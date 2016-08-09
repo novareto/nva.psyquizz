@@ -1,0 +1,9 @@
+<ul tal:condition="len(manager.viewlets) > 1 or (manager.viewlets and manager.viewlets[0].__component_name__ != 'index')"
+    tal:attributes="id manager.id"
+    class="nav nav-tabs" style="margin-bottom: 2em">
+  <li role="presentation" tal:repeat="action manager.viewlets"
+      tal:attributes="class action.selected and 'active' or ''">
+	<a tal:attributes="href action.url; title action.title;"
+	   tal:content="action.title" />
+  </li>
+</ul>

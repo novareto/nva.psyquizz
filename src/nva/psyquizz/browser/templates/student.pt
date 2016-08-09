@@ -1,0 +1,25 @@
+<h1>Student access <span tal:content="context.access" /></h1>
+<div tal:condition="context.completion_date is None">
+  <h2>The student has not filled the quizz yet</h2>
+</div>
+
+<div tal:condition="context.completion_date is not None">
+  <p>
+    The student filled the quizz on
+    <span tal:content="context.completion_date" />
+  </p>
+  <h2>Answers for <span tal:content="context.quizz_type" /></h2>
+  <dl>
+    <tal:loop repeat="field view.fields.values()">
+      <dt tal:content="'%s - %s' % (field.title, field.description)" />
+      <dd tal:content="getattr(view.answers, field.__name__, '')" />
+    </tal:loop>
+  </dl>
+  <h2>Answers to the extra questions</h2>
+  <dl>
+    <tal:loop repeat="extra view.extra.items()">
+      <dt tal:content="extra[0]" />
+      <dd tal:content="extra[1]" />
+    </tal:loop>
+  </dl>
+</div>

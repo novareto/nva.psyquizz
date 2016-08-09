@@ -1,0 +1,25 @@
+<div class="row">
+<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
+  Hilfe 
+</button>
+<div class="modal fade" id="myModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Hilfe</h4>
+      </div>
+      <div class="modal-body">
+        <p class="lead">Musteranschreiben: </p>
+        <p>Mit Hilfe des Musteranschreibens können Sie Ihre Beschäftigten über die Befragung informieren und
+      den Link zum Fragebogen verteilen. Sie können diesen per Copy&Paste in Ihr E-Mailprogramm
+      einfügen und an Ihre Beschäftigten verschicken. Alternativ können Sie den Text ausdrucken und per
+      Hauspost verschicken.  </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

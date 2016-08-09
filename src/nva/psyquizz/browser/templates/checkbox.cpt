@@ -1,0 +1,9 @@
+<input id="#" name="#" class="#" checked="" value="True" type="checkbox" style="float: left;"
+       tal:define="checked widget.inputValue() == 'True'"
+       tal:attributes="name widget.identifier;
+                       id widget.htmlId();
+                       class widget.htmlClass();
+                       checked checked and 'checked' or None;
+                       widget.htmlAttributes()" />
+
+<p style="margin-left: 20px;"> Zu Forschungszwecken werden die Ergebnisse der Befragung anonymisiert in einer Gesamtdatenbank gespeichert. Dies hilft uns sehr bei der Entwicklung von branchenspezifischen Instrumenten zur Prävention psychischer Belastungen. Die gespeicherten Ergebnisse lassen keinerlei Rückschlüsse auf den betreffenden Betrieb zu. Es werden lediglich die Branche sowie die Anzahl der Beschäftigten erfasst. </p>

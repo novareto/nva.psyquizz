@@ -1,0 +1,87 @@
+    <form action="." tal:attributes="action view.action_url;
+                                     id view.htmlId();
+                                     method view.formMethod;
+                                     enctype view.enctype">
+
+      <h1 tal:condition="view.label"
+          tal:content="view.label">Label</h1>
+
+      <p tal:condition="view.description"
+         tal:content="view.description">Description</p>
+
+      <p class="form-status"
+         tal:condition="view.status"
+         tal:content="view.status">Status</p>
+
+      <div class="form-error"
+         tal:condition="view.errors">
+          <ul tal:condition="view.formErrors"
+              tal:repeat="error view.formErrors">
+            <li> <span tal:replace="error.title" /> </li>
+          </ul>
+      </div>
+
+      <div id="wizard">
+	<div class="panel">
+	  <tal:groups tal:repeat="group view.groups.keys()">
+	  <a data-toggle="collapse" href="" class="btn btn-primary"
+	     data-parent="#wizard"
+	     tal:attributes="href '#' + group.__name__;
+	                     aria-expanded repeat['group'].start and 'true' or 'false';
+			     aria-controls group.__name__"
+	     tal:content="group.getTaggedValue('label')">Section Name</a>
+	  
+	  <div tal:attributes="id group.__name__;
+	                       class repeat['group'].start and 'collapse in' or 'collapse'"
+	       data-parent="#wizard">
+	    <h1 tal:content="group.getTaggedValue('label')" />
+            <div class="field" tal:repeat="widget view.groups[group]">
+              <!--
+              <label class="field-label" for="#"
+                     tal:attributes="for widget.htmlId()"
+                     tal:content="widget.title"
+                     tal:condition="widget.isVisible() and not view.isHidden(widget)">
+		Label
+              </label>
+              <span class="field-required"
+                    i18n:translate=""
+                    tal:condition="widget.required and widget.isVisible()
+				   and not view.isHidden(widget)"
+                    >(required)</span>
+              <br />
+-->
+              <tal:description tal:condition="widget.description">
+		<span class="field-description lead"
+                      tal:content="widget.description">
+		  </span><br />
+              </tal:description>
+              <tal:error tal:define="error widget.error"
+			 tal:condition="error">
+		<span class="field-error"
+                      tal:content="error.title">
+		  Error
+		</span>
+		<br />
+              </tal:error>
+              <tal:widget tal:content="structure widget.render()" />
+            </div>
+	  </div>
+	  </tal:groups>
+	  <a data-toggle="collapse" href="#validate"
+	     class="btn btn-primary"
+	     data-parent="#wizard"
+	     aria-expanded="false" aria-control="validate"
+	     tal:condition="view.actionWidgets">Abschließen</a>
+	  
+	  <div class= "collapse" id="validate"
+	       tal:condition="view.actionWidgets">
+	    <h2>Vielen Dank für Ihre Teilnahem am Fragegoben. Ihre Antworten werden ausschließlich anonymisiert verarbeitet.
+          Bitte klicken Sie noch den Button 'Abschließen', um Ihre Antworten einzusenden.
+	    </h2>
+            <div class="action" tal:repeat="widget view.actionWidgets">
+              <tal:widget tal:content="structure widget.render()" />
+            </div>
+	  </div>
+	</div>
+      </div>
+    </form>

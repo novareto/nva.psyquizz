@@ -1,0 +1,200 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"POT-Creation-Date: Tue Mar 24 14:10:42 2010\n"
+"PO-Revision-Date: 2015-03-24 14:48+0200\n"
+"Last-Translator: Souheil Chelfouh <trollfot@gmail.com>\n"
+"Language-Team: Novareto\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: fr\n"
+"Language-Name: French\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: nva.psyquizz\n"
+
+
+msgid "Add"
+msgstr "Hinzufügen"
+
+msgid "Answer"
+msgstr "Abschließen"
+
+msgid "Add a company"
+msgstr "Unternehmen anlegen"
+
+msgid "Number of students"
+msgstr "Anzahl Fragebögen"
+
+msgid "Name ${name} already exists."
+msgstr "Der Name '${name}' existiert bereits."
+
+msgid "Company added with success."
+msgstr "Der Betrieb wurde erfolgreich registriert."
+
+msgid "Add a course"
+msgstr "Befragung"
+
+msgid "An error occurred."
+msgstr "Ein Fehler liegt vor."
+
+msgid "Course added with success."
+msgstr "Die Befragung wurde erfolgreich angelegt."
+
+msgid "Add accesses"
+msgstr "Fragebogen anlegen"
+
+msgid "Added ${nb} accesses with success."
+msgstr "$nb Fragebogen erfolgreich angelegt."
+
+msgid "Thank you for answering the quizz"
+msgstr "Vielen Dank für Ihre Teilnahme. Ihre Angaben wurden gespeichert."
+
+msgid "Frontpage"
+msgstr "Startseite"
+
+msgid "This quizz is already completed and therefore closed."
+msgstr "  "
+
+msgid "Results for the course"
+msgstr "Auswertung Unternehmensbereich"
+
+msgid "Company wide results"
+msgstr "Auswertung Unternehmen"
+
+msgid "Site wide results"
+msgstr "Résultats combinés inter-entreprises"
+
+msgid "Company name"
+msgstr "Name des Unternehmens"
+
+msgid "Password for observation access"
+msgstr "Passwort"
+
+msgid "Course name"
+msgstr "Name der Befragung"
+
+msgid "Students"
+msgstr "Students"
+
+msgid "Quizz"
+msgstr "Fragebogen wählen"
+
+msgid "Complementary questions for the course"
+msgstr "Zusatzfragen für diese Befragung (optional)"
+
+msgid "Type your questions : one per line."
+msgstr "Zusatzfragen eingeben. Für jede Frage eine neue Zeile beginnen."
+
+msgid "Populate"
+msgstr "Anlegen"
+
+msgid "i"
+msgstr "i"
+
+msgid "Criterias"
+msgstr "Tätigkeiten/Bereiche festlegen"
+
+msgid "All criterias"
+msgstr "Alle Kriterien"
+
+msgid "Add a criteria"
+msgstr "Auswertungsgruppen bilden"
+
+msgid "Label"
+msgstr "Kriterium (z. B. Abteilung, Tätigkeit, Standort)"
+
+msgid "Please enter one criteria per line"
+msgstr "Auswertungsgruppen"
+
+msgid "Description items"
+msgstr "Nennen Sie mindestens zwei unterschiedliche Ausprägungen (Beispiel Abteilung: „Personal“ und „Buchhaltung“). Bitte geben Sie jeder Ausprägung in eine neue Zeile ein, indem Sie die Eingabetaste („Return“) betätigen. Bitte achten Sie bei der Wahl Ihrer Auswertungsgruppen - aus Datenschutzgründen werden Ihnen nach Durchführung der Befragung nur Auswertungen von Gruppen angezeigt, von denen mindestens sieben ausgefüllte „Fragebögen“ vorliegen."
+
+msgid "Description Label"
+msgstr "Mithilfe der Kriterien können Sie unterschiedliche Auswertungsgruppen bilden: (das Kriterium Abteilung könnte bspw. die Auswertungsgruppen Personal, Buchhaltung, Vertrieb und Produktion ermöglichen). Bitte beachten Sie bei der Wahl Ihrer Kriterien darauf, dass Ihre Auswertungsgruppen möglichst nicht kleiner als 10 Beschäftigte werden." 
+
+msgid "Company ID"
+msgstr "Mitgliedsnummer"
+
+msgid "Retype password"
+msgstr "Passwort wiederholen"
+
+msgid "Add a session"
+msgstr "Befragung anlegen"
+
+msgid "Diff"
+msgstr "Auswertung (Vergleich)"
+
+msgid "Statistics"
+msgstr "Auswertung"
+
+msgid "Start date"
+msgstr "Startdatum der Befragung"
+
+msgid "Edit the course"
+msgstr "Bearbeiten"
+
+msgid "Fullname"
+msgstr "Vor- und Zuname"
+
+msgid "Transfer the company"
+msgstr "Benutzerprofil übertragen"
+
+msgid "Duration of the session's validity"
+msgstr "Dauer der Befragung"
+
+msgid "Account added with success."
+msgstr "Ihr Benutzerprofil wurde erfolgreich erstellt."
+
+msgid "Please give your Fullname here"
+msgstr "Bitten tragen Sie in dieses Feld Ihren Vor- und Zunamen ein."
+
+msgid "Session added with success."
+msgstr "Die Befragung wurde erfolgreich angelegt"
+
+msgid "Criteria added with success."
+msgstr "Die Auswertungsgruppe wurde erfolgreich angelegt"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "Deleted with success."
+msgstr "Das Objekt wurde erfolgreich gelöscht"
+
+msgid "About"
+msgstr "Einführungstext"
+
+msgid "This Text gives Information about the Course to Participants"
+msgstr "Dieser Text wird Ihren Beschäftigten als erste Seite vor Beginn der eigentlichen Befragung angezeigt. Sie haben die Möglichkeit den vorgegeben Text nach Ihren Wünschen anzupassen."
+
+msgid "Please provide at least 2 criteria items."
+msgstr "Bitte geben Sie mindestens 2 Kriterien in der Auswertungsgruppe an"
+
+msgid "Employees"
+msgstr "Beschäftigte"
+
+msgid "Employees_desc"
+msgstr "Wie viele Beschäftigte hat der Betrieb, für den Sie die Befragung anlegen?" 
+
+msgid "Type"
+msgstr "Branche"
+
+msgid "Type_desc"
+msgstr "Welche der folgenden Branchen beschreibt den „Betriebsgegenstand“ Ihres Unternehmens am besten. In welcher der Branchen liegt der Schwerpunkt der Tätigkeit Ihres Unternehmens?"
+
+msgid "Dürfen wir die Ergebnisse in der ForschungsDB verwenden"
+msgstr "Ich stimme einer Auswertung der Daten zu wissenschaftlichen Zwecken zu."
+
+msgid "Edit Account"
+msgstr "Profil bearbeiten"
+
+msgid "Update"
+msgstr "Bearbeiten"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "User with given email already exists."
+msgstr "Diese E-Mail Adresse ist bereits im System gespeichert"

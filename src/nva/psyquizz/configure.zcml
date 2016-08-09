@@ -1,0 +1,21 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:grok="http://namespaces.zope.org/grok">
+
+  <include package="uvclight" />
+  <include package="ul.auth" />
+  <include package="siguvtheme.uvclight" />
+  <include package="cromlech.dawnlight" file="consumers.zcml" />
+  <include package="dolmen.clockwork" />
+  <include package="dolmen.forms.base" />
+  <include package="dolmen.forms.crud" />
+  <include package="dolmen.breadcrumbs" />
+
+  <include package="zope.i18n" />
+  <include package="zope.i18n" file="meta.zcml" />
+  <i18n:registerTranslations directory="translations" />
+
+  <grok:grok package="." />
+
+</configure>

@@ -1,0 +1,643 @@
+<div class="row">
+  <div class="col-md-3">
+    <div class="well">
+      <form role="form" noValidate="true" method="post"
+	    enctype="multipart/form-data" novalidate="novalidate"
+	    action="/login">
+	<div>
+	  <div id="field-username" class="form-group">
+	    <label for="username" class="control-label">
+              <span>E-Mail</span>
+	    </label>
+	    <input type="text" value="" id="username" name="username"
+		   class="field field-textline form-control field-required"
+		   required="required" />      
+	  </div>
+	  <div id="field-password" class="form-group">
+	    <label for="password" class="control-label">
+              <span>Passwort</span>
+	    </label>
+	    <input type="password" id="password" name="password"
+		   class="field field-password form-control field-required"
+		   required="required" />
+	  </div>
+	  <p>
+	    <a href="forgotten">Passwort vergessen</a>
+	  </p>
+	  <input id="came_from" name="came_from" class="field"
+		 type="hidden" value="" />
+	</div>
+	<div class="form-group">
+	  <input type="submit" id="action-login" name="action.login"
+		 value="Anmelden" class="action btn btn-default" />
+	</div>
+	<div>
+	  <p>
+	    Um sich neu zu registrieren klicken sie auf
+	    <a href="register">registrieren</a>
+	  </p>
+	</div>
+      </form>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <h1>
+      Gemeinsam zu gesunden Arbeitsbedingungen - online <br> 
+      <small>Psychische Belastung online erfassen</small>
+    </h1>
+    <p>
+    Die Gesundheit der Beschäftigten ist die Voraussetzung für ihre Leistung. Und damit die Basis für den Erfolg jedes Betriebes.
+    </p>
+    <p>
+    Die BG ETEM hilft Ihnen mit ihrem Programm Gemeinsam zu gesunden 
+    <a data-toggle="popover" data-placement="left" title="Arbeitsschutzgesetz" data-content="Das Arbeitsschutzgesetz verpflichtet Arbeitgeber/-innen die Arbeit so zu gestalten, dass die psychische Gesundheit der Beschäftigten nicht gefährdet ist. Er muss daher die psychischen Belastungsfaktoren der Arbeitsbedingungen beurteilen und erforderlichenfalls Maßnahmen ableiten. Die Umsetzung und Wirksamkeit der Maßnahmen muss kontrolliert und der gesamte Vorgang dokumentiert werden (vgl. ArbSchG §§ 4,5,6).
+Psychische Gefährdungen resultieren häufig aus sehr hoher Arbeitsintensität, ungünstiger Dauer, Lage und Verteilung der Arbeitszeit, sozialen Konflikten, mangelhafter ergonomischer Gestaltung oder dem Zusammenwirken mehrerer psychischer Belastungsfaktoren wie zum Beispiel häufigen Störungen bei hohem Konzentrationserfordernis und hohem Zeitdruck.
+So vielfältig die Ursachen sein können, so vielfältig sind mögliche Ansatzpunkte für präventive Maßnahmen: Arbeitsmittel, Arbeitsumgebung, Arbeitsorganisation, Mitarbeiterqualifikation oder die Gestaltung der sozialen Umwelt kommen in Frage.">Arbeitsbedingungen</a>
+    dabei. Das Programm führt Sie ein sieben Schritten zur Gefährdungsbeurteilung psychischer Belastung: </p>
+
+
+    <div metal:define-macro="panel">
+      <div class="row">
+        <a href="fanstatic/nva.psyquizz/BGETEM-7_Schritte.pdf" class="pull-right"> Download </a>
+      </div>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+        <a role="button" class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+	  1. Vorbereitung und Planung
+	  <span class="sign">&nbsp;</span>
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+      <div class="panel-body">
+
+<p class="lead">Steuerungsgruppe </p> 
+<p>Die Steuerung und Umsetzung der Gefährdungsbeurteilung Psychischer Belastung sollte durch eine Steuerungsgruppe erfolgen. Diese setzt sich idealerweise aus den folgenden Personen zusammen:
+</p>
+<p>
+<ul>
+<li>
+  Geschäftsleitung oder ein Vertreter z.B. Personalleitung
+</li>
+<li>
+  Vertreter der Interessenvertretung (Betriebsrat)
+</li>
+<li>
+  Fachkraft für Arbeitssicherheit
+</li>
+<li>
+  Betriebsarzt 
+</li>
+<li>
+  Mitarbeiter des Personalbereiches
+</li>
+<li>
+  Vertreter aus dem Betrieblichen Gesundheitsmanagements
+</li>
+<li>
+  U.U. weitere Beauftragte
+</li>
+</ul>
+</p>
+<p>
+Idealerweise nutzen Sie bestehende betriebliche Strukturen, zum Beispiel den Arbeitsschutzausschuss (ASA). 
+</p>
+<p>
+In der Steuerungsgruppe werden der Prozess geplant, Rahmenbedingungen und Ressourcen festgelegt und Verantwortlichkeiten definiert.
+</p>
+<p class="lead">
+Projektplan entwickeln
+</p>
+<p>
+Der nächste Schritt besteht im Aufsetzen eines Projektplanes. Im Prinzip ergibt sich die Projektplanung aus den in dieser Handlungsanleitung hinterlegten Schritten. 
+</p>
+<p>
+Wichtige Fragen, die in diesem Zusammenhang beantwortet werden sollten:
+</p>
+<p>
+<ul>
+<li>
+  Sollen die Gefährdungsbeurteilung Psychischer Belastung oder Teilschritte zunächst in einem Pilotbereich durchlaufen werden?
+</li>
+<li>
+  Kann die Umsetzung komplett intern erfolgen oder soll sie durch einen externen Dienstleister unterstützt werden?
+</li>
+</ul>
+</p>
+ Tipp: Investieren Sie an dieser Stelle ausreichend Zeit für eine saubere Planung aller Prozessschritte!
+<p>
+Die Durchführung, Auswertung und Beurteilung der Befragung dauert abhängig von der Betriebsgröße mit zwischen drei bis sechs Wochen. Bei der Festlegung des Befragungszeitraumes sollten Sie darauf achten, einen Zeitraum zu wählen, an dem möglichst viele der Beschäftigten auch tatsächlich im Betrieb anwesend sind (keine Hauptferienzeiten o.Ä.) 
+</p>
+<p class="lead">
+Auswertungsgruppen festlegen
+</p>
+<p>
+In der Gefährdungsbeurteilung soll die Belastung durch die berufliche Tätigkeit/den Arbeitsplatz erfasst werden. Gleichartige Tätigkeiten können zusammengefasst werden. Daher sollten die Auswertungsgruppen Arbeitsplätzen bzw. Tätigkeiten umfassen, die hinsichtlich ihrer psychischen Belastung vergleichbar sind.
+</p>
+<p>
+Diese Gruppenbildung kann bspw. anhand des Organigramms erfolgen, d.h. alle Mitglieder eines Arbeitsteams oder einer Abteilung bilden eine Auswertungsgruppe. Alternativ kann die Gruppenbildung auch tätigkeitsbezogen erfolgen, so dass bspw. alle Entwickler eine Auswertungsgruppe bilden, alle Führungskräfte eine, alle Monteure eine usw.
+</p>
+<p>
+Unter Umständen können auch Kombinationen Sinn ergeben, wie z.B. Auswertungsgruppen anhand der Teamzugehörigkeit zu bilden, daneben eine Auswertungsgruppe für Führungskräfte.
+</p>
+<p>
+Berücksichtigen Sie bei der Bildung von Auswertungsgruppen zudem die folgenden Hinweise:
+</p>
+<p>
+<ul>
+<li>
+  Denken Sie an den Datenschutz – es sollten keine Auswertungsgruppen mit weniger als 10 Beschäftigten gebildet werden um die Anonymität beim Ausfüllen des Fragebogens sicherzustellen
+</li>
+<li>
+  Bilden Sie nachvollziehbare Auswertungsgruppen – im Laufe der Befragung muss der  Beschäftigte angeben, zu welcher Auswertungsgruppe er gehört.
+</li>
+</ul>
+
+</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingTwo">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+	  2. Information und Kommunikation
+	  <span class="sign">&nbsp;</span>
+        </a>
+      </h4>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+      <div class="panel-body">
+<p>
+Eine wichtige Stellschraube für eine erfolgreiche Umsetzung ist die umfassende und transparente Information der Beschäftigten. Den Beschäftigten muss deutlich werden, warum und wie die Gefährdungsbeurteilung psychischer Belastung durchgeführt wird und was sie persönlich davon haben.  Neben einer offenen Kommunikation über den Gesamtprozess liegt ein weiterer wesentlicher Erfolgsfaktor in der Sicherstellung der Anonymität der Angaben der Beschäftigten. Diesen Punkt sollten Sie aktiv kommunizieren und den Beschäftigten deutlich machen, warum es nicht möglich und nicht gewollt ist, aus den Ergebnissen auf die Angaben einzelner Beschäftigter zu schließen.
+</p>
+<p>
+Nur so kann es gelingen, die für eine erfolgreiche Befragung notwendige Vertrauensbasis zu den Beschäftigten herzustellen. Dieses Vertrauen ist u.A. notwendig, um eine für aussagekräftige Ergebnisse möglichst hohe Anzahl an ausgefüllten Fragebögen zu erreichen. Zudem stellen Sie so sicher, dass die Beschäftigten den Fragebogen möglichst offen und ehrlich beantworten und keine „geschönten“ Angaben gemacht werden.
+</p> 
+<p>
+Und auch für Sie als Betrieb bietet sich hier eine Möglichkeit sich zu präsentieren – Wir kümmern uns!
+</p>
+<p>
+Wichtige Meilensteine in der Kommunikation an die Beschäftigten sind:
+</p>
+<ul>
+<li>
+  Präsentation des Gesamtprojektes sowie der verfolgten Ziele, z.B. im Rahmen einer Mitarbeiterversammlung oder Teammeetings
+</li>
+<li>
+  Auftaktinformation zum Start der Befragung, bspw. im Intranet oder als Informationsschreiben
+</li>
+<li>
+  „Bewerbung der laufenden Befragung“, z.B. Erinnerungs-Mails, Aushang etc.
+</li>
+<li>
+  Präsentation der Ergebnisse und Vorstellung des weiteren Verlaufs (Durchführung der Lösungsworkshops) bspw. in Form einer Mitarbeiterversammlung oder im Rahmen von Teammeetings
+</li>
+<li>
+  Vorstellung der Ergebnisse der Lösungsworkshops und der beschlossenen Verbesserungsmaßnahmen, z.B. Informationsschreiben oder Teammeetings
+</li>
+<li>
+  Vorstellung des Umsetzungsstandes der beschlossenen Maßnahmen, z.B. vierteljährliches Informationsschreiben, Aushang etc.
+</li>
+</ul>
+<p>
+ Zudem sollten Sie eine Person aus der Steuerungsgruppe, die das Vertrauen der Beschäftigten genießt, als persönlichen Ansprechpartner für Rückfragen der Beschäftigten benennen.
+</p>
+TIPP: Informieren Sie in einem ersten Schritt Ihrer Führungskräfte möglichst detailliert über den Ablauf der Gefährdungsbeurteilung psychischer Belastung in Ihrem Betrieb. So haben Sie die Möglichkeit frühzeitig Bedenken seitens der Führungskräfte auszuräumen und diese als Multiplikatoren zu gewinnen.
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+	  3. Online-Befragung
+	  <span class="sign">&nbsp;</span>
+        </a>
+      </h4>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+      <div class="panel-body">
+
+<p class="lead">
+Einführung
+</p>
+<p>
+Die Befragung erfolgt mit Hilfe des Kurz Fragebogens zur Arbeitsanalyse (KFZA), der von Prof. Jochen Prümper, Klaus Hartmannsgruber und Michael Frese als Instrument zur Ermittlung psychischer Belastungen entwickelt und veröffentlicht wurde. 
+</p>
+<p>
+Es handelt sich um ein theoretisch fundiertes Verfahren, das den wissenschaftlichen Qualitätskriterien genügt und bereist langjährig in der betrieblichen Praxis im Einsatz ist. Die Einsatzmöglichkeiten sind an keine bestimmte Branche gebunden.
+</p>
+<p>
+Der KFZA besteht aus insgesamt 26 Fragen mit jeweils fünf vorgegebenen Antwortmöglichkeiten („trifft gar nicht zu“ – „trifft völlig zu“). Die Bearbeitung dauert weniger als 10 Minuten.
+</p>
+<p>
+Den gesamten Fragebogen können Sie <a target="_blank" href="fanstatic/nva.psyquizz/KFzA.pdf"> hier </a> aufrufen.
+</p>
+<p>
+Weitere Informationen zum KFZA finden Sie in der Toolbox der baua <a target="_blank" href="http://www.baua.de/de/Informationen-fuer-die-Praxis/Handlungshilfen-und-Praxisbeispiele/Toolbox/Suche/Datarecord_toolbox.html?idDatarecord=82529"> hier </a>.
+</p>
+<p class="lead">
+Registrierung
+</p>
+<p>
+Die Befragung erfolgt durch die Online Hilfe der BG ETEM. Hierzu ist zunächst eine einmalige Registrierung erforderlich:
+</p>
+
+
+<a  data-footer="" data-title="Registrierung" data-toggle="lightbox" href="/fanstatic/nva.psyquizz/abb1.jpg">
+  <img class="img-responsive img-thumbnail" src="/fanstatic/nva.psyquizz/abb1.jpg"/>
+</a>
+
+<p>
+Anschließend erhalten Sie eine E-Mail mit einem Bestätigungslink. Nach Abschluss der Registrierung können Sie sich mit Ihrer E-Mail Adresse und Ihrem Passwort anmelden.
+Betrieb anlegen
+Nach der Anmeldung legen Sie zunächst die Stammdaten Ihres Betriebes an. Hierzu ist die Angabe des Namens sowie der Mitgliedsnummer bei der BG ETEM erforderlich. Diese Angaben dienen als Nachweis dafür, dass es sich bei Ihrem Betrieb um ein Mitgliedsunternehmen der BGETEM handelt.
+</p>
+
+
+<a data-footer="" data-title="Stammdaten" data-toggle="lightbox" href="/fanstatic/nva.psyquizz/abb2.jpg">
+  <img class="img-responsive img-thumbnail" src="/fanstatic/nva.psyquizz/abb2.jpg"/>
+</a>
+
+<p>
+Zusätzlich haben Sie die Möglichkeit, uns Ihre Daten für Forschungszwecke freizugeben. Diese Angaben helfen uns bei der Entwicklung von branchenspezifischen Präventionsangeboten.
+</p>
+
+<a data-footer="" data-title="Datenfreigabe" data-toggle="lightbox" href="/fanstatic/nva.psyquizz/abb3.jpg">
+  <img class="img-responsive img-thumbnail" src="/fanstatic/nva.psyquizz/abb3.jpg"/>
+</a>
+<p class="lead">
+Auswertungsgruppen erfassen
+</p>
+<p>
+Im nächsten Schritt erfassen Sie für Ihren Betrieb die Auswertungsgruppen. Diese haben Sie idealerweise bereits in Ihrer Steuerungsgruppe festgelegt
+</p>
+
+<a data-footer="" data-title="Auswertungsgruppen" data-toggle="lightbox" href="/fanstatic/nva.psyquizz/abb4.jpg">
+  <img class="img-responsive img-thumbnail" src="/fanstatic/nva.psyquizz/abb4.jpg"/>
+</a>
+<p>Haben Sie sich bspw. für eine Analyse der psychischen Belastung nach Abteilungen entschieden, würden Sie unter Kriterium „Abteilung“ und unter Auswertungsgruppen die Bezeichnungen Ihrer einzelnen Abteilunge eingeben.
+</p>
+<p>
+Die Auswertungsgruppen werden später auf dem „Fragebogen“ angezeigt, und die Beschäftigten geben an, zu welcher Auswertungsgruppe Sie gehören.
+</p>
+<p>Denken Sie bei der Wahl der Auswertungsgruppen daran, dass aus Datenschutzgründen nur Auswertungen für Gruppen angezeigt werden können, von denen mehr als sieben ausgefüllte „Fragebögen“ vorliegen.
+</p>
+
+
+<p class="lead">Befragung anlegen</p>
+<p>
+Im nächsten Schritt erfolgt die Eingabe der Rahmendaten Ihrer Befragung. 
+</p>
+
+<a data-footer="" data-title="Rahmendaten" data-toggle="lightbox" href="/fanstatic/nva.psyquizz/abb5.jpg">
+  <img class="img-responsive img-thumbnail" src="/fanstatic/nva.psyquizz/abb5.jpg"/>
+</a>
+<p>
+Hierzu vergeben Sie eine eindeutige Bezeichnung für Ihre Befragung, den Startzeitpunkt und die Dauer der Befragung. In diesem Zeitraum ist der „Fragebogen“ Ihres Betriebes für Ihre Beschäftigten erreichbar und die Angaben werden gespeichert. Zudem haben Sie die Möglichkeit, den Einführungstext, den Ihre Beschäftigten beim Aufruf des „Fragebogens“ angezeigt bekommen, entsprechend Ihren Bedürfnissen anzupassen.
+</p>
+
+<a data-footer="" data-title="Einführungstext" data-toggle="lightbox" href="/fanstatic/nva.psyquizz/abb6.jpg">
+  <img class="img-responsive img-thumbnail" src="/fanstatic/nva.psyquizz/abb6.jpg"/>
+</a>
+
+<p class="lead"> Link zum „Fragebogen“ an Beschäftigte verteilen</p>
+<p>
+Als nächstes verteilen Sie den Link zum „Fragebogen“ an Ihre Beschäftigten. Unter diesem Link ist der individuelle „Fragebogen“ Ihres Betriebes erreichbar. Den Link sehen Sie auf der Übersichtsseite unter der Befragung – „Link zum Fragebogen“.
+</p>
+<p>
+Zur Verteilung des Links können Sie das hinterlegte Musteranschreiben nutzen. Hier werden automatisch Zeitraum und Dauer der Befragung sowie der Link zum „Fragebogen“ hinterlegt. 
+</p>
+
+<a data-footer="" data-title="Musteranschreiben" data-toggle="lightbox" href="/fanstatic/nva.psyquizz/abb7.jpg">
+  <img class="img-responsive img-thumbnail" src="/fanstatic/nva.psyquizz/abb7.jpg"/>
+</a>
+
+<p>
+Idealerweise fügen Sie das Musteranschreiben per Copy&Paste in Ihrer E-Mailsoftware ein, passen der Text Ihren Bedürfnissen an und verschicken Ihn per E-Mail an Ihre Beschäftigten.
+</p>
+
+<p class="lead"> Beschäftigte bearbeiten Befragung</p>
+<p>
+Der nächste Schritt besteht darin, dass Ihre Beschäftigten die Befragung bearbeiten. Hierzu muss zunächst der Link zum „Fragebogen“ aufgerufen werden. 
+</p>
+
+<a data-footer="" data-title="Fragebogen" data-toggle="lightbox" href="/fanstatic/nva.psyquizz/abb8.jpg">
+  <img class="img-responsive img-thumbnail" src="/fanstatic/nva.psyquizz/abb8.jpg"/>
+</a>
+<p>
+Anschließend erscheint zunächst ein Einführungstext den Sie beim Anlegen der Befragung festgelegt haben. Danach werden die einzelnen Fragen angezeigt.
+</p>
+
+<a data-footer="" data-title="Einführungstext" data-toggle="lightbox" href="/fanstatic/nva.psyquizz/abb9.jpg">
+  <img class="img-responsive img-thumbnail" src="/fanstatic/nva.psyquizz/abb9.jpg"/>
+</a>
+<p class="lead">
+Auswertung
+</p>
+
+<p> Fertig ausgefüllte „Fragebögen“ werden auf der Übersichtsseite unter ausgefüllte „Fragebögen“ angezeigt.</p>
+
+<a data-footer="" data-title="Übersichtsseite" data-toggle="lightbox" href="/fanstatic/nva.psyquizz/abb10.jpg">
+  <img class="img-responsive img-thumbnail" src="/fanstatic/nva.psyquizz/abb10.jpg"/>
+</a>
+<p>
+Die Ergebnisse Ihrer Befragung können Sie unter dem Punkt „Auswertung“ aufrufen.
+</p>
+
+<p class="lead">
+Beurteilung der Ergebnisse
+</p>
+<p>
+In der Steuerungsgruppe entscheiden Sie, wie Sie weiter verfahren. In den Auswertungsgruppen, in denen alle Ergebnisse im „grünen Bereich“ sind, kann die Gefährdungsbeurteilung psychische Belastung mit der Dokumentation abgeschlossen werden. Bitte denken Sie daran, dieses positive Ergebnis Ihren Beschäftigten mitzuteilen. 
+</p>
+<p>
+In allen anderen Fällen ist eine tiefergehende Analyse erforderlich. Wir empfehlen Ihnen dann, <b>Lösungsworkshops</b> durchzuführen.
+</p>
+
+<a data-footer="" data-title="Analyse" data-toggle="lightbox" href="/fanstatic/nva.psyquizz/abb11.jpg">
+  <img class="img-responsive img-thumbnail" src="/fanstatic/nva.psyquizz/abb11.jpg"/>
+</a>
+<p>
+Hier haben Sie die Möglichkeit, sich für Ihre Auswertungsgruppen entsprechende Auswertungen anzeigen zu lassen und als PDF Dokument zu exportieren.
+</p>
+
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+	  4. Lösungsworkshop
+	  <span class="sign">&nbsp;</span>
+        </a>
+      </h4>
+    </div>
+    <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+      <div class="panel-body">
+        <p>
+Ein Lösungsworkshop dient der Konkretisierung der Befragungsergebnisse und der Entwicklung von Lösungsideen. In moderierten Kleingruppen wird das Expertenwissen der Teilnehmer erschlossen.
+        </p>
+
+        <p>
+Die Dauer des Lösungsworkshops liegt zwischen 1,5 und 4 Stunden. Sie hängt von der Teilnehmerzahl und Art und Anzahl der zu besprechenden Belastungsfaktoren ab.
+        </p>
+
+        <p>
+Die Moderation kann durch interne oder externe Moderatoren geleitet werden.  
+<ul>
+<li> Eine externe Moderation ist empfehlenswert, wenn soziale Konflikte oder Führungsfragen im Raum stehen. 
+</li>
+<li>
+Moderieren interne Mitarbeiter oder Führungskräfte, sollten sie eine neutrale, wertschätzende Haltung einnehmen. Ist dies nicht möglich, weil z.B. Rollenkonflikte oder Führungsthemen ins Blickfeld geraten, raten wir dazu, einen gesonderten Termin mit externen Moderatoren anzusetzen.
+</li>
+</ul>
+        </p>
+Die Führungskraft wird aktiv.
+<ul>
+<li>
+Die Führungskraft erteilt zu Beginn des Lösungsworkshops der Gruppe den Auftrag, die Belastungssituation zu reflektieren und Ideen für Maßnahmen zu entwickeln.
+</li>
+<li>
+Die Führungskraft verlässt den Raum während der Problembeschreibung und Lösungssuche. Denn es wird häufig freier gesprochen, wenn die Führungskräfte nicht im Raum sind.
+</li>
+<li>
+Am Ende des Workshops ist die Führungskraft, bei der Präsentation der Ergebnisse anwesend. Dann können mit ihrer Zustimmung erste Maßnahmen direkt auf den Weg gebracht werden.
+</li>
+</ul>
+        <p>
+Die Teilnehmergruppe
+        </p>
+
+        <p>
+Die Teilnehmergruppe muss nicht exakt der Befragungsgruppe entsprechen. Es hat sich jedoch bewährt, entweder ein gesamtes Team im Lösungsworkshop zu haben oder eine repräsentative Anzahl Freiwilliger (Vertreterworkshop). Durch die aktive Beteiligung der Beschäftigten erhöht sich die Akzeptanz der Maßnahmen. Die Gruppe sollte nur im Ausnamefall weniger als fünf oder mehr als 15  Personen umfassen.
+        </p>
+
+        <p>
+Nach dem Lösungsworkshop werden die Ergebnisse an die Führungskraft, die Steuerungsgruppe bzw. die Geschäftsleitung weitergeleitet. Hier wird entschieden, welche Maßnahmen umgesetzt werden.
+        </p>
+
+        <table class="table table-bordered">
+          <tr>
+             <th> Ablauf </th>
+             <th> Vorgehen </th>
+             <th> Zeit </th>
+         </tr>
+         <tr>
+            <td>Begrüßung und Klärung der Rahmenbedingungen </td>
+            <td> 
+              <p> <b>Vorstellung</b> von Moderator und Teilnehmern.</p>
+              <p> <b>Führungskraft nennt das Ziel:</b> Die Verbesserung der Arbeitsbedingungen.</p>
+              <p>  Vereinbarung zur Vertraulichkeit des gesprochenen Wortes. Alles Schriftliche, das raus geht, wird am Ende gemeinsam beschlossen.</p>
+            </td>
+            <td> 15 Minuten</td>
+         </tr>
+         <tr>
+            <td> Ergebnispräsentation</td>
+            <td> 
+              <b> Präsentation der Ergebnisse aus der Onlinebefragung</b> (z.B. mit Beamer): <br> Was ist positiv? (Ressourcen) Wo muss genauer hingeschaut werden?<br>  (Alle Themenfelder, die im roten Bereich liegen, sollten bearbeitet werden.)
+</td>
+            <td>15 Minuten </td>
+         </tr>
+         <tr>
+            <td> Problembeschreibung</td>
+            <td>
+              Was sind <b>typische Situationen, in denen sich das Problem zeigt?</b> <br> Jede Person schreibt möglichst mindestens eine  Situation zu jedem „roten“ Themenfeld  (z.B. auf Moderationskarten).
+</td>
+            <td> 15 - 20 Minuten</td>
+         </tr>
+         <tr>
+            <td>Ursachen</td>
+            <td>
+              Was ist die <b>Ursache der Belastung?</b> <br>
+              Sammeln der Belastungsursachen für alle Themenfelder im Plenum.<br>
+              Der Moderator visualisiert (z.B. auf Flipchart).<br>
+            </td>
+            <td>15 - 30 Minuten </td>
+         </tr>
+         <tr>
+           <td> Lösungssuche</td>
+           <td>
+                 Bildung von Kleingruppen nach Interesse an den
+                 <br>
+                 Themenfeldern (auf gleiche Gruppengröße achten). 
+                 <br>
+                 Leitfragen: 
+                 <br>
+                 <b> Was kann ich selbst tun?</b>
+                 <br>
+                 <b>Was kann unser Team tun?</b> 
+                 <br>
+                 <b>Was kann die Führung tun?</b> 
+                 <br>
+                 (Moderationskarten -  je Frage eine Farbe)
+                 <br>
+                 Bitte darauf achten, dass die Lösungen zu den eigenen Situationen passen.
+                 <br>
+                 Vorstellung der Kleingruppenergebnisse im Plenum, 
+                 Ergänzungen werden vom Moderator aufgenommen.
+                 <br>
+                 Eventuell: Priorisierung (Rangfolge) der besten 
+                 Lösungen
+                 <br>
+           </td>
+            <td> 30 - 60 Minuten</td>
+         </tr>
+         <tr>
+           <td>Abschluss und Ausblick</td>
+           <td> <b>Führungskraft ist anwesend:</b>
+             <ul>
+               <li>
+                 Was können wir hier beschließen? 
+               </li>
+               <li>
+
+                 Was wird in der Steuerungsgruppe entschieden? 
+               </li>
+               <li>
+
+                 Beschreibung des weiteren Verfahrens, 
+               </li>
+             </ul>
+
+               <b>Führungskraft ist nicht anwesend: 
+                 Gemeinsamer Beschluss
+               </b> 
+               <ul>
+                 <li>
+                   Was soll in welcher Form weitergereicht werden? (Fotoprotokoll)
+                 </li>
+                 <li>
+                   Wird noch ein weiterer Termin gebraucht?  
+                 </li>
+               </ul>
+               <p>
+               Hinweis auf die Vertraulichkeit des gesprochenen 
+               Wortes. Feedback. Bedanken für die Teilnahme.
+               </p>
+           </td>
+           <td> 15 - 45 Minuten</td>
+         </tr>
+      </table>
+
+
+
+        <p>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+	  5. Maßnahmenumsetzung
+	  <span class="sign">&nbsp;</span>
+        </a>
+      </h4>
+    </div>
+    <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+      <div class="panel-body">
+<p>
+Hier wird zunächst unterteilt nach Maßnahmen, die nur den eigenen Bereich der Führungskraft betreffen und Maßnahmen, die den Gesamtbetrieb oder mehrere Bereiche betreffen. 
+</p>
+<p>
+Maßnahmen die im Bereich der Führungskraft liegen, können durch diese geplant und gesteuert werden. Bereichsübergreifende Maßnahmen werden durch die Steuerungsgruppe geplant und überwacht.
+</p>
+<p>
+In einem ersten Schritt werden die Maßnahmen priosiert (z.B. nach Erwartetem Nutzen vs. Aufwand). 
+</p>
+<a data-footer="A custom footer text" data-title="A random title" data-toggle="lightbox" href="/fanstatic/nva.psyquizz/maßnahmen.jpg">
+  <img class="img-responsive img-thumbnail" src="/fanstatic/nva.psyquizz/maßnahmen.jpg"/>
+</a>
+
+<p>
+Anschließend wird für jede Maßnahme ein Maßnahmenplan  erstellt der konkrete Termine und Verantwortlichkeiten enthält und die erwartete Wirkung der Maßnahme beschreibt.
+</p>
+
+<p>
+Denken Sie auch daran, Ihre Beschäftigten regelmäßig über den Stand der Maßnahmenumsetzung zu informieren. Dies kann bspw. im Rahmen von Teammeeting oder über das Intranet bzw. entsprechende Aushänge geschehen.
+</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+	  6. Wirksamkeit
+	  <span class="sign">&nbsp;</span>
+        </a>
+      </h4>
+    </div>
+    <div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
+      <div class="panel-body">
+<p>
+Mit Hilfe der Wirksamkeitskontrolle stellen Sie fest, ob Ihre Maßnahmen tatsächlich zu den gewünschten Optimierungen geführt haben.
+</p>
+<p>
+Beachten Sie, dass Maßnahmen oftmals nicht sofort wirksam werden. Planen Sie ausreichend Zeit ein, damit sich Ihre Maßnahmen auch auswirken können.
+</p>
+<p>
+Ein Weg um dies zu erreichen ist die Wiederholung der Online Befragung, bspw. einmal im Jahr. So können Sie anhand der Entwicklung der Ergebnisse feststellen, inwieweit Ihre Maßnahmen tatsächlich zu einer Optimierung der Belastungssituation geführt haben.
+</p>
+<p>
+Neben der Wiederholung der Befragung bieten sich auch Gespräche mit den Beschäftigten der betroffenen Bereiche über die Wirksamkeit der Maßnahmen an. Diese können durch die Führungskraft oder durch die Fachkraft für Arbeitssicherheit, bspw. im Rahmen der Begehungen, erfolgen. 
+</p>
+<p>
+Sollten Sie feststellen, dass Ihre Maßnahmen nicht die erwartete Wirkung erzielen, müssen Sie diese entsprechend anpassen.
+</p>
+<p>
+TIPP: Gehen Sie offen mit Misserfolgen um.  Wenn Maßnahmen nicht wirkungsvoll waren oder Widerstände auftraten, können Sie draus für die Zukunft lernen. Thematisieren Sie diese Punkte und beziehen sie in zukünftige Planungen mit ein.
+</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+	  7. Dokumentation
+	  <span class="sign">&nbsp;</span>
+        </a>
+      </h4>
+    </div>
+    <div id="collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSeven">
+      <div class="panel-body">
+<p>
+In der Dokumentation sollte nachvollziehbar sein, dass die Beurteilung der psychischen Belastung angemessen durchgeführt wurde. Dies geschieht durch die Darstellung der Ergebnisse der Beurteilung (Auswertungsberichte der Online-Befragung), die abgeleiteten Maßnahmen (Maßnahmenplan als Ergebnis des Lösungsworkshops) sowie das Ergebnis der Wirksamkeitskontrolle.
+</p>
+<p>
+Insgesamt ergeben sich daraus folgenden Mindestanforderungen an den Inhalt:
+<p>
+<ul>
+ <li> Beurteilung der Gefährdungen </li>
+ <li> Festlegung konkreter Arbeitsschutzmaßnahmen, inklusive Termine und Verantwortliche </li>
+ <li> Durchführung der Maßnahmen </li>
+ <li> Überprüfung der Wirksamkeit </li>
+ <li> Datum der Erstellung/Aktualisierung </li>
+</ul>
+<p>
+Bzgl. der Form der Dokumentation bestehen keine konkreten Anforderungen. Sie sollte jedoch so gestaltet sein, das sie auch für andere innerbetriebliche Akteure und Externe (z.B. Aufsichtsbehörden) nachvollziehbar ist
+</p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+    <p>
+    <!--
+    Beachten Sie, dass die Gefährdungsbeurteilung der psychischen Belastung nur sinnvolle Ergebnisse erzielen kann, wenn sie aktuell ist, beziehungsweise aktuell gehalten wird.
+    -->
+    </p>
+  </div>
+</div>
+</div>

@@ -1,0 +1,38 @@
+<div class="row">
+<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
+  Hilfe 
+</button>
+<div class="modal fade" id="myModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Hilfe</h4>
+      </div>
+      <div class="modal-body">
+        <p class="lead"> Auswertungsgruppen festlegen </p>
+        <p> Diese Auswahl erscheint später auf der ersten Seite des „Fragebogens“ und die Beschäftigten wählen
+        aus, zu welcher Auswertungsgruppe Sie gehören. Nur für diese Auswertungsgruppen können Sie sich
+        nach Ablauf der Befragung separate Ergebnisse anzeigen lassen.</p>
+        <p>
+        Hier sind standardmäßig alle Auswertungsgruppen ausgewählt. Sollten Sie einzelnen
+        Auswertungsgruppen in der Befragung nicht benötigen, entfernen Sie bitte das Häkchen.
+        </p>
+        <p class="lead">Startdatum und Dauer der Befragung </p>
+        <p> Hier geben Sie an ab wann und wie lange die Befragung für Ihre Beschäftigten. Wählen Sie einen
+       Zeitraum, in dem auch möglichst viele Beschäftigte auch tatsächlich im Betrieb sind (also z.B. keine
+       Hauptferienzeiten). Bei der Dauer der Befragung hat sich in der Praxis ein Zeitraum von 3 Wochen
+       bewährt. Dieser ist so lang, dass alle Beschäftigten die Möglichkeit haben komfortabel an der
+       Befragung teilzunehmen aber nicht so lange, dass die Befragung „in Vergessenheit“ gerät. </p>
+        <p class="lead">Einführungstext </p>
+        <p>Dieser Text wird Ihren Beschäftigten angezeigt, wenn Sie auf den Link zur Befragung klicken. Der Text
+       ist frei editierbar, der Textvorschlag hat sich jedoch in der Praxis bewährt. Achten Sie darauf, einen
+       Ansprechpartner für Rückfragen der Beschäftigten zu benennen. </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

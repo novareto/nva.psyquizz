@@ -1,0 +1,7 @@
+<input type="password" id="#" name="#" class="#"
+       tal:attributes="name widget.identifier;
+                       id widget.htmlId();
+                       value widget.inputValue();
+                       class widget.htmlClass();
+                       widget.htmlAttributes()" />
+

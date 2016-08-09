@@ -1,0 +1,31 @@
+<h1> Musteranschreiben </h1>
+    <p>
+    Sie können das folgenden Musteranschreiben nutzen, um Ihre Beschäftigten über die 
+    Befragung zu informieren und den Link zum „Fragebogen“ zu verteilen.  
+    Fügen Sie den Text dazu in eine E-Mail ein, passen ihn nach Ihren Vorstellungen an und 
+    versenden ihn an Ihre Beschäftigten.
+    </p>
+
+
+<div class="row">
+<div class="col-md-8 col-md-offset-1" id="copyable">
+
+<p class="lead">Liebe Kolleginnen und Kollegen, </p>
+<p>wie bereits angekündigt, erhalten Sie heute Ihre Einladung zur Teilnahme an unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“.</p> 
+<p>Ziel der Befragung ist es, Ihre Arbeitsbedingungen zu beurteilen und ggf. entsprechende Verbesserungsmaßnahmen einleiten zu können. Bitte beantworten Sie alle Fragen offen und ehrlich. Wir sichern Ihnen vollständige Vertraulichkeit zu. Die Ergebnisse der einzelnen Fragebögen bleiben absolut anonym. Die Auswertung der Ergebnisse erfolgt automatisiert über unsere Berufsgenossenschaft Elektro, Textil, Energie und Medienerzeugnisse.</p>
+<p> Keine Mitarbeiterin und kein Mitarbeiter unserer Firma wird Einblick in die originalen Datensätze erhalten, eine Rückverfolgung wird nicht möglich sein.</p>
+<p>Die Aussagekraft der Ergebnisse hängt von einer möglichst hohen Beteiligung ab. Geben Sie Ihrer Meinung Gewicht!</p>
+<p>Die Befragung läuft vom <span tal:content="string: ${context.startdate.strftime('%d.%m.%Y')} - ${context.enddate.strftime('%d.%m.%Y')}"></span>. Während dieses Zeitraums haben Sie die Möglichkeit, über folgende Internetadresse an unserer Befragung teilzunehmen: 
+<br><a href="" tal:attributes="href '%s/quizz/generic-%s' % (view.application_url(), view.generic_id(context.id))"> Link </a> 
+<br> <b><span tal:content="'%s/quizz/generic-%s' % (view.application_url(), view.generic_id(context.id))"/></b> </p>
+<p>Über diesen Link gelangen Sie direkt auf den Fragebogen unseres Unternehmens. Das Ausfüllen wird etwa 5 Minuten in Anspruch nehmen. </p>
+<p>Nehmen Sie sich diese Zeit, Ihre Meinung zu äußern, wir freuen uns auf Ihre Rückmeldung und bedanken uns bei Ihnen für Ihre Mitarbeit!</p> 
+<p>Sollten Sie Fragen oder Anmerkungen haben, wenden Sie sich bitte an: <br> Ansprechpartner und Kontaktdaten</p>
+</div>
+<button class="clipbtn btn" data-clipboard-target="#copyable">
+    In Zwischenablage kopieren 
+</button>
+<script language="Javascript">
+  new Clipboard('.clipbtn');
+</script>
+</div>

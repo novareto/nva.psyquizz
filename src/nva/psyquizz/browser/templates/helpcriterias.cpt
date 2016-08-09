@@ -1,0 +1,61 @@
+<div class="row">
+<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
+  Hilfe 
+</button>
+<div class="modal fade" id="myModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Hilfe</h4>
+      </div>
+      <div class="modal-body">
+        <p class="lead">Auswertungsgruppe <p>
+        <p>
+Mit Hilfe der Auswertungsgruppen bilden Sie Gruppen von Arbeitsplätzen oder Tätigkeiten die 
+hinsichtlich Ihrer psychischen Belastungen vergleichbar sind. Diese Gruppenbildung kann bspw. 
+anhand des Organigramms erfolgen (s. Schritt 1 Vorbereitung).
+        </p>
+        <p>
+Zunächst legen Sie einen Oberbegriff für Ihre Auswertungsgruppen an. Mögliche Oberbegriffe 
+könnten z.B. sein „Abteilung“, „Arbeitsgruppe“, „Standort“, „Führungskraft“ usw.
+        </p>
+        <p>
+Zu jedem Oberbegriff gehören mehrere Auswertungsgruppen. Der Oberbegriff „Abteilung“ würde als 
+Auswertungsgruppen alle Abteilungen Ihres Betriebes beinhalten, wie z.B. „Personalabteilung“, 
+„Produktion“, „Einkauf“ usw. Zum Oberbegriff „Führungskraft“ gehören die Auswertungsgruppen 
+„Führungskraft“ und „keine Führungskraft“.
+        </p>
+        <p>
+Über die Funktion „Auswertungsgruppen anlegen“ auf der Startseite können Sie beliebig viele 
+Auswertungsgruppen für Ihre Befragung anlegen.
+        </p>
+        <p>
+Starten Ihre Beschäftigten die Befragungen, müssen Sie zunächst angeben, zu welcher 
+Auswertungsgruppe Sie gehören. Haben Sie bspw. „Abteilung“ angelegt, würden Ihre Beschäftigten 
+zunächst angeben, ob Sie zur „Personalabteilung“, zur „Produktion“, oder zum „Einkauf“ gehören.
+        </p>
+        <p>
+Zu jeder Auswertungsgruppe können Sie nach Abschluss der Befragung eine separate Auswertung 
+erzeugen. Sie haben auch die Möglichkeit, Auswertungsgruppen zu kombinieren. So könnten Sie sich 
+bspw. eine Auswertung für alle „Führungskräfte“ in der „Personalabteilung“ anzeigen lassen.
+        </p>
+        <p>
+           <b>
+             Bitte beachten Sie aber: Sie können sich aus Datenschutzgründen nur Befragungsergebnisse von 
+             Auswertungsgruppen oder Kombinationen anzeigen lassen, von denen mindestens sieben 
+             ausgefüllte „Fragebögen“ vorliegen.
+           </b>
+        </p>
+        <p>
+
+        </p>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

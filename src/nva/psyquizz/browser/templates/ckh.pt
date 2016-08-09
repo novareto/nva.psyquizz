@@ -1,0 +1,110 @@
+<div>
+  <div class="page-header">
+    <h1> Startseite <small tal:content="context.name"> </small> </h1>
+    <p>
+      Herzlich Willkommen bei der Online-Hilfe der BG ETEM für Ihre
+      Gefährdungsbeurteilung psychischer Belastung. Mit diesem Werkzeug
+      können Sie die psychische Belastung unkompliziert erheben. Auf den
+      folgenden Seiten können Sie das Profil Ihres Betriebes
+      beschreiben, Befragungen anlegen, Ergebnisse einsehen und mit
+      früheren Befragungen vergleichen.
+    </p>
+  </div>
+  <div class="panel-group" id="accordion" role="tablist"
+       aria-multiselectable="true">
+    <div class="panel panel-default" tal:repeat="company iter(context)"
+	 role="tab" id="headingOne"
+	 tal:attributes="id string:heading${company.id}">
+      <h4 class="panel-heading panel-title">
+        <a role="button" class="collapsed" data-toggle="collapse"
+	      data-parent="#accordion" href="#collapseOne"
+	      aria-expanded="true" aria-controls="collapseOne"
+	      tal:attributes="href string:#collapse${company.id}">
+          <span tal:content="company.name" />
+	  <span class="pull-right sign">&nbsp;</span>
+        </a>
+      </h4>
+      <div id="collapseOne" class="panel-collapse collapse"
+	   role="tabpanel" aria-labelledby="headingOne"
+	   tal:attributes="id string:collapse${company.id}">
+	<div class="panel-body">
+    <h3> Auswertungsgruppen 
+      <small>
+            <a href="" tal:attributes="href view.url(context, str(company.id) + '/criterias/add.criteria')" data-toggle="tooltip" data-placement="left" title="Neue Auswertungsgruppe anlegen" class="pull-top"> (Neue Gruppe anlegen) </a>
+      </small>
+    </h3>
+	  
+          <ul>
+            <li tal:repeat="crit company.criterias">
+              <span tal:content="crit.title"/> 
+              <a tal:attributes="href str(company.id) + '/criterias/' + str(crit.id)"> <span class="glyphicon glyphicon-pencil"> </span>  </a>
+              <!-- <a tal:attributes="href str(company.id) + '/criterias/' + str(crit.id) + '/delete'"> <span class="glyphicon glyphicon-trash"> </span>  </a> -->
+            </li>
+          </ul>
+          <div tal:condition="len(list(company.criterias)) == 0">
+            <p> Sie haben bis jetzt für Ihren Betrieb  <span tal:content="company.name"/> noch keine Auswertungsgruppen angelegt.
+            Klicken Sie bitte <a href="" tal:attributes="href view.url(context, str(company.id) + '/criterias/add.criteria')">hier </a> um Auswertungsgruppen anzulegen.
+            </p>
+          </div>
+          <hr>
+            <h3> Befragungen 
+              <small>
+            <a href="" data-toggle="tooltip" data-placement="left" title="weitere Erhebung anlegen" tal:attributes="href view.url(context, str(company.id) + '/add.course')"> (Neue Befragung anlegen)  </a>
+              </small>
+            </h3>
+            <div tal:repeat="course sorted(company.courses, key=lambda x: x.id, reverse=True)">
+              <fieldset tal:repeat="session course.sessions">
+                <span class="lead" tal:content="course.title"> </span> 
+		  <a href="" data-toggle="tooltip" data-placement="left" title="Erhebung bearbeiten" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/edit_course')"> <span class="glyphicon glyphicon-pencil"> </span> </a>
+		  <a href="" data-toggle="tooltip" data-placement="left" title="Erhebung löschen" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/delete')"> <span class="glyphicon glyphicon-trash"> </span> </a>
+		<dl class="dl-horizontal">
+		  <dt> Fragebogen: </dt>  
+		  <dd tal:content="view.quizz_name(course)"> </dd> 
+		  <dt> Befragungszeitraum: </dt> 
+		  <dd>
+      <span class="glyphicon glyphicon-calendar"> </span> <span tal:replace="string: ${session.startdate.strftime('%d.%m.%Y')} - ${session.enddate.strftime('%d.%m.%Y')}"></span> 
+		  </dd>
+		  <dt> Link zum Fragebogen: </dt> 
+		  <dd>
+		    <a target="_blank" href="" tal:attributes="href '%s/quizz/generic-%s' % (view.application_url(), view.generic_id(session.id))"> 
+		      <span class="glyphicon glyphicon-play-circle"/> 
+             </a> 
+             <span tal:content="'%s/quizz/generic-%s' % (view.application_url(), view.generic_id(session.id))"></span> 
+		  </dd>
+		  <dt> Musteranschreiben: </dt> 
+		  <dd>
+      <a href="" tal:attributes="href  view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/exampletext')"> <span class="glyphicon glyphicon-comment"> </span> Ihre Vorlage  </a> 
+		  </dd>
+		  <dt> Auswertung: </dt> 
+		  <dd> 
+      <a href="" tal:condition="len(list(session.complete)) >= 7" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/session.stats')"> <span class="glyphicon glyphicon-stats"> </span> Grafische Darstellung   </a> 
+      <span tal:condition="len(list(session.complete)) <= 7"> Die Auswertung wird erst ab dem 7. ausgefüllten Fragebogen angzeigt </span>
+		  </dd>
+		  <dt> Ausgefüllte Fragebogen: </dt> 
+		  <dd>
+		    <span class="badge" tal:content="len(list(session.complete))"> </span> 
+		  </dd>
+      <dt>
+      <a href="" tal:condition="view.checkDate(session.enddate)" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/add.session')"><span class="glyphicon glyphicon-repeat"> </span><strong> Wiederholungsbefragung</strong>  </a> 
+      </dt>
+      <dd> </dd>
+		</dl>
+
+              </fieldset>
+            </div>
+            <a href="" class="pull-right btn btn-primary" data-toggle="tooltip" data-placement="left" title="Unternehmen löschen" tal:attributes="href view.url(context, str(company.id) + '/delete')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Betrieb löschen </a>
+            <div tal:condition="len(list(company.courses)) == 0">
+              <p> Sie haben bis jetzt für Ihr Unternehmen <span tal:content="company.name"/> noch keine Befragung angelegt.
+              Klicken Sie bitte <a href="" tal:attributes="href view.url(context, str(company.id) + '/add.course')">hier </a> um eine neue Befragung anzulegen.
+              </p>
+            </div>
+	  </div>
+	</div>
+      </div>
+      <br /><br />
+      <div class="actions pull-right">
+        <a href="" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="Weiteres Unternehmen anlegen" tal:attributes="href view.url(context, 'add.company')"> <span class="glyphicon glyphicon-plus"> </span>  Betrieb anlegen  </a>
+      </div>
+      <br />
+    </div>
+  </div>

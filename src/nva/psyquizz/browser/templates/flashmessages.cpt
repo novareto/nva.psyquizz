@@ -1,0 +1,5 @@
+<tal:messages repeat="message viewlet.messages" condition="viewlet.messages">
+  <div class="" tal:attributes="class 'alert alert-%s' % message.type">
+    <span tal:replace="message.message"/> 
+  </div>
+</tal:messages>

@@ -1,0 +1,32 @@
+<div class="personalpreferences pull-right hidden-xs">
+  <ul class="nav navbar-nav hidden-xs pull-right">
+    <tal:loop repeat="entry viewlet.getFooter()">
+      <li tal:attributes="class entry.selected and 'active' or ''">
+	<a tal:attributes="href entry.action" tal:content="entry.title" />
+      </li>
+      <li class="divider-vertical"
+	  tal:condition="not repeat['entry'].end">&nbsp;</li>
+    </tal:loop>
+  </ul>
+  <div class="userpreferences" tal:define="entries viewlet.getPersonal()">
+    <ul class="nav navbar-nav navbar-right" tal:condition="entries">
+      <li class="dropdown">
+	<a data-toggle="dropdown" id="dropdown-user" class="dropdown-toggle"> 
+    <a tal:condition="viewlet.iavailable()" href="" tal:attributes="href string: ${viewlet.view.application_url()}/myprefs"> <span class="glyphicon glyphicon-user"></span> Mein Profil </a> 
+	</a>
+<!--
+	<ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-user">
+	  <tal:loop repeat="entry entries">
+	    <li class="divider" tal:condition="getattr(entry, 'action', None) == 'divider'" />
+	    <li tal:condition="getattr(entry, 'action', None) != 'divider'"
+		tal:attributes="class entry.selected and 'active' or ''">
+	      <a href="" tal:attributes="href entry.url"
+		 tal:content="structure entry.title" />
+	    </li>
+	  </tal:loop>
+	</ul>
+-->
+      </li>
+    </ul>
+  </div>
+</div>

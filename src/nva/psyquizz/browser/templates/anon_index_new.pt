@@ -1,0 +1,52 @@
+<div class="row">
+  <div class="col-md-3">
+    <div class="well">
+      <form role="form" noValidate="true" method="post"
+        enctype="multipart/form-data" novalidate="novalidate"
+        action="/login">
+        <div>
+          <div id="field-username" class="form-group">
+            <label for="username" class="control-label">
+              <span>E-Mail</span>
+            </label>
+            <input type="text" value="" id="username" name="username"
+            class="field field-textline form-control field-required"
+            required="required" />      
+          </div>
+          <div id="field-password" class="form-group">
+            <label for="password" class="control-label">
+              <span>Passwort</span>
+            </label>
+            <input type="password" id="password" name="password"
+            class="field field-password form-control field-required"
+            required="required" />
+          </div>
+          <p>
+          <a href="forgotten">Passwort vergessen</a>
+          </p>
+          <input id="came_from" name="came_from" class="field"
+          type="hidden" value="" />
+        </div>
+        <div class="form-group">
+          <input type="submit" id="action-login" name="action.login"
+          value="Anmelden" class="action btn btn-default" />
+        </div>
+        <div>
+          <p>
+          Um sich neu zu registrieren klicken sie auf
+          <a href="register">registrieren</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <h1> Gemeinsam zu gesunden Arbeitsbedingungen  <br/>
+      <small> Psychische Belastung online erfassen </small> 
+    </h1>
+    <p> <b> Die Sicherheit und Gesundheit der Beschäftigten ist eine Voraussetzung für den Erfolg jedes Unternehmens. Die BG ETEM unterstützt die Betriebe dabei mit ihrem Programm „Gemeinsam zu gesunden Arbeitsbedingungen“. Es führt in – je nach Größe des Betriebes – fünf bzw. sieben Schritten zur Gefährdungsbeurteilung psychischer Belastung.</b></p>
+    <p> Das Arbeitsschutzgesetz verpflichtet Arbeitgeberinnen und Arbeitgeber zur Beurteilung der Arbeitsbedingungen. Sie sind aufgefordert, psychische Gefährdungen, die zum Beispiel aus hoher Arbeitsintensität, fehlender sozialer Unterstützung am Arbeitsplatz oder Dauer, Lage und Verteilung der Arbeitszeit resultieren, zu ermitteln und erforderliche Maßnahmen abzuleiten.</p>
+    <p> Entscheidend für die Prävention negativer psychischer Beanspruchungsfolgen ist die systematische Erfassung der Belastungssituation. Die BG ETEM hat dazu dieses Online-Tool zur Erfassung der psychischen Belastung geschaffen.</p>
+    <p> Weitere Informationen zur Gefährdungsbeurteilung psychischer Belastung finden Sie auf unseren Internetseiten unter <a href="http://www.bgetem.de"> bgetem.de. </a> </p>
+  </div>
+</div>

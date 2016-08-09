@@ -1,0 +1,68 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"POT-Creation-Date: Tue Mar 24 14:10:42 2010\n"
+"PO-Revision-Date: 2015-03-24 14:48+0200\n"
+"Last-Translator: Souheil Chelfouh <trollfot@gmail.com>\n"
+"Language-Team: Novareto\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: fr\n"
+"Language-Name: French\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: nva.psyquizz\n"
+
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Answer"
+msgstr "Répondre"
+
+msgid "Add a company"
+msgstr "Ajouter une entreprise"
+
+msgid "Number of students"
+msgstr "Nombre d'étudiants"
+
+msgid "Name ${name} already exists."
+msgstr "Le nom '${name}' existe déjà."
+
+msgid "Company added with success."
+msgstr "L'entreprise a été ajoutée avec succès."
+
+msgid "Add a course"
+msgstr "Ajouter un cours"
+
+msgid "An error occurred."
+msgstr "Une erreur est survenue."
+
+msgid "Course added with success."
+msgstr "Le cours a été ajouté avec succès."
+
+msgid "Add accesses"
+msgstr "Ajouter des accès aux quizz"
+
+msgid "Added ${nb} accesses with success."
+msgstr "$nb accès ont été ajoutés avec succès."
+
+msgid "Thank you for answering the quizz"
+msgstr "Merci d'avoir répondu au quizz"
+
+msgid "Frontpage"
+msgstr "Page d'accueil"
+
+msgid "This quizz is already completed and therefore closed."
+msgstr "Ce quizz a déjà été complété et est donc cloturé."
+
+msgid "Results for the course"
+msgstr "Résultats pour ce cours"
+
+msgid "Company wide results"
+msgstr "Résultats combinés de l'entreprise"
+
+msgid "Site wide results"
+msgstr "Résultats combinés inter-entreprises"

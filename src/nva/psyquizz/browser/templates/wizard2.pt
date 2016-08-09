@@ -1,0 +1,112 @@
+<form action="." tal:attributes="action view.action_url;
+                                 id view.htmlId();
+                                 method view.formMethod;
+                                 enctype view.enctype">
+
+  <h1 tal:condition="view.label"
+      tal:content="view.label">Label</h1>
+
+  <p tal:condition="view.description"
+     tal:content="view.description">Description</p>
+
+  <p class="form-status"
+     tal:condition="view.status"
+     tal:content="view.status">Status</p>
+  
+  <div class="form-error"
+       tal:condition="view.errors">
+    <ul tal:condition="view.formErrors"
+        tal:repeat="error view.formErrors">
+      <li> <span tal:replace="error.title" /> </li>
+    </ul>
+  </div>
+
+  <script type="text/javascript">
+   $(document).ready(function() {
+       var max = <tal:max replace="len(view.fieldWidgets) + 1" />;
+       var previous = $('#previous');
+       var next = $('#next');
+    
+       next.click(function(e) {
+	   var hash = window.location.hash.substring(1) || '0';
+	   var current = parseInt(hash);
+
+	   $('#question-' + current.toString()).removeClass('error has-error');
+	   if (current != 0 && !$('#question-' + current.toString() + ' input').is(':checked')) {
+	     e.preventDefault();
+	     //alert('Please answer the question, before you proceed.');
+	     $('#question-' + current.toString()).addClass('error has-error');
+	   }
+	 });
+    
+      function switch_question() {
+
+        var hash = window.location.hash.substring(1) || '0';
+	var current = parseInt(hash);
+
+        $('.question').hide();
+        $('#question-' + hash).show();
+        if (current <= 0) {
+	  previous.hide();
+	}
+	else {
+	  previous.show();
+	  previous.attr('href', '#' + (current - 1).toString());
+	}
+	if (current < max) {
+	  next.show();
+	  next.attr('href', '#' + (current + 1).toString());
+	}
+	else {
+	  next.hide()
+	}
+      }
+      window.onhashchange = switch_question
+      switch_question();
+    });
+  </script>
+  
+  <div id="wizard">
+    <div class="question" id="question-0">
+      <p tal:content="structure context.session.about or 'Press next to start'" />
+    </div>
+    <div tal:repeat="widget view.fieldWidgets"
+	 class="question" tal:attributes="id 'question-%s' % repeat['widget'].number">
+
+      <tal:frage condition="repeat['widget'].number > view.nbcriterias">
+	<h1>Frage: <span tal:replace="repeat['widget'].number - view.nbcriterias" /> /
+	  <span tal:replace="len(view.fieldWidgets) - view.nbcriterias" /></h1>
+      </tal:frage>
+      <tal:criteria condition="repeat['widget'].number <= view.nbcriterias">
+      <h1><span tal:content="widget.title"/></h1>
+      </tal:criteria>
+      
+      <tal:description tal:condition="widget.description">
+	<span class="field-description lead"
+              tal:content="widget.description">
+	</span><br />
+      </tal:description>
+      <tal:error tal:define="error widget.error"
+		 tal:condition="error">
+	<span class="field-error"
+              tal:content="error.title">
+	  Error
+	</span>
+	<br />
+      </tal:error>
+      <tal:widget tal:content="structure widget.render()" />
+    </div>
+  </div>
+    <div class="btn-group" role="group">
+      <a id="previous" class="control btn btn-default"
+	 href="">← Zurück</a>
+      <a id="next" class="control btn btn-primary"
+	 href="">Weiter →</a>
+    </div>
+  <div class="question" tal:attributes="id 'question-%d' % (len(view.fieldWidgets) + 1)">
+    <p class="lead"> Klicken Sie auf „Abschließen“ um Ihre Daten abzusenden. </p>
+    <div class="action" tal:repeat="widget view.actionWidgets">
+      <tal:widget tal:content="structure widget.render()" />
+    </div>
+  </div>
+</form>
