@@ -97,7 +97,7 @@ class GeneratePDF(uvclight.Page):
         parts.append(Spacer(0, 4*cm))
         parts.append(Paragraph(u'Mittelwerte', styles['Normal']))
 
-        table = Table(data=[[k, v] for k, v in avg.items()])
+        table = Table(data=avg)
         ts = TableStyle([
             ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
             ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
