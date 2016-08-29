@@ -103,7 +103,7 @@
 
     <textarea type="text" id="averages" name="averages" style="display:none">
       <tal:data
-           content="view.jsonify(dict((res[0], '%.2f' % view.avg(res[1])) for res in data[qname]['users'].items()))" />
+           content="view.jsonify(dict((res[0], '%.2f' % res[1]['avg']) for res in data[qname]['chart'].items()))" />
     </textarea>
 
     <div class="row"> 
