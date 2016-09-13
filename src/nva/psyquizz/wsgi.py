@@ -34,7 +34,7 @@ def routing(conf, files, session_key, **kwargs):
 
     # We register our SQLengine under a given name
     dsn = "sqlite:////tmp/test.db"
-    dsn = "postgresql+psycopg2://quizz:quizz@localhost/quizz"
+    #dsn = "postgresql+psycopg2://quizz:quizz@localhost/quizz"
     engine = create_and_register_engine(dsn, name)
 
     # We use a declarative base, if it exists we bind it and create

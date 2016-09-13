@@ -5,10 +5,16 @@
 import uvclight
 from zope.interface import Interface
 from grokcore.component import adapts
-from dolmen.forms.ztk.widgets import choice
+from dolmen.forms.ztk.widgets import choice, date
+from uvc.themes.btwidgets.widgets.date import DateFieldWidget
 from uvc.themes.btwidgets.widgets.choice import RadioFieldWidget
 from dolmen.forms.ztk.widgets.collection import SetField, MultiChoiceFieldWidget
 from nva.psyquizz.interfaces import IQuizzLayer
+
+
+class DateFieldWidget(DateFieldWidget):
+    adapts(date.DateField, Interface, IQuizzLayer)
+    template = uvclight.get_template('datefieldwidget.cpt', __file__)
 
 
 class RadioFieldWidget(RadioFieldWidget):
