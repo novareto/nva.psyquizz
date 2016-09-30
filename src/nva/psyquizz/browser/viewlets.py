@@ -67,6 +67,16 @@ class Crumbs(BreadcrumbsRenderer, uvclight.Viewlet):
         uvclight.Viewlet.__init__(self, *args)
 
 
+
+class Timeout(uvclight.Viewlet):
+    uvclight.viewletmanager(IAboveContent)
+    uvclight.order(10)
+    template = uvclight.get_template('timeout.cpt', __file__)
+
+    def available(self):
+        return self.request.environ.get('timeout', False)
+
+
 class FlashMessages(uvclight.Viewlet):
     uvclight.viewletmanager(IAboveContent)
     uvclight.order(30)

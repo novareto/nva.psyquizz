@@ -1,0 +1,3 @@
+<div class="alert alert-info" tal:condition="viewlet.available()">
+ <p> Ihre Sitzung ist abgelaufen. Bitte melden Sie sich neu an </p>
+</div>
