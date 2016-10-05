@@ -291,7 +291,7 @@ class Application(SQLPublication, SecurePublication):
             return e
 
     def __call__(self, environ, start_response):
-
+        
         @sessionned(self.session_key)
         @transaction_sql(self.engine)
         def publish(environ, start_response):

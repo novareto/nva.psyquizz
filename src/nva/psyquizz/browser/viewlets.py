@@ -37,6 +37,7 @@ from uvclight.auth import require
 from zope.component import getUtilitiesFor, getUtility
 from zope.schema import getFieldsInOrder
 from uvc.entities.browser.managers import IHeaders
+from cromlech.browser import getSession
 
 
 def resolve_name(item):
@@ -67,14 +68,25 @@ class Crumbs(BreadcrumbsRenderer, uvclight.Viewlet):
         uvclight.Viewlet.__init__(self, *args)
 
 
-
 class Timeout(uvclight.Viewlet):
     uvclight.viewletmanager(IAboveContent)
     uvclight.order(10)
     template = uvclight.get_template('timeout.cpt', __file__)
 
     def available(self):
-        return self.request.environ.get('timeout', False)
+        return self.request.environ.get('session.timeout', False)
+
+
+class Expiration(uvclight.Viewlet):
+    uvclight.viewletmanager(IAboveContent)
+    uvclight.order(20)
+    template = uvclight.get_template('expiration.cpt', __file__)
+    expiration = None
+    
+    def update(self):
+        session = getSession()
+        if session is not None:
+            self.expiration = session.get('__session_expiration__')
 
 
 class FlashMessages(uvclight.Viewlet):

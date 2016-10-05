@@ -56,6 +56,9 @@ setup(name=name,
           ],
       entry_points="""
       # -*- Entry points: -*-
+      [paste.filter_app_factory]
+      file_session = nva.psyquizz.session:file_session_wrapper
+
       [paste.app_factory]
       app = nva.psyquizz.wsgi:routing
 
