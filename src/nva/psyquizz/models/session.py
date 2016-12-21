@@ -37,6 +37,13 @@ class ClassSession(Base, Location):
         self._students[value.access] = value
 
     @property
+    def title(self):
+        mid = min([x.id for x in self.course.sessions])
+        if self.id == mid:
+            return "Initialbefragung"
+        return "Wiederholungsbefragung"
+
+    @property
     def enddate(self):
         return self.startdate + timedelta(days=self.duration)
 
