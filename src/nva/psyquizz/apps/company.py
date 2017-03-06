@@ -308,9 +308,8 @@ class Regitration(Publication, Location):
 
     layers = [IRegistrationRequest]
     
-    def __init__(self, session_key, engine):
-        self.engine = engine
-        self.session_key = session_key
+    def __init__(self, configuration):
+        self.configuration = configuration
 
     def getSiteManager(self):
         return getGlobalSiteManager()
@@ -320,8 +319,8 @@ class Regitration(Publication, Location):
     
     def __call__(self, environ, start_response):
 
-        @sessionned(self.session_key)
-        @transaction_sql(self.engine)
+        @sessionned(self.configuration.session_key)
+        @transaction_sql(self.configuration.engine)
         def publish(environ, start_response):
             layers = self.layers or list()
             with ContextualRequest(environ, layers=layers) as request:

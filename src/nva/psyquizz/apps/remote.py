@@ -8,8 +8,8 @@ from cromlech.webob import Response
 
 class Application(object):
 
-    def __init__(self, session_key, engine, name):
-        self.engine = engine
+    def __init__(self, configuration):
+        self.engine = configuration.engine
 
     def get(self, obj):
         return {

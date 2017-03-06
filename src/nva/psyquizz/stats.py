@@ -50,7 +50,8 @@ class QuizzStats(object):
                     criteria_data = criterias.setdefault(
                         criteria.id, {'title': criteria.title, 'answers': {}})
                     criteria_data['answers'][criteria_answer.answer] = (
-                        criteria_data['answers'].get(criteria_answer.answer, 0) + 1)
+                        criteria_data['answers'].get(
+                            criteria_answer.answer, 0) + 1)
 
         self.criterias = criterias
 
@@ -134,6 +135,9 @@ class ChartedQuizzStats(QuizzStats):
                 self.determine_average.get(answer['title']), {})
             values.setdefault('nb', 0)
             values.setdefault('sum', 0)
+            
+            print answer
+
             for value_answer in answer['answers']:
                 values['nb'] += value_answer['nb']
                 values['sum'] += (value_answer['nb'] * value_answer['value'])

@@ -2,6 +2,7 @@
 
 from . import Base
 from .apps import company, anonymous, remote
+from collections import namedtuple
 from cromlech.configuration.utils import load_zcml
 from cromlech.i18n import register_allowed_languages, setLanguage
 from cromlech.sqlalchemy import create_and_register_engine
@@ -33,8 +34,7 @@ def routing(conf, files, session_key, **kwargs):
     name = 'school'
 
     # We register our SQLengine under a given name
-    dsn = "sqlite:////tmp/test.db"
-    #dsn = "postgresql+psycopg2://quizz:quizz@localhost/quizz"
+    dsn = kwargs.get('dns', "sqlite:////tmp/test.db")
     engine = create_and_register_engine(dsn, name)
 
     # We use a declarative base, if it exists we bind it and create
@@ -42,11 +42,15 @@ def routing(conf, files, session_key, **kwargs):
     metadata = Base.metadata
     metadata.create_all(engine.engine, checkfirst=True)
 
+    # Applications configuration
+    factory = namedtuple('Setupuration', ('session_key', 'engine', 'name', 'fs_store'))
+    setup = factory(session_key, engine, name, None)
+
     # Router
     root = URLMap()
-    root['/'] = localize(company.Application(session_key, engine, name))
-    root['/register'] = localize(company.Regitration(session_key, engine))
-    root['/quizz'] = localize(anonymous.Application(session_key, engine, name))
-    root['/json'] = localize(remote.Application(session_key, engine, name))
+    root['/'] = localize(company.Application(setup))
+    root['/register'] = localize(company.Regitration(setup))
+    root['/quizz'] = localize(anonymous.Application(setup))
+    root['/json'] = localize(remote.Application(setup))
 
     return root
