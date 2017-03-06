@@ -53,11 +53,17 @@
               </small>
             </h3>
             <div tal:repeat="course sorted(company.courses, key=lambda x: x.id, reverse=True)">
-              <fieldset tal:repeat="session course.sessions">
                 <span class="lead" tal:content="course.title"> </span> 
-		  <a href="" data-toggle="tooltip" data-placement="left" title="Erhebung bearbeiten" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/edit_course')"> <span class="glyphicon glyphicon-pencil"> </span> </a>
-		  <a href="" data-toggle="tooltip" data-placement="left" title="Erhebung löschen" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/delete')"> <span class="glyphicon glyphicon-trash"> </span> </a>
-		<dl class="dl-horizontal">
+                <hr>
+              <fieldset tal:repeat="session sorted(course.sessions, key=lambda x: x.id)">
+                <dl class="dl-horizontal">
+      <dt>
+      <h2> <span tal:content="session.title"/> </h2>
+      </dt>
+      <dd>
+		  <a href="" onclick="_paq.push(['trackEvent', 'Befragung bearbeiten']);" data-toggle="tooltip" data-placement="left" title="Erhebung bearbeiten" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/edit_course')"> <span class="glyphicon glyphicon-pencil"> </span> </a>
+		  <a href="" onclick="_paq.push(['trackEvent', 'Befragung löschen']);" data-toggle="tooltip" data-placement="left" title="Erhebung löschen" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/delete')"> <span class="glyphicon glyphicon-trash"> </span> </a>
+      </dd>
 		  <dt> Fragebogen: </dt>  
 		  <dd tal:content="view.quizz_name(course)"> </dd> 
 		  <dt> Befragungszeitraum: </dt> 

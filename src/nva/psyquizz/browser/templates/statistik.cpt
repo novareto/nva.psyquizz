@@ -1,0 +1,19 @@
+<h1> Statistik </h1>
+
+<p>
+Registrierter Benutzer: <span tal:content="view.getAccounts()"> </span>
+</p>
+<p>
+Erstellte Unternehmen: <span tal:content="view.getCompanies()"> </span>
+</p>
+
+<p tal:define="b view.getSessions()">
+Erstellte Befragungen: <span tal:content="b['alle']"> </span>
+davon zukünftig <span tal:content="b['future']"> </span>
+aktive <span tal:content="b['present']"> </span>
+abgeschlossen <span tal:content="b['past']"> </span>
+</p>
+
+<p>
+ Befragungen: <span tal:content="view.getAnswers()"/>
+</p>

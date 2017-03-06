@@ -687,10 +687,10 @@ class PopulateCourse(Form):
                      mapping=dict(nb=data['nb_students'])))
         return self.redirect(self.url(self.context))
 
-
+from nva.psyquizz.models.interfaces import ICourseSession
 @menuentry(IDocumentActions, order=20)
 class DeleteSession(DeleteForm):
-    context(CourseSession)
+    context(IClassSession)
     name('delete')
     require('manage.company')
     title(_(u'Delete'))
@@ -712,7 +712,6 @@ class DeleteSession(DeleteForm):
     def handle_cancel(self):
         self.redirect(self.url(self.application_url()))
         return SUCCESS
-
 
 
 class SaveQuizz(Action):
