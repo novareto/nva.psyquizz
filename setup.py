@@ -28,6 +28,7 @@ install_requires = [
     'zope.cachedescriptors',
     'uvc.validation',
     'psycopg2',
+    'setuptools',
     ]
 
 tests_require = [
