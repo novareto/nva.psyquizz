@@ -742,6 +742,7 @@ class SaveQuizz(Action):
                 criteria_answer = CriteriaAnswer(
                     criteria_id=cid,
                     student_id=form.context.access,
+                    session_id=form.context.session_id,
                     answer=value,
                     )
                 session.add(criteria_answer)
