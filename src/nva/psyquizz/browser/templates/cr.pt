@@ -1,8 +1,9 @@
 <h1> Resultate </h1>
 
 <table>
- <tr tal:repeat="data view.avdata">
-  <td tal:content="data"/> 
+ <tr tal:repeat="data view.getPData()">
+   <td tal:content="data.name"></td> 
+   <td tal:content="data.value"></td> 
  </tr>
 
 </table>

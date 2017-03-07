@@ -14,6 +14,9 @@ from nva.psyquizz.models import IQuizz
 from collections import OrderedDict
 from zope.component import getUtility
 
+from zope.schema import getFieldsInOrder
+from collections import namedtuple
+
 
 class CR(uvclight.Page):
     uvclight.context(Interface)
@@ -35,14 +38,15 @@ class CR(uvclight.Page):
         (u'Entwicklungsmöglichkeiten', ('25', '26')),
         ))
 
-
     def update(self):
         self.quizz = getUtility(IQuizz, self.context.course.quizz_type)
         self.data = self.getBaseData()
         self.avdata = self.getAverageData()
-        print self.avdata
-        for k,v in self.avdata.items():
-            print "%s - %s" % (k, float(sum([x.result for x in v]))/len(v))
+
+    def getPData(self):
+        PR = namedtuple('PrintResults', ('name', 'value'))
+        for k, v in self.avdata.items():
+            yield PR(k, float(sum([x.result for x in v]))/len(v))
 
     def getAverageData(self):
         def getAV(question_id):
@@ -52,33 +56,37 @@ class CR(uvclight.Page):
         av = {}
         for question_id, questions in self.data.items():
             average = getAV(question_id)
-            if not average in av.keys():
+            if average not in av.keys():
                 av[average] = []
             av[average] += questions
         return av
 
     def getBaseData(self):
-        from zope.schema import getFieldsInOrder
-        from collections import namedtuple
-        Result = namedtuple('Result', ('answer', 'id', 'result'), verbose=True)
+        Result = namedtuple(
+            'Result',
+            ('answer', 'id', 'result', 'result_title')
+        )
         data = {}
-        ad = {}
         session = get_session('school')
-        answers = session.query(Quizz2).filter(Quizz2.session_id == self.context.id)
         answers = session.query(Quizz2).filter(
             Quizz2.session_id == self.context.id
         )
-        if False:  ### Filter on Criterias
+        if False:  # Filter on Criterias
             answers = answers.filter(
                 Quizz2.student_id == CriteriaAnswer.student_id,
                 CriteriaAnswer.answer == "HR"
             )
-        print answers.all()
         for answer in answers.all():
             for field, dd in getFieldsInOrder(self.quizz.__schema__):
-                if not dd.title in data.keys():
-                    data[dd.title] = [] 
+                if dd.title not in data.keys():
+                    data[dd.title] = []
+                field_answer = getattr(answer, field, 0)
                 data[dd.title].append(
-                    Result(field, dd.title, getattr(answer, field, 0))
+                    Result(
+                        field,
+                        dd.title,
+                        field_answer,
+                        dd.source.getTerm(field_answer).title
+                    )
                 )
         return data
