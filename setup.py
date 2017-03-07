@@ -29,6 +29,7 @@ install_requires = [
     'uvc.validation',
     'psycopg2',
     'setuptools',
+    'pygal',
     ]
 
 tests_require = [

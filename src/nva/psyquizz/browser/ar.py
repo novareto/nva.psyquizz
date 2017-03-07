@@ -16,6 +16,7 @@ from zope.component import getUtility
 
 from zope.schema import getFieldsInOrder
 from collections import namedtuple
+import pygal
 
 
 class CR(uvclight.Page):
@@ -37,6 +38,15 @@ class CR(uvclight.Page):
         (u'Information und Mitsprache', ('23', '24')),
         (u'Entwicklungsmöglichkeiten', ('25', '26')),
         ))
+
+
+    def getRadar(self):
+        radar_chart = pygal.Radar()
+        radar_chart.title = 'RADAR EXMAPLE'
+        data = self.getPData()
+        radar_chart.x_labels = [x.name for x in self.getPData()]
+        radar_chart.add('Chrome',[x.value for x in self.getPData()])
+        return radar_chart.render_data_uri()
 
     def update(self):
         self.quizz = getUtility(IQuizz, self.context.course.quizz_type)
