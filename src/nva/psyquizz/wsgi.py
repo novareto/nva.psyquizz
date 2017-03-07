@@ -34,7 +34,8 @@ def routing(conf, files, session_key, **kwargs):
     name = 'school'
 
     # We register our SQLengine under a given name
-    dsn = kwargs.get('dns', "sqlite:////tmp/test.db")
+    dsn = kwargs.get('dsn', "sqlite:////tmp/test.db")
+    print dsn
     engine = create_and_register_engine(dsn, name)
 
     # We use a declarative base, if it exists we bind it and create

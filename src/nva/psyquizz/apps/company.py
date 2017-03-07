@@ -261,7 +261,7 @@ class Application(SQLPublication, SecurePublication):
     def site_manager(self, request):
         username = request.principal.id.lower()
         if username != unauthenticated_principal.id:
-            session = get_session(self.name)
+            session = get_session(self.configuration.name)
             account = session.query(Account).filter(
                 func.lower(Account.email) == username)
 
@@ -292,8 +292,8 @@ class Application(SQLPublication, SecurePublication):
 
     def __call__(self, environ, start_response):
         
-        @sessionned(self.session_key)
-        @transaction_sql(self.engine)
+        @sessionned(self.configuration.session_key)
+        @transaction_sql(self.configuration.engine)
         def publish(environ, start_response):
             layers = self.layers or list()
             with ContextualRequest(environ, layers=layers) as request:

@@ -213,7 +213,7 @@ class Quizz2(Base, Location):
     session_id = Column(Integer, ForeignKey('sessions.id'))
     company_id = Column(Integer, ForeignKey('companies.id'))
 
-    student = relationship("Student")
+    student = relationship("Student", backref="answer")
 
     # Quizz
     completion_date = Column('completion_date', DateTime)

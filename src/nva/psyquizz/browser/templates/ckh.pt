@@ -83,8 +83,9 @@
 		  </dd>
 		  <dt> Auswertung: </dt> 
 		  <dd> 
-      <a href="" tal:condition="len(list(session.complete)) >= 7" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/session.stats')"> <span class="glyphicon glyphicon-stats"> </span> Grafische Darstellung   </a> 
-      <span tal:condition="len(list(session.complete)) <= 7"> Die Auswertung wird erst ab dem 7. ausgefüllten Fragebogen angzeigt </span>
+      <a href="" tal:condition="len(list(session.complete)) >= view.maxResults" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/session.stats')"> <span class="glyphicon glyphicon-stats"> </span> Grafische Darstellung   </a> 
+      <span tal:condition="len(list(session.complete)) <= view.maxResults"> Die
+        Auswertung wird erst ab dem <b> <span tal:content="view.maxResults"/>.</b> ausgefüllten Fragebogen angzeigt </span>
 		  </dd>
 		  <dt> Ausgefüllte Fragebogen: </dt> 
 		  <dd>

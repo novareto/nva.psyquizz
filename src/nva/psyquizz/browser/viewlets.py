@@ -82,6 +82,7 @@ class Expiration(uvclight.Viewlet):
     uvclight.order(20)
     template = uvclight.get_template('expiration.cpt', __file__)
     expiration = None
+    uvclight.baseclass()
     
     def update(self):
         session = getSession()

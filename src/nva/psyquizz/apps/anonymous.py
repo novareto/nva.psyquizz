@@ -67,4 +67,4 @@ class Application(SQLPublication):
         pass
 
     def site_manager(self, environ):
-        return Site(QuizzBoard(None, '', self.name))
+        return Site(QuizzBoard(None, '', self.configuration.name))

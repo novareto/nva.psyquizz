@@ -1,0 +1,8 @@
+<h1> Resultate </h1>
+
+<table>
+ <tr tal:repeat="data view.avdata">
+  <td tal:content="data"/> 
+ </tr>
+
+</table>
