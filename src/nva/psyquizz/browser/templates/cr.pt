@@ -1,6 +1,14 @@
 <h1> Resultate </h1>
 
-<span tal:content="view.getRadar()"/>
+  <ul tal:define="crits view.getCriterias()">
+    <li tal:repeat="crit crits">
+      <span tal:content="crit"/>
+        <ul tal:repeat="crit_item crits[crit]">
+          <li tal:content="string: ${crit_item.name} (${crit_item.amount})"/>
+        </ul>
+    </li>
+  </ul>
+
   <div id="chart">
     <embed type="image/svg+xml" tal:attributes="src view.getRadar()"/>
   </div>

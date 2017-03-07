@@ -52,6 +52,21 @@ class CR(uvclight.Page):
         self.quizz = getUtility(IQuizz, self.context.course.quizz_type)
         self.data = self.getBaseData()
         self.avdata = self.getAverageData()
+        self.criterias = self.getCriterias()
+
+    def getCriterias(self):
+        d = {}
+        CRIT = namedtuple('Criterias', ('name', 'amount'))
+        session = get_session('school')
+        from sqlalchemy import func
+        all_crits = {x[0]: x[1] for x in session.query(CriteriaAnswer.answer, func.count(CriteriaAnswer.answer)).group_by(CriteriaAnswer.answer).all()}
+        for crit in self.context.course.criterias:
+            d[crit.title] = []
+            print crit.title
+            for item in crit.items.split('\r\n'):
+                d[crit.title].append(CRIT(item, all_crits.get(item, 0)))
+        print d
+        return d
 
     def getPData(self):
         PR = namedtuple('PrintResults', ('name', 'value'))
