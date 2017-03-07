@@ -1,5 +1,10 @@
 <h1> Resultate </h1>
 
+<span tal:content="view.getRadar()"/>
+  <div id="chart">
+    <embed type="image/svg+xml" tal:attributes="src view.getRadar()"/>
+  </div>
+
 <table>
  <tr tal:repeat="data view.getPData()">
    <td tal:content="data.name"></td> 
