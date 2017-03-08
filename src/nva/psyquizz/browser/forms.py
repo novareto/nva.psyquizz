@@ -236,6 +236,8 @@ class AddSession(Form):
         return SUCCESS
 
 
+from uvc.protectionwidgets import Captcha
+
 class ICaptched(Interface):
 
     captcha = Captcha(

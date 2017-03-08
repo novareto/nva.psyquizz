@@ -304,7 +304,7 @@ class Application(SQLPublication, SecurePublication):
 
 
 @implementer(IPublicationRoot)
-class Regitration(Publication, Location):
+class Registration(Publication, Location):
 
     layers = [IRegistrationRequest]
     

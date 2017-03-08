@@ -50,7 +50,7 @@ def routing(conf, files, session_key, **kwargs):
     # Router
     root = URLMap()
     root['/'] = localize(company.Application(setup))
-    root['/register'] = localize(company.Regitration(setup))
+    root['/register'] = localize(company.Registration(setup))
     root['/quizz'] = localize(anonymous.Application(setup))
     root['/json'] = localize(remote.Application(setup))
 

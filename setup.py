@@ -30,6 +30,7 @@ install_requires = [
     'psycopg2',
     'setuptools',
     'pygal',
+    'uvc.protectionwidgets',
     ]
 
 tests_require = [
