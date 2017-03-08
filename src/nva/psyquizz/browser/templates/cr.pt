@@ -1,22 +1,44 @@
-<h1> Resultate </h1>
+<div>
+  <h1>Resultate</h1>
 
-  <ul tal:define="crits view.getCriterias()">
-    <li tal:repeat="crit crits">
-      <span tal:content="crit"/>
-        <ul tal:repeat="crit_item crits[crit]">
-          <li tal:content="string: ${crit_item.name} (${crit_item.amount})"/>
-        </ul>
-    </li>
-  </ul>
+  <form action="." tal:attributes="action view.request.url"
+	tal:define="current view.filters.get('criterias', {})">
+    <dl tal:define="crits view.criterias">
+      <tal:dl tal:repeat="crit crits">
+	<dt><h3 tal:content="crit" /></dt>
+	<dd>
+	  <div tal:repeat="opt crits[crit]"
+	       style="display: inline-block; padding: 5px;">
+	    <input name="criterias" type="checkbox"
+		   tal:attributes="value opt.uid;
+				   checked opt.uid in current" />
+              <span tal:content="'%s (%s)' % (opt.name, opt.amount)" />
+	  </div>
+	</dd>
+      </tal:dl>
+    </dl>
+    <input type="submit" value="filter" />
+  </form>
 
   <div id="chart">
-    <embed type="image/svg+xml" tal:attributes="src view.getRadar()"/>
+    <embed type="image/svg+xml" tal:attributes="src view.radar"/>
   </div>
 
-<table>
- <tr tal:repeat="data view.getPData()">
-   <td tal:content="data.name"></td> 
-   <td tal:content="data.value"></td> 
- </tr>
-
-</table>
+  <table class="table table-bordered">
+    <tr tal:repeat="stat view.users_statistics.items()">
+      <td tal:content="stat[0]"></td> 
+      <td>
+	<div tal:repeat="scale stat[1]">
+	  <span tal:content="'%s : %s%%' % (scale.name, scale.percentage)" />
+	</div>
+      </td> 
+    </tr>
+  </table>
+  
+  <table>
+    <tr tal:repeat="data view.statistics['global.averages']">
+      <td tal:content="data.title"></td> 
+      <td tal:content="data.average"></td> 
+    </tr>
+  </table>
+</div>
