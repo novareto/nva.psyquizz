@@ -40,5 +40,8 @@ wysiwyg_css = Resource(library, 'summernote.css',
                        depends=[bootstrap_css, siguv_css, font_css])
 editor = Resource(library, 'quizzeditor.js', depends=[wysiwyg_js], bottom=True)
 wysiwyg = Group([wysiwyg_js, wysiwyg_css, editor])
+hsb = Resource(library, 'highcharts.js')
+hs = Resource(library, 'highcharts-more.js', depends=[hsb])
+
 
 Base = declarative_base()

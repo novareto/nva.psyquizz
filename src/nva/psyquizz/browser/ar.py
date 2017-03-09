@@ -195,6 +195,16 @@ def radar(data):
     return radar_chart.render_data_uri()
 
 
+def histogramm(data):
+    hist = pygal.Histogram()
+    hist.add('Wide bars', [(1, 0, 10),  ])
+    hist.add('Narrow bars',  [(1, 10, 12), ])
+    return hist.render_data_uri()
+
+
+from nva.psyquizz import hs
+
+
 class CR(uvclight.Page):
     uvclight.context(Interface)
     require('manage.company')
@@ -233,13 +243,26 @@ class CR(uvclight.Page):
 
         filters['session'] = self.context.id
         return filters
-                                    
+
     def update(self):
+        hs.need()
         quizz = getUtility(IQuizz, self.context.course.quizz_type)
         self.criterias = available_criterias(self.context.course.criterias)
         self.filters = self.get_filters()
         self.statistics = compute(
             quizz, self.criterias, self.averages, self.filters)
         self.radar = radar(self.statistics['global.averages'])
+        self.histogramm = histogramm(None)
         self.users_statistics = groups_scaling(
             self.statistics['users.grouped'])
+        self.xAxis = [x.encode('utf-8') for x in self.users_statistics.keys()] 
+        good = dict(name="GUT", data=[])
+        mid = dict(name="Mittel", data=[])
+        bad = dict(name="Schlecht", data=[])
+        for x in self.users_statistics.values():
+            good['data'].append(x[0].percentage)
+            mid['data'].append(x[1].percentage)
+            bad['data'].append(x[2].percentage)
+        import json
+        self.series = json.dumps([good, mid, bad])
+        self.rd = [x.average for x in self.statistics['global.averages']]

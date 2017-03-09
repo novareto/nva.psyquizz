@@ -20,10 +20,6 @@
     <input type="submit" value="filter" />
   </form>
 
-  <div id="chart">
-    <embed type="image/svg+xml" tal:attributes="src view.radar"/>
-  </div>
-
   <table class="table table-bordered">
     <tr tal:repeat="stat view.users_statistics.items()">
       <td tal:content="stat[0]"></td> 
@@ -41,4 +37,98 @@
       <td tal:content="data.average"></td> 
     </tr>
   </table>
+  <div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+  <div id="container1" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+  <script>
+Highcharts.chart('container', {
+    chart: {
+        type: 'bar'
+    },
+    title: {
+        text: 'Stacked bar chart'
+    },
+    xAxis: {
+        categories: <span tal:replace="view.xAxis"/> 
+    },
+    yAxis: {
+        min: 0,
+        title: {
+            text: 'Total fruit consumption'
+        }
+    },
+    legend: {
+        reversed: true
+    },
+    plotOptions: {
+        series: {
+            stacking: 'normal'
+        }
+    },
+    series: <span tal:replace="view.series"/> 
+});
+
+
+Highcharts.chart('container1', {
+
+    chart: {
+        polar: true,
+        type: 'line'
+    },
+
+    title: {
+        text: 'Budget vs spending',
+        x: -80
+    },
+
+    pane: {
+        size: '80%'
+    },
+
+    xAxis: {
+      categories: <span tal:replace="view.xAxis"/>,
+        tickmarkPlacement: 'on',
+        lineWidth: 0
+    },
+
+    yAxis: {
+        gridLineInterpolation: 'polygon',
+        lineWidth: 0,
+        tickAmount: 4,
+        min: 0,
+        plotBands: [
+           {
+            color: '#FF0000',
+            from: 0,
+            to:  3 
+           },
+           {
+            color: '#FFFF00',
+            from: 3,
+            to: 4 
+           },
+           {
+            color: '#32DD32',
+            from: 4,
+            to: 6 
+           },
+       ],
+    },
+
+    legend: {
+        align: 'right',
+        verticalAlign: 'top',
+        y: 70,
+        layout: 'vertical'
+    },
+
+    series: [{
+        name: 'Allocated Budget',
+        data: <span tal:replace="view.rd"/>,
+        pointPlacement: 'on'
+    }
+    ]
+
+});
+
+  </script>
 </div>
