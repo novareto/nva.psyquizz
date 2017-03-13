@@ -2,6 +2,7 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
+import json
 import pygal
 import uvclight
 
@@ -96,7 +97,8 @@ def compute(quizz, criterias, averages, filters):
                 criteria in filters['criterias'].values())
             
             answers = answers.filter(or_(*criterias))
-    
+
+    total = answers.count()
     for answer in answers.all():
         user_data = OrderedDict()  # Per user results
         for field, dd in getFieldsInOrder(quizz.__schema__):
@@ -146,6 +148,7 @@ def compute(quizz, criterias, averages, filters):
     global_averages = tuple(average_computation(sorted_global_answers))
     
     return {
+        'total': total,
         'users.grouped': users_averages,
         'global.averages': global_averages,
     }
@@ -225,6 +228,9 @@ class CR(uvclight.Page):
         (u'Entwicklungsmöglichkeiten', ('25', '26')),
         ))
 
+    def jsonify(self, da):
+        return json.dumps(da)
+    
     def get_filters(self):
 
         def extract_criteria(str):
@@ -266,3 +272,9 @@ class CR(uvclight.Page):
         import json
         self.series = json.dumps([good, mid, bad])
         self.rd = [x.average for x in self.statistics['global.averages']]
+
+        criterias = []
+        for crits in self.criterias.values():
+            for crit in crits:
+                criterias.append([crit.name, crit.amount])
+        self.json_criterias = json.dumps(criterias)

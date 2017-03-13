@@ -31,6 +31,7 @@ install_requires = [
     'setuptools',
     'pygal',
     'uvc.protectionwidgets',
+    'svglib',
     ]
 
 tests_require = [

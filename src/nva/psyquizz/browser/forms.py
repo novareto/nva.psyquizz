@@ -835,7 +835,7 @@ class AnswerQuizz(Form):
 
         return fields
 
-LIMIT = 7 
+LIMIT = 1
 def company_criterias(view, limit=LIMIT):
     data = view.data.get(view.context.quizz_type)
     if data:
