@@ -3,7 +3,6 @@
 # cklinger@novareto.de
 
 import json
-import pygal
 import uvclight
 
 from collections import OrderedDict, namedtuple
@@ -54,13 +53,13 @@ def sort_data(order, data):
     return ordered
 
 
-def available_criterias(criterias):
+def available_criterias(criterias, session_id):
     available_criterias = {}
     Criteria = namedtuple('Criteria', ('id', 'name', 'amount', 'uid'))
     session = get_session('school')
-
     all_crits = {x[0]: x[1] for x in session.query(
-        CriteriaAnswer.answer, func.count(CriteriaAnswer.answer))
+        CriteriaAnswer.answer, func.count(CriteriaAnswer.answer)).filter(
+        CriteriaAnswer.session_id == session_id)
                  .group_by(CriteriaAnswer.answer).all()}
 
     for crit in criterias:
@@ -208,7 +207,7 @@ def histogramm(data):
 from nva.psyquizz import hs
 
 
-class CR(uvclight.Page):
+class SessionStats(uvclight.Page):
     uvclight.context(Interface)
     require('manage.company')
     uvclight.layer(ICompanyRequest)
@@ -253,12 +252,12 @@ class CR(uvclight.Page):
     def update(self):
         hs.need()
         quizz = getUtility(IQuizz, self.context.course.quizz_type)
-        self.criterias = available_criterias(self.context.course.criterias)
+        self.criterias = available_criterias(self.context.course.criterias, self.context.id)
         self.filters = self.get_filters()
         self.statistics = compute(
             quizz, self.criterias, self.averages, self.filters)
-        self.radar = radar(self.statistics['global.averages'])
-        self.histogramm = histogramm(None)
+        #self.radar = radar(self.statistics['global.averages'])
+        #self.histogramm = histogramm(None)
         self.users_statistics = groups_scaling(
             self.statistics['users.grouped'])
         self.xAxis = [x.encode('utf-8') for x in self.users_statistics.keys()] 
@@ -278,3 +277,36 @@ class CR(uvclight.Page):
             for crit in crits:
                 criterias.append([crit.name, crit.amount])
         self.json_criterias = json.dumps(criterias)
+
+
+
+import xlsxwriter
+class XLSX(SessionStats):
+
+
+    def generateXLSX(self):
+        workbook = xlsxwriter.Workbook('/tmp/ouput.xlsx')
+        worksheet = workbook.add_worksheet() 
+        for i, x in enumerate(self.statistics['global.averages']):
+            worksheet.write(i, 0, x.title)
+            worksheet.write(i, 1, x.average)
+        chart1 = workbook.add_chart({'type': 'radar'})
+        chart1.add_series({
+            'name':       'KLAUS',
+            'categories': '=Sheet1!$A$1:$A$11',
+            'values':     '=Sheet1!$B$1:$B$11',
+            })
+
+        chart1.set_title ({'name': 'Results of sample analysis'})
+        chart1.set_x_axis({'name': 'Test number'})
+        chart1.set_y_axis({'name': 'Sample length (mm)'})
+        chart1.set_style(11)
+
+        # Insert the chart into the worksheet (with an offset).
+        worksheet.insert_chart('D2', chart1, {'x_offset': 25, 'y_offset': 10})
+
+        workbook.close()
+
+    def render(self):
+        self.generateXLSX()
+        import pdb; pdb.set_trace() 

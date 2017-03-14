@@ -29,9 +29,9 @@ install_requires = [
     'uvc.validation',
     'psycopg2',
     'setuptools',
-    'pygal',
     'uvc.protectionwidgets',
     'svglib',
+    'xlsxwriter',
     ]
 
 tests_require = [
