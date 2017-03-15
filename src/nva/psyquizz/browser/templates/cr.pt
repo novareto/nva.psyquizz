@@ -140,10 +140,19 @@
             layout: 'vertical'
 	},
 	series: [{
-            name: 'Allocated Budget',
+            name: 'Selected criterias',
             data: <span tal:replace="view.stats.rd"/>,
             pointPlacement: 'on'
-	}]
+	    }
+	    <tal:general condition="view.general_stats">
+	      ,
+	      {
+            name: 'General stats',
+            data: <span tal:replace="view.general_stats.rd"/>,
+            pointPlacement: 'on'
+	    }
+	    </tal:general>
+	    ]
      });
      svgToCanvas(usersChart, 'userschart');
   </script>

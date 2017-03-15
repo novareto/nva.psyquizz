@@ -223,6 +223,24 @@ class Statistics(object):
         ))
 
 
+def get_filters(request):
+
+    def extract_criteria(str):
+        cid, name = str.split(':', 1)
+        return str, int(cid), name
+
+    filters = {}
+    Criteria = namedtuple('Criteria', ('id', 'name'))
+    criterias = request.form.get('criterias', None)
+    if criterias is not None:
+        if not isinstance(criterias, (set, list, tuple)):
+            criterias = [criterias]
+        filters['criterias'] = {
+            uid: Criteria(cid, name) for uid, cid, name in
+            map(extract_criteria, criterias)}
+    return filters
+
+
 class CourseStatistics(Statistics):
 
     def __init__(self, quizz, course):
@@ -230,25 +248,8 @@ class CourseStatistics(Statistics):
         self.course = course
         self.criterias = available_criterias(course.criterias)
 
-    def get_filters(self, request):
-
-        def extract_criteria(str):
-            cid, name = str.split(':', 1)
-            return str, int(cid), name
-
-        filters = {}
-        Criteria = namedtuple('Criteria', ('id', 'name'))
-        criterias = request.form.get('criterias', None)
-        if criterias is not None:
-            if not isinstance(criterias, (set, list, tuple)):
-                criterias = [criterias]
-            filters['criterias'] = {
-                uid: Criteria(cid, name) for uid, cid, name in
-                map(extract_criteria, criterias)}
-        return filters
-
-    def update(self, request):
-        self.filters = self.get_filters(request)
+    def update(self, filters):
+        self.filters = filters
         self.statistics = compute(
             self.quizz, self.criterias, self.averages, self.filters)
         #self.radar = radar(self.statistics['global.averages'])
@@ -314,10 +315,9 @@ class SessionStatistics(CourseStatistics):
         self.session = session
         self.criterias = available_criterias(session.course.criterias, self.session.id)
 
-    def get_filters(self, request):
-        filters = CourseStatistics.get_filters(self, request)
+    def update(self, filters):
         filters['session'] = self.session.id
-        return filters
+        return CourseStatistics.update(self, filters)
 
 
 class SR(uvclight.Page):
@@ -326,15 +326,21 @@ class SR(uvclight.Page):
     uvclight.layer(ICompanyRequest)
 
     template = uvclight.get_template('cr.pt', __file__)
-
+    general_stats = None
+    
     def jsonify(self, da):
         return json.dumps(da)
 
     def update(self):
         hs.need()
         quizz = getUtility(IQuizz, self.context.course.quizz_type)
+        filters = get_filters(self.request)
         self.stats = SessionStatistics(quizz, self.context)
-        self.stats.update(self.request)
+        self.stats.update(filters)
+
+        if 'criterias' in filters:
+            self.general_stats = SessionStatistics(quizz, self.context)
+            self.general_stats.update({})
 
 
 class CR(uvclight.Page):
@@ -343,17 +349,23 @@ class CR(uvclight.Page):
     uvclight.layer(ICompanyRequest)
 
     template = uvclight.get_template('cr.pt', __file__)
-
+    general_stats = None
+    
     def jsonify(self, da):
         return json.dumps(da)
 
     def update(self):
         hs.need()
         quizz = getUtility(IQuizz, self.context.quizz_type)
+        filters = get_filters(self.request)
         self.stats = CourseStatistics(quizz, self.context)
-        self.stats.update(self.request)
+        self.stats.update(filters)
 
+        if 'criterias' in filters:
+            self.general_stats = CourseStatistics(quizz, self.context)
+            self.general_stats.update({})
 
+    
 @provider(IContextSourceBinder)
 def courses(context):
     return SimpleVocabulary([
