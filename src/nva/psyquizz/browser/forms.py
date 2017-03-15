@@ -1,46 +1,41 @@
 # -*- coding: utf-8 -*-
 
+from uvc.protectionwidgets import Captcha
 import os
 import json
 import uuid
-import uvclight
 import datetime
 import html2text
-import base64
 
 from .. import wysiwyg, quizzjs
 from ..i18n import _
-from ..interfaces import IAnonymousRequest, ICompanyRequest, IRegistrationRequest
+from ..interfaces import IAnonymousRequest, ICompanyRequest
+from ..interfaces import IRegistrationRequest
 from ..models import Account, Company, Course, ClassSession, Student
 from ..models import ICourseSession, IAccount, ICompany, ICourse, IClassSession
-from ..models import ICompanyTransfer, ICompanies, IQuizz, TrueOrFalse
+from ..models import IQuizz, TrueOrFalse
 from ..models import Criteria, CriteriaAnswer, ICriteria, ICriterias
 from .emailer import SecureMailer, prepare, ENCODING
-from .results import Results
 
-from collections import OrderedDict
 from cromlech.sqlalchemy import get_session
-from dolmen.forms.base.markers import NO_VALUE
 from dolmen.forms.base.errors import Error
 from dolmen.forms.base.actions import Action, Actions
 from dolmen.forms.base import SuccessMarker, makeAdaptiveDataManager
-from dolmen.forms.base.utils import set_fields_data, apply_data_event
+from dolmen.forms.base.utils import apply_data_event
 from dolmen.forms.crud.actions import message
 from dolmen.menu import menuentry, order
 from string import Template
-from uvc.design.canvas import IContextualActionsMenu, IPersonalMenu
+from uvc.design.canvas import IContextualActionsMenu
 from uvc.design.canvas import IDocumentActions
-from uvclight.form_components.fields import Captcha
 from uvclight import Form, EditForm, DeleteForm, Fields, SUCCESS, FAILURE
-from uvclight import action, layer, name, title, get_template, baseclass
+from uvclight import action, layer, name, title, get_template
 from uvclight.auth import require
 from zope.component import getUtility
 from zope.interface import Interface
-from zope.schema import TextLine, Int, Choice, Set, Password
+from zope.schema import Int, Choice, Password
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
-from grokcore.component import baseclass, Adapter, provides, context
+from grokcore.component import Adapter, provides, context
 from siguvtheme.resources import all_dates, datepicker_de
-from zope.interface import invariant, Invalid
 
 
 with open(os.path.join(os.path.dirname(__file__), 'mail.tpl'), 'r') as fd:
@@ -49,8 +44,7 @@ with open(os.path.join(os.path.dirname(__file__), 'mail.tpl'), 'r') as fd:
 
 
 def send_activation_code(company_name, email, code, base_url):
-    #mailer = SecureMailer('localhost')
-    mailer = SecureMailer('smtprelay.bg10.bgfe.local')
+    mailer = SecureMailer('smtprelay.bg10.bgfe.local')  # BBB
     from_ = 'extranet@bgetem.de'
     title = (u'Gemeinsam zu gesunden Arbeitsbedingungen – Aktivierung').encode(
         ENCODING)
@@ -128,7 +122,6 @@ Ergebnisse von Auswertungsgruppen angezeigt, von denen mindestens sieben ausgef�
         session.flush()
         session.refresh(criteria)
         self.flash(_(u'Criteria added with success.'))
-        #self.redirect(self.url(self.context))
         self.redirect(self.application_url())
         return SUCCESS
 
@@ -235,8 +228,6 @@ class AddSession(Form):
         self.redirect('%s' % self.application_url())
         return SUCCESS
 
-
-from uvc.protectionwidgets import Captcha
 
 class ICaptched(Interface):
 
@@ -439,7 +430,7 @@ class CreateCourse(Form):
     title(_(u'Add a course'))
 
     fields = Fields(ICourse).select(
-        'name', 'criterias') + Fields(IClassSession).select('startdate', 'duration', 'about')  # Remove temporary QUIZZ-TYPE FIELD
+        'name', 'criterias', 'quizz_type') + Fields(IClassSession).select('startdate', 'duration', 'about')  # Remove temporary QUIZZ-TYPE FIELD
 
     def update(self):
         all_dates.need()
@@ -463,7 +454,7 @@ class CreateCourse(Form):
     @action(_(u'Add'))
     def handle_save(self):
         data, errors = self.extractData()
-        data['quizz_type'] = 'quizz2'  # XXX Remove temporary the FIELD
+        #data['quizz_type'] = 'quizz2'  # XXX Remove temporary the FIELD
         if errors:
             self.flash(_(u'An error occurred.'))
             return FAILURE
@@ -796,7 +787,7 @@ class AnswerQuizz(Form):
     def fields(self):
         fields = Fields(self.quizz.__schema__)
         fields.sort(key=lambda c: c.interface[c.identifier].order)
-        
+ 
         criteria_fields = []
         for criteria in self.context.course.criterias:
             values = SimpleVocabulary([
@@ -805,7 +796,7 @@ class AnswerQuizz(Form):
                     if c.strip()])
 
             criteria_field = Choice(
-                __name__ = 'criteria_%s' % criteria.id,
+                __name__='criteria_%s' % criteria.id,
                 title=criteria.title,
                 description=u"Wählen Sie das Zutreffende aus.",
                 vocabulary=values,
@@ -814,7 +805,7 @@ class AnswerQuizz(Form):
             criteria_fields.append(criteria_field)
         self.nbcriterias = len(criteria_fields)
         fields = Fields(*criteria_fields) + fields
-        
+
         questions_text = self.context.course.extra_questions
         questions_fields = []
         if questions_text:
@@ -822,7 +813,7 @@ class AnswerQuizz(Form):
             for idx, question in enumerate(questions, 1):
                 question = question.decode('utf-8').strip()
                 extra_field = Choice(
-                    __name__ = 'extra_question%s' % idx,
+                    __name__='extra_question%s' % idx,
                     title=question,
                     vocabulary=TrueOrFalse,
                     required=True,
@@ -834,195 +825,3 @@ class AnswerQuizz(Form):
             field.mode = 'radio'
 
         return fields
-
-LIMIT = 1
-def company_criterias(view, limit=LIMIT):
-    data = view.data.get(view.context.quizz_type)
-    if data:
-        criterias = []
-        for idx, answers in data['criterias'].items():
-            rc = []
-            for criteria, number in answers['answers'].items():
-                if number >= limit:
-                    vocab = SimpleTerm(
-                            value=criteria, title='%s (%s)' % (criteria, number),
-                            token=base64.b64encode(criteria.encode('utf-8'))
-                            )
-                else:
-                    vocab = SimpleTerm(
-                            value=criteria, title='%s (%s)' % (criteria, number),
-                            token=base64.b64encode(criteria.encode('utf-8'))
-                            )
-                    vocab.disabled = "disabled" 
-                rc.append(vocab)
-            vocabulary = SimpleVocabulary(rc)
-            if len(vocabulary):
-                yield Set(
-                    __name__= '%i' % idx,
-                    title="%s: " % answers['title'],
-                    value_type=Choice(vocabulary=vocabulary),
-                    required=False)
-
-
-class CriteriaFiltering(Form, Results):
-    baseclass()
-
-    ignoreContent = True
-    dataValidators = []
-    criterias = {}
-
-    description_pt = uvclight.get_template('criteria_filtering.pt', __file__)
-    results_pt = uvclight.get_template('results.pt', __file__)
-
-    @property
-    def fields(self):
-        return Fields(*list(company_criterias(self)))
-
-    def update(self):
-        self.data = dict(self.display())
-        Form.update(self)
-
-    def getCurrentTotal(self):
-        from cromlech.sqlalchemy import get_session
-        from nva.psyquizz import models
-        data, errors = self.extractData()
-        session = get_session('school')
-        crit_id = [x.id for x in self.context.criterias]
-        student_ids = [x[0] for x in session.query(models.quizz.quizz2.Quizz2.student_id).filter(models.quizz.quizz2.Quizz2.course_id==self.context.id).all()]
-        values = []
-        for crit in crit_id:
-            if data.get(str(crit), NO_VALUE) != NO_VALUE:
-                value = data[str(crit)]
-                for x in value:
-                    values.append(x)
-        query = session.query(models.criterias.CriteriaAnswer.student_id).filter(
-                models.criterias.CriteriaAnswer.criteria_id.in_(crit_id), 
-                models.criterias.CriteriaAnswer.student_id.in_(student_ids),
-        )
-        if values:
-            query = query.filter(models.criterias.CriteriaAnswer.answer.in_(values))
-        return query.distinct(models.criterias.CriteriaAnswer.student_id, models.criterias.CriteriaAnswer.criteria_id).count()
-
-    def render(self):
-        form = Form.render(self)
-        description = self.description_pt.render(
-            self, target_language=self.target_language, **self.namespace())
-        filtering = self.results_pt.render(
-            self, target_language=self.target_language, **self.namespace())
-        return description + form + filtering
-
-    @property
-    def json_criterias(self):
-        dump = []
-        data = self.data.get(self.context.quizz_type)
-        if data:
-            all_criterias = data['criterias']
-            for id, filtered in self.criterias.items():
-                criterias = all_criterias.get(id)
-                if criterias is not None:
-                    criterias = criterias['answers']
-                    for filter in filtered:
-                        if filter in criterias:
-                            dump.append((filter, criterias[filter]))
-        return json.dumps(dump)
-
-    @property
-    def action_url(self):
-        return self.request.path
-
-    @action(_(u'Filter'))
-    def handle_save(self):
-        data, errors = self.extractData()
-        if errors:
-            self.flash(_(u'An error occurred.'))
-            return FAILURE
-
-        self.criterias = {int(k): v for k,v in data.items()
-                          if v is not NO_VALUE}
-        return SUCCESS
-
-
-@menuentry(IContextualActionsMenu, order=10)
-class ClassStats(CriteriaFiltering):
-    context(ClassSession)
-    name('session.stats')
-    title(_(u'Statistics'))
-    require('manage.company')
-    layer(ICompanyRequest)
-
-    def display(self):
-        quizzjs.need()
-        data = self.get_data(
-            self.context.course.quizz_type,
-            cid=self.context.course.id,
-            sid=self.context.id,
-            extra_questions=self.context.course.extra_questions)
-
-        for name, result in data.items():
-            compute_chart = getattr(result, 'compute_chart', None)
-            if compute_chart is None:
-                yield name, {'results': result.get_answers(),
-                             'total': result.percent_base,
-                             'criterias': result.criterias,
-                             'all': result.percent_base + result.missing,
-                             'users': None, 'chart': None}
-            else:
-                gbl, users = compute_chart()
-                yield name, {'results': result.get_answers(),
-                             'total': result.percent_base,
-                             'criterias': result.criterias,
-                             'all': result.percent_base + result.missing,
-                             'users': users,
-                             'chart': gbl}
-
-    
-@menuentry(IContextualActionsMenu, order=10)
-class CourseStats(CriteriaFiltering):
-    context(Course)
-    name('course.stats')
-    title(_(u'Statistics'))
-    require('manage.company')
-    layer(ICompanyRequest)
-
-    ignoreContent = True
-    dataValidators = []
-    criterias = {}
-
-    def rN(self, value):
-        from nva.psyquizz.models.interfaces import deferred
-        return deferred('quizz_choice')(None).getTerm(
-            self.context.quizz_type).title
-
-    def display(self):
-        quizzjs.need()
-        data = self.get_data(
-            self.context.quizz_type,
-            cid=self.context.id,
-            extra_questions=self.context.extra_questions)
-
-        for name, result in data.items():
-            compute_chart = getattr(result, 'compute_chart', None)
-            if compute_chart is None:
-                yield name, {'results': result.get_answers(),
-                             'total': result.percent_base,
-                             'criterias': result.criterias,
-                             'all': result.percent_base + result.missing,
-                             'users': None, 'chart': None}
-            else:
-                gbl, users = compute_chart()
-                yield name, {'results': result.get_answers(),
-                             'total': result.percent_base,
-                             'criterias': result.criterias,
-                             'all': result.percent_base + result.missing,
-                             'users': users,
-                             'chart': gbl}
-
-
-    
-@menuentry(IContextualActionsMenu, order=10)
-class CourseDiff(CriteriaFiltering):
-    context(Course)
-    name('course.diff')
-    title(_(u'Diff'))
-    require('manage.company')
-    layer(ICompanyRequest)

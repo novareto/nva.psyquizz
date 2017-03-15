@@ -206,4 +206,4 @@ class Quizz1(Base, Location):
     extra_questions = Column('extra_questions', Text)
 
 
-# global_utility(Quizz1, provides=IQuizz, name='quizz1', direct=True)
+global_utility(Quizz1, provides=IQuizz, name='quizz1', direct=True)

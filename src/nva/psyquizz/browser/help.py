@@ -7,7 +7,6 @@ import uvclight
 from zope.interface import Interface
 from uvc.design.canvas import IAboveContent
 from .forms import CreateCourse, CreateCompany, CreateCriterias, EditCriteria
-from .forms import CourseStats
 from .ckhp import AccountHomepage, ExampleText
 
 

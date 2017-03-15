@@ -6,7 +6,6 @@ import uvclight
 from random import *
 from zope.interface import Interface
 from .results import Results
-from .forms import ClassStats, CourseStats, CourseDiff
 from ..apps import anonymous
 from ..i18n import _
 from ..interfaces import ICompanyRequest
@@ -182,66 +181,66 @@ def object_template(context, request):
 #                              'users': users,
 #                              'chart': gbl}
 
-def colors(limit=15):
-    h, s, v = random() * 6, .5, 243.2
-    for i in range(limit):
-        h += 3.708
-        yield ((v,v-v*s*abs(1-h%2),v-v*s)*3)[5**int(h)/3%3::int(h)%2+1][:3]
-        if i%5 / 4:
-            s += .1
-            v -= 51.2
-
-
-class CompanyCourseDiffs(uvclight.Viewlet, Results):
-    uvclight.viewletmanager(IBelowContent)
-    uvclight.view(CourseDiff)
-    uvclight.context(Course)
-    uvclight.name('diffs')
-
-    template = uvclight.get_template('diffs.pt', __file__)
-
-    averages = [
-        u'Handlungsspielraum',
-        u'Vielseitiges Arbeiten',
-        u'Ganzheitliches Arbeiten',
-        u'Soziale Rückendeckung',
-        u'Zusammenarbeit',
-        u'Passende inhaltliche Arbeitsanforderungen',
-        u'Passende mengenmäßige Arbeit',
-        u'Passende Arbeitsabläufe',
-        u'Passende Arbeitsumgebung',
-        u'Information und Mitsprache',
-        u'Entwicklungsmöglichkeiten',
-        ]
-
-
-    coloring_set = colors()
-
-    @property
-    def criterias(self):
-        return self.view.criterias
-    
-    def get_color(self):
-        r, v, b = self.coloring_set.next()
-        return ['rgba(%i, %i, %i, %s)' % (r, v, b, tr) for tr in [0.3, 1, 1]]
-
-    def display(self):
-        quizzjs.need()
-        diffs = {}
-        for session in self.context.sessions:
-            data = self.get_data(
-                self.context.quizz_type,
-                cid=self.context.id,
-                sid=session.id,
-                extra_questions=self.context.extra_questions)
-
-            for name, result in data.items():
-                diff = diffs.setdefault(name, {})
-                gbl, users = result.compute_chart()
-                diff['%s - %s' % (session.id, session.startdate)] = gbl
-        return diffs
-
-
+#def colors(limit=15):
+#    h, s, v = random() * 6, .5, 243.2
+#    for i in range(limit):
+#        h += 3.708
+#        yield ((v,v-v*s*abs(1-h%2),v-v*s)*3)[5**int(h)/3%3::int(h)%2+1][:3]
+#        if i%5 / 4:
+#            s += .1
+#            v -= 51.2
+#
+#
+#class CompanyCourseDiffs(uvclight.Viewlet, Results):
+#    uvclight.viewletmanager(IBelowContent)
+#    uvclight.view(CourseDiff)
+#    uvclight.context(Course)
+#    uvclight.name('diffs')
+#
+#    template = uvclight.get_template('diffs.pt', __file__)
+#
+#    averages = [
+#        u'Handlungsspielraum',
+#        u'Vielseitiges Arbeiten',
+#        u'Ganzheitliches Arbeiten',
+#        u'Soziale Rückendeckung',
+#        u'Zusammenarbeit',
+#        u'Passende inhaltliche Arbeitsanforderungen',
+#        u'Passende mengenmäßige Arbeit',
+#        u'Passende Arbeitsabläufe',
+#        u'Passende Arbeitsumgebung',
+#        u'Information und Mitsprache',
+#        u'Entwicklungsmöglichkeiten',
+#        ]
+#
+#
+#    coloring_set = colors()
+#
+#    @property
+#    def criterias(self):
+#        return self.view.criterias
+#    
+#    def get_color(self):
+#        r, v, b = self.coloring_set.next()
+#        return ['rgba(%i, %i, %i, %s)' % (r, v, b, tr) for tr in [0.3, 1, 1]]
+#
+#    def display(self):
+#        quizzjs.need()
+#        diffs = {}
+#        for session in self.context.sessions:
+#            data = self.get_data(
+#                self.context.quizz_type,
+#                cid=self.context.id,
+#                sid=session.id,
+#                extra_questions=self.context.extra_questions)
+#
+#            for name, result in data.items():
+#                diff = diffs.setdefault(name, {})
+#                gbl, users = result.compute_chart()
+#                diff['%s - %s' % (session.id, session.startdate)] = gbl
+#        return diffs
+#
+#
 class Home(uvclight.MenuItem):
     uvclight.title(_(u'Startseite'))
     uvclight.auth.require('zope.Public')

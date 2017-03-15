@@ -1,8 +1,27 @@
 <div>
-  <h1>Resultate</h1>
+<div class="header">
+  <h1>Ergebnisse</h1>
+  <p>Hier sehen Sie die Auswertung für alle Beschäftigten. 
+  </p>
+
+  <p>
+  Durch Auswahl einer oder mehrerer Auswertungsgruppen haben Sie die Möglichkeit sich eine
+  detaillierte Auswertung anzeigen zu lassen. (Bitte beachten Sie: Einzelne Auswertungsgruppen 
+  können erst ausgewählt werden, wenn für diese Auswertungsgruppe mindestens sieben 
+  ausgefüllte Fragebögen vorliegen.)
+  </p>
+  <p>
+  Der weitere Umgang mit den Ergebnissen ist in der „Übersicht 7 Schritte“ unter 4.  Lösungsworkshops beschrieben.
+  </p>
+
+</div>
 
   <form action="." tal:attributes="action view.request.url"
 	tal:define="current view.stats.filters.get('criterias', {})">
+<div><a name="uncheckall">Alle</a>
+
+
+ </div>
     <dl tal:define="crits view.stats.criterias">
       <tal:dl tal:repeat="crit crits">
 	<dt><h3 tal:content="crit" /></dt>
@@ -17,10 +36,12 @@
 	</dd>
       </tal:dl>
     </dl>
-    <input type="submit" value="filter" />
+    <input id="form-action-filter" type="submit" value="filter" />
   </form>
   
-  <table>
+  <div id="container1" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+
+  <table id="mt" class="table table-bordered table-striped">
     <tr tal:repeat="data view.stats.statistics['global.averages']">
       <td tal:content="data.title"></td> 
       <td tal:content="data.average"></td> 
@@ -47,7 +68,6 @@
   </form>
 
   <div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
-  <div id="container1" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
   <script>
      function svgToCanvas(chart, target_id) {
         var svg = chart.getSVG();
@@ -117,17 +137,17 @@
             min: 0,
             plotBands: [
 		{
-		    color: '#FF0000',
+		    color: '#D8262B',
 		    from: 0,
 		    to:  3 
 		},
 		{
-		    color: '#FFFF00',
+		    color: '#FFCC00',
 		    from: 3,
 		    to: 4 
 		},
 		{
-		    color: '#32DD32',
+		    color: '#62B645',
             from: 4,
 		    to: 6 
 		},
@@ -155,5 +175,17 @@
 	    ]
      });
      svgToCanvas(usersChart, 'userschart');
+    $("a[name='checkall']").click(function () {
+    $("input:checkbox").prop('checked', true);
+    $("#form-action-filter").click();
+    });
+    $("a[name='uncheckall']").click(function () {
+    $("input:checkbox").prop('checked', false);
+    $("#form-action-filter").click();
+    });
+    $('input[type=checkbox]').change(function() {
+       alert('HANS');
+    $("#form-action-filter").click();
+    });
   </script>
 </div>

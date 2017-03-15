@@ -57,11 +57,12 @@ def sort_data(order, data):
 
 def available_criterias(criterias, session_id):
     available_criterias = {}
+    print session_id
     Criteria = namedtuple('Criteria', ('id', 'name', 'amount', 'uid'))
     session = get_session('school')
     all_crits = {x[0]: x[1] for x in session.query(
         CriteriaAnswer.answer, func.count(CriteriaAnswer.answer)).filter(
-        CriteriaAnswer.session_id == session_id)
+        CriteriaAnswer.session_id.in_(session_id))
                  .group_by(CriteriaAnswer.answer).all()}
 
     for crit in criterias:
@@ -246,7 +247,8 @@ class CourseStatistics(Statistics):
     def __init__(self, quizz, course):
         self.quizz = quizz
         self.course = course
-        self.criterias = available_criterias(course.criterias)
+        session_ids = [x.id for x in self.course.sessions]
+        self.criterias = available_criterias(course.criterias, session_ids)
 
     def update(self, filters):
         self.filters = filters
@@ -313,7 +315,8 @@ class SessionStatistics(CourseStatistics):
         self.quizz = quizz
         self.course = session.course
         self.session = session
-        self.criterias = available_criterias(session.course.criterias, self.session.id)
+        self.criterias = available_criterias(
+            session.course.criterias, [self.session.id, ])
 
     def update(self, filters):
         filters['session'] = self.session.id
