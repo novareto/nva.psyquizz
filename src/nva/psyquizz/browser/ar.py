@@ -7,29 +7,31 @@ import uvclight
 
 from collections import OrderedDict, namedtuple
 from cromlech.sqlalchemy import get_session
-from nva.psyquizz.models import IQuizz
+from grokcore.component import provider
+from nva.psyquizz import hs
+from nva.psyquizz.models import IQuizz, IClassSession, ICourse
 from nva.psyquizz.models.criterias import CriteriaAnswer
 from nva.psyquizz.models.quizz.quizz2 import Quizz2
+from sqlalchemy import and_, or_
 from sqlalchemy import func
 from uvclight.auth import require
 from zope.component import getUtility
 from zope.interface import Interface
-from zope.schema import getFieldsInOrder
-from sqlalchemy import and_, or_
+from zope.schema import getFieldsInOrder, Choice
+from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
 from ..interfaces import ICompanyRequest
 
 
 Result = namedtuple(
     'Result',
-    ('answer', 'id', 'result', 'result_title')
-)
+    ('answer', 'id', 'result', 'result_title'))
 
 
 Average = namedtuple(
     'Average',
-    ('title', 'average')
-)
+    ('title', 'average'))
 
 
 def average_computation(data):
@@ -204,14 +206,7 @@ def histogramm(data):
     return hist.render_data_uri()
 
 
-from nva.psyquizz import hs
-
-
-class SessionStats(uvclight.Page):
-    uvclight.context(Interface)
-    require('manage.company')
-    uvclight.layer(ICompanyRequest)
-    template = uvclight.get_template('cr.pt', __file__)
+class Statistics(object):
 
     averages = OrderedDict((
         (u'Vielseitiges Arbeiten', ('1', '2', '3')),
@@ -227,10 +222,15 @@ class SessionStats(uvclight.Page):
         (u'Entwicklungsmöglichkeiten', ('25', '26')),
         ))
 
-    def jsonify(self, da):
-        return json.dumps(da)
-    
-    def get_filters(self):
+
+class CourseStatistics(Statistics):
+
+    def __init__(self, quizz, course):
+        self.quizz = quizz
+        self.course = course
+        self.criterias = available_criterias(course.criterias)
+
+    def get_filters(self, request):
 
         def extract_criteria(str):
             cid, name = str.split(':', 1)
@@ -238,24 +238,19 @@ class SessionStats(uvclight.Page):
 
         filters = {}
         Criteria = namedtuple('Criteria', ('id', 'name'))
-        criterias = self.request.form.get('criterias', None)
+        criterias = request.form.get('criterias', None)
         if criterias is not None:
             if not isinstance(criterias, (set, list, tuple)):
                 criterias = [criterias]
             filters['criterias'] = {
                 uid: Criteria(cid, name) for uid, cid, name in
                 map(extract_criteria, criterias)}
-
-        filters['session'] = self.context.id
         return filters
 
-    def update(self):
-        hs.need()
-        quizz = getUtility(IQuizz, self.context.course.quizz_type)
-        self.criterias = available_criterias(self.context.course.criterias, self.context.id)
-        self.filters = self.get_filters()
+    def update(self, request):
+        self.filters = self.get_filters(request)
         self.statistics = compute(
-            quizz, self.criterias, self.averages, self.filters)
+            self.quizz, self.criterias, self.averages, self.filters)
         #self.radar = radar(self.statistics['global.averages'])
         #self.histogramm = histogramm(None)
         self.users_statistics = groups_scaling(
@@ -268,7 +263,6 @@ class SessionStats(uvclight.Page):
             good['data'].append(x[0].percentage)
             mid['data'].append(x[1].percentage)
             bad['data'].append(x[2].percentage)
-        import json
         self.series = json.dumps([good, mid, bad])
         self.rd = [x.average for x in self.statistics['global.averages']]
 
@@ -281,7 +275,7 @@ class SessionStats(uvclight.Page):
 
 
 import xlsxwriter
-class XLSX(SessionStats):
+class XLSX(CourseStatistics):
 
 
     def generateXLSX(self):
@@ -310,3 +304,102 @@ class XLSX(SessionStats):
     def render(self):
         self.generateXLSX()
         import pdb; pdb.set_trace() 
+
+
+class SessionStatistics(CourseStatistics):
+    
+    def __init__(self, quizz, session):
+        self.quizz = quizz
+        self.course = session.course
+        self.session = session
+        self.criterias = available_criterias(session.course.criterias, self.session.id)
+
+    def get_filters(self, request):
+        filters = CourseStatistics.get_filters(self, request)
+        filters['session'] = self.session.id
+        return filters
+
+
+class SR(uvclight.Page):
+    require('manage.company')
+    uvclight.context(IClassSession)
+    uvclight.layer(ICompanyRequest)
+
+    template = uvclight.get_template('cr.pt', __file__)
+
+    def jsonify(self, da):
+        return json.dumps(da)
+
+    def update(self):
+        hs.need()
+        quizz = getUtility(IQuizz, self.context.course.quizz_type)
+        self.stats = SessionStatistics(quizz, self.context)
+        self.stats.update(self.request)
+
+
+class CR(uvclight.Page):
+    require('manage.company')
+    uvclight.context(ICourse)
+    uvclight.layer(ICompanyRequest)
+
+    template = uvclight.get_template('cr.pt', __file__)
+
+    def jsonify(self, da):
+        return json.dumps(da)
+
+    def update(self):
+        hs.need()
+        quizz = getUtility(IQuizz, self.context.quizz_type)
+        self.stats = CourseStatistics(quizz, self.context)
+        self.stats.update(self.request)
+
+
+@provider(IContextSourceBinder)
+def courses(context):
+    return SimpleVocabulary([
+        SimpleTerm(value=c, token=c.id, title=c.name)
+        for c in context.company.courses if c.id != context.id])
+
+
+class ICourseDiff(Interface):
+
+    course = Choice(
+        title=u"Course to diff with",
+        required=True,
+        source=courses)
+
+
+class CDiff(uvclight.Form):
+    require('manage.company')
+    uvclight.context(ICourse)
+    uvclight.layer(ICompanyRequest)
+
+    fields = uvclight.Fields(ICourseDiff)
+    template = uvclight.get_template('cdiff.cpt', __file__)
+
+    current = None
+    diff = None
+
+    @property
+    def action_url(self):
+        return self.request.path
+
+    @uvclight.action(u'Difference')
+    def handle_save(self):
+        data, errors = self.extractData()
+        if errors:
+            self.flash(_(u'An error occurred.'))
+            return FAILURE
+
+        hs.need()
+        quizz = getUtility(IQuizz, self.context.quizz_type)
+        
+        # This course
+        self.current = CourseStatistics(quizz, self.context)
+        self.current.update(self.request)
+
+        # The diff course
+        self.diff = CourseStatistics(quizz, data['course'])
+        self.diff.update(self.request)
+
+        return SUCCESS

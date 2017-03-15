@@ -2,8 +2,8 @@
   <h1>Resultate</h1>
 
   <form action="." tal:attributes="action view.request.url"
-	tal:define="current view.filters.get('criterias', {})">
-    <dl tal:define="crits view.criterias">
+	tal:define="current view.stats.filters.get('criterias', {})">
+    <dl tal:define="crits view.stats.criterias">
       <tal:dl tal:repeat="crit crits">
 	<dt><h3 tal:content="crit" /></dt>
 	<dd>
@@ -21,7 +21,7 @@
   </form>
   
   <table>
-    <tr tal:repeat="data view.statistics['global.averages']">
+    <tr tal:repeat="data view.stats.statistics['global.averages']">
       <td tal:content="data.title"></td> 
       <td tal:content="data.average"></td> 
     </tr>
@@ -31,14 +31,14 @@
 	tal:attributes="action view.url(context) + '/pdf'">
 
     <input type="hidden" value=""
-	   tal:attributes="value view.json_criterias" name="criterias" />
+	   tal:attributes="value view.stats.json_criterias" name="criterias" />
     
     <input type="hidden"
-	   tal:attributes="value view.statistics['total']" name="total"/>
+	   tal:attributes="value view.stats.statistics['total']" name="total"/>
     
     <textarea type="text" id="averages" name="averages" style="display:none">
       <tal:data
-           content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.statistics['global.averages']])" />
+           content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
     </textarea>
     
     <textarea type="text" id="chart" name="chart" style="display: none"></textarea>
@@ -72,7 +72,7 @@
             text: 'Stacked bar chart'
 	},
 	xAxis: {
-            categories: <span tal:replace="view.xAxis"/> 
+            categories: <span tal:replace="view.stats.xAxis"/> 
 	},
 	yAxis: {
             min: 0,
@@ -88,7 +88,7 @@
 		stacking: 'normal'
             }
 	},
-	series: <span tal:replace="view.series"/> 
+	series: <span tal:replace="view.stats.series"/> 
     });
 
     svgToCanvas(myChart, 'chart');
@@ -106,7 +106,7 @@
             size: '80%'
 	},
 	xAxis: {
-	    categories: <span tal:replace="view.xAxis"/>,
+	    categories: <span tal:replace="view.stats.xAxis"/>,
             tickmarkPlacement: 'on',
             lineWidth: 0
 	},
@@ -141,7 +141,7 @@
 	},
 	series: [{
             name: 'Allocated Budget',
-            data: <span tal:replace="view.rd"/>,
+            data: <span tal:replace="view.stats.rd"/>,
             pointPlacement: 'on'
 	}]
      });

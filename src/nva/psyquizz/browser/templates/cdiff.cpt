@@ -1,0 +1,170 @@
+<form action="." tal:attributes="action view.action_url;
+                                 id view.htmlId();
+                                 method view.formMethod;
+                                 enctype view.enctype">
+  
+  <h1 tal:condition="view.label"
+      tal:content="view.label">Label</h1>
+  
+  <p tal:condition="view.description"
+     tal:content="view.description">Description</p>
+  
+  <p class="form-status"
+     tal:condition="view.status"
+     tal:content="view.status">Status</p>
+  
+  <div class="form-error"
+       tal:condition="view.errors">
+    <ul tal:condition="view.formErrors"
+        tal:repeat="error view.formErrors">
+      <li> <span tal:replace="error.title" /> </li>
+    </ul>
+  </div>
+  
+  <div class="fields"
+       tal:condition="view.fieldWidgets">
+    <div class="field" tal:repeat="widget view.fieldWidgets">
+      <label class="field-label" for="#"
+             tal:attributes="for widget.htmlId()"
+             tal:content="widget.title"
+             tal:condition="widget.isVisible() and not view.isHidden(widget)">
+            Label
+      </label>
+      <span class="field-required"
+            i18n:translate=""
+            tal:condition="widget.required and widget.isVisible()
+			   and not view.isHidden(widget)"
+            >(required)</span>
+      <br />
+      <tal:description tal:condition="widget.description">
+        <span class="field-description"
+              tal:content="widget.description">
+          </span><br />
+      </tal:description>
+          <tal:error tal:define="error widget.error"
+                     tal:condition="error">
+            <span class="field-error"
+                  tal:content="error.title">
+              Error
+            </span>
+            <br />
+          </tal:error>
+          <tal:widget tal:content="structure widget.render()" />
+    </div>
+  </div>
+  
+  <div class="actions"
+       tal:condition="view.actionWidgets">
+    <div class="action" tal:repeat="widget view.actionWidgets">
+      <tal:widget tal:content="structure widget.render()" />
+    </div>
+  </div>
+
+  <div tal:condition="view.current != None">
+    <div id="container1" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+    <script>
+     function svgToCanvas(chart, target_id) {
+        var svg = chart.getSVG();
+        var canvas = document.createElement('canvas');
+        canvas.width = "600";
+        canvas.height = "400";
+        var ctx = canvas.getContext('2d');
+        var img = document.createElement("img");
+        img.setAttribute("src", "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg))));
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, 400, 400);
+          document.getElementById(target_id).value = canvas.toDataURL("image/png");
+        };
+     }
+
+    
+    var myChart = Highcharts.chart('container', {
+	chart: {
+            type: 'bar'
+	},
+	title: {
+            text: 'Stacked bar chart'
+	},
+	xAxis: {
+            categories: <span tal:replace="view.stats.xAxis"/> 
+	},
+	yAxis: {
+            min: 0,
+            title: {
+		text: 'Total fruit consumption'
+            }
+	},
+	legend: {
+            reversed: true
+	},
+	plotOptions: {
+            series: {
+		stacking: 'normal'
+            }
+	},
+	series: <span tal:replace="view.stats.series"/> 
+    });
+
+    svgToCanvas(myChart, 'chart');
+
+    var usersChart = Highcharts.chart('container1', {
+	chart: {
+            polar: true,
+            type: 'line'
+	},
+	title: {
+            text: 'Budget vs spending',
+            x: -80
+	},
+	pane: {
+            size: '80%'
+	},
+	xAxis: {
+	    categories: <span tal:replace="view.stats.xAxis"/>,
+            tickmarkPlacement: 'on',
+            lineWidth: 0
+	},
+	yAxis: {
+            gridLineInterpolation: 'polygon',
+            lineWidth: 0,
+            tickAmount: 4,
+            min: 0,
+            plotBands: [
+		{
+		    color: '#FF0000',
+		    from: 0,
+		    to:  3 
+		},
+		{
+		    color: '#FFFF00',
+		    from: 3,
+		    to: 4 
+		},
+		{
+		    color: '#32DD32',
+            from: 4,
+		    to: 6 
+		},
+	    ],
+	},
+	legend: {
+            align: 'right',
+            verticalAlign: 'top',
+            y: 70,
+            layout: 'vertical'
+	},
+	series: [{
+            name: 'Allocated Budget',
+            data: <span tal:replace="view.stats.rd"/>,
+            pointPlacement: 'on'
+	    },{
+            name: 'Allocated Budget',
+            data: <span tal:replace="view.diff.rd"/>,
+            pointPlacement: 'on'
+	    }
+	    ]
+     });
+     svgToCanvas(usersChart, 'userschart');
+    </script>
+  </div>
+</form>
