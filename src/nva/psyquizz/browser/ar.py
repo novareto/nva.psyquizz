@@ -4,6 +4,7 @@
 
 import json
 import uvclight
+import xlsxwriter
 
 from collections import OrderedDict, namedtuple
 from cromlech.sqlalchemy import get_session
@@ -11,7 +12,6 @@ from grokcore.component import provider
 from nva.psyquizz import hs
 from nva.psyquizz.models import IQuizz, IClassSession, ICourse
 from nva.psyquizz.models.criterias import CriteriaAnswer
-from nva.psyquizz.models.quizz.quizz2 import Quizz2
 from sqlalchemy import and_, or_
 from sqlalchemy import func
 from uvclight.auth import require
@@ -80,10 +80,10 @@ def compute(quizz, criterias, averages, filters):
 
     global_data = OrderedDict()
     users_averages = OrderedDict()
-        
+
     session = get_session('school')
     answers = session.query(quizz)
-        
+
     if filters:
         if 'session' in filters:
             answers = answers.filter(
@@ -97,7 +97,7 @@ def compute(quizz, criterias, averages, filters):
                      CriteriaAnswer.criteria_id == criteria.id,
                      CriteriaAnswer.answer == criteria.name) for
                 criteria in filters['criterias'].values())
-            
+
             answers = answers.filter(or_(*criterias))
 
     total = answers.count()
@@ -107,12 +107,12 @@ def compute(quizz, criterias, averages, filters):
 
             # We cook the result object.
             field_answer = getattr(answer, field, 0)
-            result = Result(
-                field,
-                dd.title,
-                field_answer,
-                dd.source.getTerm(field_answer).title
-            )
+            # result = Result(
+            #    field,
+            #    dd.title,
+            #    field_answer,
+            #    dd.source.getTerm(field_answer).title
+            # )
 
             # We set the user response for each question as
             # a list, because we'll use the same method as
@@ -148,7 +148,7 @@ def compute(quizz, criterias, averages, filters):
     # We do the computation for the global data as well
     sorted_global_answers = sort_data(averages, global_data)
     global_averages = tuple(average_computation(sorted_global_answers))
-    
+
     return {
         'total': total,
         'users.grouped': users_averages,
@@ -160,7 +160,7 @@ class Scale(object):
 
     percentage = 0
     number = 0
-    
+
     def __init__(self, name, weight):
         self.name = name
         self.weight = weight
@@ -169,7 +169,7 @@ class Scale(object):
 def groups_scaling(data):
 
     groups_scaling = OrderedDict()
-    
+
     for k, av in data.items():
         total = float(len(av))
         scales = (
@@ -177,7 +177,7 @@ def groups_scaling(data):
             Scale('mediocre', 3.5),
             Scale('good', 5),
         )
-        
+
         for a in av:
             for scale in scales:
                 if a.average <= scale.weight:
@@ -190,21 +190,6 @@ def groups_scaling(data):
         groups_scaling[k] = scales
 
     return groups_scaling
-        
-
-def radar(data):
-    radar_chart = pygal.Radar()
-    radar_chart.title = 'RADAR EXAMPLE'
-    radar_chart.x_labels = [x.title for x in data]
-    radar_chart.add('Chrome',[x.average for x in data])
-    return radar_chart.render_data_uri()
-
-
-def histogramm(data):
-    hist = pygal.Histogram()
-    hist.add('Wide bars', [(1, 0, 10),  ])
-    hist.add('Narrow bars',  [(1, 10, 12), ])
-    return hist.render_data_uri()
 
 
 class Statistics(object):
@@ -254,8 +239,6 @@ class CourseStatistics(Statistics):
         self.filters = filters
         self.statistics = compute(
             self.quizz, self.criterias, self.averages, self.filters)
-        #self.radar = radar(self.statistics['global.averages'])
-        #self.histogramm = histogramm(None)
         self.users_statistics = groups_scaling(
             self.statistics['users.grouped'])
         self.xAxis = [x.encode('utf-8') for x in self.users_statistics.keys()] 
@@ -276,10 +259,7 @@ class CourseStatistics(Statistics):
         self.json_criterias = json.dumps(criterias)
 
 
-
-import xlsxwriter
 class XLSX(CourseStatistics):
-
 
     def generateXLSX(self):
         workbook = xlsxwriter.Workbook('/tmp/ouput.xlsx')
@@ -310,7 +290,7 @@ class XLSX(CourseStatistics):
 
 
 class SessionStatistics(CourseStatistics):
-    
+
     def __init__(self, quizz, session):
         self.quizz = quizz
         self.course = session.course
@@ -330,7 +310,7 @@ class SR(uvclight.Page):
 
     template = uvclight.get_template('cr.pt', __file__)
     general_stats = None
-    
+
     def jsonify(self, da):
         return json.dumps(da)
 
@@ -353,7 +333,7 @@ class CR(uvclight.Page):
 
     template = uvclight.get_template('cr.pt', __file__)
     general_stats = None
-    
+
     def jsonify(self, da):
         return json.dumps(da)
 
@@ -368,7 +348,7 @@ class CR(uvclight.Page):
             self.general_stats = CourseStatistics(quizz, self.context)
             self.general_stats.update({})
 
-    
+
 @provider(IContextSourceBinder)
 def courses(context):
     return SimpleVocabulary([
@@ -408,7 +388,6 @@ class CDiff(uvclight.Form):
 
         hs.need()
         quizz = getUtility(IQuizz, self.context.quizz_type)
-        
         # This course
         self.current = CourseStatistics(quizz, self.context)
         self.current.update(self.request)
@@ -416,5 +395,4 @@ class CDiff(uvclight.Form):
         # The diff course
         self.diff = CourseStatistics(quizz, data['course'])
         self.diff.update(self.request)
-
         return SUCCESS

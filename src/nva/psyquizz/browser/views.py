@@ -1,23 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import json
-
-from collections import OrderedDict
 from ..i18n import _
 from ..interfaces import ICompanyRequest, IRegistrationRequest
 from ..interfaces import QuizzAlreadyCompleted, QuizzClosed
-from ..models import IQuizz, Company, Course, Student, TrueOrFalse
-from dolmen.menu import menuentry
+from ..models import Company
 from uvc.design.canvas import IContextualActionsMenu
 from cromlech.browser import getSession
 from uvclight import Page, View, MenuItem
-from uvclight import layer, title, name, menu, context, get_template
+from uvclight import layer, title, name, menu, context
 from uvclight.auth import require
-from zope.component import getUtilitiesFor, getUtility
-from zope.schema import getFieldsInOrder
-from cromlech.sqlalchemy import get_session
 from zope import interface
-from uvc.design.canvas import IPersonalMenu, IFooterMenu
+from uvc.design.canvas import IFooterMenu
 
 
 class LogoutMenu(MenuItem):
@@ -36,16 +29,17 @@ class LogoutMenu(MenuItem):
             return False
         return True
 
+
 class Logout(View):
     name(u'logout')
     context(interface.Interface)
     layer(ICompanyRequest)
     require('zope.Public')
-   
+
     def update(self):
         session = getSession()
         if session is not None:
-           session.clear()
+            session.clear()
 
     def render(self):
         return self.redirect(self.application_url())
@@ -87,4 +81,5 @@ class Registered(Page):
     require('zope.Public')
 
     def render(self):
-        return u"Ihre Registrierung war erfolgreich. Sie erhalten in Kürze eine E-Mail mit den Aktivierungslink"
+        return u"Ihre Registrierung war erfolgreich. Sie erhalten in Kürze eine \
+                 E-Mail mit den Aktivierungslink"

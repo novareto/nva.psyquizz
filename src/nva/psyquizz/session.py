@@ -2,8 +2,6 @@
 
 import tempfile
 from wsgistate.session import SessionCache
-from wsgistate.simple import session as session_decorator
-from cromlech.wsgistate.timeout import TimeoutFileCache, TimeoutCookieSession
 
 try:
     import cPickle as pickle
@@ -55,7 +53,7 @@ class Manager(SessionManager):
             self.new = True
             self.expired = True
             environ['session.timeout'] = timeout
-    
+
 
 class TimeoutCookieSession(CookieSession):
 
@@ -71,7 +69,6 @@ class TimeoutCookieSession(CookieSession):
         # Always close session
         finally:
             sess.close()
-
 
 
 def file_session(path, **kw):

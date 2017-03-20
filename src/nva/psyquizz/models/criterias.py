@@ -41,7 +41,7 @@ class CriteriaAnswer(Base):
 
     criteria_id = Column(Integer, ForeignKey('criterias.id'), primary_key=True)
     student_id = Column(String, ForeignKey('students.access'), primary_key=True)
-    session_id = Column(Integer, ForeignKey('sessions.id'), primary_key=True)
+    session_id = Column(Integer, ForeignKey('sessions.id'), primary_key=False)
     completion_date = Column('completion_date', DateTime,
                              default=datetime.utcnow)
     answer = Column('answer', String)

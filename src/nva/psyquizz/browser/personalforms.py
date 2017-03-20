@@ -9,7 +9,7 @@ from uvc.design.canvas import IDocumentActions, IPersonalMenu
 from uvclight import Form, EditForm, name, context, layer, title, menuentry
 from uvclight import Fields, action, SUCCESS, FAILURE
 from uvclight.auth import require
-from ..models import IAccount, Account, Company, ICompanyTransfer, ICompanies
+from ..models import IAccount, Account, ICompanyTransfer, ICompanies
 from ..interfaces import ICompanyRequest
 from ..i18n import _
 from dolmen.forms.base.utils import apply_data_event
@@ -29,7 +29,8 @@ class EditAccount(EditForm):
     name('edit')
     require('manage.company')
     title = u'Benutzerprofil bearbeiten'
-    label = description = u"Hier haben Sie die Möglichkeit, die Angaben in Ihrem Benutzerprofil zu ändern."
+    label = description = u"Hier haben Sie die Möglichkeit, die Angaben in\
+     Ihrem Benutzerprofil zu ändern."
 
     def __init__(self, context, request):
         super(EditAccount, self).__init__(context, request)

@@ -20,7 +20,6 @@ from zope.component import getUtility
 from zope.schema import getFieldsInOrder
 
 
-#@menuentry(IContextualActionsMenu, order=0)
 class CriteriasListing(Page):
     name('index')
     title(_(u'Frontpage'))
@@ -31,7 +30,6 @@ class CriteriasListing(Page):
     template = get_template('criterias.pt', __file__)
 
 
-#@menuentry(IContextualActionsMenu, order=0)
 class CompanyHomepage(Page):
     name('index')
     title(_(u'Frontpage'))
@@ -42,7 +40,6 @@ class CompanyHomepage(Page):
     template = get_template('company.pt', __file__)
 
 
-#@menuentry(IContextualActionsMenu, order=0)
 class AccountHomepage(Page):
     name('display')
     title(_(u'Frontpage'))
@@ -51,7 +48,6 @@ class AccountHomepage(Page):
     require('manage.company')
 
     template = get_template('account.pt', __file__)
-
 
 
 @menuentry(IContextualActionsMenu, order=0)

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import smtplib
-import time
-from string import Template
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -29,7 +27,7 @@ class SecureMailer(object):
         # If we can encrypt this session, do it
         if server.has_extn('STARTTLS'):
             server.starttls()
-            server.ehlo() # re-identify ourselves over TLS connection
+            server.ehlo()  # re-identify ourselves over TLS connection
 
         if self.username and self.password:
             server.login(self.username, self.password)

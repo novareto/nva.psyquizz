@@ -31,7 +31,7 @@ class Statistik(uvclight.Page):
         session = get_session('school')
         now = datetime.now().date()
         sessions = session.query(models.ClassSession).all()
-        
+
         for session in sessions:
             if session.startdate > now:
                 future += 1
@@ -39,9 +39,6 @@ class Statistik(uvclight.Page):
                 present += 1
             elif now > session.startdate + timedelta(days=session.duration):
                 past += 1
-        print past
-        print present
-        print future
         return dict(alle=len(sessions), past=past, present=present, future=future)
 
     def getAnswers(self):
