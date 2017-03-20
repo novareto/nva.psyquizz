@@ -2,8 +2,8 @@
 
 from .. import TrueOrFalse, IQuizz
 
+from collections import OrderedDict
 from nva.psyquizz import Base
-from nva.psyquizz.stats import TrueFalseQuizzStats
 from sqlalchemy import *
 from grokcore.component import global_utility
 from zope.interface import Interface, implementer
@@ -163,13 +163,19 @@ class IQuizz1(IQuizz, IGroup1, IGroup2, IGroup3):
     pass
 
 
+IQuizz1.setTaggedValue(
+    'averages', OrderedDict((
+        (u'Tätigkeit', range(1, 12)),
+        (u'Arbeitsorganisation', range(12, 18)),
+        (u'Sozialen Umfeld', range(18, 20)),
+    )))
+
 
 @implementer(IQuizz1)
 class Quizz1(Base, Location):
 
     __tablename__ = 'quizz1'
     __schema__ = IQuizz1
-    __stats__ = TrueFalseQuizzStats
     __title__ = u"Some Quizz"
 
     id = Column('id', Integer, primary_key=True)

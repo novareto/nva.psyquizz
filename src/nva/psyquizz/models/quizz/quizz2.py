@@ -2,8 +2,8 @@
 
 from .. import MoreToLess, MoreToLessN, LessToMore, IQuizz
 
+from collections import OrderedDict
 from nva.psyquizz import Base
-from nva.psyquizz.stats import ChartedQuizzStats
 from grokcore.component import global_utility
 from sqlalchemy import *
 from zope import schema
@@ -196,13 +196,28 @@ class IQuizz2(Interface):
         required=True,
         )
 
+    
+IQuizz2.setTaggedValue(
+    'averages', OrderedDict((
+        (u'Vielseitiges Arbeiten', ('1', '2', '3')),
+        (u'Ganzheitliches Arbeiten', ('4', '5')),
+        (u'Passende inhaltliche Arbeitsanforderungen', ('6', '7')),
+        (u'Passende mengenmäßige Arbeit', ('8', '9')),
+        (u'Passende Arbeitsabläufe', ('10', '11')),
+        (u'Passende Arbeitsumgebung', ('12', '13')),
+        (u'Handlungsspielraum', ('14', '15', '16')),
+        (u'Soziale Rückendeckung', ('17', '18', '19')),
+        (u'Zusammenarbeit', ('20', '21', '22')),
+        (u'Information und Mitsprache', ('23', '24')),
+        (u'Entwicklungsmöglichkeiten', ('25', '26')),
+        )))
+
 
 @implementer(IQuizz2)
 class Quizz2(Base, Location):
 
     __tablename__ = 'quizz2'
     __schema__ = IQuizz2
-    __stats__ = ChartedQuizzStats
     __title__ = u"KFZA Kurzfragebogen zur Arbeitsanalyse"
 
     id = Column('id', Integer, primary_key=True)

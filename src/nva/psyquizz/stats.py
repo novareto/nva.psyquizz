@@ -1,161 +1,188 @@
-# -*- coding: utf-8 -*-
+# Copyright (c) 2007-2013 NovaReto GmbH
+# cklinger@novareto.de
 
 import json
-from collections import OrderedDict
-from zope.schema import getFieldsInOrder
-from .models import TrueOrFalse
+import uvclight
+
+from collections import OrderedDict, namedtuple
+from cromlech.sqlalchemy import get_session
+from grokcore.component import provider
+from nva.psyquizz import hs
+from nva.psyquizz.models import IQuizz, IClassSession, ICourse
+from nva.psyquizz.models.criterias import CriteriaAnswer
+from sqlalchemy import and_, or_
+from sqlalchemy import func
+from uvclight.auth import require
+from zope.component import getUtility
+from zope.interface import Interface
+from zope.schema import getFieldsInOrder, Choice
+from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
 
-def compute(forms, iface):
-    questions = OrderedDict()
-    extras = OrderedDict()
-    users = []
-
-    for form in forms:
-        user = {}
-        for field in list(iface):
-            question = questions.setdefault(field, {})
-            answer = getattr(form, field)
-            stat = question.setdefault(answer, 0)
-            question[answer] = stat + 1
-            user[iface[field].title] = answer
-
-        xa = json.loads(form.extra_questions)
-        for title, answer in xa.items():
-            question = extras.setdefault(title, {})
-            stat = question.setdefault(answer, 0)
-            question[answer] = stat + 1
-            user[title] = answer
-
-        users.append(user)
-
-    return questions, extras, users
+Result = namedtuple(
+    'Result',
+    ('answer', 'id', 'result', 'result_title'))
 
 
-class QuizzStats(object):
-
-    def __init__(self, total, completed, extra_questions, quizz):
-        self.quizz = quizz.__schema__
-        self.completed = list(completed)
-        self.percent_base = len(self.completed)
-        self.missing = total - self.percent_base 
-        self.extra_questions = extra_questions
-        self.computed, self.extras, self.users = compute(completed, self.quizz)
-
-        criterias = {}
-        for answer in completed:
-            if answer.student:
-                for criteria_answer in answer.student.criterias:
-                    criteria = criteria_answer.criteria
-                    criteria_data = criterias.setdefault(
-                        criteria.id, {'title': criteria.title, 'answers': {}})
-                    criteria_data['answers'][criteria_answer.answer] = (
-                        criteria_data['answers'].get(
-                            criteria_answer.answer, 0) + 1)
-
-        self.criterias = criterias
-
-    def get_answers(self):
-
-        for key, field in getFieldsInOrder(self.quizz):
-            question = {
-                'title': self.quizz[key].title,
-                'description': self.quizz[key].description,
-                'answers': [],
-                }
-            for term in self.quizz[key].vocabulary:
-                nb = self.computed[key].get(term.value, 0)
-                question['answers'].append({
-                    'title': term.title,
-                    'nb': nb,
-                    'value': term.value,
-                    'percent': float(nb) / self.percent_base * 100
-                    })
-            yield question
-
-        if self.extra_questions:
-            xq = set(self.extra_questions.strip().split('\n'))
-        else:
-            xq = ()
-        for title in xq:
-            title = title.strip()
-            if title == "":
-                continue
-
-            question = {
-                'title': title,
-                'description': '',
-                'answers': [],
-                }
-            for term in TrueOrFalse:
-                nb = self.extras[title].get(term.value, 0)
-                question['answers'].append({
-                    'title': term.title,
-                    'nb': nb,
-                    'value': term.value,
-                    'percent': float(nb) / self.percent_base * 100
-                    })
-            yield question
+Average = namedtuple(
+    'Average',
+    ('title', 'average'))
 
 
-class TrueFalseQuizzStats(QuizzStats):
-    pass
+def average_computation(data):
+    for k, v in data.items():
+        yield Average(k, float(sum([x.result for x in v]))/len(v))    
 
+
+def sort_data(order, data):
+
+    def sorter(id):
+        for k, v in order.items():
+            if id in v:
+                return k
+
+    ordered = OrderedDict()
+    for id, values in data.items():
+        title = sorter(id)
+        current = ordered.setdefault(title, [])
+        current += values
+
+    return ordered
+
+
+def available_criterias(criterias, session_id):
+    available_criterias = {}
+    print session_id
+    Criteria = namedtuple('Criteria', ('id', 'name', 'amount', 'uid'))
+    session = get_session('school')
+    all_crits = {x[0]: x[1] for x in session.query(
+        CriteriaAnswer.answer, func.count(CriteriaAnswer.answer)).filter(
+        CriteriaAnswer.session_id.in_(session_id))
+                 .group_by(CriteriaAnswer.answer).all()}
+
+    for crit in criterias:
+        for item in crit.items.split('\r\n'):
+            total = all_crits.get(item, 0)
+            if total >= 1:
+                uid = '%s:%s' % (crit.id, item)
+                criterias = available_criterias.setdefault(crit.title, [])
+                criterias.append(Criteria(crit.id, item, total, uid))
+
+    return available_criterias
+
+
+def compute(quizz, criterias, averages, filters):
+
+    global_data = OrderedDict()
+    users_averages = OrderedDict()
+        
+    session = get_session('school')
+    answers = session.query(quizz)
+        
+    if filters:
+        if 'session' in filters:
+            answers = answers.filter(
+                quizz.session_id == filters['session']
+            )
+
+        if 'criterias' in filters:
+            # Filter on Criterias
+            criterias = (
+                and_(quizz.student_id == CriteriaAnswer.student_id,
+                     CriteriaAnswer.criteria_id == criteria.id,
+                     CriteriaAnswer.answer == criteria.name) for
+                criteria in filters['criterias'].values())
             
-class ChartedQuizzStats(QuizzStats):
+            answers = answers.filter(or_(*criterias))
 
-    averages = OrderedDict((
-        (u'Vielseitiges Arbeiten', ('1', '2', '3')),
-        (u'Ganzheitliches Arbeiten', ('4', '5')),
-        (u'Passende inhaltliche Arbeitsanforderungen', ('6', '7')),
-        (u'Passende mengenmäßige Arbeit', ('8', '9')),
-        (u'Passende Arbeitsabläufe', ('10', '11')),
-        (u'Passende Arbeitsumgebung', ('12', '13')),
-        (u'Handlungsspielraum', ('14', '15', '16')),
-        (u'Soziale Rückendeckung', ('17', '18', '19')),
-        (u'Zusammenarbeit', ('20', '21', '22')),
-        (u'Information und Mitsprache', ('23', '24')),
-        (u'Entwicklungsmöglichkeiten', ('25', '26')),
-        ))
+    total = answers.count()
+    for answer in answers.all():
+        user_data = OrderedDict()  # Per user results
+        for field, dd in getFieldsInOrder(quizz.__schema__):
 
-    determine_average = {}
-    for label, questions in averages.items():
-        for question in questions:
-            determine_average[question] = label
+            # We cook the result object.
+            field_answer = getattr(answer, field, 0)
+            result = Result(
+                field,
+                dd.title,
+                field_answer,
+                dd.source.getTerm(field_answer).title
+            )
 
-    total = 0
+            # We set the user response for each question as
+            # a list, because we'll use the same method as
+            # the global computation for the averages.
+            user_data[dd.title] = [Result(
+                field,
+                dd.title,
+                field_answer,
+                dd.source.getTerm(field_answer).title
+            )]
 
-    def compute_chart(self):
-        answers = self.get_answers()
-        averages = OrderedDict()
-        users_averages = OrderedDict()
+            # For the global computation
+            # We make sure we have the global question set up
+            # We'll append all the corresponding answers of all
+            # the users
+            question = global_data.setdefault(dd.title, [])
+            question.append(
+                Result(
+                    field,
+                    dd.title,
+                    field_answer,
+                    dd.source.getTerm(field_answer).title
+                )
+            )
+        # The computation for a single user is done.
+        # We now compute its average.
+        sorted_user_answers = sort_data(averages, user_data)
+        user_averages = average_computation(sorted_user_answers)
+        for av in user_averages:
+            group_averages = users_averages.setdefault(av.title, [])
+            group_averages.append(av)
 
-        for answer in answers:
-            values = averages.setdefault(
-                self.determine_average.get(answer['title']), {})
-            values.setdefault('nb', 0)
-            values.setdefault('sum', 0)
-            
-            print answer
+    # We do the computation for the global data as well
+    sorted_global_answers = sort_data(averages, global_data)
+    global_averages = tuple(average_computation(sorted_global_answers))
+    
+    return {
+        'total': total,
+        'users.grouped': users_averages,
+        'global.averages': global_averages,
+    }
 
-            for value_answer in answer['answers']:
-                values['nb'] += value_answer['nb']
-                values['sum'] += (value_answer['nb'] * value_answer['value'])
 
-        for user in self.users:
-            avg = user['averages'] = OrderedDict()
-            for title, ids in self.averages.items():
-                group = users_averages.setdefault(title, {})
-                group['total'] = group.get('total', 0) + 1
-                avg = sum([user[id] for id in ids]) / len(ids)
-                group[avg] = group.get(avg, 0) + 1
+class Scale(object):
 
-        for title, results in users_averages.items():
-            for i in [1, 2, 3, 4, 5]:
-                results[i] = results.get(i, 0)
-                results[i] = results[i] / float(results['total']) * 100
+    percentage = 0
+    number = 0
+    
+    def __init__(self, name, weight):
+        self.name = name
+        self.weight = weight
 
-        for data in averages.values():
-            data['avg'] = float(data['sum']) / data['nb']
 
-        return averages, users_averages
+def groups_scaling(data):
+
+    groups_scaling = OrderedDict()
+    
+    for k, av in data.items():
+        total = float(len(av))
+        scales = (
+            Scale('bad', 2.5),
+            Scale('mediocre', 3.5),
+            Scale('good', 5),
+        )
+        
+        for a in av:
+            for scale in scales:
+                if a.average <= scale.weight:
+                    scale.number += 1
+                    break
+
+        for scale in scales:
+            scale.percentage = (scale.number / total) * 100
+
+        groups_scaling[k] = scales
+
+    return groups_scaling
