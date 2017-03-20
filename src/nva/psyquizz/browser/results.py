@@ -5,7 +5,8 @@ from cromlech.sqlalchemy import get_session
 from zope.component import getUtility
 from ..models import IQuizz, Student, CriteriaAnswer
 
-class Results(object):
+
+class Results1(object):
 
     colors = {
         1: 'rgba(212, 15, 20, 0.9)',
@@ -20,7 +21,7 @@ class Results(object):
         3: '+ / -',
         5: '-',
         }
-   
+
     def jsonify(self, da):
         return json.dumps(da)
 
@@ -31,7 +32,7 @@ class Results(object):
             (3.0 * res[3]) / 100.0 +
             (4.0 * res[4]) / 100.0 +
             (5.0 * res[5]) / 100.0)
-        
+
     def students_ids(self, session):
         criterias = self.criterias
         if not criterias:

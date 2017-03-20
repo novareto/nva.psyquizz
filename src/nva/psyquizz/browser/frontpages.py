@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import json
+import base64
+import datetime
+import binascii
 
 from ..apps import anonymous
 from ..i18n import _
@@ -18,6 +21,35 @@ from uvclight import layer, name, context, title, get_template
 from uvclight.auth import require
 from zope.component import getUtility
 from zope.schema import getFieldsInOrder
+from .. import quizzjs
+
+
+class AccountHomepage(Page):
+    name('index')
+    title(_(u'Frontpage'))
+    context(Account)
+    layer(ICompanyRequest)
+    require('manage.company')
+
+    template = get_template('ckh.pt', __file__)
+
+    maxResults = 1
+
+    def update(self):
+        quizzjs.need()
+
+    def quizz_name(self, course):
+        voc = quizz_choice(course)
+        return voc.getTermByToken(course.quizz_type).title
+
+    def generic_id(self, id):
+        return binascii.hexlify(base64.urlsafe_b64encode(str(id) + ' complexificator'))
+
+    def checkDate(self, date):
+        now = datetime.datetime.now()
+        if date < now.date():
+            return True
+        return False
 
 
 class CriteriasListing(Page):
@@ -37,17 +69,9 @@ class CompanyHomepage(Page):
     layer(ICompanyRequest)
     require('manage.company')
 
-    template = get_template('company.pt', __file__)
-
-
-class AccountHomepage(Page):
-    name('display')
-    title(_(u'Frontpage'))
-    context(Account)
-    layer(ICompanyRequest)
-    require('manage.company')
-
-    template = get_template('account.pt', __file__)
+    def render(self):
+        self.redirect(self.application_url())
+        return "" 
 
 
 @menuentry(IContextualActionsMenu, order=0)
@@ -58,15 +82,9 @@ class CompanyCourseHomepage(Page):
     layer(ICompanyRequest)
     require('manage.company')
 
-    template = get_template('course.pt', __file__)
-
-    def update(self):
-        self.criterias = {
-            c.title: [v.strip() for v in c.items.split('\n') if v.strip()]
-            for c in self.context.criterias}
-
-        voc = quizz_choice(self.context)
-        self.quizz_name = voc.getTermByToken(self.context.quizz_type).title
+    def render(self):
+        self.redirect(self.application_url())
+        return "" 
 
 
 @menuentry(IContextualActionsMenu, order=0)
@@ -75,7 +93,10 @@ class CompanySessionHomepage(Page):
     title(_(u'Frontpage'))
     context(ClassSession)
     require('manage.company')
-    template = get_template('session.pt', __file__)
+
+    def render(self):
+        self.redirect(self.application_url())
+        return "" 
 
 
 class StudentHomepage(Page):

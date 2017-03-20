@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import binascii
+import base64
+
 from ..i18n import _
 from ..interfaces import ICompanyRequest, IRegistrationRequest
 from ..interfaces import QuizzAlreadyCompleted, QuizzClosed
-from ..models import Company
+from ..models import Company, ClassSession
 from uvc.design.canvas import IContextualActionsMenu
 from cromlech.browser import getSession
 from uvclight import Page, View, MenuItem
@@ -11,6 +14,10 @@ from uvclight import layer, title, name, menu, context
 from uvclight.auth import require
 from zope import interface
 from uvc.design.canvas import IFooterMenu
+from zope.interface import Interface
+from uvc.design.canvas.menus import INavigationMenu
+from uvclight import order, get_template
+from .. import clipboard_js
 
 
 class LogoutMenu(MenuItem):
@@ -83,3 +90,44 @@ class Registered(Page):
     def render(self):
         return u"Ihre Registrierung war erfolgreich. Sie erhalten in Kürze eine \
                  E-Mail mit den Aktivierungslink"
+
+
+class SevenSteps(MenuItem):
+    context(Interface)
+    layer(ICompanyRequest)
+    menu(INavigationMenu)
+    order(100)
+    require('manage.company')
+    title(u'Übersicht 7 Schritte')
+
+    @property
+    def url(self):
+        return "https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung"
+
+
+class SevenStepsView(Page):
+    name('sevensteps')
+    context(Interface)
+    layer(ICompanyRequest)
+    require('manage.company')
+    template = get_template('sevensteps.pt', __file__)
+
+    @property
+    def panel(self):
+        template = get_template('anon_index.pt', __file__)
+        panel = template.macros['panel']
+        return panel
+
+
+class ExampleText(Page):
+    context(ClassSession)
+    layer(ICompanyRequest)
+    require('manage.company')
+    template = get_template('example_text.pt', __file__)
+
+    def update(self):
+        clipboard_js.need()
+        Page.update(self)
+
+    def generic_id(self, id):
+        return binascii.hexlify(base64.urlsafe_b64encode(str(id) + ' complexificator'))
