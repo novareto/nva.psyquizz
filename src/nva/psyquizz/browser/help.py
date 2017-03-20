@@ -7,7 +7,7 @@ import uvclight
 from zope.interface import Interface
 from uvc.design.canvas import IAboveContent
 from .forms import CreateCourse, CreateCompany, CreateCriterias, EditCriteria
-from .ckhp import AccountHomepage, ExampleText
+from .views import ExampleText
 
 
 class HelpPage(uvclight.Viewlet):
@@ -17,9 +17,9 @@ class HelpPage(uvclight.Viewlet):
     template = uvclight.get_template('helppage.cpt', __file__)
 
 
-class HelpCompany(HelpPage):
-    uvclight.view(AccountHomepage)
-    template = uvclight.get_template('helpfrontpage.cpt', __file__)
+#class HelpCompany(HelpPage):
+#    uvclight.view(AccountHomepage)
+#    template = uvclight.get_template('helpfrontpage.cpt', __file__)
 
 
 class HelpFrontPage(HelpPage):

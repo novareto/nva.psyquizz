@@ -27,12 +27,8 @@ lbcss = Resource(library, 'ekko-lightbox.min.css')
 
 lbg = Group([lbjs, lbcss])
 
-#chartjs = Resource(library, 'Chart.js')
-#charthbar = Resource(library, 'Chart.StackedBar.js', depends=[chartjs])
-
-charthjs = Resource(library, 'ChartNew.js')
 quizzcss = Resource(library, 'quizz.css')
-quizzjs = Resource(library, 'quizz.js', depends=[charthjs, ])
+quizzjs = Resource(library, 'quizz.js')
 clipboard_js = Resource(library, 'clipboard.min.js')
 wysiwyg_js = Resource(library, 'summernote.min.js', bottom=True)
 font_css = Resource(library, 'font-awesome.min.css')

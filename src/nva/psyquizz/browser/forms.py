@@ -36,7 +36,8 @@ from zope.schema import Int, Choice, Password
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from grokcore.component import Adapter, provides, context
 from siguvtheme.resources import all_dates, datepicker_de
-
+from zope.interface import provider
+from zope.schema.interfaces import IContextSourceBinder
 
 with open(os.path.join(os.path.dirname(__file__), 'mail.tpl'), 'r') as fd:
     data = unicode(fd.read(), 'utf-8')
@@ -78,7 +79,22 @@ class IStudentFilters(Interface):
 IStudentFilters.setTaggedValue('label', 'Getting started')
 
 
+@provider(IContextSourceBinder)
+def get_strategy(context):
+    return SimpleVocabulary((
+        SimpleTerm('fixed', 'fixed', u'Feste Anzahl pro Teilnehmer'),
+        SimpleTerm('mixed', 'mixed', u'Feste und freie Anzahl von Teilnehmern'),
+        SimpleTerm('free', 'free', u'Freie Anzahl von Teilnehmern'),
+    ))
+
+
 class IPopulateCourse(Interface):
+
+    strategy = Choice(
+        title=u"Strategie",
+        description=u"Hier können Sie auswählen welche Stragie Sie für das Einrichen von Fragebögen gelten soll.",
+        source=get_strategy,
+    )
 
     nb_students = Int(
         title=_(u"Number of students"),
@@ -264,7 +280,6 @@ class CreateAccount(Form):
         session = get_session('school')
 
         if errors:
-            #self.flash(_(u'An error occurred.'))
             return FAILURE
 
         if not data['password'] == data['verif']:
@@ -289,8 +304,6 @@ class CreateAccount(Form):
         data.pop('verif')
         data.pop('captcha')
 
-
-        # create it
         account = Account(**data)
         code = account.activation = str(uuid.uuid1())
         session.add(account)
@@ -298,9 +311,7 @@ class CreateAccount(Form):
         session.refresh(account)
 
         base_url = self.application_url().replace('/register', '')
-        # send email
         send_activation_code(data['name'], data['email'], code, base_url)
-        # redirect
         self.flash(_(u'Account added with success.'))
         self.redirect('%s/registered' % self.application_url())
         return SUCCESS
@@ -341,15 +352,17 @@ class CreateCompany(Form):
     require('manage.company')
 
     dataValidators = []
-    fields = Fields(ICompany).select('name', 'mnr', 'exp_db', 'type', 'employees')
+    fields = Fields(ICompany).select(
+        'name', 'mnr', 'exp_db', 'type', 'employees')
     fields['mnr'].htmlAttributes = {'maxlength': 8}
 
     def updateForm(self):
         super(CreateCompany, self).updateForm()
-        self.fieldWidgets.get('form.field.exp_db').template = get_template('checkbox.cpt', __file__)
+        self.fieldWidgets.get('form.field.exp_db').template = get_template(
+            'checkbox.cpt', __file__)
         name = self.fieldWidgets['form.field.name']
         nv = u""
-        name.value = {'form.field.name': nv} 
+        name.value = {'form.field.name': nv}
         quizzjs.need()
 
     @property
@@ -429,8 +442,15 @@ class CreateCourse(Form):
     require('manage.company')
     title(_(u'Add a course'))
 
-    fields = Fields(ICourse).select(
-        'name', 'criterias', 'quizz_type') + Fields(IClassSession).select('startdate', 'duration', 'about')  # Remove temporary QUIZZ-TYPE FIELD
+    @property
+    def fields(self):
+        course_fields = Fields(ICourse).select(
+            'name', 'criterias', 'quizz_type')
+        populate_fields = Fields(IPopulateCourse)
+        populate_fields['strategy'].mode = "radio"
+        session_fields = Fields(IClassSession).select(
+            'startdate', 'duration', 'about')
+        return course_fields + populate_fields + session_fields
 
     def update(self):
         all_dates.need()
@@ -441,11 +461,12 @@ class CreateCourse(Form):
     def updateForm(self):
         super(CreateCourse, self).updateForm()
         name = self.fieldWidgets['form.field.name']
-        nv = u"Beurteilung Psychischer Belastung %s" % datetime.datetime.now().strftime('%Y')
+        nv = u"Beurteilung Psychischer Belastung %s" % (
+            datetime.datetime.now().strftime('%Y'))
         courses = len(list(self.context.courses))
         if courses > 0:
             nv = "%s (%s)" % (nv, str(courses + 1))
-        name.value = {'form.field.name': nv} 
+        name.value = {'form.field.name': nv}
 
     @property
     def action_url(self):
@@ -454,7 +475,6 @@ class CreateCourse(Form):
     @action(_(u'Add'))
     def handle_save(self):
         data, errors = self.extractData()
-        #data['quizz_type'] = 'quizz2'  # XXX Remove temporary the FIELD
         if errors:
             self.flash(_(u'An error occurred.'))
             return FAILURE
@@ -463,6 +483,10 @@ class CreateCourse(Form):
             startdate=data.pop('startdate'),
             duration=data.pop('duration'),
             about=data.pop('about')
+        )
+        strategy = dict(
+           nb_students=data.pop('nb_students'),
+           strategy=data.pop('strategy')
         )
         course = Course(**data)
         course.company_id = self.context.id
@@ -476,9 +500,11 @@ class CreateCourse(Form):
         session.add(clssession)
         session.flush()
         session.refresh(clssession)
+        if strategy.get('strategy') == 'fixed':
+            for student in clssession.generate_students(strategy['nb_students']):
+                clssession.append(student)
         self.flash(_(u'Course added with success.'))
         self.redirect(self.application_url())
-        #self.redirect('%s/%s' % (self.url(self.context), course.id))
         return SUCCESS
 
 
@@ -490,6 +516,7 @@ class CourseSession(Adapter):
     def name():
         def fget(self):
             return self.context.course.name
+
         def fset(self, value):
             self.context.course.name = value
         return property(fget, fset)
@@ -498,6 +525,7 @@ class CourseSession(Adapter):
     def criterias():
         def fget(self):
             return self.context.course.criterias
+
         def fset(self, value):
             self.context.course.criterias = value
         return property(fget, fset)
@@ -506,6 +534,7 @@ class CourseSession(Adapter):
     def quizz_type():
         def fget(self):
             return self.context.course.quizz_type
+
         def fset(self, value):
             self.context.course.quizz_type = value
         return property(fget, fset)
@@ -514,6 +543,7 @@ class CourseSession(Adapter):
     def startdate():
         def fget(self):
             return self.context.startdate
+
         def fset(self, value):
             self.context.startdate = value
         return property(fget, fset)
@@ -522,6 +552,7 @@ class CourseSession(Adapter):
     def duration():
         def fget(self):
             return self.context.duration
+
         def fset(self, value):
             self.context.duration = value
         return property(fget, fset)
@@ -530,6 +561,7 @@ class CourseSession(Adapter):
     def about():
         def fget(self):
             return self.context.about
+
         def fset(self, value):
             self.context.about = value
         return property(fget, fset)
@@ -546,9 +578,7 @@ class EditCourse(Form):
     ignoreRequest = False
 
     dataManager = makeAdaptiveDataManager(ICourseSession)
-    #fields = Fields(ICourseSession).select(
-    #    'name', 'criterias', 'quizz_type') + Fields(ICourseSession).select(
-    #        'startdate', 'duration', 'about')
+
     @property
     def fields(self):
         now = datetime.date.today()
@@ -556,7 +586,7 @@ class EditCourse(Form):
         if self.getContentData().content.startdate > now:
             fields += Fields(ICourseSession).select('startdate', 'criterias')
         return fields
-    
+
     def update(self):
         all_dates.need()
         datepicker_de.need()
@@ -584,7 +614,6 @@ class EditCourse(Form):
         self.redirect(self.application_url())
         return SUCCESS
 
-    
 
 @menuentry(IDocumentActions, order=10)
 class EditCourseBase(Form):
@@ -595,7 +624,7 @@ class EditCourseBase(Form):
 
     ignoreContent = False
     ignoreRequest = False
-    
+
     fields = Fields(ICourse).select(
         'name', 'startdate')
 
@@ -620,7 +649,6 @@ class EditCourseBase(Form):
         self.redirect(self.url(self.context))
         return SUCCESS
 
-    
 
 @menuentry(IDocumentActions, order=20)
 class DeleteCourse(DeleteForm):
@@ -653,7 +681,7 @@ class DeleteCourse(DeleteForm):
         self.redirect(self.application_url())
         return SUCCESS
 
-    
+
 @menuentry(IContextualActionsMenu, order=10)
 class PopulateCourse(Form):
     context(IClassSession)
@@ -680,7 +708,7 @@ class PopulateCourse(Form):
                      mapping=dict(nb=data['nb_students'])))
         return self.redirect(self.url(self.context))
 
-from nva.psyquizz.models.interfaces import ICourseSession
+
 @menuentry(IDocumentActions, order=20)
 class DeleteSession(DeleteForm):
     context(IClassSession)
