@@ -32,6 +32,7 @@ install_requires = [
     'uvc.protectionwidgets',
     'svglib',
     'xlsxwriter',
+    'backports.tempfile',
     ]
 
 tests_require = [

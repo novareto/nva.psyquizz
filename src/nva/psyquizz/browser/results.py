@@ -2,9 +2,13 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
+import os.path
 import json
 import uvclight
 import xlsxwriter
+import cStringIO
+import shutil
+from backports import tempfile
 
 from collections import OrderedDict, namedtuple
 from cromlech.browser import IView
@@ -25,6 +29,9 @@ from ..stats import compute, available_criterias, groups_scaling
 from zope.schema import Choice
 from dolmen.forms.base import FAILURE, SUCCESS
 from nva.psyquizz.i18n import MessageFactory as _
+
+
+CHUNK = 4096
 
 
 Result = namedtuple(
@@ -139,8 +146,9 @@ class CourseStatistics(object):
 
 class XLSX(CourseStatistics):
 
-    def generateXLSX(self):
-        workbook = xlsxwriter.Workbook('/tmp/ouput.xlsx')
+    def generateXLSX(self, folder, filename="ouput.xlsx"):
+        filepath = os.path.join(folder, filename)
+        workbook = xlsxwriter.Workbook(filepath)
         worksheet = workbook.add_worksheet() 
         for i, x in enumerate(self.statistics['global.averages']):
             worksheet.write(i, 0, x.title)
@@ -159,13 +167,19 @@ class XLSX(CourseStatistics):
 
         # Insert the chart into the worksheet (with an offset).
         worksheet.insert_chart('D2', chart1, {'x_offset': 25, 'y_offset': 10})
-
         workbook.close()
+        return filepath
 
     def render(self):
-        self.generateXLSX()
-        import pdb; pdb.set_trace() 
+        with tempfile.TemporaryDirectory() as temp_dir:
+            filepath = self.generateXLSX(temp_dir)
+            output = cStringIO.StringIO()
+            with open(filepath, 'rb') as fd:
+                shutil.copyfileobj(fd, output)
 
+            output.seek(0)
+        return output
+            
 
 class SessionStatistics(CourseStatistics):
 
@@ -273,6 +287,36 @@ class CR(uvclight.Page):
         return self.charts.render()
 
 
+class Excel(uvclight.Page):
+    require('manage.company')
+    uvclight.context(ICourse)
+    uvclight.layer(ICompanyRequest)
+
+    def update(self):
+        quizz = getUtility(IQuizz, self.context.quizz_type)
+        filters = get_filters(self.request)
+        self.stats = XLSX(quizz, self.context)
+        self.stats.update(filters)
+
+    def render(self):
+        return self.stats.render()
+
+    def make_response(self, result):
+        response = self.responseFactory()
+        response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        response.headers['Content-Disposition'] = (
+            u'attachment; filename="output.xslx"')
+
+        def filebody(r):
+            data = r.read(CHUNK)
+            while data:
+                yield data
+                data = r.read(CHUNK)
+
+        response.app_iter = filebody(result)
+        return response
+
+    
 @provider(IContextSourceBinder)
 def courses(context):
     return SimpleVocabulary([
