@@ -22,9 +22,9 @@ class ClassSession(Base, Location):
 
     id = Column('id', Integer, primary_key=True)
     startdate = Column('startdate', Date)
+    enddate = Column('startdate', Date)
     company_id = Column(Integer, ForeignKey('companies.id'))
     course_id = Column(Integer, ForeignKey('courses.id'))
-    duration = Column('duration', Integer)
     about = Column('about', Text)
     _students = relationship(
         "Student", backref="session",
@@ -42,10 +42,6 @@ class ClassSession(Base, Location):
         if self.id == mid:
             return "Initialbefragung"
         return "Wiederholungsbefragung"
-
-    @property
-    def enddate(self):
-        return self.startdate + timedelta(days=self.duration)
 
     @property
     def students(self):

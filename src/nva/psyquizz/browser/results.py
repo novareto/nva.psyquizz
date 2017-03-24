@@ -46,7 +46,7 @@ Average = namedtuple(
 
 def average_computation(data):
     for k, v in data.items():
-        yield Average(k, float(sum([x.result for x in v]))/len(v))    
+        yield Average(k, float(sum([x.result for x in v]))/len(v))
 
 
 def sort_data(order, data):
@@ -126,7 +126,7 @@ class CourseStatistics(object):
         self.users_statistics = groups_scaling(
             self.statistics['users.grouped'])
         self.xAxis = [
-            x.encode('utf-8') for x in self.users_statistics.keys() if x] 
+            x.encode('utf-8') for x in self.users_statistics.keys() if x]
         good = dict(name="GUT", data=[], color="#62B645")
         mid = dict(name="Mittel", data=[], color="#FFCC00")
         bad = dict(name="Schlecht", data=[], color="#D8262B")
@@ -149,24 +149,56 @@ class XLSX(CourseStatistics):
     def generateXLSX(self, folder, filename="ouput.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
-        worksheet = workbook.add_worksheet() 
+        worksheet = workbook.add_worksheet()
         for i, x in enumerate(self.statistics['global.averages']):
             worksheet.write(i, 0, x.title)
             worksheet.write(i, 1, x.average)
         chart1 = workbook.add_chart({'type': 'radar'})
         chart1.add_series({
-            'name':       'KLAUS',
+            'name':       'Durchscnitt',
             'categories': '=Sheet1!$A$1:$A$11',
             'values':     '=Sheet1!$B$1:$B$11',
             })
 
-        chart1.set_title ({'name': 'Results of sample analysis'})
+        chart1.set_title({'name': 'Results of sample analysis'})
         chart1.set_x_axis({'name': 'Test number'})
         chart1.set_y_axis({'name': 'Sample length (mm)'})
         chart1.set_style(11)
 
         # Insert the chart into the worksheet (with an offset).
-        worksheet.insert_chart('D2', chart1, {'x_offset': 25, 'y_offset': 10})
+        worksheet.insert_chart('A13', chart1, {'x_offset': 25, 'y_offset': 10})
+
+        data = json.loads(self.series)
+        for y, x in enumerate(data):
+            name = x['name']
+            r = 27
+            worksheet.write(27, y, name)
+            for i, z in enumerate(x['data']):
+                worksheet.write((r+1+i), y, z)
+
+
+        chart3 = workbook.add_chart({'type': 'bar', 'subtype': 'percent_stacked'})
+
+        # Configure the first series.
+        chart3.add_series({
+            'name':       '=Sheet1!$A$27',
+            'categories': '=Sheet1!$A$28:$A$39',
+            'values':     '=Sheet1!$A$28:$A$39',
+        })
+
+        chart3.add_series({
+            'name':       '=Sheet1!$B$27',
+            'categories': '=Sheet1!$B$28:$B$39',
+            'values':     '=Sheet1!$B$28:$B$39',
+        })
+
+        chart3.add_series({
+            'name':       '=Sheet1!$C$27',
+            'categories': '=Sheet1!$C$28:$C$39',
+            'values':     '=Sheet1!$C$28:$C$39',
+        })
+        worksheet.insert_chart("G27", chart3, {'x_offset': 25, 'y_offset': 10})
+
         workbook.close()
         return filepath
 
@@ -179,7 +211,7 @@ class XLSX(CourseStatistics):
 
             output.seek(0)
         return output
-            
+
 
 class SessionStatistics(CourseStatistics):
 
@@ -233,7 +265,7 @@ class SR(uvclight.Page):
     require('manage.company')
     uvclight.context(IClassSession)
     uvclight.layer(ICompanyRequest)
- 
+
     def update(self):
         quizz = getUtility(IQuizz, self.context.course.quizz_type)
         filters = get_filters(self.request)
@@ -305,7 +337,7 @@ class Excel(uvclight.Page):
         response = self.responseFactory()
         response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         response.headers['Content-Disposition'] = (
-            u'attachment; filename="output.xslx"')
+            u'attachment; filename="output.xlsx"')
 
         def filebody(r):
             data = r.read(CHUNK)
@@ -316,7 +348,7 @@ class Excel(uvclight.Page):
         response.app_iter = filebody(result)
         return response
 
-    
+
 @provider(IContextSourceBinder)
 def courses(context):
     return SimpleVocabulary([

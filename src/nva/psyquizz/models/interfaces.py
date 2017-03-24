@@ -193,11 +193,9 @@ class IClassSession(ILocation, IContent):
         required=True,
         )
 
-    duration = schema.Choice(
-        title=_(u"Duration of the session's validity"),
-        description=u"Bitte geben Sie an, wie lange die Befragungsseite für Ihre Beschäftigten zugänglich sein soll.",
+    enddate = schema.Date(
+        title=_(u"End date"),
         required=True,
-        vocabulary=vocabularies.durations,
         )
 
     students = schema.Set(

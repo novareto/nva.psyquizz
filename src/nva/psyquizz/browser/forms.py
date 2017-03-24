@@ -7,7 +7,7 @@ import uuid
 import datetime
 import html2text
 
-from .. import wysiwyg, quizzjs
+from .. import wysiwyg, quizzjs, startendpicker
 from ..i18n import _
 from ..interfaces import IAnonymousRequest, ICompanyRequest
 from ..interfaces import IRegistrationRequest
@@ -38,6 +38,7 @@ from grokcore.component import Adapter, provides, context
 from siguvtheme.resources import all_dates, datepicker_de
 from zope.interface import provider
 from zope.schema.interfaces import IContextSourceBinder
+
 
 with open(os.path.join(os.path.dirname(__file__), 'mail.tpl'), 'r') as fd:
     data = unicode(fd.read(), 'utf-8')
@@ -214,11 +215,12 @@ class AddSession(Form):
     title(_(u'Add a session'))
     require('zope.Public')
 
-    fields = Fields(IClassSession).select('startdate', 'duration', 'about')
+    fields = Fields(IClassSession).select('startdate', 'enddate', 'about')
 
     def update(self):
-        all_dates.need()
-        datepicker_de.need()
+        #all_dates.need()
+        #datepicker_de.need()
+        startendpicker.need()
         wysiwyg.need()
         Form.update(self)
 

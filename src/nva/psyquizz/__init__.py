@@ -17,7 +17,7 @@ from zope.interface import implementer
 from zope.location import Location, ILocation
 from dolmen.sqlcontainer import SQLContainer
 from fanstatic import Library, Resource, Group
-from siguvtheme.resources import bootstrap_css, siguv_css
+from siguvtheme.resources import datepicker_de, bootstrap_css, siguv_css
 
 
 library = Library('nva.psyquizz', 'static')
@@ -39,5 +39,7 @@ wysiwyg = Group([wysiwyg_js, wysiwyg_css, editor])
 hsb = Resource(library, 'highcharts.js')
 hsb_export = Resource(library, 'exporting.js', depends=[hsb])
 hs = Resource(library, 'highcharts-more.js', depends=[hsb, hsb_export])
+
+startendpicker = Resource(library, 'picker.js', depends=[datepicker_de])
 
 Base = declarative_base()
