@@ -2,6 +2,8 @@
 
 import binascii
 import base64
+from cStringIO import StringIO
+import qrcode
 
 from ..i18n import _
 from ..interfaces import ICompanyRequest, IRegistrationRequest
@@ -131,3 +133,29 @@ class ExampleText(Page):
 
     def generic_id(self, id):
         return binascii.hexlify(base64.urlsafe_b64encode(str(id) + ' complexificator'))
+
+
+class QRLink(View):
+    context(ClassSession)
+    layer(ICompanyRequest)
+    require('manage.company')
+
+    def generic_id(self, id):
+        return binascii.hexlify(base64.urlsafe_b64encode(str(id) + ' complexificator'))
+
+    def render(self):
+        url = '%s/generic-%s' % (
+            self.application_url(), self.generic_id(self.context.id))
+        img = qrcode.make(url)
+
+        output = StringIO()
+        img.save(output, format="PNG")
+        output.seek(0)
+        return output
+        
+    def make_response(self, result):
+        response = self.responseFactory(app_iter=result)
+        response.headers['Content-Type'] = 'image/png'
+        response.headers['Content-Disposition'] = (
+            'attachment; filename="qrcode.png"')
+        return response

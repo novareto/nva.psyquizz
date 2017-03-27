@@ -33,6 +33,7 @@ install_requires = [
     'svglib',
     'xlsxwriter',
     'backports.tempfile',
+    'qrcode',
     ]
 
 tests_require = [

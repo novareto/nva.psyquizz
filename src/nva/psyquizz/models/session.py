@@ -22,7 +22,7 @@ class ClassSession(Base, Location):
 
     id = Column('id', Integer, primary_key=True)
     startdate = Column('startdate', Date)
-    enddate = Column('startdate', Date)
+    enddate = Column('enddate', Date)
     company_id = Column(Integer, ForeignKey('companies.id'))
     course_id = Column(Integer, ForeignKey('courses.id'))
     about = Column('about', Text)
