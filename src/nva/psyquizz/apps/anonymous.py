@@ -37,6 +37,7 @@ class QuizzBoard(SQLContainer):
                     raise QuizzClosed(self)
                 uuid = self.model.generate_access()
                 student = self.model(
+                    anonymous=True,
                     access=uuid,
                     company_id=session.course.company_id,
                     session_id=sessionid,

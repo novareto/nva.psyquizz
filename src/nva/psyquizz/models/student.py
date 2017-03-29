@@ -24,6 +24,9 @@ class Student(Base, Location):
     company_id = Column(Integer, ForeignKey('companies.id'))
     session_id = Column(Integer, ForeignKey('sessions.id'))
 
+    # Origin
+    anonymous = Column('anonymous', Boolean)
+
     # Quizz
     quizz_type = Column('quizz_type', String)
     completion_date = Column('completion_date', DateTime)
