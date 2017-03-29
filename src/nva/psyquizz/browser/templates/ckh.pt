@@ -148,15 +148,18 @@
         <span tal:content="'%s/quizz/%s' % (view.application_url(), 'TOKEN')"></span> 
         </dd>
         <dt> Tokens: </dt> 
-        <dd> <a id="show_tokens" href=""> + anzeigen </a>
-           <div tal:repeat="unc zip(session.uncomplete, session.uncomplete)">
+        <dd> <span data-toggle="collapse" data-target="#tokens" href=""> +
+          anzeigen </span>
+          <div id="tokens" class="collapse">
+           <row tal:repeat="unc zip(session.uncomplete, session.uncomplete)">
              <a tal:attributes="href '%s/quizz/%s' %(view.application_url(),
                unc[0].access)"> <span class="col-md-5"
                  tal:content="unc[0].access"/> </a>
              <a tal:attributes="href '%s/quizz/%s' %(view.application_url(),
                unc[0].access)"> <span class="col-md-5"
                  tal:content="unc[0].access"/></a>
-           </div>
+           </row>
+         </div>
         </dd>
 
         <dt> Auswertung: </dt> 
