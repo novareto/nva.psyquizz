@@ -23,6 +23,7 @@ class ClassSession(Base, Location):
     id = Column('id', Integer, primary_key=True)
     startdate = Column('startdate', Date)
     enddate = Column('enddate', Date)
+    strategy = Column('strategy', String(20))
     company_id = Column(Integer, ForeignKey('companies.id'))
     course_id = Column(Integer, ForeignKey('courses.id'))
     about = Column('about', Text)
@@ -84,3 +85,9 @@ class ClassSession(Base, Location):
             student.__parent__ = self
             if student.completion_date is not None:
                 yield student
+
+    @property
+    def strat_title(self):
+        from nva.psyquizz.browser.forms import IPopulateCourse
+        source = IPopulateCourse['strategy'].source(None)
+        return source.getTerm(self.strategy).title

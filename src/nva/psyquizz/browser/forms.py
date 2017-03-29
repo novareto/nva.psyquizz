@@ -38,6 +38,7 @@ from grokcore.component import Adapter, provides, context
 from siguvtheme.resources import all_dates, datepicker_de
 from zope.interface import provider
 from zope.schema.interfaces import IContextSourceBinder
+from nva.psyquizz import quizzjs
 
 
 with open(os.path.join(os.path.dirname(__file__), 'mail.tpl'), 'r') as fd:
@@ -451,13 +452,14 @@ class CreateCourse(Form):
         populate_fields = Fields(IPopulateCourse)
         populate_fields['strategy'].mode = "radio"
         session_fields = Fields(IClassSession).select(
-            'startdate', 'duration', 'about')
+            'startdate', 'enddate', 'about')
         return course_fields + populate_fields + session_fields
 
     def update(self):
         all_dates.need()
         datepicker_de.need()
         wysiwyg.need()
+        quizzjs.need()
         Form.update(self)
 
     def updateForm(self):
@@ -483,12 +485,13 @@ class CreateCourse(Form):
         session = get_session('school')
         csdata = dict(
             startdate=data.pop('startdate'),
-            duration=data.pop('duration'),
-            about=data.pop('about')
+            enddate=data.pop('enddate'),
+            about=data.pop('about'),
+            strategy=data.pop('strategy')
         )
         strategy = dict(
            nb_students=data.pop('nb_students'),
-           strategy=data.pop('strategy')
+           strategy=csdata.get('strategy')
         )
         course = Course(**data)
         course.company_id = self.context.id
@@ -502,7 +505,7 @@ class CreateCourse(Form):
         session.add(clssession)
         session.flush()
         session.refresh(clssession)
-        if strategy.get('strategy') == 'fixed':
+        if strategy.get('strategy') in ('mixed','fixed'):
             for student in clssession.generate_students(strategy['nb_students']):
                 clssession.append(student)
         self.flash(_(u'Course added with success.'))

@@ -37,4 +37,22 @@ $( document ).ready(function() {
     $("a[href='https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung']").attr('target','_blank');
     $("a[href='http://www.bgetem.de/die-bgetem/impressum']").attr('target','_blank');
 
+
+    $('div#field-form-field-nb_students').hide();
+
+    $('div#field-form-field-strategy input:radio').click(function() {
+        value = $(this).val()
+        if (value == 'fixed') {
+            $('div#field-form-field-nb_students').fadeIn();
+        }
+        if (value == 'mixed') {
+            $('div#field-form-field-nb_students').fadeIn();
+        }
+        if (value == 'free') {
+            $('div#field-form-field-nb_students').fadeOut();
+        }
+    }
+    )
+
+
 });
