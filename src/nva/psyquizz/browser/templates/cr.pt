@@ -89,15 +89,16 @@
             type: 'bar'
 	},
 	title: {
-            text: 'Stacked bar chart'
+            text: 'Verteilung'
 	},
 	xAxis: {
             categories: <span tal:replace="view.stats.xAxis"/> 
 	},
 	yAxis: {
             min: 0,
+	    max: 100,
             title: {
-		text: 'Total fruit consumption'
+		text: 'Antworten'
             }
 	},
 	legend: {
@@ -119,7 +120,7 @@
             type: 'line'
 	},
 	title: {
-            text: 'Budget vs spending',
+            text: 'Verteilung',
             x: -80
 	},
 	pane: {
@@ -128,13 +129,14 @@
 	xAxis: {
 	    categories: <span tal:replace="view.stats.xAxis"/>,
             tickmarkPlacement: 'on',
-            lineWidth: 0
+            lineWidth: 0,
 	},
 	yAxis: {
             gridLineInterpolation: 'polygon',
             lineWidth: 0,
             tickAmount: 4,
             min: 0,
+	    max: 5,
             plotBands: [
 		{
 		    color: '#D8262B',
@@ -148,8 +150,8 @@
 		},
 		{
 		    color: '#62B645',
-            from: 4,
-		    to: 6 
+                    from: 4,
+		    to: 6
 		},
 	    ],
 	},
@@ -160,14 +162,14 @@
             layout: 'vertical'
 	},
 	series: [{
-            name: 'Selected criterias',
+            name: 'Durchschnitswert',
             data: <span tal:replace="view.stats.rd"/>,
             pointPlacement: 'on'
 	    }
 	    <tal:general condition="view.general_stats">
 	      ,
 	      {
-            name: 'General stats',
+            name: 'Ihre Auswahl',
             data: <span tal:replace="view.general_stats.rd"/>,
             pointPlacement: 'on'
 	    }

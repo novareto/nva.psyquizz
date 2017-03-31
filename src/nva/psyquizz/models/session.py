@@ -87,6 +87,10 @@ class ClassSession(Base, Location):
                 yield student
 
     @property
+    def anon_complete(self):
+        return [x for x in self.complete if x.anonymous == True]
+
+    @property
     def strat_title(self):
         from nva.psyquizz.browser.forms import IPopulateCourse
         source = IPopulateCourse['strategy'].source(None)

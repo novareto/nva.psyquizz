@@ -7,6 +7,7 @@ import json
 import uvclight
 import xlsxwriter
 import cStringIO
+import itertools
 import shutil
 from backports import tempfile
 
@@ -142,6 +143,52 @@ class CourseStatistics(object):
             for crit in crits:
                 criterias.append([crit.name, crit.amount])
         self.json_criterias = json.dumps(criterias)
+
+
+
+class DownloadTokens(uvclight.View):
+    require('manage.company')
+    uvclight.context(IClassSession)
+    uvclight.layer(ICompanyRequest)
+
+    def update(self):
+        app_url = self.application_url()
+        _all = itertools.chain(
+            self.context.uncomplete, self.context.uncomplete)
+        self.tokens = ['%s/quizz/%s' % (app_url, a.access) for a in _all]
+
+    def generateXLSX(self, folder, filename="ouput.xlsx"):
+        filepath = os.path.join(folder, filename)
+        workbook = xlsxwriter.Workbook(filepath)
+        worksheet = workbook.add_worksheet()
+        for i, x in enumerate(self.tokens):
+            worksheet.write(i, 0, x)
+        workbook.close()
+        return filepath
+
+    def render(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            filepath = self.generateXLSX(temp_dir)
+            output = cStringIO.StringIO()
+            with open(filepath, 'rb') as fd:
+                shutil.copyfileobj(fd, output)
+            output.seek(0)
+        return output
+
+    def make_response(self, result):
+        response = self.responseFactory()
+        response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        response.headers['Content-Disposition'] = (
+            u'attachment; filename="tokens.xlsx"')
+
+        def filebody(r):
+            data = r.read(CHUNK)
+            while data:
+                yield data
+                data = r.read(CHUNK)
+
+        response.app_iter = filebody(result)
+        return response
 
 
 class XLSX(CourseStatistics):
