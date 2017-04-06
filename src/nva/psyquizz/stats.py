@@ -1,23 +1,12 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
-import json
-import uvclight
-
 from collections import OrderedDict, namedtuple
 from cromlech.sqlalchemy import get_session
-from grokcore.component import provider
-from nva.psyquizz import hs
-from nva.psyquizz.models import IQuizz, IClassSession, ICourse
 from nva.psyquizz.models.criterias import CriteriaAnswer
 from sqlalchemy import and_, or_
 from sqlalchemy import func
-from uvclight.auth import require
-from zope.component import getUtility
-from zope.interface import Interface
-from zope.schema import getFieldsInOrder, Choice
-from zope.schema.interfaces import IContextSourceBinder
-from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
+from zope.schema import getFieldsInOrder
 
 
 Result = namedtuple(
@@ -32,7 +21,7 @@ Average = namedtuple(
 
 def average_computation(data):
     for k, v in data.items():
-        yield Average(k, float(sum([x.result for x in v]))/len(v))    
+        yield Average(k, float(sum([x.result for x in v]))/len(v))
 
 
 def sort_data(order, data):
@@ -76,10 +65,10 @@ def compute(quizz, criterias, averages, filters):
 
     global_data = OrderedDict()
     users_averages = OrderedDict()
-        
+
     session = get_session('school')
     answers = session.query(quizz)
-        
+
     if filters:
         if 'session' in filters:
             answers = answers.filter(
@@ -93,7 +82,7 @@ def compute(quizz, criterias, averages, filters):
                      CriteriaAnswer.criteria_id == criteria.id,
                      CriteriaAnswer.answer == criteria.name) for
                 criteria in filters['criterias'].values())
-            
+
             answers = answers.filter(or_(*criterias))
 
     total = answers.count()
@@ -103,12 +92,6 @@ def compute(quizz, criterias, averages, filters):
 
             # We cook the result object.
             field_answer = getattr(answer, field, 0)
-            result = Result(
-                field,
-                dd.title,
-                field_answer,
-                dd.source.getTerm(field_answer).title
-            )
 
             # We set the user response for each question as
             # a list, because we'll use the same method as
@@ -144,7 +127,7 @@ def compute(quizz, criterias, averages, filters):
     # We do the computation for the global data as well
     sorted_global_answers = sort_data(averages, global_data)
     global_averages = tuple(average_computation(sorted_global_answers))
-    
+
     return {
         'total': total,
         'users.grouped': users_averages,
@@ -156,7 +139,7 @@ class Scale(object):
 
     percentage = 0
     number = 0
-    
+
     def __init__(self, name, weight):
         self.name = name
         self.weight = weight
@@ -165,7 +148,7 @@ class Scale(object):
 def groups_scaling(data):
 
     groups_scaling = OrderedDict()
-    
+
     for k, av in data.items():
         total = float(len(av))
         scales = (
@@ -173,7 +156,7 @@ def groups_scaling(data):
             Scale('mediocre', 3.5),
             Scale('good', 5),
         )
-        
+
         for a in av:
             for scale in scales:
                 if a.average <= scale.weight:

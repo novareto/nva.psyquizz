@@ -14,4 +14,3 @@ class Site(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         setSite()
-

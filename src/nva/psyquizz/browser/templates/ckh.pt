@@ -170,7 +170,7 @@
         </dd>
         <dt> Ausgefüllte Fragebogen: </dt> 
         <dd>
-        <span class="badge" tal:content="'%s / %s' % (len(list(session.complete)), len(list(session.uncomplete)))"> </span> 
+        <span class="badge" tal:content="'%s / %s - %s' % (len(list(session.complete)), len(list(session.uncomplete)), len(list(session.anon_complete)))"> </span> 
         </dd>
       </div>
         <dt>

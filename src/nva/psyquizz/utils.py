@@ -31,5 +31,4 @@ class HH(Helper):
     require('manage.company')
 
     def render(self):
-        import pdb; pdb.set_trace()
         return ""

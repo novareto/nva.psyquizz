@@ -5,7 +5,7 @@ import base64
 from datetime import date
 from . import Site
 from ..interfaces import IAnonymousRequest, QuizzAlreadyCompleted, QuizzClosed
-from ..models import Student, Course, ClassSession
+from ..models import Student, ClassSession
 from cromlech.browser import IPublicationRoot
 from dolmen.sqlcontainer import SQLContainer
 from uvc.content.interfaces import IContent
@@ -16,7 +16,8 @@ from zope.interface import implementer
 
 
 def get_id(secret):
-    return int(base64.urlsafe_b64decode(binascii.unhexlify(secret)).split(' ', 1)[0])
+    return int(
+        base64.urlsafe_b64decode(binascii.unhexlify(secret)).split(' ', 1)[0])
 
 
 @implementer(IContent, IPublicationRoot)

@@ -21,7 +21,6 @@ def localize(application):
 
 def routing(conf, files, session_key, **kwargs):
     global ALLOWED_LANGUAGES
-    
     languages = kwargs['langs']
     allowed = languages.strip().replace(',', ' ').split()
     allowed = ('de',)
@@ -35,7 +34,6 @@ def routing(conf, files, session_key, **kwargs):
 
     # We register our SQLengine under a given name
     dsn = kwargs.get('dsn', "sqlite:////tmp/test.db")
-    print dsn
     engine = create_and_register_engine(dsn, name)
 
     # We use a declarative base, if it exists we bind it and create
@@ -44,7 +42,8 @@ def routing(conf, files, session_key, **kwargs):
     metadata.create_all(engine.engine, checkfirst=True)
 
     # Applications configuration
-    factory = namedtuple('Setupuration', ('session_key', 'engine', 'name', 'fs_store'))
+    factory = namedtuple(
+        'Setupuration', ('session_key', 'engine', 'name', 'fs_store'))
     setup = factory(session_key, engine, name, None)
 
     # Router
@@ -53,5 +52,4 @@ def routing(conf, files, session_key, **kwargs):
     root['/register'] = localize(company.Registration(setup))
     root['/quizz'] = localize(anonymous.Application(setup))
     root['/json'] = localize(remote.Application(setup))
-
     return root

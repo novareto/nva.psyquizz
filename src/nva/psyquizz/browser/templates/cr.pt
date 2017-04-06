@@ -89,15 +89,15 @@
             type: 'bar'
 	},
 	title: {
-            text: 'Stacked bar chart'
+            text: 'Absolute Verteilung'
 	},
 	xAxis: {
-            categories: <span tal:replace="view.stats.xAxis"/> 
+            categories: <span tal:replace="view.stats.xAxis"/>, 
+              tickAmount: 10
 	},
 	yAxis: {
-            min: 0,
             title: {
-		text: 'Total fruit consumption'
+		text: 'Antworten'
             }
 	},
 	legend: {
@@ -119,7 +119,7 @@
             type: 'line'
 	},
 	title: {
-            text: 'Budget vs spending',
+            text: 'Verteilung',
             x: -80
 	},
 	pane: {
@@ -160,14 +160,14 @@
             layout: 'vertical'
 	},
 	series: [{
-            name: 'Selected criterias',
+            name: 'Durchschnitt',
             data: <span tal:replace="view.stats.rd"/>,
             pointPlacement: 'on'
 	    }
 	    <tal:general condition="view.general_stats">
 	      ,
 	      {
-            name: 'General stats',
+            name: 'Ihre Auswahl',
             data: <span tal:replace="view.general_stats.rd"/>,
             pointPlacement: 'on'
 	    }
@@ -184,7 +184,6 @@
     $("#form-action-filter").click();
     });
     $('input[type=checkbox]').change(function() {
-       alert('HANS');
     $("#form-action-filter").click();
     });
   </script>

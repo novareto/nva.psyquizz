@@ -15,16 +15,17 @@ from ..interfaces import ICompanyRequest, IRegistrationRequest
 from ..models import Account
 from .. import quizzjs, lbg
 
+from sqlalchemy import func
 from cromlech.browser import IPublicationRoot, IView, IResponseFactory
 from cromlech.browser.interfaces import ITraverser
 from cromlech.security import Interaction, unauthenticated_principal
 from cromlech.sqlalchemy import get_session
-from dolmen.forms.base import FAILURE, SUCCESS, Fields, SuccessMarker,action
+from dolmen.forms.base import FAILURE, SUCCESS, Fields, SuccessMarker, action
 from dolmen.forms.base.errors import Error
 from nva.psyquizz import browser
 from ul.auth import SecurePublication, ICredentials
 from ul.auth import _
-from ul.auth.browser import Login, ILoginForm
+from ul.auth.browser import Login
 from ul.browser.context import ContextualRequest
 from ul.browser.decorators import sessionned
 from ul.browser.publication import Publication
@@ -60,7 +61,7 @@ class ActivationTraverser(MultiAdapter):
     def __init__(self, obj, request):
         self.obj = obj
         self.request = request
-    
+
     def traverse(self, ns, name):
         alsoProvides(self.request, IActivationRequest)
         return self.obj
@@ -76,11 +77,11 @@ def activate_url(url, **data):
     url_parts[4] = urllib.urlencode(query)
     return urlparse.urlunparse(url_parts)
 
-from sqlalchemy import func
+
 @implementer(ICredentials)
 class Access(GlobalUtility):
     name('access')
-    
+
     def log_in(self, request, username, password, **kws):
         session = get_session('school')
         account = session.query(Account).filter(
@@ -114,10 +115,10 @@ class IActivation(Interface):
     activation = TextLine(
         title=u'Activation code',
         required=True)
-    
+
 
 def send_forgotten_password(email, password):
-    #mailer = SecureMailer('localhost')
+    # mailer = SecureMailer('localhost')
     mailer = SecureMailer('smtprelay.bg10.bgfe.local')
     from_ = 'extranet@bgetem.de'
     title = (u'Ihre Passwortanfrage').encode(ENCODING)
@@ -172,11 +173,12 @@ class ForgotPassword(Form):
             return FAILURE
         else:
             send_forgotten_password(account.email, account.password)
-            self.flash(_(u'Ihr Passwort wurde an Ihre E-Mail-Adresse verschickt.'))
+            self.flash(_(
+                u'Ihr Passwort wurde an Ihre E-Mail-Adresse verschickt.'))
             self.redirect(self.application_url())
             return SUCCESS
 
-    
+
 class AccountLogin(Login):
     name('login')
     layer(ICompanyRequest)
@@ -191,7 +193,7 @@ class AccountLogin(Login):
 
     def update(self):
         quizzjs.need()
-    
+
     @property
     def fields(self):
         fields = Login.fields
@@ -208,7 +210,7 @@ class AccountLogin(Login):
     @action(_(u'Login'))
     def log_me(self):
         result = Login.log_me(self)
-        if result.success == True:
+        if result.success is True:
             if IActivationRequest.providedBy(self.request):
                 return SuccessMarker(
                     'Add a company', True, url='/add.company')
@@ -221,7 +223,7 @@ class AccountLogin(Login):
 class AnonIndex(Page):
     baseclass()
     __component_name__ = 'index'
-   
+
     template = get_template('anon_index_new.pt', browser.__file__)
 
     def update(self):
@@ -291,7 +293,7 @@ class Application(SQLPublication, SecurePublication):
             return e
 
     def __call__(self, environ, start_response):
-        
+
         @sessionned(self.configuration.session_key)
         @transaction_sql(self.configuration.engine)
         def publish(environ, start_response):
@@ -307,7 +309,7 @@ class Application(SQLPublication, SecurePublication):
 class Registration(Publication, Location):
 
     layers = [IRegistrationRequest]
-    
+
     def __init__(self, configuration):
         self.configuration = configuration
 
@@ -316,7 +318,7 @@ class Registration(Publication, Location):
 
     def site_manager(self, request):
         return Site(self)
-    
+
     def __call__(self, environ, start_response):
 
         @sessionned(self.configuration.session_key)
@@ -328,5 +330,5 @@ class Registration(Publication, Location):
                 with site_manager as site:
                     response = self.publish_traverse(request, site)
                     return response(environ, start_response)
- 
+
         return publish(environ, start_response)
