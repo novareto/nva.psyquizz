@@ -89,13 +89,15 @@
             type: 'bar'
 	},
 	title: {
-            text: 'Absolute Verteilung'
+            text: 'Verteilung'
 	},
 	xAxis: {
             categories: <span tal:replace="view.stats.xAxis"/>, 
               tickAmount: 10
 	},
 	yAxis: {
+            min: 0,
+	    max: 100,
             title: {
 		text: 'Antworten'
             }
@@ -128,13 +130,14 @@
 	xAxis: {
 	    categories: <span tal:replace="view.stats.xAxis"/>,
             tickmarkPlacement: 'on',
-            lineWidth: 0
+            lineWidth: 0,
 	},
 	yAxis: {
             gridLineInterpolation: 'polygon',
             lineWidth: 0,
             tickAmount: 4,
             min: 0,
+	    max: 5,
             plotBands: [
 		{
 		    color: '#D8262B',
@@ -148,8 +151,8 @@
 		},
 		{
 		    color: '#62B645',
-            from: 4,
-		    to: 6 
+                    from: 4,
+		    to: 6
 		},
 	    ],
 	},
