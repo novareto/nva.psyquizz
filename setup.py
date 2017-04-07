@@ -37,6 +37,7 @@ install_requires = [
     ]
 
 tests_require = [
+    'zope.testbrowser >= 5.2',
     ]
 
 setup(name=name,
