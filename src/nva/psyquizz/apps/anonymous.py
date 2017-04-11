@@ -63,10 +63,16 @@ class QuizzBoard(SQLContainer):
 
 
 class Application(SQLPublication):
-    layers = [IBootstrapRequest, IAnonymousRequest]
+    _layers = [IBootstrapRequest, IAnonymousRequest]
 
     def setup_database(self, engine):
         pass
 
     def site_manager(self, environ):
         return Site(QuizzBoard(None, '', self.configuration.name))
+
+    @property
+    def layers(self):
+        if self.configuration.layer is not None:
+            return self._layers + [self.configuration.layer]
+        return self._layers

@@ -249,7 +249,13 @@ class NoAccess(Location):
 
 class Application(SQLPublication, SecurePublication):
 
-    layers = [ICompanyRequest]
+    _layers = [ICompanyRequest]
+
+    @property
+    def layers(self):
+        if self.configuration.layer is not None:
+            return self._layers + [self.configuration.layer]
+        return self._layers
 
     def setup_database(self, engine):
         pass

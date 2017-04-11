@@ -20,6 +20,11 @@ class IAnonymousRequest(IQuizzLayer):
     pass
 
 
+from zope.interface import Interface
+class ISomeLayer(Interface):
+    pass
+
+
 class QuizzAlreadyCompleted(exceptions.HTTPForbidden):
     pass
 

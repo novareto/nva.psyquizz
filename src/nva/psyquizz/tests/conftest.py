@@ -3,9 +3,9 @@
 import os
 import pytest
 import datetime
-from cromlech.sqlalchemy import SQLAlchemySession
-from cromlech.sqlalchemy import create_and_register_engine
-from cromlech.sqlalchemy import get_session
+import transaction
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
 from nva.psyquizz import Base
 from nva.psyquizz.models import *
 from nva.psyquizz.session import file_session_wrapper
@@ -15,8 +15,7 @@ from zope.testbrowser.wsgi import Browser
 
 @pytest.fixture(scope='session')
 def engine():
-    print "Creating the DB engine"
-    return create_and_register_engine('sqlite:////tmp/quizz.db', 'school')
+    return create_engine('sqlite:////tmp/quizz.db')
 
 
 @pytest.yield_fixture(scope='session')
@@ -29,15 +28,22 @@ def tables(engine):
 @pytest.yield_fixture
 def dbsession(engine, tables):
     """Returns an sqlalchemy session, and after the test tears down everything properly."""
-    with SQLAlchemySession(engine) as session:
-        yield session
-    session.rollback()
+    connection = engine.connect()
+    transaction = connection.begin()
+    session = Session(bind=connection)
+
+    yield transaction, session
+
     session.close()
+    transaction.rollback()
+    connection.close()
 
 
 @pytest.yield_fixture
 def session_with_content(dbsession):
     # do your data injection here
+    transaction, session = dbsession
+    
     account = Account(
         email="ck@novareto.de",
         name="Christian Klinger",
@@ -63,7 +69,7 @@ def session_with_content(dbsession):
         extra_questions="""To be or not to be ?
 """)
 
-    session = ClassSession(
+    clsession = ClassSession(
         id=1,
         startdate=datetime.date.today(),
         enddate=datetime.date.today() + datetime.timedelta(days=5),
@@ -83,20 +89,21 @@ def session_with_content(dbsession):
         quizz_type="quizz2",
         completion_date=datetime.date.today() + datetime.timedelta(days=1))
 
-    dbsession.add(account)
-    dbsession.add(company)
-    dbsession.add(course)
-    dbsession.add(session)
-    dbsession.add(student)
+    session.add(account)
+    session.add(company)
+    session.add(course)
+    session.add(clsession)
+    session.add(student)
 
-    yield dbsession
+    yield transaction, session
 
 
 @pytest.fixture(scope='session')
 def browser(zcml):
     wsgi_app = routing(
-        None, None, 'school', **{'langs': 'de,fr', 'zcml': zcml})
-    app = file_session_wrapper(wsgi_app, None, **{'session_key': 'school'})
+        conf=None, files=None, session_key='session',
+        **{'langs': 'de,fr', 'zcml': zcml, 'name': 'test'})
+    app = file_session_wrapper(wsgi_app, None, **{'session_key': 'session'})
 
     def open_url(url):
         return Browser(url, wsgi_app=app)

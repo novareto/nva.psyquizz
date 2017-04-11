@@ -12,6 +12,31 @@ from zope.i18n import config
 from zope.security.management import setSecurityPolicy
 
 
+marker = object()
+
+
+def eval_loader(expr):
+    """load  a class / function
+    :param expr: dotted name of the module ':' name of the class / function
+    :raises RuntimeError: if expr is not a valid expression
+    :raises ImportError: if module or object not found
+    """
+    modname, elt = expr.split(':', 1)
+    if modname:
+        try:
+            module = __import__(modname, {}, {}, ['*'])
+            val = getattr(module, elt, marker)
+            if val is marker:
+                raise ImportError('')
+            return val
+        except ImportError:
+            raise ImportError(
+                    "Bad specification %s: no item name %s in %s." %
+                    (expr, elt, modname))
+    else:
+        raise RuntimeError("Bad specification %s: no module name." % expr)
+
+
 def localize(application):
     def wrapper(*args, **kwargs):
         setLanguage('de')
@@ -30,7 +55,7 @@ def routing(conf, files, session_key, **kwargs):
     load_zcml(kwargs['zcml'])
 
     setSecurityPolicy(GenericSecurityPolicy)
-    name = 'school'
+    name = kwargs.get('name', 'school')
 
     # We register our SQLengine under a given name
     dsn = kwargs.get('dsn', "sqlite:////tmp/test.db")
@@ -41,10 +66,17 @@ def routing(conf, files, session_key, **kwargs):
     metadata = Base.metadata
     metadata.create_all(engine.engine, checkfirst=True)
 
+    # Extract possible layer
+    layer = kwargs.get('layer')
+    if layer is not None:
+        layer_iface = eval_loader(layer)
+    else:
+        layer_iface = None
+
     # Applications configuration
     factory = namedtuple(
-        'Setupuration', ('session_key', 'engine', 'name', 'fs_store'))
-    setup = factory(session_key, engine, name, None)
+        'Setupuration', ('session_key', 'engine', 'name', 'fs_store', 'layer'))
+    setup = factory(session_key, engine, name, None, layer_iface)
 
     # Router
     root = URLMap()
