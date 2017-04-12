@@ -22,7 +22,8 @@ def test_simple(session_with_content, browser):
 
     # Make sure we are logged in
     assert 'Mein Profil' in page.contents
+    print page.contents
 
+    
     link = page.getLink('Mein Profil')
     link.click()
-    print page.contents

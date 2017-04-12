@@ -5,7 +5,7 @@ import sys
 import sqlite3
 import pytest
 import datetime
-import transaction
+import contextlib
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from nva.psyquizz import Base
@@ -28,26 +28,28 @@ def engine():
     return create_engine('sqlite:///:memory:', creator=creator)
 
 
-@pytest.fixture(scope='session')
-def dbsession(engine):
+@pytest.fixture(scope='function')
+def dbsession(engine, request):
     """Returns an sqlalchemy session, and after the test tears down everything properly."""
     connection = engine.connect()
     transaction = connection.begin()
     session = Session(bind=connection)
-    Base.metadata.create_all(engine.engine)
+    Base.metadata.create_all(engine)
 
-    yield transaction, session
-    
-    Base.metadata.drop_all(engine.engine)
-    session.close()
-    transaction.rollback()
-    connection.close()
+    def teardown():
+        Base.metadata.drop_all(engine)
+        connection.close()
+
+    request.addfinalizer(teardown)
+    return transaction, session
 
 
-@pytest.fixture(scope='session')
-def session_with_content(dbsession):
-    # do your data injection here
-    transaction, session = dbsession
+@pytest.fixture(scope='function')
+def session_with_content(engine, request):
+    connection = engine.connect()
+    transaction = connection.begin()
+    session = Session(bind=connection)
+    Base.metadata.create_all(engine)
     
     account = Account(
         email="ck@novareto.de",
@@ -56,7 +58,7 @@ def session_with_content(dbsession):
         activation="BLA",
         activated=datetime.date.today(),
     )
-
+    
     company = Company(
         id=1,
         name="Novareto",
@@ -65,7 +67,7 @@ def session_with_content(dbsession):
         exp_db="C",
         type="D",
         account_id=account.email)
-
+    
     course = Course(
         id=1,
         name="Crash Course",
@@ -73,7 +75,7 @@ def session_with_content(dbsession):
         company_id=1,
         quizz_type="quizz2",
         extra_questions="""To be or not to be ?
-""")
+        """)
 
     clsession = ClassSession(
         id=1,
@@ -83,7 +85,7 @@ def session_with_content(dbsession):
         company_id=1,
         course_id=1,
         about="A course.",
-        )
+    )
 
     student = Student(
         access="ABCD",
@@ -100,7 +102,13 @@ def session_with_content(dbsession):
     session.add(course)
     session.add(clsession)
     session.add(student)
+    session.commit()
     
+    def teardown():
+        Base.metadata.drop_all(engine)
+        connection.close()
+
+    request.addfinalizer(teardown)
     return transaction, session
 
 
