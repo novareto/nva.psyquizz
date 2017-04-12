@@ -5,7 +5,8 @@ from .apps import company, anonymous, remote
 from collections import namedtuple
 from cromlech.configuration.utils import load_zcml
 from cromlech.i18n import register_allowed_languages, setLanguage
-from cromlech.sqlalchemy import create_and_register_engine
+from cromlech.sqlalchemy import create_engine
+from cromlech.sqlalchemy.components import EngineServer
 from paste.urlmap import URLMap
 from ul.auth import GenericSecurityPolicy
 from zope.i18n import config
@@ -56,10 +57,13 @@ def routing(conf, files, session_key, **kwargs):
 
     setSecurityPolicy(GenericSecurityPolicy)
     name = kwargs.get('name', 'school')
-
+    
     # We register our SQLengine under a given name
-    dsn = kwargs.get('dsn', "sqlite:////tmp/test.db")
-    engine = create_and_register_engine(dsn, name)
+    if not 'engine' in kwargs:
+        dsn = kwargs['dsn']    
+        engine = create_engine(dsn, name)
+    else:
+        engine = EngineServer(kwargs['engine'], name)
 
     # We use a declarative base, if it exists we bind it and create
     engine.bind(Base)

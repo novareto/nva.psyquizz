@@ -93,7 +93,7 @@ class Access(GlobalUtility):
             account = None
 
         if account is not None and account.password == password:
-            if account.activated is not None:
+            if account.activated is not None:                
                 return account
             activation = kws.get('activation')
             if activation is not None:
@@ -266,7 +266,7 @@ class Application(SQLPublication, SecurePublication):
         principal.roles = set()
         return principal
 
-    def site_manager(self, request):
+    def site_manager(self, request):        
         username = request.principal.id.lower()
         if username != unauthenticated_principal.id:
             session = get_session(self.configuration.name)
@@ -277,7 +277,7 @@ class Application(SQLPublication, SecurePublication):
                 account = account.first()
             else:
                 account = None
-
+                
             if account is not None:
                 account.getSiteManager = getGlobalSiteManager
                 alsoProvides(account, IPublicationRoot)

@@ -5,7 +5,7 @@ from nva.psyquizz.models import Account
 
 def test_simple(session_with_content, browser):
     transaction, session = session_with_content
-
+    
     # Get the frontpage
     page = browser('http://localhost/')
     assert "Startseite" in page.contents
@@ -19,3 +19,10 @@ def test_simple(session_with_content, browser):
     form.getControl(name="username").value = "ck@novareto.de"
     form.getControl(name="password").value = "TEST"
     form.submit("Anmelden")
+
+    # Make sure we are logged in
+    assert 'Mein Profil' in page.contents
+
+    link = page.getLink('Mein Profil')
+    link.click()
+    print page.contents

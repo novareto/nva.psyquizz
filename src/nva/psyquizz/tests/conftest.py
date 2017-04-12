@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
+import sqlite3
 import pytest
 import datetime
 import transaction
@@ -15,31 +17,34 @@ from zope.testbrowser.wsgi import Browser
 
 @pytest.fixture(scope='session')
 def engine():
-    return create_engine('sqlite:////tmp/quizz.db')
+    DB_URI = 'file::memory:?cache=shared'
+    PY2 = sys.version_info.major == 2
+    if PY2:
+        params = {}
+    else:
+        params = {'uri': True}
+
+    creator = lambda: sqlite3.connect(DB_URI, **params)
+    return create_engine('sqlite:///:memory:', creator=creator)
 
 
-@pytest.yield_fixture(scope='session')
-def tables(engine):
-    Base.metadata.create_all(engine.engine)
-    yield
-    Base.metadata.drop_all(engine.engine)
-
-
-@pytest.yield_fixture
-def dbsession(engine, tables):
+@pytest.fixture(scope='session')
+def dbsession(engine):
     """Returns an sqlalchemy session, and after the test tears down everything properly."""
     connection = engine.connect()
     transaction = connection.begin()
     session = Session(bind=connection)
+    Base.metadata.create_all(engine.engine)
 
     yield transaction, session
-
+    
+    Base.metadata.drop_all(engine.engine)
     session.close()
     transaction.rollback()
     connection.close()
 
 
-@pytest.yield_fixture
+@pytest.fixture(scope='session')
 def session_with_content(dbsession):
     # do your data injection here
     transaction, session = dbsession
@@ -48,7 +53,8 @@ def session_with_content(dbsession):
         email="ck@novareto.de",
         name="Christian Klinger",
         password="TEST",
-        activation="BLA"
+        activation="BLA",
+        activated=datetime.date.today(),
     )
 
     company = Company(
@@ -64,7 +70,7 @@ def session_with_content(dbsession):
         id=1,
         name="Crash Course",
         startdate=datetime.date.today(),
-        company_id=company.id,
+        company_id=1,
         quizz_type="quizz2",
         extra_questions="""To be or not to be ?
 """)
@@ -94,15 +100,17 @@ def session_with_content(dbsession):
     session.add(course)
     session.add(clsession)
     session.add(student)
-
-    yield transaction, session
+    
+    return transaction, session
 
 
 @pytest.fixture(scope='session')
-def browser(zcml):
+def browser(engine, zcml):
+
     wsgi_app = routing(
         conf=None, files=None, session_key='session',
-        **{'langs': 'de,fr', 'zcml': zcml, 'name': 'test'})
+        **{'langs': 'de,fr', 'zcml': zcml, 'name': 'school',
+           'engine': engine})
     app = file_session_wrapper(wsgi_app, None, **{'session_key': 'session'})
 
     def open_url(url):
