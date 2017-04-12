@@ -81,7 +81,7 @@ def session_with_content(engine, request):
         id=1,
         startdate=datetime.date.today(),
         enddate=datetime.date.today() + datetime.timedelta(days=5),
-        strategy="",
+        strategy="mixed",
         company_id=1,
         course_id=1,
         about="A course.",
