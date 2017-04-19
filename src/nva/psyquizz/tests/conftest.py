@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import os
 import sys
 import sqlite3
 import pytest
 import datetime
-import contextlib
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from nva.psyquizz import Base
@@ -13,6 +11,7 @@ from nva.psyquizz.models import *
 from nva.psyquizz.session import file_session_wrapper
 from nva.psyquizz.wsgi import routing
 from zope.testbrowser.wsgi import Browser
+from z3c.etestbrowser.testing import ExtendedTestBrowser
 
 
 @pytest.fixture(scope='session')
@@ -23,7 +22,6 @@ def engine():
         params = {}
     else:
         params = {'uri': True}
-
     creator = lambda: sqlite3.connect(DB_URI, **params)
     return create_engine('sqlite:///:memory:', creator=creator)
 
@@ -50,7 +48,7 @@ def session_with_content(engine, request):
     transaction = connection.begin()
     session = Session(bind=connection)
     Base.metadata.create_all(engine)
-    
+
     account = Account(
         email="ck@novareto.de",
         name="Christian Klinger",
@@ -58,7 +56,7 @@ def session_with_content(engine, request):
         activation="BLA",
         activated=datetime.date.today(),
     )
-    
+
     company = Company(
         id=1,
         name="Novareto",
@@ -67,7 +65,7 @@ def session_with_content(engine, request):
         exp_db="C",
         type="D",
         account_id=account.email)
-    
+
     course = Course(
         id=1,
         name="Crash Course",
@@ -103,7 +101,7 @@ def session_with_content(engine, request):
     session.add(clsession)
     session.add(student)
     session.commit()
-    
+
     def teardown():
         Base.metadata.drop_all(engine)
         connection.close()
@@ -122,5 +120,6 @@ def browser(engine, zcml):
     app = file_session_wrapper(wsgi_app, None, **{'session_key': 'session'})
 
     def open_url(url):
+        from z3c.etestbrowser.wsgi import Browser
         return Browser(url, wsgi_app=app)
     return open_url

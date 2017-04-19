@@ -34,10 +34,12 @@ install_requires = [
     'xlsxwriter',
     'backports.tempfile',
     'qrcode',
+    'ul.sql',
     ]
 
 tests_require = [
     'zope.testbrowser >= 5.2',
+    'z3c.etestbrowser',
     ]
 
 setup(name=name,

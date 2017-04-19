@@ -5,7 +5,7 @@ from nva.psyquizz.models import Account
 
 def test_simple(session_with_content, browser):
     transaction, session = session_with_content
-    
+
     # Get the frontpage
     page = browser('http://localhost/')
     assert "Startseite" in page.contents
@@ -44,7 +44,7 @@ def test_simple(session_with_content, browser):
 
     # Asserting we are now unlogged
     assert 'Mein Profil' not in page.contents
-    
+
     # Logging in with the new password
     form = page.getForm()
     form.getControl(name="username").value = "ck@novareto.de"
@@ -56,3 +56,20 @@ def test_simple(session_with_content, browser):
     assert 'Christian Klinger' in page.contents
     assert 'Novareto' in page.contents
     assert 'Crash Course' in page.contents
+
+    link = page.getLink('Betrieb anlegen')
+    link.click()
+    assert "Unternehmen anlegen"
+
+    form = page.getForm()
+    form.getControl(name='form.field.name').value="Novareto GmbH"
+    form.getControl(name='form.field.mnr').value="12345678"
+    form.submit(name='form.action.add')
+    
+    assert "Novareto" in page.contents
+
+    link = page.getLink('(Neue Befragung anlegen)')
+    link.click()
+
+    
+    import pdb; pdb.set_trace()
