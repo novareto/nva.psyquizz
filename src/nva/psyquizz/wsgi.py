@@ -9,7 +9,6 @@ from cromlech.sqlalchemy import create_engine
 from cromlech.sqlalchemy.components import EngineServer
 from paste.urlmap import URLMap
 from ul.auth import GenericSecurityPolicy
-from zope.i18n import config
 from zope.security.management import setSecurityPolicy
 
 
@@ -46,12 +45,10 @@ def localize(application):
 
 
 def routing(conf, files, session_key, **kwargs):
-    global ALLOWED_LANGUAGES
     languages = kwargs['langs']
     allowed = languages.strip().replace(',', ' ').split()
     allowed = ('de',)
     register_allowed_languages(allowed)
-    config.ALLOWED_LANGUAGES = None
 
     load_zcml(kwargs['zcml'])
 
