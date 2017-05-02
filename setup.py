@@ -35,6 +35,7 @@ install_requires = [
     'backports.tempfile',
     'qrcode',
     'ul.sql',
+    'openpyxl',
     ]
 
 tests_require = [

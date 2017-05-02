@@ -18,12 +18,15 @@ from ..models import Criteria, CriteriaAnswer, ICriteria, ICriterias
 from .emailer import SecureMailer, prepare, ENCODING
 
 from cromlech.sqlalchemy import get_session
-from dolmen.forms.base.errors import Error
-from dolmen.forms.base.actions import Action, Actions
 from dolmen.forms.base import SuccessMarker, makeAdaptiveDataManager
+from dolmen.forms.base.actions import Action, Actions
+from dolmen.forms.base.errors import Error
 from dolmen.forms.base.utils import apply_data_event
 from dolmen.forms.crud.actions import message
 from dolmen.menu import menuentry, order
+from grokcore.component import Adapter, provides, context
+from nva.psyquizz import quizzjs
+from siguvtheme.resources import all_dates, datepicker_de
 from string import Template
 from uvc.design.canvas import IContextualActionsMenu
 from uvc.design.canvas import IDocumentActions
@@ -32,13 +35,10 @@ from uvclight import action, layer, name, title, get_template
 from uvclight.auth import require
 from zope.component import getUtility
 from zope.interface import Interface
-from zope.schema import Int, Choice, Password
-from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
-from grokcore.component import Adapter, provides, context
-from siguvtheme.resources import all_dates, datepicker_de
 from zope.interface import provider
+from zope.schema import Int, Choice, Password
 from zope.schema.interfaces import IContextSourceBinder
-from nva.psyquizz import quizzjs
+from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
 
 with open(os.path.join(os.path.dirname(__file__), 'mail.tpl'), 'r') as fd:
@@ -449,6 +449,7 @@ class CreateCourse(Form):
     def fields(self):
         course_fields = Fields(ICourse).select(
             'name', 'criterias', 'quizz_type')
+        course_fields['criterias'].mode = "INOUT"
         populate_fields = Fields(IPopulateCourse)
         populate_fields['strategy'].mode = "radio"
         session_fields = Fields(IClassSession).select(
@@ -820,7 +821,7 @@ class AnswerQuizz(Form):
     def fields(self):
         fields = Fields(self.quizz.__schema__)
         fields.sort(key=lambda c: c.interface[c.identifier].order)
- 
+
         criteria_fields = []
         for criteria in self.context.course.criterias:
             values = SimpleVocabulary([

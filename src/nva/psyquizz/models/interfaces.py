@@ -26,7 +26,6 @@ nachzudenken. Meist ist der erste Eindruck auch der treffendste.</p>
 """
 
 
-
 def deferred(name):
     @provider(IContextSourceBinder)
     def vocabulary(context):
@@ -231,7 +230,7 @@ class ICourse(ILocation, IContent):
         required=True,
         )
 
-    criterias = schema.Set(
+    criterias = schema.List(
         title=_(u"Auswertungsgruppen festlegen"),
         description=u"Bitte entfernen Sie das Häkchen, falls Sie einzelne Auswertungsgruppen nicht in Ihrer Befragung verwenden wollen.",
         value_type=schema.Choice(source=deferred('criterias_choice')),

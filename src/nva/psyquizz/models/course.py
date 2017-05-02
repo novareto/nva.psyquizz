@@ -3,13 +3,14 @@
 from nva.psyquizz import Base
 from sqlalchemy import *
 from sqlalchemy.orm import relationship, backref
+from uvc.content.interfaces import IDescriptiveSchema
 from uvclight.directives import traversable
 from zope.interface import Interface, implementer
 from zope.location import Location
+
 from . import IntIds
 from .criterias import criterias_table
 from .interfaces import ICourse
-from uvc.content.interfaces import IDescriptiveSchema
 
 
 @implementer(ICourse, IDescriptiveSchema)
