@@ -26,7 +26,7 @@ from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from zope.location import LocationProxy
 
 from ..interfaces import ICompanyRequest
-from ..stats import compute, available_criterias, groups_scaling
+from ..stats import compute, groups_scaling
 from zope.schema import Choice
 from dolmen.forms.base import FAILURE, SUCCESS
 from nva.psyquizz.i18n import MessageFactory as _
@@ -118,16 +118,15 @@ class CourseStatistics(object):
         self.averages = quizz.__schema__.getTaggedValue('averages')
         self.course = course
         session_ids = [x.id for x in self.course.sessions]
-        self.criterias = available_criterias(course.criterias, session_ids)
 
     def update(self, filters):
         self.filters = filters
         self.statistics = compute(
-            self.quizz, self.criterias, self.averages, self.filters)
+            self.quizz, self.averages, self.filters)
         self.users_statistics = groups_scaling(
             self.statistics['users.grouped'])
         self.xAxis = [
-            x.encode('utf-8') for x in self.users_statistics.keys() if x]
+            x.encode('iso8859-1') for x in self.users_statistics.keys() if x]
         good = dict(name="GUT", data=[], color="#62B645")
         mid = dict(name="Mittel", data=[], color="#FFCC00")
         bad = dict(name="Schlecht", data=[], color="#D8262B")
@@ -139,7 +138,7 @@ class CourseStatistics(object):
         self.rd = [x.average for x in self.statistics['global.averages']]
 
         criterias = []
-        for crits in self.criterias.values():
+        for crits in self.statistics['criterias'].values():
             for crit in crits:
                 criterias.append([crit.name, crit.amount])
         self.json_criterias = json.dumps(criterias)
@@ -197,9 +196,11 @@ class XLSX(CourseStatistics):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
         worksheet = workbook.add_worksheet()
+
         for i, x in enumerate(self.statistics['global.averages']):
             worksheet.write(i, 0, x.title)
             worksheet.write(i, 1, x.average)
+
         chart1 = workbook.add_chart({'type': 'radar'})
         chart1.add_series({
             'name':       'Durchscnitt',
@@ -224,7 +225,8 @@ class XLSX(CourseStatistics):
                 worksheet.write((r+1+i), y, z)
 
 
-        chart3 = workbook.add_chart({'type': 'bar', 'subtype': 'percent_stacked'})
+        chart3 = workbook.add_chart(
+            {'type': 'bar', 'subtype': 'percent_stacked'})
 
         # Configure the first series.
         chart3.add_series({
@@ -245,6 +247,13 @@ class XLSX(CourseStatistics):
             'values':     '=Sheet1!$C$28:$C$39',
         })
         worksheet.insert_chart("G27", chart3, {'x_offset': 25, 'y_offset': 10})
+
+        for i, x in enumerate(self.statistics['criterias'].items()):
+            cname, cvalues = x
+            for v in cvalues:
+                worksheet.write("A%i" % (43+i), cname)
+                worksheet.write("B%i" % (43+i), v.name)
+                worksheet.write("C%i" % (43+i), v.amount)
 
         workbook.close()
         return filepath
@@ -267,8 +276,6 @@ class SessionStatistics(CourseStatistics):
         self.course = session.course
         self.session = session
         self.averages = quizz.__schema__.getTaggedValue('averages')
-        self.criterias = available_criterias(
-            session.course.criterias, [self.session.id, ])
 
     def update(self, filters):
         filters['session'] = self.session.id
@@ -382,7 +389,8 @@ class Excel(uvclight.Page):
 
     def make_response(self, result):
         response = self.responseFactory()
-        response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        response.headers['Content-Type'] = (
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response.headers['Content-Disposition'] = (
             u'attachment; filename="output.xlsx"')
 

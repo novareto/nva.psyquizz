@@ -22,7 +22,7 @@
 
 
  </div>
-    <dl tal:define="crits view.stats.criterias">
+    <dl tal:define="crits view.stats.statistics['criterias']">
       <tal:dl tal:repeat="crit crits">
 	<dt><h3 tal:content="crit" /></dt>
 	<dd>
@@ -41,10 +41,20 @@
   
   <div id="container1" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
 
+  <div class="legend" style="width: 550px; margin: 0 auto 5em auto; text-align: center; border: 2px solid #666;">
+    <em><b style="color: #62B645;">> 3,5</b>:
+    in diesem Bereich scheint alles in Ordnung</em><br>
+    <em><b style="color: #FFCC00;">> 2,5 < 3,5</b>:
+    diesen Bereich sollten Sie sich noch mal genauer ansehen</em><br>
+    <em><b style="color: #D8262B;"> < 2,5  </b>:
+    in diesem Bereich scheint Handlungsbedarf zu bestehen </em>&nbsp;&nbsp;
+  </div>
+
+  
   <table id="mt" class="table table-bordered table-striped">
     <tr tal:repeat="data view.stats.statistics['global.averages']">
       <td tal:content="data.title"></td> 
-      <td tal:content="data.average"></td> 
+      <td tal:content="str('%.2f' % data.average)"></td> 
     </tr>
   </table>
 
@@ -87,7 +97,10 @@
     var myChart = Highcharts.chart('container', {
 	chart: {
             type: 'bar'
-	},
+	    },
+	credits: {
+             enabled: false
+        },
 	title: {
             text: 'Verteilung'
 	},
@@ -100,10 +113,15 @@
 	    max: 100,
             title: {
 		text: 'Antworten'
-            }
+		},
+	   labels: {
+              formatter:function() {
+                  return this.value + '%';
+              }
+           }
 	},
 	legend: {
-            reversed: true
+           reversed: true
 	},
 	plotOptions: {
             series: {
@@ -120,6 +138,9 @@
             polar: true,
             type: 'line'
 	},
+	credits: {
+             enabled: false
+        },
 	title: {
             text: 'Verteilung',
             x: -80
@@ -136,12 +157,12 @@
             gridLineInterpolation: 'polygon',
             lineWidth: 0,
             tickAmount: 4,
-            min: 0,
-	    max: 5,
+            min: 1,
+	    max: 6,
             plotBands: [
 		{
 		    color: '#D8262B',
-		    from: 0,
+		    from: 1,
 		    to:  3 
 		},
 		{
@@ -154,13 +175,14 @@
                     from: 4,
 		    to: 6
 		},
-	    ],
+	   ],
 	},
 	legend: {
             align: 'right',
-            verticalAlign: 'top',
-            y: 70,
-            layout: 'vertical'
+            layout: 'vertical',
+            enabled: false,
+            floating: true,
+            verticalAlign: 'bottom'
 	},
 	series: [{
             name: 'Durchschnitt',

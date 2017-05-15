@@ -8,8 +8,10 @@ import datetime
 import html2text
 
 from .. import wysiwyg, quizzjs, startendpicker
+from ..apps.anonymous import QuizzBoard
 from ..i18n import _
 from ..interfaces import IAnonymousRequest, ICompanyRequest
+from ..interfaces import QuizzAlreadyCompleted, QuizzClosed
 from ..interfaces import IRegistrationRequest
 from ..models import Account, Company, Course, ClassSession, Student
 from ..models import ICourseSession, IAccount, ICompany, ICourse, IClassSession
@@ -36,7 +38,7 @@ from uvclight.auth import require
 from zope.component import getUtility
 from zope.interface import Interface
 from zope.interface import provider
-from zope.schema import Int, Choice, Password
+from zope.schema import Int, Choice, Password, TextLine
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
@@ -794,6 +796,54 @@ class SaveQuizz(Action):
         return SUCCESS
 
 
+class IAnonymousLogin(Interface):
+
+    login = TextLine(
+        title=_(u"Login"),
+        required=True,
+        )
+
+    
+class AnonymousLogin(Action):
+
+    def available(self, form):
+        return True
+
+    def __call__(self, form):
+        data, errors = form.extractData()
+        if errors:
+            form.flash(_(u'An error occurred.'))
+            return FAILURE
+
+        try:
+            student = form.context.create_student(data['login'])
+        except QuizzClosed:
+            form.flash(_(u'This session is no longer available'))
+            return FAILURE
+        except AssertionError:
+            form.flash(_(u'Invalid token'))
+            return FAILURE
+        except Exception as ex:
+            form.flash(_(u'Invalid token'))
+            return FAILURE
+        
+        form.redirect('%s/%s' % (form.request.url, student.access))
+        return SUCCESS
+
+
+class AnonymousAccess(Form):
+    context(QuizzBoard)
+    layer(IAnonymousRequest)
+    name('index')
+    require('zope.Public')
+    title(_(u'Login'))
+
+    dataValidators = []
+    fields = Fields(IAnonymousLogin)
+    actions = Actions(AnonymousLogin(_(u'Login')))
+
+
+    
 class AnswerQuizz(Form):
     context(Student)
     layer(IAnonymousRequest)

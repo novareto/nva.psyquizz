@@ -42,7 +42,6 @@ def sort_data(order, data):
 
 def available_criterias(criterias, session_id):
     available_criterias = {}
-    print session_id
     Criteria = namedtuple('Criteria', ('id', 'name', 'amount', 'uid'))
     session = get_session('school')
     all_crits = {x[0]: x[1] for x in session.query(
@@ -61,14 +60,15 @@ def available_criterias(criterias, session_id):
     return available_criterias
 
 
-def compute(quizz, criterias, averages, filters):
+def compute(quizz, averages, filters):
 
     global_data = OrderedDict()
     users_averages = OrderedDict()
 
     session = get_session('school')
     answers = session.query(quizz)
-
+    filtered_criterias = {}
+    
     if filters:
         if 'session' in filters:
             answers = answers.filter(
@@ -88,6 +88,13 @@ def compute(quizz, criterias, averages, filters):
     total = answers.count()
     for answer in answers.all():
         user_data = OrderedDict()  # Per user results
+
+        if answer.student:
+            for c in answer.student.criterias:
+                cid = '%s:%s' % (c.criteria.id, c.criteria.title)
+                fc = filtered_criterias.setdefault(cid, {})
+                fc[c.answer] = fc.get(c.answer, 0) + 1
+
         for field, dd in getFieldsInOrder(quizz.__schema__):
 
             # We cook the result object.
@@ -128,10 +135,20 @@ def compute(quizz, criterias, averages, filters):
     sorted_global_answers = sort_data(averages, global_data)
     global_averages = tuple(average_computation(sorted_global_answers))
 
+    Criteria = namedtuple('Criteria', ('id', 'name', 'amount', 'uid'))
+    merged_criterias = {}
+    for fid, fc in filtered_criterias.items():
+        id, name = fid.split(':')
+        for fa, count in fc.items():
+            uid = '%s:%s' % (id, fa)
+            criterias = merged_criterias.setdefault(name, [])
+            criterias.append(Criteria(id, fa, count, uid))
+
     return {
         'total': total,
         'users.grouped': users_averages,
         'global.averages': global_averages,
+        'criterias': merged_criterias,
     }
 
 

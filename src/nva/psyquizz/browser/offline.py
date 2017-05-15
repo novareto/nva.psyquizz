@@ -196,6 +196,9 @@ class UploadOfflineQuizz(Page):
                                 except:
                                     # Value doesn't exist, HELP !
                                     raise
+                        else:
+                            del answer_objects[idx]
+                            break
                 else:
                     # this is a big error, handle me
                     raise NotImplementedError
