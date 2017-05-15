@@ -50,7 +50,6 @@
     in diesem Bereich scheint Handlungsbedarf zu bestehen </em>&nbsp;&nbsp;
   </div>
 
-  
   <table id="mt" class="table table-bordered table-striped">
     <tr tal:repeat="data view.stats.statistics['global.averages']">
       <td tal:content="data.title"></td> 
@@ -102,7 +101,7 @@
              enabled: false
         },
 	title: {
-            text: 'Verteilung'
+            text: 'Mittelwerte'
 	},
 	xAxis: {
             categories: <span tal:replace="view.stats.xAxis"/>, 
@@ -113,8 +112,11 @@
 	    max: 100,
             title: {
 		text: 'Antworten'
-		},
-	   labels: {
+            },
+	    labels: {
+		text: 'Anteil der Antworten'
+            },
+          labels: {
               formatter:function() {
                   return this.value + '%';
               }
@@ -138,7 +140,7 @@
             polar: true,
             type: 'line'
 	},
-	credits: {
+       credits: {
              enabled: false
         },
 	title: {
@@ -185,7 +187,7 @@
             verticalAlign: 'bottom'
 	},
 	series: [{
-            name: 'Durchschnitt',
+            name: 'gesamt',
             data: <span tal:replace="view.stats.rd"/>,
             pointPlacement: 'on'
 	    }

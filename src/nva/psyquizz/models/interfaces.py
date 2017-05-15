@@ -193,7 +193,7 @@ class IClassSession(ILocation, IContent):
         )
 
     enddate = schema.Date(
-        title=_(u"End date"),
+        title=_(u"Ende der Befragung"),
         required=True,
         )
 
@@ -230,7 +230,7 @@ class ICourse(ILocation, IContent):
         required=True,
         )
 
-    criterias = schema.List(
+    criterias = schema.Set(
         title=_(u"Auswertungsgruppen festlegen"),
         description=u"Bitte entfernen Sie das Häkchen, falls Sie einzelne Auswertungsgruppen nicht in Ihrer Befragung verwenden wollen.",
         value_type=schema.Choice(source=deferred('criterias_choice')),

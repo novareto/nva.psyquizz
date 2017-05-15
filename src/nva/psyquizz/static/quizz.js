@@ -38,18 +38,18 @@ $( document ).ready(function() {
     $("a[href='http://www.bgetem.de/die-bgetem/impressum']").attr('target','_blank');
 
 
-    $('div#field-form-field-nb_students').hide();
+    $('div#form-field-form-field-nb_students').hide();
 
-    $('div#field-form-field-strategy input:radio').click(function() {
+    $('div#form-field-form-field-strategy input:radio').click(function() {
         value = $(this).val()
         if (value == 'fixed') {
-            $('div#field-form-field-nb_students').fadeIn();
+            $('div#form-field-form-field-nb_students').fadeIn();
         }
         if (value == 'mixed') {
-            $('div#field-form-field-nb_students').fadeIn();
+            $('div#form-field-form-field-nb_students').fadeIn();
         }
         if (value == 'free') {
-            $('div#field-form-field-nb_students').fadeOut();
+            $('div#form-field-form-field-nb_students').fadeOut();
         }
     }
     )

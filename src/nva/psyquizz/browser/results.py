@@ -126,10 +126,10 @@ class CourseStatistics(object):
         self.users_statistics = groups_scaling(
             self.statistics['users.grouped'])
         self.xAxis = [
-            x.encode('iso8859-1') for x in self.users_statistics.keys() if x]
-        good = dict(name="GUT", data=[], color="#62B645")
-        mid = dict(name="Mittel", data=[], color="#FFCC00")
-        bad = dict(name="Schlecht", data=[], color="#D8262B")
+        x.encode('iso-8859-1') for x in self.users_statistics.keys() if x]
+        good = dict(name="viel / zutreffend", data=[], color="#62B645")
+        mid = dict(name="mittelmäßig", data=[], color="#FFCC00")
+        bad = dict(name="wenig / nicht zutreffend", data=[], color="#D8262B")
         for x in self.users_statistics.values():
             good['data'].append(x[0].percentage)
             mid['data'].append(x[1].percentage)
