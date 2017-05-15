@@ -164,6 +164,7 @@ class UploadOfflineQuizz(Page):
         return quizz, fields
 
     def read_xls(self, fields, finput):
+        import pdb; pdb.set_trace()
         answer_objects = {}
         
         wb = load_workbook(filename=finput, read_only=True)

@@ -85,7 +85,7 @@ IStudentFilters.setTaggedValue('label', 'Getting started')
 def get_strategy(context):
     return SimpleVocabulary((
         SimpleTerm('fixed', 'fixed', u'Feste Anzahl pro Teilnehmer'),
-        SimpleTerm('mixed', 'mixed', u'Feste und freie Anzahl von Teilnehmern'),
+       # SimpleTerm('mixed', 'mixed', u'Feste und freie Anzahl von Teilnehmern'),
         SimpleTerm('free', 'free', u'Freie Anzahl von Teilnehmern'),
     ))
 
@@ -93,14 +93,15 @@ def get_strategy(context):
 class IPopulateCourse(Interface):
 
     strategy = Choice(
-        title=u"Strategie",
-        description=u"Hier können Sie auswählen welche Stragie Sie für das Einrichen von Fragebögen gelten soll.",
+        title=u"Zugang zur Befragung",
+        description=_(u"Hier können Sie festlegen, wie der Zugang zur Befragung\
+            gestaltet ist. Offen oder nur mit individuellen Kennwort."),
         source=get_strategy,
     )
 
     nb_students = Int(
         title=_(u"Number of students"),
-        required=True,
+        required=False,
         )
 
 
