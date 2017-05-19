@@ -164,7 +164,6 @@ class UploadOfflineQuizz(Page):
         return quizz, fields
 
     def read_xls(self, fields, finput):
-        import pdb; pdb.set_trace()
         answer_objects = {}
         
         wb = load_workbook(filename=finput, read_only=True)
@@ -174,7 +173,7 @@ class UploadOfflineQuizz(Page):
         for row in rows:
              identifier, title = [c.value for c in row[0:2]]
              answers = [c.value for c in row[2:]]
-             
+             errors = set()
 
              if identifier == 'UUID':
                  for idx, answer in enumerate(answers):
@@ -184,7 +183,7 @@ class UploadOfflineQuizz(Page):
                 field = fields.get(identifier)
                 if field is not None:
                     for idx, answer in enumerate(answers):
-                        if answer is not None:
+                        if answer is not None and idx not in errors:
                             answer_object = answer_objects.setdefault(idx, {})
                             if not field.source:
                                 answer_object[identifier] = answer
@@ -198,11 +197,15 @@ class UploadOfflineQuizz(Page):
                                     # Value doesn't exist, HELP !
                                     raise
                         else:
-                            del answer_objects[idx]
-                            break
+                            if idx not in errors:
+                                if idx in answer_objects:
+                                    del answer_objects[idx]
+                                errors.add(idx)
+                            continue
                 else:
                     # this is a big error, handle me
                     raise NotImplementedError
+ 
         return answer_objects
 
     def update(self):
