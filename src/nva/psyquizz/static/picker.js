@@ -28,8 +28,9 @@ $(document).ready(function() {
     }).on('changeDate', function() {
 	// set the start to not be later than the end:
 	var startdate = addDays($(this).datepicker('getDate'), 1);
-	$('#form-field-enddate').datepicker(
-	    'setStartDate', startdate);
+	var defaultdate = addDays($(this).datepicker('getDate'), 21);
+	$('#form-field-enddate').datepicker('setStartDate', startdate);
+	$('#form-field-enddate').datepicker('setDate', defaultdate);
     }); 
 
     $('#form-field-enddate').datepicker({
