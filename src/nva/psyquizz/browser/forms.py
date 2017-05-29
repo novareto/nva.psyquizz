@@ -27,6 +27,7 @@ from dolmen.forms.base.utils import apply_data_event
 from dolmen.forms.crud.actions import message
 from dolmen.menu import menuentry, order
 from grokcore.component import Adapter, provides, context
+from js.jqueryui import jqueryui
 from nva.psyquizz import quizzjs
 from siguvtheme.resources import all_dates, datepicker_de
 from string import Template
@@ -222,8 +223,7 @@ class AddSession(Form):
     fields = Fields(IClassSession).select('startdate', 'enddate', 'about')
 
     def update(self):
-        #all_dates.need()
-        #datepicker_de.need()
+        jqueryui.need()
         startendpicker.need()
         wysiwyg.need()
         Form.update(self)
@@ -463,6 +463,7 @@ class CreateCourse(Form):
         #all_dates.need()
         #datepicker_de.need()
         startendpicker.need();
+        jqueryui.need()
         wysiwyg.need()
         quizzjs.need()
         Form.update(self)
@@ -598,8 +599,8 @@ class EditCourse(Form):
         return fields
 
     def update(self):
-        all_dates.need()
-        datepicker_de.need()
+        startendpicker.need()
+        jqueryui.need()
         wysiwyg.need()
         Form.update(self)
 
