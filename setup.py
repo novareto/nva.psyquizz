@@ -36,6 +36,7 @@ install_requires = [
     'qrcode',
     'ul.sql',
     'openpyxl',
+    'pyPdf',
     ]
 
 tests_require = [

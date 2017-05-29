@@ -90,7 +90,11 @@ class GeneratePDF(uvclight.Page):
         parts.append(Paragraph(u'Anzahl Fragebögen %s' % self.request.form['total'], styles['Normal']))
         parts.append(Paragraph(u'Auswertungsgruppe', styles['Normal']))
         parts.append(Paragraph(crit_style, styles['Normal']))
-        image = Image(chart, width=650, height=650, kind='proportional')
+        from reportlab.graphics.shapes import Drawing
+        from StringIO import StringIO
+        image = Image(userschart, width=20*cm, height=10*cm)
+        image.hAlign="CENTER"
+        #image.scale(500, 600)
         parts.append(image)
         parts.append(Paragraph(LEGEND, styles['Normal']))
         parts.append(PageBreak())
@@ -107,7 +111,7 @@ class GeneratePDF(uvclight.Page):
         parts.append(PageBreak())
         parts.append(Spacer(0, 1*cm))
         parts.append(Paragraph(u'Verteilung der Antworten', styles['Normal']))
-        parts.append(Image(userschart, width=500, height=400))
+        parts.append(Image(chart, width=700, height=400))
 
         doc.build(parts, onFirstPage=self.headerfooter, onLaterPages=self.headerfooter)
         pdf = doc.filename
