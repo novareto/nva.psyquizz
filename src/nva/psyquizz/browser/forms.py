@@ -460,8 +460,9 @@ class CreateCourse(Form):
         return course_fields + populate_fields + session_fields
 
     def update(self):
-        all_dates.need()
-        datepicker_de.need()
+        #all_dates.need()
+        #datepicker_de.need()
+        startendpicker.need();
         wysiwyg.need()
         quizzjs.need()
         Form.update(self)

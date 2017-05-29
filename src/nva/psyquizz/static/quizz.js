@@ -54,5 +54,30 @@ $( document ).ready(function() {
     }
     )
 
+    function validate_date(startDate, endDate) {
+        var regExp = /(\d{1,2})\/(\d{1,2})\/(\d{2,4})/;
+        if(parseInt(endDate.replace(regExp, "$3$2$1")) > parseInt(startDate.replace(regExp, "$3$2$1"))) {
+	    return false;
+        }
+        return true;
+    }
+
+    function check_date() {
+        enddate = $('#form-field-enddate').val();
+        startdate = $('#form-field-startdate').val();
+        correct = validate_date(startdate, enddate);
+        if (correct == false) {
+            alert('The end date needs to be greater than the start date');
+            $('#form-field-enddate').val(startdate);
+        }
+    }
+
+    //$('#form-field-startdate').on('changeDate', function() {
+//	check_date();
+ //   })
+
+   // $('#form-field-enddate').on('changeDate', function() {
+    //    check_date();
+    //})
 
 });

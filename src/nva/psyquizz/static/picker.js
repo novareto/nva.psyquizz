@@ -1,5 +1,17 @@
 $(document).ready(function() {
 
+    function addDays(date, days) {
+	var result = new Date(date);
+	result.setDate(result.getDate() + days);
+	return result;
+    }
+
+    function removeDays(date, days) {
+        var result = new Date(date);
+        result.setDate(result.getDate() - days);
+        return result;
+    }
+
     // set default dates
     var start = new Date();
 
@@ -15,7 +27,7 @@ $(document).ready(function() {
 	endDate: end
     }).on('changeDate', function() {
 	// set the start to not be later than the end:
-	var startdate = new Date($(this).datepicker('getDate'));
+	var startdate = addDays($(this).datepicker('getDate'), 1);
 	$('#form-field-enddate').datepicker(
 	    'setStartDate', startdate);
     }); 
@@ -28,7 +40,7 @@ $(document).ready(function() {
 	endDate   : end
     }).on('changeDate', function() {
 	// set the end to not be later than the start:
-	var enddate = new Date($(this).datepicker('getDate'));
+	var enddate = removeDays($(this).datepicker('getDate'), 1);
 	$('#form-field-startdate').datepicker(
 	    'setEndDate', enddate);
     });
