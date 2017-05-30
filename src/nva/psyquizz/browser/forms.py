@@ -27,6 +27,7 @@ from dolmen.forms.base.utils import apply_data_event
 from dolmen.forms.crud.actions import message
 from dolmen.menu import menuentry, order
 from grokcore.component import Adapter, provides, context
+from js.jqueryui import jqueryui
 from nva.psyquizz import quizzjs
 from siguvtheme.resources import all_dates, datepicker_de
 from string import Template
@@ -86,9 +87,9 @@ IStudentFilters.setTaggedValue('label', 'Getting started')
 @provider(IContextSourceBinder)
 def get_strategy(context):
     return SimpleVocabulary((
-        SimpleTerm('fixed', 'fixed', u'Feste Anzahl pro Teilnehmer'),
+        SimpleTerm('fixed', 'fixed', u'Zugang mit Kennwort'),
        # SimpleTerm('mixed', 'mixed', u'Feste und freie Anzahl von Teilnehmern'),
-        SimpleTerm('free', 'free', u'Freie Anzahl von Teilnehmern'),
+        SimpleTerm('free', 'free', u'Offener Zugang'),
     ))
 
 
@@ -222,8 +223,7 @@ class AddSession(Form):
     fields = Fields(IClassSession).select('startdate', 'enddate', 'about')
 
     def update(self):
-        #all_dates.need()
-        #datepicker_de.need()
+        jqueryui.need()
         startendpicker.need()
         wysiwyg.need()
         Form.update(self)
@@ -370,6 +370,7 @@ class CreateCompany(Form):
         nv = u""
         name.value = {'form.field.name': nv}
         quizzjs.need()
+        print "YES"
 
     @property
     def action_url(self):
@@ -460,10 +461,13 @@ class CreateCourse(Form):
         return course_fields + populate_fields + session_fields
 
     def update(self):
-        all_dates.need()
-        datepicker_de.need()
+        #all_dates.need()
+        #datepicker_de.need()
+        startendpicker.need();
+        jqueryui.need()
         wysiwyg.need()
         quizzjs.need()
+        print "NEEED"
         Form.update(self)
 
     def updateForm(self):
@@ -510,6 +514,9 @@ class CreateCourse(Form):
         session.flush()
         session.refresh(clssession)
         if strategy.get('strategy') in ('mixed','fixed'):
+            if strategy['nb_students'] <= 7:
+                self.flash(u'Auswertungen sind erst ab 7 Teilnehmer zulässig. Bitte erhöhen Sie die Anzahl der Teilnehmer auf mindestens 7')
+                return FAILURE
             for student in clssession.generate_students(strategy['nb_students']):
                 clssession.append(student)
         self.flash(_(u'Course added with success.'))
@@ -597,8 +604,8 @@ class EditCourse(Form):
         return fields
 
     def update(self):
-        all_dates.need()
-        datepicker_de.need()
+        startendpicker.need()
+        jqueryui.need()
         wysiwyg.need()
         Form.update(self)
 
@@ -816,20 +823,25 @@ class AnonymousLogin(Action):
             form.flash(_(u'An error occurred.'))
             return FAILURE
 
-        try:
-            student = form.context.create_student(data['login'])
-        except QuizzClosed:
-            form.flash(_(u'This session is no longer available'))
-            return FAILURE
-        except AssertionError:
+#        try:
+#            student = form.context.create_student(data['login'])
+#        except QuizzClosed:
+#            form.flash(_(u'This session is no longer available'))
+#            return FAILURE
+#        except AssertionError:
+#            form.flash(_(u'Invalid token'))
+#            return FAILURE
+#        except Exception as ex:
+#            form.flash(_(u'Invalid token'))
+#            return FAILURE
+        import pdb; pdb.set_trace()
+        if data['login'] in form.context:
+            form.redirect('%s/%s' % (form.request.url, data['login']))
+            return SUCCESS
+        else:
             form.flash(_(u'Invalid token'))
             return FAILURE
-        except Exception as ex:
-            form.flash(_(u'Invalid token'))
-            return FAILURE
-        
-        form.redirect('%s/%s' % (form.request.url, student.access))
-        return SUCCESS
+
 
 
 class AnonymousAccess(Form):

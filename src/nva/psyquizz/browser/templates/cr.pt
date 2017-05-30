@@ -160,24 +160,24 @@
 	yAxis: {
             gridLineInterpolation: 'polygon',
             lineWidth: 0,
-            tickAmount: 4,
+            tickAmount: 3,
             min: 1,
-	    max: 6,
+	    max: 5,
             plotBands: [
 		{
 		    color: '#D8262B',
 		    from: 1,
-		    to:  3 
+		    to:  2.5 
 		},
 		{
 		    color: '#FFCC00',
-		    from: 3,
-		    to: 4 
+		    from: 2.5,
+		    to: 3.5
 		},
 		{
 		    color: '#62B645',
-                    from: 4,
-		    to: 6
+                    from: 3.5,
+		    to: 5
 		},
 	   ],
 	},

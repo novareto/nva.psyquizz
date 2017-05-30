@@ -37,6 +37,7 @@ install_requires = [
     'ul.sql',
     'openpyxl',
     'pyPdf',
+    'js.jqueryui',
     ]
 
 tests_require = [

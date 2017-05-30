@@ -85,14 +85,15 @@
         <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/offlinequizz')">
           <span class="glyphicon glyphicon-download" aria-hidden="true"></span> Download Excel Vorlage</a> <br>
         <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/uploadofflinequizz')">
-          <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>Upload Excel </a>
+          <span class="glyphicon glyphicon-upload"
+            aria-hidden="true"></span>Ausgefüllte Excel Vorlage importieren </a>
       </dd>
 
       <dt> Musteranschreiben: </dt> 
       <dd>
 	<a href="" tal:attributes="href  view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/exampletext')"> <span class="glyphicon glyphicon-comment"> </span> Ihre Vorlage  </a> 
       </dd>
-      <dt> Strategy: </dt> 
+      <dt> Zugang zur Befragung: </dt> 
       <dd>
 	<span tal:replace="'%s' % (session.strat_title)"></span> 
       </dd>
@@ -128,12 +129,13 @@
               </a>
 	      </tal:comment>
         -->
-        <span tal:content="'%s/quizz/%s' % (view.application_url(), 'TOKEN')"></span> 
+        <span tal:content="'%s/quizz/%s' % (view.application_url(), 'index')"></span> 
         </dd>
-        <dt> Tokens:
+        <dt> Tokens: </dt>
+        <dd>
 	<a href="" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/downloadtokens')">
-	  <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a></dt>
-        <dd> <span data-toggle="collapse" data-target="#tokens" href=""> +
+	  <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+         <span data-toggle="collapse" data-target="#tokens" href=""> +
           anzeigen </span>
           <div id="tokens" class="collapse">
            <row tal:repeat="unc zip(session.uncomplete, session.uncomplete)">

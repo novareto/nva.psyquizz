@@ -21,10 +21,11 @@ from uvclight.auth import require
 from zope.component import getUtility
 from zope.schema import Choice
 from zope.interface.verify import verifyObject
+from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
 from ..i18n import _
 from ..interfaces import ICompanyRequest
-from ..models import ClassSession, Student
+from ..models import ClassSession, Student, CriteriaAnswer
 from ..interfaces import QuizzAlreadyCompleted, QuizzClosed
 
 
@@ -35,6 +36,22 @@ class OfflineQuizz(Page):
     context(ClassSession)
     layer(ICompanyRequest)
     require('manage.company')
+
+    def get_criterias_questions(self):
+        for criteria in self.context.course.criterias:
+            values = SimpleVocabulary([
+                    SimpleTerm(value=c.strip(), token=idx, title=c.strip())
+                    for idx, c in enumerate(criteria.items.split('\n'), 1)
+                    if c.strip()])
+
+            criteria_field = Choice(
+                __name__='criteria_%s' % criteria.id,
+                title=criteria.title,
+                description=u"Wählen Sie das Zutreffende aus.",
+                vocabulary=values,
+                required=True,
+            )
+            yield criteria_field
 
     def get_quizz_questions(self):
         quizz = getUtility(IQuizz, self.context.quizz_type)
@@ -48,6 +65,14 @@ class OfflineQuizz(Page):
             for idx, q in enumerate(questions_text.strip().split('\n')):
                 yield None, 'extra%s' % idx, q
 
+        criterias_questions = Fields(*list(self.get_criterias_questions()))
+        for criteria_field in criterias_questions:
+            yield (
+                criteria_field,
+                criteria_field.identifier,
+                criteria_field.description)
+
+                
     def generateXLSX(self, folder, filename="ouput.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
@@ -244,6 +269,19 @@ class UploadOfflineQuizz(Page):
                             course=self.context.course,
                             quizz_type=self.context.course.quizz_type)
 
+                        criterias = []
+                        for key in answer:
+                            if key.startswith('criteria_'):
+                                cid = key.split('_', 1)[1]
+                                value = answer.pop(key)
+                                criteria_answer = CriteriaAnswer(
+                                    criteria_id=cid,
+                                    student_id=student.access,
+                                    session_id=self.context.id,
+                                    answer=value,
+                                )
+                                criterias.append(criteria_answer)
+
                         answer = quizz(
                             student_id=student.access,
                             course_id=student.course_id,
@@ -256,6 +294,9 @@ class UploadOfflineQuizz(Page):
                         
                         session.add(student)
                         session.add(answer)
+                        for ca in criterias:
+                            session.add(ca)
+
                     self.flash('Ihre Vorlage wurde Erfolgreich importiert')
                     self.redirect(self.application_url())
                         
