@@ -375,13 +375,13 @@ class CR(uvclight.Page):
 
 class Excel(uvclight.Page):
     require('manage.company')
-    uvclight.context(ICourse)
+    uvclight.context(IClassSession)
     uvclight.layer(ICompanyRequest)
 
     def update(self):
         quizz = getUtility(IQuizz, self.context.quizz_type)
         filters = get_filters(self.request)
-        self.stats = XLSX(quizz, self.context)
+        self.stats = XLSX(quizz, self.context.course)
         self.stats.update(filters)
 
     def render(self):
@@ -402,6 +402,8 @@ class Excel(uvclight.Page):
 
         response.app_iter = filebody(result)
         return response
+
+
 
 
 @provider(IContextSourceBinder)

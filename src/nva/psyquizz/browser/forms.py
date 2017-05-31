@@ -834,7 +834,6 @@ class AnonymousLogin(Action):
 #        except Exception as ex:
 #            form.flash(_(u'Invalid token'))
 #            return FAILURE
-        import pdb; pdb.set_trace()
         if data['login'] in form.context:
             form.redirect('%s/%s' % (form.request.url, data['login']))
             return SUCCESS

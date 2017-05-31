@@ -76,7 +76,7 @@
     <textarea type="text" id="chart" name="chart" style="display: none"></textarea>
     <textarea type="text" id="userschart" name="userschart" style="display: none"></textarea>
     <button class="btn btn-default" value="pdf export"> <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> PDF Export </button>
-    <a href="xls" class="btn btn-default">  <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Excel Export </a>
+    <a href="excel" class="btn btn-default">  <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Excel Export </a>
   </form>
 
   <script>

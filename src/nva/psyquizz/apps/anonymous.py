@@ -47,12 +47,22 @@ class QuizzBoard(SQLContainer):
         student.__name__ = uuid
         student.__parent__ = self
         return student
-    
+
+    def __contains__(self, id):
+        try:
+            key = self.key_converter(id)
+        except ValueError:
+            return False
+        model = self.session.query(self.model).get(key)
+        if model is None:
+            return False
+        return True
+
     def __getitem__(self, id):
         if id.startswith('generic'):
             try:
-                sessionid = get_id(str(id[8:]))
-                return self.create_student(sessionid)
+                #sessionid = get_id(str(id[8:]))
+                return self.create_student(str(id[8:]))
             except QuizzClosed:
                 raise
             except:
