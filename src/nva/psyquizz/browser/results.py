@@ -135,7 +135,8 @@ class CourseStatistics(object):
             mid['data'].append(x[1].percentage)
             bad['data'].append(x[2].percentage)
         self.series = json.dumps([good, mid, bad])
-        self.rd = [x.average for x in self.statistics['global.averages']]
+        self.rd1 = [x.average for x in self.statistics['global.averages']]
+        self.rd = [float("%.2f" % x.average) for x in self.statistics['global.averages']]
 
         criterias = []
         for crits in self.statistics['criterias'].values():
@@ -381,13 +382,13 @@ class CR(uvclight.Page):
 
 class Excel(uvclight.Page):
     require('manage.company')
-    uvclight.context(ICourse)
+    uvclight.context(IClassSession)
     uvclight.layer(ICompanyRequest)
 
     def update(self):
         quizz = getUtility(IQuizz, self.context.quizz_type)
         filters = get_filters(self.request)
-        self.stats = XLSX(quizz, self.context)
+        self.stats = XLSX(quizz, self.context.course)
         self.stats.update(filters)
 
     def render(self):
@@ -408,6 +409,8 @@ class Excel(uvclight.Page):
 
         response.app_iter = filebody(result)
         return response
+
+
 
 
 @provider(IContextSourceBinder)

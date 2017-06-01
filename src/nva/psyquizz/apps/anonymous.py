@@ -61,8 +61,8 @@ class QuizzBoard(SQLContainer):
     def __getitem__(self, id):
         if id.startswith('generic'):
             try:
-                sessionid = get_id(str(id[8:]))
-                return self.create_student(sessionid)
+                #sessionid = get_id(str(id[8:]))
+                return self.create_student(str(id[8:]))
             except QuizzClosed:
                 raise
             except:

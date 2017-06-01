@@ -53,9 +53,11 @@
   <table id="mt" class="table table-bordered table-striped">
     <tr tal:repeat="data view.stats.statistics['global.averages']">
       <td tal:content="data.title"></td> 
-      <td tal:content="str('%.2f' % data.average)"></td> 
+      <td tal:content="str('%.2f' % data.average).replace('.',',')"></td> 
     </tr>
   </table>
+
+  <div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
 
   <form id="result" method="POST"
 	tal:attributes="action view.url(context) + '/pdf'">
@@ -73,10 +75,10 @@
     
     <textarea type="text" id="chart" name="chart" style="display: none"></textarea>
     <textarea type="text" id="userschart" name="userschart" style="display: none"></textarea>
-    <input type="submit" value="pdf export" />
+    <button class="btn btn-default" value="pdf export"> <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> PDF Export </button>
+    <a href="excel" class="btn btn-default">  <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Excel Export </a>
   </form>
 
-  <div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
   <script>
      function svgToCanvas(chart, target_id) {
         var svg = chart.getSVG();
@@ -100,6 +102,9 @@
 	credits: {
              enabled: false
         },
+  exporting: {
+    enabled: false
+  },
 	title: {
             text: 'Mittelwerte'
 	},
@@ -143,8 +148,11 @@
        credits: {
              enabled: false
         },
+  exporting: {
+    enabled: false
+  },
 	title: {
-            text: 'Verteilung',
+            text: 'Mittelwerte',
             x: -80
 	},
 	pane: {
@@ -182,9 +190,9 @@
 	legend: {
             align: 'right',
             layout: 'vertical',
-            enabled: false,
+            enabled: true,
             floating: true,
-            verticalAlign: 'bottom'
+            verticalAlign: 'top'
 	},
 	series: [{
             name: 'gesamt',

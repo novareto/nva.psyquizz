@@ -125,7 +125,13 @@ class ExampleText(Page):
     context(ClassSession)
     layer(ICompanyRequest)
     require('manage.company')
-    template = get_template('example_text.pt', __file__)
+
+    @property
+    def template(self):
+        template = "example_text.pt"
+        if self.context.strategy == "fixed":
+            template = "example_text_fixed.pt"
+        return get_template(template, __file__)
 
     def update(self):
         clipboard_js.need()

@@ -29,27 +29,27 @@ $( document ).ready(function() {
 	$("#form-action-filter").click();
     });
 
-    $('#form-field-form-field-employees, #form-field-form-field-type').hide();
+    $('#field-form-field-employees, #field-form-field-type').hide();
     $('#form-field-exp_db').change( function(event){
-       $('#form-field-form-field-employees, #form-field-form-field-type').toggle();
+       $('#field-form-field-employees, #field-form-field-type').toggle();
     });
 
     $("a[href='https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung']").attr('target','_blank');
     $("a[href='http://www.bgetem.de/die-bgetem/impressum']").attr('target','_blank');
 
 
-    $('div#form-field-form-field-nb_students').hide();
+    $('div#field-form-field-nb_students').hide();
 
-    $('div#form-field-form-field-strategy input:radio').click(function() {
+    $('div#field-form-field-strategy input:radio').click(function() {
         value = $(this).val()
         if (value == 'fixed') {
-            $('div#form-field-form-field-nb_students').fadeIn();
+            $('div#field-form-field-nb_students').fadeIn();
         }
         if (value == 'mixed') {
-            $('div#form-field-form-field-nb_students').fadeIn();
+            $('div#field-form-field-nb_students').fadeIn();
         }
         if (value == 'free') {
-            $('div#form-field-form-field-nb_students').fadeOut();
+            $('div#field-form-field-nb_students').fadeOut();
         }
     }
     )
