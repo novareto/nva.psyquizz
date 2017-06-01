@@ -823,19 +823,8 @@ class AnonymousLogin(Action):
             form.flash(_(u'An error occurred.'))
             return FAILURE
 
-#        try:
-#            student = form.context.create_student(data['login'])
-#        except QuizzClosed:
-#            form.flash(_(u'This session is no longer available'))
-#            return FAILURE
-#        except AssertionError:
-#            form.flash(_(u'Invalid token'))
-#            return FAILURE
-#        except Exception as ex:
-#            form.flash(_(u'Invalid token'))
-#            return FAILURE
         if data['login'] in form.context:
-            form.redirect('%s/%s' % (form.request.url, data['login']))
+            form.redirect('%s/%s' % (form.application_url(), data['login']))
             return SUCCESS
         else:
             form.flash(_(u'Invalid token'))

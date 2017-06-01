@@ -122,14 +122,10 @@
       <div tal:condition="session.strategy == 'fixed'">
         <dt>Link zum Fragebogen:</dt> 
         <dd>
-          <!--
-	      <tal:comment condition="false">
-              <a target="_blank" href="" tal:attributes="href '%s/quizz/%s' % (view.application_url(), 'TOKEN')"> 
+              <a target="_blank" href="" tal:attributes="href '%s/quizz' % (view.application_url())"> 
               <span class="glyphicon glyphicon-play-circle"></span> 
               </a>
-	      </tal:comment>
-        -->
-        <span tal:content="'%s/quizz/%s' % (view.application_url(), 'index')"></span> 
+        <span tal:content="'%s/quizz' % (view.application_url())"></span> 
         </dd>
         <dt> Tokens: </dt>
         <dd>

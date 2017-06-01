@@ -135,14 +135,14 @@ class CourseStatistics(object):
             mid['data'].append(x[1].percentage)
             bad['data'].append(x[2].percentage)
         self.series = json.dumps([good, mid, bad])
-        self.rd = [x.average for x in self.statistics['global.averages']]
+        self.rd1 = [x.average for x in self.statistics['global.averages']]
+        self.rd = [float("%.2f" % x.average) for x in self.statistics['global.averages']]
 
         criterias = []
         for crits in self.statistics['criterias'].values():
             for crit in crits:
                 criterias.append([crit.name, crit.amount])
         self.json_criterias = json.dumps(criterias)
-
 
 
 class DownloadTokens(uvclight.View):

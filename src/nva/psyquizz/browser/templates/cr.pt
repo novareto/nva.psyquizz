@@ -53,7 +53,7 @@
   <table id="mt" class="table table-bordered table-striped">
     <tr tal:repeat="data view.stats.statistics['global.averages']">
       <td tal:content="data.title"></td> 
-      <td tal:content="str('%.2f' % data.average)"></td> 
+      <td tal:content="str('%.2f' % data.average).replace('.',',')"></td> 
     </tr>
   </table>
 
@@ -102,6 +102,9 @@
 	credits: {
              enabled: false
         },
+  exporting: {
+    enabled: false
+  },
 	title: {
             text: 'Mittelwerte'
 	},
@@ -145,8 +148,11 @@
        credits: {
              enabled: false
         },
+  exporting: {
+    enabled: false
+  },
 	title: {
-            text: 'Verteilung',
+            text: 'Mittelwerte',
             x: -80
 	},
 	pane: {
@@ -184,9 +190,9 @@
 	legend: {
             align: 'right',
             layout: 'vertical',
-            enabled: false,
+            enabled: true,
             floating: true,
-            verticalAlign: 'bottom'
+            verticalAlign: 'top'
 	},
 	series: [{
             name: 'gesamt',
