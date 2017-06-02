@@ -370,7 +370,6 @@ class CreateCompany(Form):
         nv = u""
         name.value = {'form.field.name': nv}
         quizzjs.need()
-        print "YES"
 
     @property
     def action_url(self):
@@ -467,7 +466,6 @@ class CreateCourse(Form):
         jqueryui.need()
         wysiwyg.need()
         quizzjs.need()
-        print "NEEED"
         Form.update(self)
 
     def updateForm(self):
