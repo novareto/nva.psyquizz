@@ -145,6 +145,19 @@ class CourseStatistics(object):
         self.json_criterias = json.dumps(criterias)
 
 
+class SessionStatistics(CourseStatistics):
+
+    def __init__(self, quizz, session):
+        self.quizz = quizz
+        self.course = session.course
+        self.session = session
+        self.averages = quizz.__schema__.getTaggedValue('averages')
+
+    def update(self, filters):
+        filters['session'] = self.session.id
+        return CourseStatistics.update(self, filters)
+        
+
 class DownloadTokens(uvclight.View):
     require('manage.company')
     uvclight.context(IClassSession)
@@ -190,7 +203,7 @@ class DownloadTokens(uvclight.View):
         return response
 
 
-class XLSX(CourseStatistics):
+class XSLX(object):
 
     def update(self, filters):
         import pdb; pdb.set_trace()
@@ -227,7 +240,6 @@ class XLSX(CourseStatistics):
             worksheet.write(27, y, name)
             for i, z in enumerate(x['data']):
                 worksheet.write((r+1+i), y, z)
-
 
         chart3 = workbook.add_chart(
             {'type': 'bar', 'subtype': 'percent_stacked'})
@@ -273,17 +285,12 @@ class XLSX(CourseStatistics):
         return output
 
 
-class SessionStatistics(CourseStatistics):
+class CourseXLSX(CourseStatistics, XSLX):
+    name('xslx')
+    
 
-    def __init__(self, quizz, session):
-        self.quizz = quizz
-        self.course = session.course
-        self.session = session
-        self.averages = quizz.__schema__.getTaggedValue('averages')
-
-    def update(self, filters):
-        filters['session'] = self.session.id
-        return CourseStatistics.update(self, filters)
+class SessionXLSX(SessionStatistics, XSLX):
+    name('xslx')
 
 
 class Quizz2Charts(uvclight.Page):
