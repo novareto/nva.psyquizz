@@ -39,7 +39,7 @@ from uvclight.auth import require
 from zope.component import getUtility
 from zope.interface import Interface
 from zope.interface import provider
-from zope.schema import Int, Choice, Password, TextLine
+from zope.schema import Bool, Int, Choice, Password, TextLine
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
@@ -105,6 +105,13 @@ class IPopulateCourse(Interface):
     nb_students = Int(
         title=_(u"Number of students"),
         required=False,
+        )
+
+    p2p = Bool(
+        title=u"Pencil 2 Paper",
+        description=_(u"Möchten Sie zusätzlich zum elektronischen Verfahren\
+            auch Papierfragebögen verteilen. Diese können dann im Anschluss\
+            über einen standardisierten Weg übertragen werden."),
         )
 
 
@@ -491,11 +498,13 @@ class CreateCourse(Form):
             self.flash(_(u'An error occurred.'))
             return FAILURE
         session = get_session('school')
+        print data
         csdata = dict(
             startdate=data.pop('startdate'),
             enddate=data.pop('enddate'),
             about=data.pop('about'),
-            strategy=data.pop('strategy')
+            strategy=data.pop('strategy'),
+            p2p=data.pop('p2p')
         )
         strategy = dict(
            nb_students=data.pop('nb_students'),

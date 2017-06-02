@@ -192,6 +192,10 @@ class DownloadTokens(uvclight.View):
 
 class XLSX(CourseStatistics):
 
+    def update(self, filters):
+        import pdb; pdb.set_trace()
+        super(CourseStatistcs, self.update)
+
     def generateXLSX(self, folder, filename="ouput.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
@@ -381,6 +385,7 @@ class Excel(uvclight.Page):
     def update(self):
         quizz = getUtility(IQuizz, self.context.quizz_type)
         filters = get_filters(self.request)
+        import pdb; pdb.set_trace() 
         self.stats = XLSX(quizz, self.context.course)
         self.stats.update(filters)
 
@@ -402,7 +407,6 @@ class Excel(uvclight.Page):
 
         response.app_iter = filebody(result)
         return response
-
 
 
 

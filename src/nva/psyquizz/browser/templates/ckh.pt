@@ -76,6 +76,7 @@
 	<span tal:replace="'%s - %s' % (session.startdate.strftime('%d.%m.%Y'), session.enddate.strftime('%d.%m.%Y'))"></span> 
       </dd>
 
+      <div tal:condition="session.p2p">
       <dt>Paper2Disk:</dt> 
       <dd>
         <a tal:attributes="href view.url(context, str(company.id) + '/' +
@@ -88,7 +89,7 @@
           <span class="glyphicon glyphicon-upload"
             aria-hidden="true"></span>Ausgefüllte Excel Vorlage importieren </a>
       </dd>
-
+      </div>
       <dt> Musteranschreiben: </dt> 
       <dd>
 	<a href="" tal:attributes="href  view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/exampletext')"> <span class="glyphicon glyphicon-comment"> </span> Ihre Vorlage  </a> 
@@ -134,13 +135,9 @@
          <span data-toggle="collapse" data-target="#tokens" href=""> +
           anzeigen </span>
           <div id="tokens" class="collapse">
-           <row tal:repeat="unc zip(session.uncomplete, session.uncomplete)">
+           <row tal:repeat="unc session.uncomplete">
              <a tal:attributes="href '%s/quizz/%s' %(view.application_url(),
-               unc[0].access)"> <span class="col-md-5"
-                 tal:content="unc[0].access"/> </a>
-             <a tal:attributes="href '%s/quizz/%s' %(view.application_url(),
-               unc[0].access)"> <span class="col-md-5"
-                 tal:content="unc[0].access"/></a>
+               unc[0].access)"> <span class="col-md-5" tal:content="unc[0].access"/> </a>
            </row>
          </div>
         </dd>
