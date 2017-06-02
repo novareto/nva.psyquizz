@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import uuid
+from shortid import ShortId
 
 from ..interfaces import ICompanyRequest
 from nva.psyquizz import Base
@@ -37,7 +38,9 @@ class Student(Base, Location):
 
     @staticmethod
     def generate_access():
-        return unicode(uuid.uuid4())
+        sid = ShortId()
+        return unicode(sid.generate())
+        #return unicode(uuid.uuid4())
 
     def complete_quizz(self):
         self.completion_date = datetime.now()

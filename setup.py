@@ -38,6 +38,7 @@ install_requires = [
     'openpyxl',
     'pyPdf',
     'js.jqueryui',
+    'shortid',
     ]
 
 tests_require = [

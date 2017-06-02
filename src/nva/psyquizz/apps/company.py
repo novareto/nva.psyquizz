@@ -42,6 +42,8 @@ from zope.interface import Interface, alsoProvides, implementer
 from zope.location import Location
 from zope.schema import TextLine
 from zope.security.proxy import removeSecurityProxy
+from dolmen.message import BASE_MESSAGE_TYPE
+from dolmen.message.utils import send
 
 
 with open(os.path.join(os.path.dirname(__file__), 'forgotten.tpl'), 'r') as fd:
@@ -91,9 +93,10 @@ class Access(GlobalUtility):
             account = account.first()
         else:
             account = None
+            send(u"KEIN BENUTZER GEFUNDEN", BASE_MESSAGE_TYPE)
 
         if account is not None and account.password == password:
-            if account.activated is not None:                
+            if account.activated is not None:
                 return account
             activation = kws.get('activation')
             if activation is not None:
@@ -108,6 +111,7 @@ class Access(GlobalUtility):
                 return SuccessMarker(
                     'Aktivierungs-Key Fehlt', False,
                     url=activate_url(request.path, **kws))
+        send("Kombination Benutzername PAsswort falsch", BASE_MESSAGE_TYPE)
         return None
 
 
