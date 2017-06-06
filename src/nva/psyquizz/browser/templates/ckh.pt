@@ -137,7 +137,7 @@
           <div id="tokens" class="collapse">
            <row tal:repeat="unc session.uncomplete">
              <a tal:attributes="href '%s/quizz/%s' %(view.application_url(),
-               unc[0].access)"> <span class="col-md-5" tal:content="unc[0].access"/> </a>
+               unc.access)"> <span class="col-md-5" tal:content="unc.access"/> </a>
            </row>
          </div>
         </dd>
