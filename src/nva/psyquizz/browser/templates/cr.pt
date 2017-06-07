@@ -30,8 +30,9 @@
 	       style="display: inline-block; padding: 5px;">
 	    <input name="criterias" type="checkbox"
 		   tal:attributes="value opt.uid;
-				   checked opt.uid in current" />
-              <span tal:content="'%s (%s)' % (opt.name, opt.amount)" />
+				   checked opt.uid in current;
+				   disabled opt.amount < 7 and 'disabled' or None" />
+            <span tal:content="'%s (%s)' % (opt.name, opt.amount)" />
 	  </div>
 	</dd>
       </tal:dl>

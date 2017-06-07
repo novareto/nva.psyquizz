@@ -484,7 +484,13 @@ class CreateCourse(Form):
         if courses > 0:
             nv = "%s (%s)" % (nv, str(courses + 1))
         name.value = {'form.field.name': nv}
-
+        criterias = self.fieldWidgets['form.field.criterias']
+        criterias.value = {
+            'form.field.criterias.present': u'1',
+            'form.field.criterias': [
+                v.token for v in
+                criterias.source.vocabularyFactory(self.context)]}
+        
     @property
     def action_url(self):
         return self.request.path

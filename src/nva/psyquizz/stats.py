@@ -49,10 +49,11 @@ def available_criterias(criterias, session_id):
         CriteriaAnswer.session_id.in_(session_id))
                  .group_by(CriteriaAnswer.answer).all()}
 
+    print all_crits
     for crit in criterias:
         for item in crit.items.split('\r\n'):
             total = all_crits.get(item, 0)
-            if total >= 1:
+            if total:
                 uid = '%s:%s' % (crit.id, item)
                 criterias = available_criterias.setdefault(crit.title, [])
                 criterias.append(Criteria(crit.id, item, total, uid))
@@ -67,6 +68,7 @@ def compute(quizz, averages, filters):
 
     session = get_session('school')
     answers = session.query(quizz)
+    criterias_title = {}
     filtered_criterias = {}
     
     if filters:
@@ -75,25 +77,33 @@ def compute(quizz, averages, filters):
                 quizz.session_id == filters['session']
             )
 
-        if 'criterias' in filters:
-            # Filter on Criterias
-            criterias = (
-                and_(quizz.student_id == CriteriaAnswer.student_id,
-                     CriteriaAnswer.criteria_id == criteria.id,
-                     CriteriaAnswer.answer == criteria.name) for
-                criteria in filters['criterias'].values())
-
-            answers = answers.filter(or_(*criterias))
-
-    total = answers.count()
+    total = 0
+    if 'criterias' in filters:
+        criterias = set(
+            tuple(v.split(':')) for v in filters['criterias'].keys())
+    else:
+        criterias = None
+        
     for answer in answers.all():
         user_data = OrderedDict()  # Per user results
 
         if answer.student:
+            student_criterias = set()
             for c in answer.student.criterias:
-                cid = '%s:%s' % (c.criteria.id, c.criteria.title)
+                criterias_title[str(c.criteria.id)] = c.criteria.title
+                student_criterias.add((str(c.criteria.id), c.answer))
+                
+            if criterias is not None and not student_criterias >= criterias:
+                # WE DO NOT MATCH THE CRITERIAS
+                continue
+            else:
+                # WE DO MATCH
+                total += 1
+
+            for id, canswer in student_criterias:
+                cid = '%s:%s' % (id, criterias_title[id])
                 fc = filtered_criterias.setdefault(cid, {})
-                fc[c.answer] = fc.get(c.answer, 0) + 1
+                fc[canswer] = fc.get(canswer, 0) + 1
 
         for field, dd in getFieldsInOrder(quizz.__schema__):
 
@@ -134,7 +144,7 @@ def compute(quizz, averages, filters):
     # We do the computation for the global data as well
     sorted_global_answers = sort_data(averages, global_data)
     global_averages = tuple(average_computation(sorted_global_answers))
-
+    
     Criteria = namedtuple('Criteria', ('id', 'name', 'amount', 'uid'))
     merged_criterias = {}
     for fid, fc in filtered_criterias.items():
