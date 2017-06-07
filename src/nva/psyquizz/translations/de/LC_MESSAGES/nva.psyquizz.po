@@ -170,7 +170,7 @@ msgid "This Text gives Information about the Course to Participants"
 msgstr "Dieser Text wird Ihren Beschäftigten als erste Seite vor Beginn der eigentlichen Befragung angezeigt. Sie haben die Möglichkeit den vorgegeben Text nach Ihren Wünschen anzupassen."
 
 msgid "Please provide at least 2 criteria items."
-msgstr "Bitte geben Sie mindestens 2 Kriterien in der Auswertungsgruppe an"
+msgstr "Bitte geben Sie mindestens 2 Auswertungsgruppen an"
 
 msgid "Employees"
 msgstr "Beschäftigte"

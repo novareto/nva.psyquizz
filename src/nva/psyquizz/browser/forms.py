@@ -97,8 +97,9 @@ class IPopulateCourse(Interface):
 
     strategy = Choice(
         title=u"Zugang zur Befragung",
-        description=_(u"Hier können Sie festlegen, wie der Zugang zur Befragung\
-            gestaltet ist. Offen oder nur mit individuellen Kennwort."),
+        description=_(u"Geben Sie an, wie der Zugang der Beschäftigten zum \
+                      „Fragebogen“ gestaltet sein soll: Offen oder mit \
+                      individuellen Kennwort."),
         source=get_strategy,
     )
 
@@ -108,10 +109,9 @@ class IPopulateCourse(Interface):
         )
 
     p2p = Bool(
-        title=u"Pencil 2 Paper",
-        description=_(u"Möchten Sie zusätzlich zum elektronischen Verfahren\
-            auch Papierfragebögen verteilen. Diese können dann im Anschluss\
-            über einen standardisierten Weg übertragen werden."),
+        title=u"Paper2Disc",
+        description=_(u"Sollen einzelne Beschäftigte mit Papierfragebogen \
+                        anstatt auf elektronischen Weg teilnehmen?")
         )
 
 
@@ -493,7 +493,7 @@ class CreateCourse(Form):
     def handle_save(self):
         data, errors = self.extractData()
         if errors:
-            self.flash(_(u'An error occurred.'))
+            #self.flash(_(u'An error occurred.'))
             return FAILURE
         session = get_session('school')
         print data
@@ -814,7 +814,8 @@ class SaveQuizz(Action):
 class IAnonymousLogin(Interface):
 
     login = TextLine(
-        title=_(u"Login"),
+        title=_(u"Login Befragung"),
+        description=u"Bitte geben Sie Ihren Zugangscode ein, um zur Befragung Ihres Unternehmens zu gelangen.",
         required=True,
         )
 
@@ -834,7 +835,7 @@ class AnonymousLogin(Action):
             form.redirect('%s/%s' % (form.application_url(), data['login']))
             return SUCCESS
         else:
-            form.flash(_(u'Invalid token'))
+            form.flash(_(u'Falsches Kennwort'))
             return FAILURE
 
 
@@ -848,7 +849,7 @@ class AnonymousAccess(Form):
 
     dataValidators = []
     fields = Fields(IAnonymousLogin)
-    actions = Actions(AnonymousLogin(_(u'Login')))
+    actions = Actions(AnonymousLogin(_(u'anmelden')))
 
 
     

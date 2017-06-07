@@ -15,6 +15,11 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, PageBreak
 
 
+HINWEIS = """Hinweis <br/>
+Bitte beantworten Sie alle Fragen und setzen Sie pro Frage nur ein Kreuz. 
+Fehlerhafte Fragebögen können leider nicht ausgewertet werden"""
+
+
 class DownloadCourse(uvclight.View):
     uvclight.name('kfza.pdf')
     uvclight.auth.require('zope.Public')
@@ -30,17 +35,21 @@ class DownloadCourse(uvclight.View):
     def genStuff(self, items):
         rc = []
         for item in items:
-            rc.append(' [ ] %s <br/>' % item)
+            if item:
+                rc.append('[ ] %s  ' % item)
         return ''.join(rc)
 
     def generate_page_one(self):
         style = getSampleStyleSheet()
         story = []
         story.append(Paragraph('KFZ-Fragebogen', style['Heading1']))
-        for crit in self.context.course.criterias:
+        story.append(Paragraph(self.context.about.replace('\r\n', '<br/>'), style['Normal']))
+        story.append(Paragraph(HINWEIS, style['Normal']))
+        if self.context.course.criterias:
             story.append(Paragraph('Bitte kreuzen Sie das zutreffende an', style['Heading2']))
-            story.append(Paragraph(crit.title, style['Heading3']))
-            story.append(Paragraph(self.genStuff(crit.items.split('\n')), style['Normal']))
+            for crit in self.context.course.criterias:
+                story.append(Paragraph(crit.title, style['Heading3']))
+                story.append(Paragraph(self.genStuff(crit.items.split('\n')), style['Normal']))
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)
         pdf.build(story)

@@ -232,7 +232,11 @@ class ICourse(ILocation, IContent):
 
     criterias = schema.Set(
         title=_(u"Auswertungsgruppen festlegen"),
-        description=u"Bitte entfernen Sie das Häkchen, falls Sie einzelne Auswertungsgruppen nicht in Ihrer Befragung verwenden wollen.",
+        description=u"Sie können die Reihenfolge der Abfrage im „Fragebogen“ \
+                      verändern, indem Sie die Auswertungsgruppen im rechten \
+                      Kasten nach oben oder unten verschieben. \
+                      Nicht benötigte Auswertungsgruppen verschieben \
+                      Sie in den linken Kasten.",
         value_type=schema.Choice(source=deferred('criterias_choice')),
         required=False,
         )

@@ -82,12 +82,13 @@
         <a tal:attributes="href view.url(context, str(company.id) + '/' +
           str(course.id) + '/sessions/' + str(session.id) + '/kfza.pdf')">
           <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-          Download Print Offline Kurs</a> <br>
+          Download Papierfragebogen</a> <br>
         <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/offlinequizz')">
-          <span class="glyphicon glyphicon-download" aria-hidden="true"></span> Download Excel Vorlage</a> <br>
+          <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+          Download Vorlage Erfassung Papierfragebögen</a> <br>
         <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/uploadofflinequizz')">
           <span class="glyphicon glyphicon-upload"
-            aria-hidden="true"></span>Ausgefüllte Excel Vorlage importieren </a>
+            aria-hidden="true"></span> Ausgefüllte Vorlage importieren </a>
       </dd>
       </div>
       <dt> Musteranschreiben: </dt> 
@@ -128,7 +129,7 @@
               </a>
         <span tal:content="'%s/quizz' % (view.application_url())"></span> 
         </dd>
-        <dt> Tokens: </dt>
+        <dt> Kennwortliste: </dt>
         <dd>
 	<a href="" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/downloadtokens')">
 	  <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
@@ -146,7 +147,10 @@
         <dd> 
         <a href="" tal:condition="len(list(session.complete)) >= view.maxResults" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/sr')"> <span class="glyphicon glyphicon-stats"> </span> Grafische Darstellung 
         </a> 
-        <span tal:condition="len(list(session.complete)) <= view.maxResults"> Die Auswertung wird erst ab dem <b> <span tal:content="view.maxResults"> </span>.</b> ausgefüllten Fragebogen angzeigt </span>
+        <span tal:condition="len(list(session.complete)) <= view.maxResults">
+          Die Auswertung wird erst ab dem <b> <span
+              tal:content="view.maxResults"> </span>.</b> ausgefüllten
+          Fragebogen angezeigt </span>
         </dd>
         <dt> Ausgefüllte Fragebogen: </dt> 
         <dd>

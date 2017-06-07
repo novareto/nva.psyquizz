@@ -93,7 +93,8 @@ class Access(GlobalUtility):
             account = account.first()
         else:
             account = None
-            send(u"KEIN BENUTZER GEFUNDEN", BASE_MESSAGE_TYPE)
+            send(u"Benutzer konnte nicht gefunden werden", BASE_MESSAGE_TYPE)
+            return 
 
         if account is not None and account.password == password:
             if account.activated is not None:
@@ -111,7 +112,7 @@ class Access(GlobalUtility):
                 return SuccessMarker(
                     'Aktivierungs-Key Fehlt', False,
                     url=activate_url(request.path, **kws))
-        send("Kombination Benutzername PAsswort falsch", BASE_MESSAGE_TYPE)
+        send("Falsches Passwort", BASE_MESSAGE_TYPE)
         return None
 
 
@@ -165,14 +166,14 @@ class ForgotPassword(Form):
     def handle_request(self):
         data, errors = self.extractData()
         if errors:
-            self.flash(_(u'An error occurred.'))
+            #self.flash(_(u'Fehlerhafte E-Mail Adresse.'))
             return FAILURE
 
         session = get_session('school')
         account = session.query(Account).get(data['username'])
         if account is None:
             self.errors.append(
-                Error(u'User does not exist',
+                Error(u'Benutzer konnte nicht gefunden werden.',
                       identifier='form.field.username'))
             return FAILURE
         else:
