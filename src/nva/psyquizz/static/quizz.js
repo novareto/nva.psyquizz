@@ -72,6 +72,9 @@ $( document ).ready(function() {
         }
     }
 
+
+    $("[data-toggle=popover]").popover();
+    $("[data-toggle=tooltip]").tooltip();
     //$('#form-field-startdate').on('changeDate', function() {
 //	check_date();
  //   })

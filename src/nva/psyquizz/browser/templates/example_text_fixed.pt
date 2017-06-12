@@ -10,8 +10,16 @@
     </p>
 
 
-<div class="row">
-<div class="col-md-8 col-md-offset-1" id="copyable">
+<br/> <br/>
+<div class="panel panel-default">
+<div class="panel-body">
+<button class="pull-right clipbtn btn" data-clipboard-target="#copyable">
+    In Zwischenablage kopieren 
+</button>
+<script language="Javascript">
+  new Clipboard('.clipbtn');
+</script>
+
 
 <p class="lead">Liebe Kolleginnen und Kollegen, </p>
 <p>wie bereits angekündigt, erhalten Sie heute Ihre Einladung zur Teilnahme an unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“.</p> 
@@ -32,10 +40,4 @@
  <img href="" tal:attributes="src '%s/qrlink' % view.url(context)" />
 </div>
 </div>
-<button class="clipbtn btn" data-clipboard-target="#copyable">
-    In Zwischenablage kopieren 
-</button>
-<script language="Javascript">
-  new Clipboard('.clipbtn');
-</script>
 </div>
