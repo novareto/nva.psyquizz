@@ -95,4 +95,6 @@ class ClassSession(Base, Location):
     def strat_title(self):
         from nva.psyquizz.browser.forms import IPopulateCourse
         source = IPopulateCourse['strategy'].source(None)
-        return source.getTerm(self.strategy).title
+        if not self.strategy:
+            return "free"
+        return source.getTermByToken(self.strategy).title

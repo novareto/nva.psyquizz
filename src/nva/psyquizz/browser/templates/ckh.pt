@@ -3,12 +3,12 @@
     <h1> Startseite <small tal:content="context.name"> </small> </h1>
     <p>
       Herzlich Willkommen bei der Online-Hilfe der BG ETEM für Ihre
-      <span data-container="body" data-trigger="hover" data-toggle="popover" data-placement="top"
-        data-content="DAS IST DER TEXT FÜR DIE GEFB"> Gefährdungsbeurteilung </span> psychischer Belastung. Mit diesem Werkzeug
+      <b data-container="body" data-trigger="hover" data-toggle="popover" data-placement="top"
+        data-content="DAS IST DER TEXT FÜR DIE GEFB"> Gefährdungsbeurteilung </b> psychischer Belastung. Mit diesem Werkzeug
       können Sie die psychische Belastung unkompliziert erheben. Auf den
       folgenden Seiten können Sie das Profil Ihres Betriebes
-      beschreiben, Befragungen anlegen, <span data-toggle="tooltip"
-        data-placement="left" title="Tooltip on left"> Ergebnisse </span> einsehen und mit
+      beschreiben, Befragungen anlegen, <b data-toggle="tooltip"
+        data-placement="left" title="BLA BLAB ERGEBINSE...."> Ergebnisse </b> einsehen und mit
       früheren Befragungen vergleichen.
     </p>
   </div>
@@ -63,7 +63,7 @@
               <fieldset tal:repeat="session sorted(course.sessions, key=lambda x: x.id)">
                 <dl class="dl-horizontal">
       <dt>
-      <h2> <span tal:content="session.title"/> </h2>
+      <b tal:content="session.title"/> 
       </dt>
       <dd>
 		  <a href="" onclick="_paq.push(['trackEvent', 'Befragung bearbeiten']);" data-toggle="tooltip" data-placement="left" title="Erhebung bearbeiten" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/edit_course')"> <span class="glyphicon glyphicon-pencil"> </span> </a>
