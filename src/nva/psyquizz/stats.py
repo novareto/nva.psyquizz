@@ -1,6 +1,7 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
+from copy import deepcopy
 from collections import OrderedDict, namedtuple
 from cromlech.sqlalchemy import get_session
 from nva.psyquizz.models.criterias import CriteriaAnswer
@@ -83,7 +84,7 @@ def compute(quizz, averages, filters):
             tuple(v.split(':')) for v in filters['criterias'].keys())
     else:
         criterias = None
-        
+
     for answer in answers.all():
         user_data = OrderedDict()  # Per user results
 
@@ -142,8 +143,10 @@ def compute(quizz, averages, filters):
             group_averages.append(av)
 
     # We do the computation for the global data as well
+    per_question_averages = tuple(average_computation(global_data))
     sorted_global_answers = sort_data(averages, global_data)
     global_averages = tuple(average_computation(sorted_global_answers))
+    
     
     Criteria = namedtuple('Criteria', ('id', 'name', 'amount', 'uid'))
     merged_criterias = {}
@@ -159,6 +162,7 @@ def compute(quizz, averages, filters):
         'users.grouped': users_averages,
         'global.averages': global_averages,
         'criterias': merged_criterias,
+        'per_question_averages': per_question_averages,
     }
 
 

@@ -212,10 +212,6 @@ class DownloadTokens(uvclight.View):
 
 class XSLX(object):
 
-    def update(self, filters):
-        import pdb; pdb.set_trace()
-        super(CourseStatistcs, self.update)
-
     def generateXLSX(self, folder, filename="ouput.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
@@ -271,12 +267,23 @@ class XSLX(object):
         })
         worksheet.insert_chart("G27", chart3, {'x_offset': 25, 'y_offset': 10})
 
-        for i, x in enumerate(self.statistics['criterias'].items()):
-            cname, cvalues = x
+        offset = 43
+        for cname, cvalues in self.statistics['criterias'].items():
             for v in cvalues:
-                worksheet.write("A%i" % (43+i), cname)
-                worksheet.write("B%i" % (43+i), v.name)
-                worksheet.write("C%i" % (43+i), v.amount)
+                offset += 1
+                worksheet.write("A%i" % offset, cname)
+                worksheet.write("B%i" % offset, v.name)
+                worksheet.write("C%i" % offset, v.amount)
+
+
+        offset += 2
+        worksheet.write("A%i" % offset, "Question")
+        worksheet.write("B%i" % offset, "Average")
+        
+        for avg in self.statistics['per_question_averages']:
+            offset += 1
+            worksheet.write("A%i" % offset, avg.title)
+            worksheet.write("B%i" % offset, avg.average)
 
         workbook.close()
         return filepath
@@ -292,11 +299,11 @@ class XSLX(object):
         return output
 
 
-class CourseXLSX(CourseStatistics, XSLX):
+class CourseXSLX(CourseStatistics, XSLX):
     name('xslx')
     
 
-class SessionXLSX(SessionStatistics, XSLX):
+class SessionXSLX(SessionStatistics, XSLX):
     name('xslx')
 
 
@@ -399,8 +406,7 @@ class Excel(uvclight.Page):
     def update(self):
         quizz = getUtility(IQuizz, self.context.quizz_type)
         filters = get_filters(self.request)
-        import pdb; pdb.set_trace() 
-        self.stats = XLSX(quizz, self.context.course)
+        self.stats = SessionXSLX(quizz, self.context)
         self.stats.update(filters)
 
     def render(self):
