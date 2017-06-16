@@ -227,12 +227,14 @@ class AddSession(Form):
     title(_(u'Add a session'))
     require('zope.Public')
 
-    fields = Fields(IClassSession).select('startdate', 'enddate', 'about')
+    fields = Fields(IPopulateCourse) + Fields(IClassSession).select('startdate', 'enddate', 'about')
+    fields['strategy'].mode = "radio"
 
     def update(self):
         jqueryui.need()
         startendpicker.need()
         wysiwyg.need()
+        quizzjs.need()
         Form.update(self)
 
     @property
@@ -247,12 +249,22 @@ class AddSession(Form):
             return FAILURE
 
         session = get_session('school')
+        strategy = dict(
+           nb_students=data.pop('nb_students'),
+           strategy=data.get('strategy')
+        )
         clssession = ClassSession(**data)
         clssession.course_id = self.context.id
         clssession.company_id = self.context.__parent__.id
         session.add(clssession)
         session.flush()
         session.refresh(clssession)
+        if strategy.get('strategy') in ('mixed','fixed'):
+            if strategy['nb_students'] <= 7:
+                self.flash(u'Auswertungen sind erst ab 7 Teilnehmer zulässig. Bitte erhöhen Sie die Anzahl der Teilnehmer auf mindestens 7')
+                return FAILURE
+            for student in clssession.generate_students(strategy['nb_students']):
+                clssession.append(student)
         self.flash(_(u'Session added with success.'))
         self.redirect('%s' % self.application_url())
         return SUCCESS

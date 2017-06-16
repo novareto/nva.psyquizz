@@ -36,13 +36,13 @@ class DownloadCourse(uvclight.View):
         rc = []
         for item in items:
             if item:
-                rc.append('[ ] %s  ' % item)
+                rc.append('[ ] %s &nbsp; &nbsp;' % item)
         return ''.join(rc)
 
     def generate_page_one(self):
         style = getSampleStyleSheet()
         story = []
-        story.append(Paragraph('KFZ-Fragebogen', style['Heading1']))
+        story.append(Paragraph('KFZA-Fragebogen', style['Heading1']))
         story.append(Paragraph(self.context.about.replace('\r\n', '<br/>'), style['Normal']))
         story.append(Paragraph(HINWEIS, style['Normal']))
         if self.context.course.criterias:
