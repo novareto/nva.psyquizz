@@ -136,8 +136,10 @@ class OfflineQuizz(Page):
             if field is not None:
                 vocabulary = getattr(field, 'source', None)
                 if vocabulary is not None:
-                    flattened = [i.title for i in vocabulary]
-
+                    # flattened = [i.title for i in vocabulary]
+                    # They want to try Values instead of the Title to have a
+                    # faster typing of the results
+                    flattened = [i.value for i in vocabulary]
                     for column in string.ascii_uppercase[2:]:
                         worksheet.data_validation(
                             '%s%d' % (column, idx + 1),

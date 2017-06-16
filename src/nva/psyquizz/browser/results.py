@@ -172,9 +172,16 @@ class DownloadTokens(uvclight.View):
     def generateXLSX(self, folder, filename="ouput.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
-        worksheet = workbook.add_worksheet()
+        worksheet = workbook.add_worksheet(u'Kennwörter')
+        for i, x in enumerate(self.tokens):
+            worksheet.write(i, 0, x.split('/')[-1:][0])
+        worksheet = workbook.add_worksheet(u'Links')
         for i, x in enumerate(self.tokens):
             worksheet.write(i, 0, x)
+        worksheet = workbook.add_worksheet(u'Dokumentation')
+        text = 'DOKUMENTATION TBD'
+        worksheet.insert_textbox(1, 1, text)
+        
         workbook.close()
         return filepath
 

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import uuid
 from shortid import ShortId
 
 from ..interfaces import ICompanyRequest
@@ -40,7 +39,6 @@ class Student(Base, Location):
     def generate_access():
         sid = ShortId()
         return unicode(sid.generate())
-        #return unicode(uuid.uuid4())
 
     def complete_quizz(self):
         self.completion_date = datetime.now()
