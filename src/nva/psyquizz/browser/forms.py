@@ -851,15 +851,11 @@ class AnonymousLogin(Action):
 
         student = form.context.get(data['login'])
         if student is not None:
-            if getattr(student, 'completion_date') is not None:
-                raise QuizzAlreadyCompleted(content)
-            else:
-                form.redirect('%s/%s' % (form.application_url(), data['login']))
-                return SUCCESS
+            form.redirect('%s/%s' % (form.application_url(), data['login']))
+            return SUCCESS
         else:
             form.flash(_(u'Falsches Kennwort'))
             return FAILURE
-
 
 
 class AnonymousAccess(Form):

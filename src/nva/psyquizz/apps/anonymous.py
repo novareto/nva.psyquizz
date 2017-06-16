@@ -58,6 +58,15 @@ class QuizzBoard(SQLContainer):
             return False
         return True
 
+    def get(self, id, default=None):
+        if not id.startswith('generic'):
+            try:
+                content = self.__getitem__(id)
+                return content
+            except KeyError:
+                return default
+        return None
+
     def __getitem__(self, id):
         if id.startswith('generic'):
             try:
@@ -69,11 +78,13 @@ class QuizzBoard(SQLContainer):
                 raise KeyError(id)
         else:
             content = SQLContainer.__getitem__(self, id)
-            if date.today() > content.session.enddate:
-                raise QuizzClosed(content)
-            if getattr(content, 'completion_date') is not None:
-                raise QuizzAlreadyCompleted(content)
-            return content
+            if content not None:
+                if date.today() > content.session.enddate:
+                    raise QuizzClosed(content)
+                if getattr(content, 'completion_date') is not None:
+                    raise QuizzAlreadyCompleted(content)
+                return content
+            raise KeyError(id)
 
 
 class Application(SQLPublication):
