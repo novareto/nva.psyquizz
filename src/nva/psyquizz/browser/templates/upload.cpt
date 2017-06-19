@@ -2,6 +2,9 @@
 <p> Hier können Sie Ihre ausgefüllte Excel-Vorlage uploaden </p>
 <form action="" tal:attributes="action request.url"
       method="post" enctype="multipart/form-data">
-  <input type="file" name="file" />
-  <input type="submit" value="Upload" name="submit">
+       <div class="form-group">
+         <label> Datei </label>
+         <input class="form-control" type="file" name="file" />
+     </div>
+  <input class="btn btn-default" type="submit" value="Upload" name="submit">
 </form>

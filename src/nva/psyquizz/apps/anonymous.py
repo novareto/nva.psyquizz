@@ -78,7 +78,7 @@ class QuizzBoard(SQLContainer):
                 raise KeyError(id)
         else:
             content = SQLContainer.__getitem__(self, id)
-            if content not None:
+            if content is not None:
                 if date.today() > content.session.enddate:
                     raise QuizzClosed(content)
                 if getattr(content, 'completion_date') is not None:

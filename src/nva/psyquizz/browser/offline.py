@@ -201,11 +201,13 @@ class UploadOfflineQuizz(Page):
              identifier, title = [c.value for c in row[0:2]]
              answers = [c.value for c in row[2:]]
              errors = set()
-
+             print identifier
              if identifier == 'UUID':
                  for idx, answer in enumerate(answers):
                      answer_object = answer_objects.setdefault(idx, {})
                      answer_object[identifier] = answer
+             elif identifier == None:
+                 continue
              else:
                 field = fields.get(identifier)
                 if field is not None:
@@ -216,9 +218,10 @@ class UploadOfflineQuizz(Page):
                                 answer_object[identifier] = answer
                             else:
                                 try:
-                                    token = base64.b64encode(
-                                        answer.encode('utf8'))
-                                    value = field.source.getTermByToken(token)
+                                    #import pdb; pdb.set_trace()
+                                    #token = base64.b64encode(
+                                    #    answer.encode('utf8'))
+                                    value = field.source.getTerm(int(answer))
                                     answer_object[identifier] = value.value
                                 except:
                                     # Value doesn't exist, HELP !
@@ -293,13 +296,11 @@ class UploadOfflineQuizz(Page):
                             **answer)
 
                         assert verifyObject(quizz.__schema__, answer)
-                        
                         session.add(student)
                         session.add(answer)
                         for ca in criterias:
                             session.add(ca)
-
-                    self.flash('Ihre Vorlage wurde Erfolgreich importiert')
+                        self.flash('Ihre Vorlage wurde Erfolgreich importiert')
                     self.redirect(self.application_url())
                         
                 else:

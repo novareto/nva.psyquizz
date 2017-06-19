@@ -838,6 +838,7 @@ class IAnonymousLogin(Interface):
         )
 
     
+from nva.psyquizz.interfaces import QuizzAlreadyCompleted
 class AnonymousLogin(Action):
 
     def available(self, form):
@@ -848,7 +849,6 @@ class AnonymousLogin(Action):
         if errors:
             form.flash(_(u'An error occurred.'))
             return FAILURE
-
         student = form.context.get(data['login'])
         if student is not None:
             form.redirect('%s/%s' % (form.application_url(), data['login']))
