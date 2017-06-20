@@ -514,7 +514,6 @@ class CreateCourse(Form):
             #self.flash(_(u'An error occurred.'))
             return FAILURE
         session = get_session('school')
-        print data
         csdata = dict(
             startdate=data.pop('startdate'),
             enddate=data.pop('enddate'),

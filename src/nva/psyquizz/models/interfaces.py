@@ -13,6 +13,19 @@ from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from uvc.validation.validation import validateZahl
 
 
+from zope.schema import ValidationError
+
+class VKontaktdaten(ValidationError):
+    u""" Bitte ändern Sie die Kontaktdaten """
+
+def v_about(value):
+    if value:
+        if '<span> A n s p r e c h p a r t n e r   &nbsp;    und   &nbsp;     K o n t a k t d a t e n </span>' in value:
+            raise VKontaktdaten(value)
+    return True
+
+
+
 ABOUT_TEXT = u"""
 <p>Liebe Kolleginnen und Kollegen,</p>
 <p> herzlich Willkommen zu unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“! </p>
@@ -207,6 +220,7 @@ class IClassSession(ILocation, IContent):
         description=_("This Text gives Information about the Course to Participants"),
         required=False,
         default=ABOUT_TEXT,
+        constraint=v_about,
         )
 
     @invariant
