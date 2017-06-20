@@ -17,7 +17,7 @@ $(document).ready(function() {
 
     // set end date to max one year period:
     var end = new Date();
-    end.setDate(end.getDate() + 365); 
+    end.setDate(end.getDate() + 180); 
     
     $('#form-field-startdate').datepicker({
 	format: 'dd/mm/yyyy',
@@ -27,7 +27,7 @@ $(document).ready(function() {
 	endDate: end
     }).on('changeDate', function() {
 	// set the start to not be later than the end:
-	var startdate = addDays($(this).datepicker('getDate'), 1);
+	var startdate = addDays($(this).datepicker('getDate'), 7);
 	var defaultdate = addDays($(this).datepicker('getDate'), 21);
 	$('#form-field-enddate').datepicker('setStartDate', startdate);
 	$('#form-field-enddate').datepicker('setDate', defaultdate);
