@@ -57,6 +57,13 @@ class OfflineQuizz(Page):
         quizz = getUtility(IQuizz, self.context.quizz_type)
         fields = Fields(quizz.__schema__)
         fields.sort(key=lambda c: c.interface[c.identifier].order)
+        criterias_questions = Fields(*list(self.get_criterias_questions()))
+        for criteria_field in criterias_questions:
+            yield (
+                criteria_field,
+                criteria_field.identifier,
+                criteria_field.title)
+
         for field in fields:
             yield field, field.identifier, field.description
         
@@ -65,12 +72,6 @@ class OfflineQuizz(Page):
             for idx, q in enumerate(questions_text.strip().split('\n')):
                 yield None, 'extra%s' % idx, q
 
-        criterias_questions = Fields(*list(self.get_criterias_questions()))
-        for criteria_field in criterias_questions:
-            yield (
-                criteria_field,
-                criteria_field.identifier,
-                criteria_field.description)
 
                 
     def generateXLSX(self, folder, filename="ouput.xlsx"):
@@ -78,6 +79,10 @@ class OfflineQuizz(Page):
         workbook = xlsxwriter.Workbook(filepath)
 
         worksheet = workbook.add_worksheet()
+        worksheet.freeze_panes(0, 2)
+        worksheet.set_row(1, None, None, {'hidden': True})
+        worksheet.set_column('A:A', None, None, {'hidden': True})
+        worksheet.set_default_row(hide_unused_rows=True)
         
         # Add a format for the header cells.
         header_format = workbook.add_format({
