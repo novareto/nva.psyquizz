@@ -165,3 +165,12 @@ class QRLink(View):
         response.headers['Content-Disposition'] = (
             'attachment; filename="qrcode.png"')
         return response
+
+from ..interfaces import IAnonymousRequest
+from ..apps.anonymous import QuizzBoard
+class FinishQuizz(Page):
+    context(QuizzBoard)
+    layer(IAnonymousRequest)
+
+    def render(self):
+        return u"Vielen Danke für die Teilnahme an der Befragung"
