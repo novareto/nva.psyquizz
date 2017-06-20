@@ -209,6 +209,43 @@ class DownloadTokens(uvclight.View):
         response.app_iter = filebody(result)
         return response
 
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph, SimpleDocTemplate, PageBreak
+from tempfile import TemporaryFile
+
+class DownloadLetter(uvclight.View):
+    require('manage.company')
+    uvclight.context(IClassSession)
+    uvclight.layer(ICompanyRequest)
+
+    def update(self):
+        app_url = self.application_url()
+        _all = itertools.chain(
+            self.context.uncomplete, self.context.uncomplete)
+        self.tokens = ['%s' % (a.access) for a in _all]
+
+    def make_response(self, result):
+        response = self.responseFactory(app_iter=result)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'attachment; \
+                filename="kfza.pdf"'
+        return response
+
+    def render(self):
+        style = getSampleStyleSheet()
+        story = []
+        for i, x in enumerate(self.tokens):
+            story.append(Paragraph('Serienbrief', style['Heading1']))
+            story.append(Paragraph(x, style['Normal']))
+            story.append(PageBreak())
+        tf = TemporaryFile()
+        pdf = SimpleDocTemplate(tf, pagesize=A4)
+        pdf.build(story)
+        tf.seek(0)
+        return tf
+
+
 
 class XSLX(object):
 
