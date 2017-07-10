@@ -237,6 +237,7 @@ class DownloadLetter(uvclight.View):
         story = []
         for i, x in enumerate(self.tokens):
             story.append(Paragraph('Serienbrief', style['Heading1']))
+            import pdb; pdb.set_trace() 
             story.append(Paragraph(x, style['Normal']))
             story.append(PageBreak())
         tf = TemporaryFile()
