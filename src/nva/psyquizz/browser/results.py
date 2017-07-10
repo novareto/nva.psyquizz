@@ -229,7 +229,7 @@ class DownloadLetter(uvclight.View):
         response = self.responseFactory(app_iter=result)
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'attachment; \
-                filename="kfza.pdf"'
+                filename="serienbrief.pdf"'
         return response
 
     def render(self):
@@ -237,8 +237,8 @@ class DownloadLetter(uvclight.View):
         story = []
         for i, x in enumerate(self.tokens):
             story.append(Paragraph('Serienbrief', style['Heading1']))
-            import pdb; pdb.set_trace() 
-            story.append(Paragraph(x, style['Normal']))
+            story.append(Paragraph(self.context.about, style['Normal']))
+            story.append(Paragraph(u"Die Befragung steht Ihnen unter dem Link http://gbpb.bgetem.de zur Verfügung. <br/> Sie können sich mit diesem Kennwort anmelden %s " %x, style['Normal']))
             story.append(PageBreak())
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)

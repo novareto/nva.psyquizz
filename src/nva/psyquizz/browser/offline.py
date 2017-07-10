@@ -81,7 +81,7 @@ class OfflineQuizz(Page):
         worksheet = workbook.add_worksheet()
         worksheet.freeze_panes(0, 2)
         worksheet.set_row(1, None, None, {'hidden': True})
-        worksheet.set_column('A:A', None, None, {'hidden': True})
+        worksheet.set_column('AA:END', None, None, {'hidden': True})
         worksheet.set_default_row(hide_unused_rows=True)
         
         # Add a format for the header cells.
