@@ -879,6 +879,7 @@ class AnswerQuizz(Form):
     dataValidators = []
     template = get_template('wizard2.pt', __file__)
 
+    fmode = 'radio'
     actions = Actions(SaveQuizz(_(u'Answer')))
 
     def update(self):
@@ -932,6 +933,147 @@ class AnswerQuizz(Form):
         fields += Fields(*questions_fields)
 
         for field in fields:
-            field.mode = 'radio'
+            field.mode = self.fmode
 
         return fields
+
+
+class CompanyAnswerQuizz(Action):
+
+    def available(self, form):
+        return True
+
+    def __call__(self, form):
+        data, errors = form.extractData()
+        if errors:
+            form.flash(_(u'An error occurred.'))
+            return FAILURE
+
+        session = get_session('school')
+
+        # HERE WE CREATE THE STUDENT.
+        from datetime import date
+        uuid = Student.generate_access()
+        student = Student(
+            anonymous=True,
+            access=uuid,
+            completion_date=date.today(),
+            company_id=form.context.course.company_id,
+            session_id=form.context.id,
+            course=form.context.course,
+            quizz_type=form.context.course.quizz_type)
+
+        fields = form.fields
+        extra_answers = {}
+
+        keys = data.keys()
+        for key in keys:
+            if key.startswith('criteria_'):
+                cid = key.split('_', 1)[1]
+                value = data.pop(key)
+                field = fields.get(key)
+                criteria_answer = CriteriaAnswer(
+                    criteria_id=cid,
+                    student_id=student.access,
+                    session_id=student.session_id,
+                    answer=value,
+                    )
+                session.add(criteria_answer)
+            elif key.startswith('extra_'):
+                value = data.pop(key)
+                field = fields.get(key)
+                extra_answers[field.title] = value
+
+        data['extra_questions'] = json.dumps(extra_answers)
+
+        student.complete_quizz()
+        quizz = form.quizz(**data)
+        quizz.student_id = student.access
+        quizz.company_id = student.company_id
+        quizz.course_id = student.course_id
+        quizz.session_id = student.session_id
+
+        session.add(student)
+        session.add(quizz)
+
+        form.flash(_(u'Thank you for answering the quizz'))
+        form.redirect(form.request.url)
+        return SUCCESS
+
+    
+class GenericAnswerQuizz(AnswerQuizz):
+    context(IClassSession)
+    layer(ICompanyRequest)
+    name('answer')
+    require('manage.company')
+    title(_(u'Answer the quizz'))
+    dataValidators = []
+
+    fmode = 'input'
+    actions = Actions(CompanyAnswerQuizz(_(u'Answer')))
+
+    def update(self):
+        self.template = Form.template
+        course = self.context.course
+        self.quizz = getUtility(IQuizz, name=course.quizz_type)
+        startdate = self.context.startdate
+        if datetime.date.today() < startdate:
+            self.flash(u'Die Befragung beginnt erst am %s deshalb werden Ihre Ergebnisse nicht gespeichert' % startdate.strftime('%d.%m.%Y'))
+        Form.update(self)
+    
+    @property
+    def action_url(self):
+        return self.request.url
+
+    def render(self):
+        form = Form.render(self)
+        jscontent = u"""
+<style>
+   label {  display: none; }
+   .highlight {
+     background-color: #f7dada;
+   }
+</style>
+<script type="text/javascript">
+   $(document).ready(function() {
+        $('select').each(function(sidx) {
+           $('option', $(this)).each(function(oidx) {
+              $(this).html((oidx + 1).toString() + ' - ' + $(this).html());
+           });
+           $(this).prepend("<option value=''></option>").val('');
+           $(this).bind('keypress',function(e) {
+              if (e.which === 49) {
+                  $(this).val($('select:nth-child(2)', $(this)).val());
+              } else if (e.which === 50) {
+                  $(this).val($('select:nth-child(3)', $(this)).val());
+              } else if (e.which === 51) {
+                  $(this).val($('select:nth-child(4)', $(this)).val());
+              } else if (e.which === 52) {
+                  $(this).val($('select:nth-child(5)', $(this)).val());
+              } else if (e.which === 53) {
+                  $(this).val($('select:nth-child(6)', $(this)).val());
+              }
+           });
+        });
+
+        $('select').first().focus();
+
+        $("form").submit(function(){
+            var isFormValid = true;
+            $("select").each(function() {
+               if ($.trim($(this).val()).length == 0) {
+                  $(this).parent().addClass("highlight");
+                  isFormValid = false;
+               } else {
+                  $(this).parent().removeClass("highlight");
+               }
+            });
+            if (!isFormValid) {
+                alert("Bitte füllen Sie zunächst alle Felder. Im Anschluss können Sie das Formular absenden.");
+            }
+            return isFormValid;
+        });
+   });
+</script>
+"""
+        return jscontent + form
