@@ -107,7 +107,7 @@
     enabled: false
   },
 	title: {
-            text: 'Mittelwerte'
+            text: 'Verteilung'
 	},
 	xAxis: {
             categories: <span tal:replace="view.stats.xAxis"/>, 

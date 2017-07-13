@@ -198,7 +198,7 @@ class DownloadTokens(uvclight.View):
         response = self.responseFactory()
         response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         response.headers['Content-Disposition'] = (
-            u'attachment; filename="tokens.xlsx"')
+            u'attachment; filename="Kennwortliste.xlsx"')
 
         def filebody(r):
             data = r.read(CHUNK)

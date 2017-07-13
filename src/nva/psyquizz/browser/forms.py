@@ -109,7 +109,7 @@ class IPopulateCourse(Interface):
         )
 
     p2p = Bool(
-        title=u"Paper2Disc",
+        title=u"Paper2Disk",
         description=_(u"Sollen einzelne Beschäftigte mit Papierfragebogen \
                         anstatt auf elektronischen Weg teilnehmen?")
         )
@@ -125,13 +125,11 @@ class CreateCriterias(Form):
     fields = Fields(ICriteria).select('title', 'items')
     label = u"Auswertungsgruppen anlegen"
     description = u"""
-   Bitte geben Sie zunächst einen Oberbegriff für Ihre Auswertungsgruppen an, wie z.B. „Abteilung“. Zu 
-jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen. Zum Oberbegriff „Abteilung“ 
-könnten bspw. die Auswertungsgruppen „Personalabteilung“ und „Produktion“ gehören.  
-<b>Beachten Sie bei der Wahl Ihrer Auswertungsgruppen - aus Datenschutzgründen werden Ihnen nur 
-Ergebnisse von Auswertungsgruppen angezeigt, von denen mindestens sieben ausgefüllte 
-„Fragebogen“ vorliegen.</b>
-    """
+Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.  
+„Abteilung“). Zu jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen (z.B.  
+„Personalabteilung“ und „Produktion“). <b>Aus Datenschutzgründen werden nur Ergebnisse von Auswertungsgruppen angezeigt, 
+von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
+"""
 
     @property
     def action_url(self):
@@ -470,7 +468,7 @@ class CreateCourse(Form):
     @property
     def fields(self):
         course_fields = Fields(ICourse).select(
-            'name', 'criterias', 'quizz_type')
+            'name', 'criterias') # , 'quizz_type')
         course_fields['criterias'].mode = "INOUT"
         populate_fields = Fields(IPopulateCourse)
         populate_fields['strategy'].mode = "radio"
@@ -525,6 +523,7 @@ class CreateCourse(Form):
            nb_students=data.pop('nb_students'),
            strategy=csdata.get('strategy')
         )
+        data['quizz_type'] = "quizz2"
         course = Course(**data)
         course.company_id = self.context.id
         session.add(course)
@@ -832,7 +831,7 @@ class IAnonymousLogin(Interface):
 
     login = TextLine(
         title=_(u"Login Befragung"),
-        description=u"Bitte geben Sie Ihren Zugangscode ein, um zur Befragung Ihres Unternehmens zu gelangen.",
+        description=u"Bitte geben Sie Ihr Kennwort ein um zur Befragung Ihres Unternehmens zu gelangen.",
         required=True,
         )
 

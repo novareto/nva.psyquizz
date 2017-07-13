@@ -16,13 +16,14 @@ $( document ).ready(function() {
 
     var panel = sessionStorage.getItem("accordion");
     if (panel == null) {
-	var accordion = $(".panel-collapse").first();
-	accordion.addClass('in');
-	accordion.prev('.panel-heading').children('a').removeClass('collapsed');
-    } else {
-	var accordion = $('#' + sessionStorage.getItem("accordion"));
-	accordion.addClass('in');
-	accordion.prev('.panel-heading').children('a').removeClass('collapsed');
+	   var accordion = $(".panel-collapse").first();
+	   accordion.addClass('in');
+	   accordion.prev('.panel-heading').children('a').removeClass('collapsed');
+       } 
+    else {
+	    var accordion = $('#' + sessionStorage.getItem("accordion"));
+	    accordion.addClass('in');
+	    accordion.prev('.panel-heading').children('a').removeClass('collapsed');
     }
 
     $('input[type=checkbox]').change(function() {

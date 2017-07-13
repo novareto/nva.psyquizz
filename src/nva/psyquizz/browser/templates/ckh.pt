@@ -74,8 +74,8 @@
 				  <b tal:content="session.title"/> 
 				</dt>
 				<dd>
-		  <a href="" onclick="_paq.push(['trackEvent', 'Befragung bearbeiten']);" data-toggle="tooltip" data-placement="left" title="Erhebung bearbeiten" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/edit_course')"> <span class="glyphicon glyphicon-pencil"> </span> </a>
-		  <a href="" onclick="_paq.push(['trackEvent', 'Befragung löschen']);" data-toggle="tooltip" data-placement="left" title="Erhebung löschen" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/delete')"> <span class="glyphicon glyphicon-trash"> </span> </a>
+		  <a href="" onclick="_paq.push(['trackEvent', 'Befragung bearbeiten']);" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/edit_course')"> <span class="glyphicon glyphicon-pencil"></span> </a>
+		  <a href="" onclick="_paq.push(['trackEvent', 'Befragung löschen']);" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/delete')"> <span class="glyphicon glyphicon-trash"></span> </a>
       </dd>
 
       <dt>Fragebogen:</dt>  
@@ -101,6 +101,11 @@
             Download Papierfragebogen
 	  </a>
 	  <br />
+          <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/answer')">
+            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+            Papierfragebögen im Batchverfahren eintragen
+	  </a>
+	  <br />
           <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/offlinequizz')">
             <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
             Download Vorlage Erfassung Papierfragebögen
@@ -121,6 +126,10 @@
       </dt> 
       <dd>
 	<a href="" tal:attributes="href  view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/exampletext')"> <span class="glyphicon glyphicon-comment"> </span> Ihre Vorlage  </a> 
+	<a tal:condition="session.strategy == 'fixed'" href="" tal:attributes="href
+    view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' +
+    str(session.id) + '/downloadletter')"> <span class="glyphicon
+      glyphicon-download" aria-hidden="true"> </span> Serienbrief </a> 
       </dd>
       <dt> Zugang zur Befragung: </dt> 
       <dd>
@@ -129,8 +138,7 @@
       <div tal:condition="session.strategy == 'free'">
         <dt>Link zum Fragebogen:</dt> 
         <dd>
-          <a target="_blank" href="" tal:attributes="href '%s/quizz/generic-%s' % (view.application_url(), view.generic_id(session.id))"> 
-            <span class="glyphicon glyphicon-play-circle"></span> 
+          <a target="_blank" href="" tal:attributes="href '%s/quizz/generic-%s' % (view.application_url(), view.generic_id(session.id))"><span class="glyphicon glyphicon-play-circle"></span> 
           </a>
           <span tal:content="'%s/quizz/generic-%s' % (view.application_url(), view.generic_id(session.id))"></span> 
         </dd>
@@ -174,8 +182,6 @@
                unc.access)"> <span class="col-md-5" tal:content="unc.access"/> </a>
            </row>
          </div>
-	<a href="" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/downloadletter')">
-    <span class="glyphicon glyphicon-download" aria-hidden="true"> <span> </a> Serienbrief 
 
         </dd>
         <dt> Auswertung: </dt> 
@@ -189,7 +195,7 @@
         </dd>
         <dt> Ausgefüllte Fragebogen: </dt> 
         <dd>
-        <span class="badge" tal:content="'%s / %s' % (len(list(session.complete)), len(list(session.uncomplete)))"> </span> 
+        <span class="badge" tal:content="'%s' % (len(list(session.complete)))"> </span> 
         </dd>
       </div>
       <div tal:condition="session.strategy == 'mixed'">

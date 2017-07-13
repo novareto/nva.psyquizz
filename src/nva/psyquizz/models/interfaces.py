@@ -16,7 +16,7 @@ from uvc.validation.validation import validateZahl
 from zope.schema import ValidationError
 
 class VKontaktdaten(ValidationError):
-    u""" Bitte ändern Sie die Kontaktdaten """
+    u""" Bitte geben Sie einen Ansprechpartner an oder löschen Sie die Zeile Ansprechpartner und Kontaktdaten."""
 
 def v_about(value):
     if value:

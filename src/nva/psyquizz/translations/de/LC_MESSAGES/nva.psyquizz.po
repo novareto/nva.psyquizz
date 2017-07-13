@@ -26,7 +26,7 @@ msgid "Add a company"
 msgstr "Unternehmen anlegen"
 
 msgid "Number of students"
-msgstr "Anzahl Fragebögen"
+msgstr "Anzahl Teilnehmer"
 
 msgid "Name ${name} already exists."
 msgstr "Der Name '${name}' existiert bereits."
@@ -56,7 +56,7 @@ msgid "Frontpage"
 msgstr "Startseite"
 
 msgid "This quizz is already completed and therefore closed."
-msgstr "Die Befragung wurde bereits mit diesem Token ausgefüllt. Eine weitere Befragung ist mit diesen Zugangsdaten nicht mehr möglich."
+msgstr "Das Kennwort wurde bereits benutzt. Eine erneute Teilnahme ist nicht möglich."
 
 msgid "Results for the course"
 msgstr "Auswertung Unternehmensbereich"
@@ -167,7 +167,7 @@ msgid "About"
 msgstr "Einführungstext"
 
 msgid "This Text gives Information about the Course to Participants"
-msgstr "Dieser Text wird Ihren Beschäftigten als erste Seite vor Beginn der eigentlichen Befragung angezeigt. Sie haben die Möglichkeit den vorgegeben Text nach Ihren Wünschen anzupassen."
+msgstr "Dieser Text wird als Startseite vor Beginn der Befragung angezeigt. Sie können den vorgegeben Text nach Ihren Wünschen anpassen.  Bei Papierbefragungen wird der Text als erste Seite des Fragebogens eingefügt."
 
 msgid "Please provide at least 2 criteria items."
 msgstr "Bitte geben Sie mindestens 2 Auswertungsgruppen an"
