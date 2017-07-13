@@ -81,7 +81,7 @@
       <dt>Fragebogen:</dt>  
       <dd tal:content="view.quizz_name(course)"> </dd> 
       <dt>
-	<b>Befragungszeitraum</b>
+	Befragungszeitraum
 	<i class="glyphicon glyphicon-question-sign"
 	   data-container="body" data-trigger="hover"
 	   data-toggle="popover" data-placement="top"
@@ -113,7 +113,7 @@
 	</dd>
       </div>
       <dt>
-	<b>Musteranschreiben</b>
+	Musteranschreiben
 	<i class="glyphicon glyphicon-question-sign"
 	   data-container="body" data-trigger="hover"
 	   data-toggle="popover" data-placement="top"
@@ -157,7 +157,7 @@
         <span tal:content="'%s/quizz' % (view.application_url())"></span> 
         </dd>
         <dt>
-	  <b>Kennwortliste</b>
+	  Kennwortliste
 	  <i class="glyphicon glyphicon-question-sign"
 	     data-container="body" data-trigger="hover"
 	     data-toggle="popover" data-placement="top"
@@ -165,7 +165,7 @@
 	</dt>
         <dd>
 	<a href="" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/downloadtokens')">
-	  <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+	  <span class="glyphicon glyphicon-download" aria-hidden="true"></span></a>
          <span data-toggle="collapse" data-target="#tokens" href=""> +
           anzeigen </span>
           <div id="tokens" class="collapse">
@@ -174,8 +174,10 @@
                unc.access)"> <span class="col-md-5" tal:content="unc.access"/> </a>
            </row>
          </div>
-        </dd>
+	<a href="" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/downloadletter')">
+    <span class="glyphicon glyphicon-download" aria-hidden="true"> <span> </a> Serienbrief 
 
+        </dd>
         <dt> Auswertung: </dt> 
         <dd> 
         <a href="" tal:condition="len(list(session.complete)) >= view.maxResults" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/sr')"> <span class="glyphicon glyphicon-stats"> </span> Grafische Darstellung 
