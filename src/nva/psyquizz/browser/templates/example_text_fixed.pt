@@ -1,13 +1,12 @@
 <h1> Musteranschreiben </h1>
 
-<h1 class="text-danger"> !!! ACHTUNG DER TEXT MUSS ANGEPASST WERDEN </h1>
 
     <p>
-    Sie können das folgenden Musteranschreiben nutzen, um Ihre Beschäftigten über die 
-    Befragung zu informieren und den Link zum „Fragebogen“ zu verteilen.  
-    Fügen Sie den Text dazu in eine E-Mail ein, passen ihn nach Ihren Vorstellungen an und 
-    versenden ihn an Ihre Beschäftigten.
-    </p>
+Sie können den folgenden Text nutzen bzw. Ihren Vorstellungen entsprechend anpassen, um Ihre Beschäftigten
+ über die Befragung zu informieren und den Link sowie das Kennwort zum „Fragebogen“ zu verteilen. 
+ Über die Funktion Serienbrief wird für jeden Beschäftigten ein Anschreiben inkl. Kennwort erzeugt.  
+Alternativ können Sie den Text als Grundlage für eine Serien E-Mail nutzen. 
+Hier müssen Sie die Kennwörter über die Kennwortliste einfügen.  </p>
 
 
 <br/> <br/>
@@ -31,7 +30,10 @@
 
 
 
-<br> <b><span tal:content="'%s/quizz/generic-%s' % (view.application_url(), view.generic_id(context.id))"/></b> </p>
+<br> <b><span tal:content="'%s/quizz/' % (view.application_url())"/></b> </p>
+
+<p> Ihr Kennwort um an der Befragung teilnehmen zu können lautent <b>{Kennwort}</b></p>
+
 <p>Über diesen Link gelangen Sie direkt auf den Fragebogen unseres Unternehmens. Das Ausfüllen wird etwa 5 Minuten in Anspruch nehmen. </p>
 <p>Nehmen Sie sich diese Zeit, Ihre Meinung zu äußern, wir freuen uns auf Ihre Rückmeldung und bedanken uns bei Ihnen für Ihre Mitarbeit!</p> 
 <p>Sollten Sie Fragen oder Anmerkungen haben, wenden Sie sich bitte an: <br> Ansprechpartner und Kontaktdaten</p>

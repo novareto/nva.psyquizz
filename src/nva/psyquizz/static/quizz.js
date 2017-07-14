@@ -14,11 +14,16 @@ $( document ).ready(function() {
 	sessionStorage.setItem("accordion", panel);
     })
 
+    var panels = $('div.panel')
+
     var panel = sessionStorage.getItem("accordion");
     if (panel == null) {
+        if (panels.length == 1)
+        {
 	   var accordion = $(".panel-collapse").first();
 	   accordion.addClass('in');
 	   accordion.prev('.panel-heading').children('a').removeClass('collapsed');
+        }
        } 
     else {
 	    var accordion = $('#' + sessionStorage.getItem("accordion"));
