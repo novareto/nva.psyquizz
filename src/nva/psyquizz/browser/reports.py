@@ -86,16 +86,27 @@ class GeneratePDF(uvclight.Page):
 
         chart = read_data_uri(self.request.form['chart'])
         userschart = read_data_uri(self.request.form['userschart'])
+        pSVG = self.request.form.get('pSVG')
+        from svglib.svglib import svg2rlg
+        import tempfile
+        tf = tempfile.NamedTemporaryFile()
+        tf.write(unicode(pSVG).encode('utf-8'))
+        tf.seek(0)
+        drawing = svg2rlg(tf.name)
+        drawing.height = 320.0
+        pSVG1 = self.request.form.get('pSVG1')
+        tf = tempfile.NamedTemporaryFile()
+        tf.write(unicode(pSVG1).encode('utf-8'))
+        tf.seek(0)
+        drawing1 = svg2rlg(tf.name)
+        #svg2rlg(pSVG)
         parts.append(Spacer(0, 2*cm))
         parts.append(Paragraph(u'Anzahl Fragebögen %s' % self.request.form['total'], styles['Normal']))
         parts.append(Paragraph(u'Auswertungsgruppe', styles['Normal']))
         parts.append(Paragraph(crit_style, styles['Normal']))
+        import pdb; pdb.set_trace() 
         from reportlab.graphics.shapes import Drawing
-        from StringIO import StringIO
-        image = Image(userschart, width=20*cm, height=10*cm)
-        image.hAlign="CENTER"
-        #image.scale(500, 600)
-        parts.append(image)
+        parts.append(drawing)
         parts.append(Paragraph(LEGEND, styles['Normal']))
         parts.append(PageBreak())
         parts.append(Spacer(0, 4*cm))
@@ -111,8 +122,7 @@ class GeneratePDF(uvclight.Page):
         parts.append(PageBreak())
         parts.append(Spacer(0, 1*cm))
         parts.append(Paragraph(u'Verteilung der Antworten', styles['Normal']))
-        parts.append(Image(chart, width=700, height=400))
-
+        parts.append(drawing1)
         doc.build(parts, onFirstPage=self.headerfooter, onLaterPages=self.headerfooter)
         pdf = doc.filename
         pdf.seek(0)

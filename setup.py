@@ -39,6 +39,7 @@ install_requires = [
     'pyPdf',
     'js.jqueryui',
     'shortid',
+    'svglib',
     ]
 
 tests_require = [

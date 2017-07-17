@@ -76,6 +76,8 @@
     
     <textarea type="text" id="chart" name="chart" style="display: none"></textarea>
     <textarea type="text" id="userschart" name="userschart" style="display: none"></textarea>
+    <textarea type="text" id="pSVG" name="pSVG"></textarea>
+    <textarea type="text" id="pSVG1" name="pSVG1"></textarea>
     <button class="btn btn-default" value="pdf export"> <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> PDF Export </button>
     <a href="excel" class="btn btn-default">  <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Excel Export </a>
   </form>
@@ -140,6 +142,7 @@
     });
 
     svgToCanvas(myChart, 'chart');
+    $('#pSVG1').val(myChart.getSVGForExport());
 
     var usersChart = Highcharts.chart('container1', {
 	chart: {
@@ -211,6 +214,10 @@
 	    ]
      });
      svgToCanvas(usersChart, 'userschart');
+
+     $('#pSVG').val(usersChart.getSVGForExport());
+
+    
     $("a[name='checkall']").click(function () {
     $("input:checkbox").prop('checked', true);
     $("#form-action-filter").click();
