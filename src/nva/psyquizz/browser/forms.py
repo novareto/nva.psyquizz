@@ -468,7 +468,7 @@ class CreateCourse(Form):
     @property
     def fields(self):
         course_fields = Fields(ICourse).select(
-            'name', 'criterias') # , 'quizz_type')
+            'name', 'criterias', 'quizz_type')
         course_fields['criterias'].mode = "INOUT"
         populate_fields = Fields(IPopulateCourse)
         populate_fields['strategy'].mode = "radio"
@@ -523,7 +523,7 @@ class CreateCourse(Form):
            nb_students=data.pop('nb_students'),
            strategy=csdata.get('strategy')
         )
-        data['quizz_type'] = "quizz2"
+        #data['quizz_type'] = "quizz2"
         course = Course(**data)
         course.company_id = self.context.id
         session.add(course)

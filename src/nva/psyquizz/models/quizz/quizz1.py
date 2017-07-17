@@ -15,77 +15,77 @@ from sqlalchemy.orm import relationship, backref
 class IGroup1(Interface):
 
     question1 = schema.Choice(
-        title=u"1.1",
+        title=u"1",
         description=u"Wird die auszuführende Arbeit von Ihnen selbst vorbereitet, organisiert und geprüft?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question2 = schema.Choice(
-        title=u"1.2",
+        title=u"2",
         description=u"Ist Ihre Tätigkeit abwechslungsreich?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question3 = schema.Choice(
-        title=u"1.3",
+        title=u"3",
         description=u"Haben Sie die Möglichkeit, eine wechselnde Körperhaltung einzunehmen?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question4 = schema.Choice(
-        title=u"1.4",
+        title=u"4",
         description=u"Erhalten Sie ausreichende Informationen zum eigenen Arbeitsbereich?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question5 = schema.Choice(
-        title=u"1.5",
+        title=u"5",
         description=u"Entspricht Ihre Qualifikation den Anforderungen, die durch die Tätigkeit gestellt werden?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question6 = schema.Choice(
-        title=u"1.6",
+        title=u"6",
         description=u"Ist die Tätigkeit frei von erhöhter Verletzungs- und Erkrankungsgefahr?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question7 = schema.Choice(
-        title=u"1.7",
+        title=u"7",
         description=u"Ist Ihre Tätigkeit frei von ungünstigen Arbeitsumgebungsbedingungen (z. B. Lärm, Klima, Gerüche)?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question8 = schema.Choice(
-        title=u"1.8",
+        title=u"8",
         description=u"Ist Ihre Tätigkeit frei von erhöhten emotionalen Anforderungen (z. B. im Publikumsverkehr)?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question9 = schema.Choice(
-        title=u"1.9",
+        title=u"9",
         description=u"Haben Sie Einfluss auf die Zeiteinteilung Ihrer Arbeit (z. B. Lage der Pausen, Arbeitstempo, Termine)?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question10 = schema.Choice(
-        title=u"1.10",
+        title=u"10",
         description=u"Haben Sie Einfluss auf die Vorgehensweise bei Ihrer Arbeit (z. B. Wahl der Arbeitsmittel/-methoden)?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question11 = schema.Choice(
-        title=u"1.11",
+        title=u"11",
         description=u"ErhaltenSieausreichendeInformationenzurEntwicklungdesBetriebes?",
         vocabulary=TrueOrFalse,
         required=True,
@@ -95,42 +95,42 @@ class IGroup1(Interface):
 class IGroup2(Interface):
 
     question12 = schema.Choice(
-        title=u"2.1",
+        title=u"12",
         description=u"Ist ein kontinuierliches Arbeiten ohne häufige Störungen möglich?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question13 = schema.Choice(
-        title=u"2.2",
+        title=u"13",
         description=u"Können Sie überwiegend ohne Zeit -und Termindruck arbeiten?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question14 = schema.Choice(
-        title=u"2.3",
+        title=u"14",
         description=u"Erhalten Sie ausreichende Rückmeldung (Anerkennung, Kritik, Beurteilung) über die eigene Leistung?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question15 = schema.Choice(
-        title=u"2.4",
+        title=u"15",
         description=u"Gibt es für Sie klare Entscheidungsstrukturen?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question16 = schema.Choice(
-        title=u"2.5",
+        title=u"16",
         description=u"Sind angeordnete Überstunden die Ausnahme?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question17 = schema.Choice(
-        title=u"2.6",
+        title=u"17",
         description=u"Wird Ihnen im Falle von Überstunden zeitnah Freizeitausgleich gewährt?",
         vocabulary=TrueOrFalse,
         required=True,
@@ -140,14 +140,14 @@ class IGroup2(Interface):
 class IGroup3(Interface):
 
     question18 = schema.Choice(
-        title=u"3.1",
+        title=u"18",
         description=u"Bietet Ihre Tätigkeit die Möglichkeit zur Zusammenarbeit mit Kolleginnen / Kollegen?",
         vocabulary=TrueOrFalse,
         required=True,
         )
 
     question19 = schema.Choice(
-        title=u"3.2",
+        title=u"19",
         description=u"Besteht ein positives soziales Klima?",
         vocabulary=TrueOrFalse,
         required=True,
@@ -165,9 +165,9 @@ class IQuizz1(IQuizz, IGroup1, IGroup2, IGroup3):
 
 IQuizz1.setTaggedValue(
     'averages', OrderedDict((
-        (u'Tätigkeit', range(1, 12)),
-        (u'Arbeitsorganisation', range(12, 18)),
-        (u'Sozialen Umfeld', range(18, 20)),
+        (u'Tätigkeit', map(str, range(1, 12))),
+        (u'Arbeitsorganisation', map(str, range(12, 18))),
+        (u'Sozialen Umfeld', map(str, range(18, 20))),
     )))
 
 

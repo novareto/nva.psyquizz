@@ -367,7 +367,7 @@ class Quizz1Charts(uvclight.Page):
     name('charts')
     uvclight.context(Quizz1)
 
-    template = uvclight.get_template('cr.pt', __file__)
+    template = uvclight.get_template('cr1.pt', __file__)
 
     def jsonify(self, da):
         return json.dumps(da)
@@ -376,6 +376,29 @@ class Quizz1Charts(uvclight.Page):
         hs.need()
         self.stats = stats
         self.general_stats = general_stats
+
+        good = dict(name="viel / zutreffend", data=[], color="#62B645")
+        bad = dict(name="wenig / nicht zutreffend", data=[], color="#D8262B")
+        
+        xAxis = []
+        percents = {}
+        for key, answers in self.stats.statistics['raw'].items():
+            xAxis.append(key)
+            yesses = 0
+            noes = 0
+            total = 0
+            for answer in answers:
+                total += 1
+                if answer.result is True:
+                    yesses += 1
+                else:
+                    noes +=1 
+
+            good['data'].append(float(yesses)/total * 100)
+            bad['data'].append(float(noes)/total * 100)
+
+        self.xAxis = json.dumps(xAxis)
+        self.series = json.dumps([good, bad])
 
 
 class SR(uvclight.Page):

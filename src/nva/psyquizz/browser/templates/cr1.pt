@@ -1,0 +1,147 @@
+<div>
+<div class="header">
+  <h1>Ergebnisse</h1>
+  <p>Hier sehen Sie die Auswertung für alle Beschäftigten. 
+  </p>
+
+  <p>
+  Durch Auswahl einer oder mehrerer Auswertungsgruppen haben Sie die Möglichkeit sich eine
+  detaillierte Auswertung anzeigen zu lassen. (Bitte beachten Sie: Einzelne Auswertungsgruppen 
+  können erst ausgewählt werden, wenn für diese Auswertungsgruppe mindestens sieben 
+  ausgefüllte Fragebögen vorliegen.)
+  </p>
+  <p>
+  Der weitere Umgang mit den Ergebnissen ist in der „Übersicht 7 Schritte“ unter 4.  Lösungsworkshops beschrieben.
+  </p>
+
+</div>
+
+  <form action="." tal:attributes="action view.request.url"
+	tal:define="current view.stats.filters.get('criterias', {})">
+<div><a name="uncheckall">Alle</a>
+
+
+ </div>
+    <dl tal:define="crits view.stats.statistics['criterias']">
+      <tal:dl tal:repeat="crit crits">
+	<dt><h3 tal:content="crit" /></dt>
+	<dd>
+	  <div tal:repeat="opt crits[crit]"
+	       style="display: inline-block; padding: 5px;">
+	    <input name="criterias" type="checkbox"
+		   tal:attributes="value opt.uid;
+				   checked opt.uid in current;
+				   disabled opt.amount < 7 and 'disabled' or None" />
+            <span tal:content="'%s (%s)' % (opt.name, opt.amount)" />
+	  </div>
+	</dd>
+      </tal:dl>
+    </dl>
+    <input id="form-action-filter" type="submit" value="filter" />
+  </form>
+
+  <table id="mt" class="table table-bordered table-striped">
+    <tr tal:repeat="data view.stats.statistics['global.averages']">
+      <td tal:content="data.title"></td> 
+      <td tal:content="str('%.2f' % data.average).replace('.',',')"></td> 
+    </tr>
+  </table>
+
+  <div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+
+  <form id="result" method="POST"
+	tal:attributes="action view.url(context) + '/pdf'">
+
+    <input type="hidden" value=""
+	   tal:attributes="value view.stats.json_criterias" name="criterias" />
+    
+    <input type="hidden"
+	   tal:attributes="value view.stats.statistics['total']" name="total"/>
+    
+    <textarea type="text" id="averages" name="averages" style="display:none">
+      <tal:data
+           content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
+    </textarea>
+    
+    <textarea type="text" id="chart" name="chart" style="display: none"></textarea>
+    <textarea type="text" id="pSVG1" name="pSVG1" style="display: none"></textarea>
+
+    <button class="btn btn-default" value="pdf export"> <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> PDF Export </button>
+    <a href="excel" class="btn btn-default">  <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Excel Export </a>
+  </form>
+
+  <script>
+     function svgToCanvas(chart, target_id) {
+        var svg = chart.getSVG();
+        var canvas = document.createElement('canvas');
+        canvas.width = "600";
+        canvas.height = "400";
+        var ctx = canvas.getContext('2d');
+        var img = document.createElement("img");
+        img.setAttribute("src", "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg))));
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, 400, 400);
+          document.getElementById(target_id).value = canvas.toDataURL("image/png");
+        };
+     }
+
+    var myChart = Highcharts.chart('container', {
+	chart: {
+            type: 'bar'
+	    },
+	credits: {
+             enabled: false
+        },
+  exporting: {
+    enabled: false
+  },
+	title: {
+            text: 'Verteilung'
+	},
+	xAxis: {
+            categories: <span tal:replace="view.xAxis"/>, 
+              tickAmount: 10
+	},
+	yAxis: {
+            min: 0,
+	    max: 100,
+            title: {
+		text: 'Antworten'
+            },
+	    labels: {
+		text: 'Anteil der Antworten'
+            },
+          labels: {
+              formatter:function() {
+                  return this.value + '%';
+              }
+           }
+	},
+	legend: {
+           reversed: true
+	},
+	plotOptions: {
+            series: {
+		stacking: 'normal'
+            }
+	},
+	series: <span tal:replace="view.series"/> 
+    });
+
+    svgToCanvas(myChart, 'chart');
+    $('#pSVG1').val(myChart.getSVGForExport());
+
+    
+    $("a[name='checkall']").click(function () {
+    $("input:checkbox").prop('checked', true);
+    $("#form-action-filter").click();
+    });
+    $("a[name='uncheckall']").click(function () {
+    $("input:checkbox").prop('checked', false);
+    $("#form-action-filter").click();
+    });
+    $('input[type=checkbox]').change(function() {
+    $("#form-action-filter").click();
+    });
+  </script>
+</div>

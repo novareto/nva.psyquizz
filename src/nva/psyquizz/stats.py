@@ -50,7 +50,6 @@ def available_criterias(criterias, session_id):
         CriteriaAnswer.session_id.in_(session_id))
                  .group_by(CriteriaAnswer.answer).all()}
 
-    print all_crits
     for crit in criterias:
         for item in crit.items.split('\r\n'):
             total = all_crits.get(item, 0)
@@ -147,7 +146,6 @@ def compute(quizz, averages, filters):
     sorted_global_answers = sort_data(averages, global_data)
     global_averages = tuple(average_computation(sorted_global_answers))
     
-    
     Criteria = namedtuple('Criteria', ('id', 'name', 'amount', 'uid'))
     merged_criterias = {}
     for fid, fc in filtered_criterias.items():
@@ -158,6 +156,7 @@ def compute(quizz, averages, filters):
             criterias.append(Criteria(id, fa, count, uid))
 
     return {
+        'raw': global_data,
         'total': total,
         'users.grouped': users_averages,
         'global.averages': global_averages,
