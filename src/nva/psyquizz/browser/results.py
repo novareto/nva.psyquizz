@@ -21,6 +21,7 @@ from nva.psyquizz.models.quizz.quizz1 import Quizz1
 from uvclight.auth import require
 from zope.component import getUtility, getMultiAdapter
 from zope.interface import Interface
+from zope.schema import getFieldsInOrder
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from zope.location import LocationProxy
@@ -382,6 +383,9 @@ class Quizz1Charts(uvclight.Page):
         
         xAxis = []
         percents = {}
+
+        self.xAxis_labels = {k.title: k.description for id, k in getFieldsInOrder(self.context.__schema__)}
+
         for key, answers in self.stats.statistics['raw'].items():
             xAxis.append(key)
             yesses = 0
