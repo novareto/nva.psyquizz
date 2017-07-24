@@ -253,7 +253,7 @@ class XSLX(object):
     def generateXLSX(self, folder, filename="ouput.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
-        worksheet = workbook.add_worksheet()
+        worksheet = workbook.add_worksheet('Durchschnitt')
 
         for i, x in enumerate(self.statistics['global.averages']):
             worksheet.write(i, 0, x.title)
@@ -261,12 +261,12 @@ class XSLX(object):
 
         chart1 = workbook.add_chart({'type': 'radar'})
         chart1.add_series({
-            'name':       'Durchscnitt',
-            'categories': '=Sheet1!$A$1:$A$11',
-            'values':     '=Sheet1!$B$1:$B$11',
+            'name':       'Durchschnitt',
+            'categories': '=Durchschnitt!$A$1:$A$11',
+            'values':     '=Durchschnitt!$B$1:$B$11',
             })
 
-        chart1.set_title({'name': 'Results of sample analysis'})
+        chart1.set_title({'name': 'Durchschnitt'})
         chart1.set_x_axis({'name': 'Test number'})
         chart1.set_y_axis({'name': 'Sample length (mm)'})
         chart1.set_style(11)
@@ -274,38 +274,45 @@ class XSLX(object):
         # Insert the chart into the worksheet (with an offset).
         worksheet.insert_chart('A13', chart1, {'x_offset': 25, 'y_offset': 10})
 
+        worksheet = workbook.add_worksheet('Mittelwerte')
+
         data = json.loads(self.series)
         for y, x in enumerate(data):
             name = x['name']
-            r = 27
-            worksheet.write(27, y, name)
+            r = 1 
+            worksheet.write(0, y, name)
             for i, z in enumerate(x['data']):
                 worksheet.write((r+1+i), y, z)
+
+        worksheet = workbook.add_worksheet('Verteilung')
 
         chart3 = workbook.add_chart(
             {'type': 'bar', 'subtype': 'percent_stacked'})
 
         # Configure the first series.
         chart3.add_series({
-            'name':       '=Sheet1!$A$27',
-            'categories': '=Sheet1!$A$28:$A$39',
-            'values':     '=Sheet1!$A$28:$A$39',
+            'name':       '=Mittelwerte!$A$1',
+            'categories': '=Mittelwerte!$A$3:$A$11',
+            'values':     '=Mittelwerte!$A$3:$A$11',
         })
 
         chart3.add_series({
-            'name':       '=Sheet1!$B$27',
-            'categories': '=Sheet1!$B$28:$B$39',
-            'values':     '=Sheet1!$B$28:$B$39',
+            'name':       '=Mittelwerte!$B$1',
+            'categories': '=Mittelwerte!$B$3:$B$11',
+            'values':     '=Mittelwerte!$B$3:$B$11',
         })
 
         chart3.add_series({
-            'name':       '=Sheet1!$C$27',
-            'categories': '=Sheet1!$C$28:$C$39',
-            'values':     '=Sheet1!$C$28:$C$39',
+            'name':       '=Mittelwerte!$C$1',
+            'categories': '=Mittelwerte!$C$3:$C$11',
+            'values':     '=Mittelwerte!$C$3:$C$11',
         })
-        worksheet.insert_chart("G27", chart3, {'x_offset': 25, 'y_offset': 10})
+        worksheet.insert_chart("A1", chart3, {'x_offset': 15, 'y_offset': 10})
 
-        offset = 43
+
+
+        worksheet = workbook.add_worksheet('Datenbasis')
+        offset = 1 
         for cname, cvalues in self.statistics['criterias'].items():
             for v in cvalues:
                 offset += 1
@@ -315,8 +322,8 @@ class XSLX(object):
 
 
         offset += 2
-        worksheet.write("A%i" % offset, "Question")
-        worksheet.write("B%i" % offset, "Average")
+        worksheet.write("A%i" % offset, "Frage")
+        worksheet.write("B%i" % offset, "Durchschnitt")
         
         for avg in self.statistics['per_question_averages']:
             offset += 1
