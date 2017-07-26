@@ -21,6 +21,7 @@ from nva.psyquizz.models.quizz.quizz1 import Quizz1
 from uvclight.auth import require
 from zope.component import getUtility, getMultiAdapter
 from zope.interface import Interface
+from zope.schema import getFieldsInOrder
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from zope.location import LocationProxy
@@ -250,7 +251,7 @@ class DownloadLetter(uvclight.View):
 
 class XSLX(object):
 
-    def generateXLSX(self, folder, filename="ouput.xlsx"):
+    def generateXLSX(self, folder, filename="Ergebnischart.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
         worksheet = workbook.add_worksheet('Durchschnitt')
@@ -374,7 +375,7 @@ class Quizz1Charts(uvclight.Page):
     name('charts')
     uvclight.context(Quizz1)
 
-    template = uvclight.get_template('cr.pt', __file__)
+    template = uvclight.get_template('cr1.pt', __file__)
 
     def jsonify(self, da):
         return json.dumps(da)
@@ -383,6 +384,32 @@ class Quizz1Charts(uvclight.Page):
         hs.need()
         self.stats = stats
         self.general_stats = general_stats
+
+        good = dict(name="viel / zutreffend", data=[], color="#62B645")
+        bad = dict(name="wenig / nicht zutreffend", data=[], color="#D8262B")
+        
+        xAxis = []
+        percents = {}
+
+        self.xAxis_labels = {k.title: k.description for id, k in getFieldsInOrder(self.context.__schema__)}
+
+        for key, answers in self.stats.statistics['raw'].items():
+            xAxis.append(key)
+            yesses = 0
+            noes = 0
+            total = 0
+            for answer in answers:
+                total += 1
+                if answer.result is True:
+                    yesses += 1
+                else:
+                    noes +=1 
+
+            good['data'].append(float(yesses)/total * 100)
+            bad['data'].append(float(noes)/total * 100)
+
+        self.xAxis = json.dumps(xAxis)
+        self.series = json.dumps([good, bad])
 
 
 class SR(uvclight.Page):

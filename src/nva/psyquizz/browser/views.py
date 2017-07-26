@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from datetime import date
 import binascii
 import base64
 from cStringIO import StringIO
@@ -60,6 +61,8 @@ class QuizzErrorPage(Page):
     require('zope.Public')
 
     def render(self):
+        if self.context.location.completion_date.date() == date.today():
+            return _(u"My message of completion ! THANK YOU")
         return _(u"This quizz is already completed and therefore closed.")
 
 
