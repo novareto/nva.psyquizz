@@ -235,10 +235,14 @@ class DownloadLetter(uvclight.View):
 
     def render(self):
         style = getSampleStyleSheet()
+        nm = style['Normal']
+        nm.leading = 14
+        print nm
+        print self.context.about
         story = []
         for i, x in enumerate(self.tokens):
-            story.append(Paragraph('Serienbrief', style['Heading1']))
-            story.append(Paragraph(self.context.about, style['Normal']))
+            story.append(Paragraph('Serienbrief', style['Heading2']))
+            story.append(Paragraph(self.context.about.replace('</p>', '</p><br/><br/>'), nm))
             story.append(Paragraph(u"Die Befragung steht Ihnen unter dem Link http://gbpb.bgetem.de zur Verfügung. <br/> Sie können sich mit diesem Kennwort anmelden %s " %x, style['Normal']))
             story.append(PageBreak())
         tf = TemporaryFile()
