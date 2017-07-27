@@ -214,32 +214,22 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, PageBreak
 from tempfile import TemporaryFile
+from dolmen.forms.base.actions import Action, Actions
+from zope.interface import Interface
+from zope.schema import Text
+from cromlech.browser.interfaces import IResponse
+from cromlech.browser.exceptions import HTTPRedirect
+from cromlech.browser.utils import redirect_exception_response
 
-class DownloadLetter(uvclight.View):
-    require('manage.company')
-    uvclight.context(IClassSession)
-    uvclight.layer(ICompanyRequest)
 
-    def update(self):
-        app_url = self.application_url()
-        _all = itertools.chain(
-            self.context.uncomplete, self.context.uncomplete)
-        self.tokens = ['%s' % (a.access) for a in _all]
+class GenerateLetter(Action):
 
-    def make_response(self, result):
-        response = self.responseFactory(app_iter=result)
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = 'attachment; \
-                filename="serienbrief.pdf"'
-        return response
-
-    def render(self):
+    def generate(self, tokens, text):
         style = getSampleStyleSheet()
         story = []
-        for i, x in enumerate(self.tokens):
+        for i, x in enumerate(tokens):
             story.append(Paragraph('Serienbrief', style['Heading1']))
-            story.append(Paragraph(self.context.about, style['Normal']))
-            story.append(Paragraph(u"Die Befragung steht Ihnen unter dem Link http://gbpb.bgetem.de zur Verfügung. <br/> Sie können sich mit diesem Kennwort anmelden %s " %x, style['Normal']))
+            story.append(Paragraph(text + x, style['Normal']))
             story.append(PageBreak())
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)
@@ -247,6 +237,54 @@ class DownloadLetter(uvclight.View):
         tf.seek(0)
         return tf
 
+    def tokens(self, form):
+        _all = itertools.chain(
+            form.context.complete, form.context.uncomplete)
+        return ['%s' % (a.access) for a in _all]
+    
+    def __call__(self, form):
+        data, errors = form.extractData()
+        if errors:
+            form.flash(_(u'An error occurred.'))
+            return FAILURE
+
+        tokens = self.tokens(form)
+        data = self.generate(tokens, data['text'] + '<br />')
+        response = form.responseFactory(app_iter=data)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'attachment; \
+                filename="serienbrief.pdf"'
+        return response
+
+
+class ILetter(Interface):
+    text = Text(title=u"Text", required=True)
+    
+
+class DownloadLetter(uvclight.Form):
+    require('manage.company')
+    uvclight.context(IClassSession)
+    uvclight.layer(ICompanyRequest)
+
+    fields = uvclight.Fields(ILetter)
+    actions = Actions(GenerateLetter('Download'))
+
+    def updateForm(self):
+        action, result = self.updateActions()
+        if IResponse.providedBy(result):
+            return result
+        self.updateWidgets()
+
+    def __call__(self, *args, **kwargs):
+        try:
+            self.update(*args, **kwargs)
+            response = self.updateForm()
+            if response is not None:
+                return response
+            result = self.render(*args, **kwargs)
+            return self.make_response(result, *args, **kwargs)
+        except HTTPRedirect, exc:
+            return redirect_exception_response(self.responseFactory, exc)
 
 
 class XSLX(object):
