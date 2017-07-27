@@ -256,6 +256,27 @@ class XSLX(object):
         workbook = xlsxwriter.Workbook(filepath)
         worksheet = workbook.add_worksheet('Durchschnitt')
 
+        # Add a format for the header cells.
+        header_format = workbook.add_format({
+            'border': 1,
+            'bg_color': '#C6EFCE',
+            'bold': True,
+            'text_wrap': True,
+            'valign': 'vcenter',
+            'indent': 1,
+            'locked': 1,
+        })
+
+        question_format = workbook.add_format({
+            'border': 0,
+            'color': '#000000',
+            'bold': True,
+            'text_wrap': False,
+            'valign': 'vcenter',
+            'indent': 0,
+            'locked': 1,
+        })
+        
         for i, x in enumerate(self.statistics['global.averages']):
             worksheet.write(i, 0, x.title)
             worksheet.write(i, 1, x.average)
@@ -310,8 +331,6 @@ class XSLX(object):
         })
         worksheet.insert_chart("A1", chart3, {'x_offset': 15, 'y_offset': 10})
 
-
-
         worksheet = workbook.add_worksheet('Datenbasis')
         offset = 1 
         for cname, cvalues in self.statistics['criterias'].items():
@@ -331,6 +350,21 @@ class XSLX(object):
             worksheet.write("A%i" % offset, avg.title)
             worksheet.write("B%i" % offset, avg.average)
 
+        worksheet = workbook.add_worksheet('RAW')
+        worksheet.set_column('A:A', 25)
+        worksheet.set_column('B:END', 30)
+        
+        worksheet.write(0, 0, "Questions", header_format)
+        
+        for i in range(1, self.statistics['total'] + 1, 1):
+            worksheet.write(0, i, "Student %s" % i, header_format)
+        
+        for question, answers in self.statistics['raw'].items():
+            line = int(question)
+            worksheet.write(line, 0, "Question %s" % question, question_format)
+            for idx, answer in enumerate(answers, 1):
+                worksheet.write(line, idx, answer.result_title)
+ 
         workbook.close()
         return filepath
 
