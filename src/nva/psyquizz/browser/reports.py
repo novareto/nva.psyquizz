@@ -104,7 +104,6 @@ class GeneratePDF(uvclight.Page):
         parts.append(Paragraph(u'Anzahl Fragebögen %s' % self.request.form['total'], styles['Normal']))
         parts.append(Paragraph(u'Auswertungsgruppe', styles['Normal']))
         parts.append(Paragraph(crit_style, styles['Normal']))
-        import pdb; pdb.set_trace() 
         from reportlab.graphics.shapes import Drawing
         parts.append(drawing)
         parts.append(Paragraph(LEGEND, styles['Normal']))
