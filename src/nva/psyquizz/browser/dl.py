@@ -29,7 +29,7 @@ class DownloadCourse(uvclight.View):
         response = self.responseFactory(app_iter=result)
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'attachment; \
-                filename="kfza.pdf"'
+                filename="Papierfragebogen.pdf"'
         return response
 
     def genStuff(self, items):
@@ -41,8 +41,10 @@ class DownloadCourse(uvclight.View):
 
     def generate_page_one(self):
         style = getSampleStyleSheet()
+        nm = style['Normal']
+        nm.leading = 14
         story = []
-        story.append(Paragraph('KFZA-Fragebogen', style['Heading1']))
+        story.append(Paragraph('KFZA-Fragebogen', style['Heading2']))
         story.append(Paragraph(self.context.about.replace('\r\n', '<br/>'), style['Normal']))
         story.append(Paragraph(HINWEIS, style['Normal']))
         if self.context.course.criterias:

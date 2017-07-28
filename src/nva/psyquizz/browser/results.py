@@ -226,10 +226,17 @@ class GenerateLetter(Action):
 
     def generate(self, tokens, text):
         style = getSampleStyleSheet()
+        nm = style['Normal']
+        nm.leading = 14
         story = []
+        #for i, x in enumerate(self.tokens):
+        #    story.append(Paragraph('Serienbrief', style['Heading2']))
+        #    story.append(Paragraph(self.context.about.replace('</p>', '</p><br/><br/>'), nm))
+        #    story.append(Paragraph(u"Die Befragung steht Ihnen unter dem Link http://gbpb.bgetem.de zur Verfügung. <br/> Sie können sich mit diesem Kennwort anmelden %s " %x, style['Normal']))
+        print text
         for i, x in enumerate(tokens):
             story.append(Paragraph('Serienbrief', style['Heading1']))
-            story.append(Paragraph(text + x, style['Normal']))
+            story.append(Paragraph(text.replace('<br>','<br/>').replace('</p>', '</p><br/>') + x, nm))
             story.append(PageBreak())
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)
@@ -257,19 +264,61 @@ class GenerateLetter(Action):
         return response
 
 
+DEFAULT = u"""
+<p class="lead">Liebe Kolleginnen und Kollegen, </p>
+<p>wie bereits angekündigt, erhalten Sie heute Ihre Einladung zur Teilnahme an unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“.</p>
+<p>Ziel der Befragung ist es, Ihre Arbeitsbedingungen zu beurteilen und ggf. entsprechende Verbesserungsmaßnahmen einleiten zu können. Bitte beantworten Sie alle Fragen off
+<p> Keine Mitarbeiterin und kein Mitarbeiter unserer Firma wird Einblick in die originalen Datensätze erhalten, eine Rückverfolgung wird nicht möglich sein.</p>
+<p>Die Aussagekraft der Ergebnisse hängt von einer möglichst hohen Beteiligung ab. Geben Sie Ihrer Meinung Gewicht!</p>
+<p>Die Befragung läuft vom %s - %s . Während dieses Zeitraums haben Sie die Möglichkeit, über folgende Internetadresse an unserer Befragung teilzunehmen:
+<br/>
+
+<br/> <b>%s/quizz/</b> </p>
+<br/>
+<p>Über diesen Link gelangen Sie direkt auf den Fragebogen unseres Unternehmens. Das Ausfüllen wird etwa 5 Minuten in Anspruch nehmen. </p>
+<p>Nehmen Sie sich diese Zeit, Ihre Meinung zu äußern, wir freuen uns auf Ihre Rückmeldung und bedanken uns bei Ihnen für Ihre Mitarbeit!</p>
+<p>Sollten Sie Fragen oder Anmerkungen haben, wenden Sie sich bitte an: <br/> Ansprechpartner und Kontaktdaten</p>
+"""
+
+
 class ILetter(Interface):
     text = Text(title=u"Text", required=True)
     
+
+DESC = u"""Sie können den folgenden Text nutzen bzw. Ihren Vorstellungen entsprechend anpassen, um Ihre Beschäftigten
+ über die Befragung zu informieren und den Link sowie das Kennwort zum „Fragebogen“ zu verteilen.
+  Über die Funktion Serienbrief wird für jeden Beschäftigten ein Anschreiben inkl. Kennwort erzeugt.
+  Alternativ können Sie den Text als Grundlage für eine Serien E-Mail nutzen.
+  Hier müssen Sie die Kennwörter über die Kennwortliste einfügen."""
+
+
+from nva.psyquizz import  wysiwyg 
+
 
 class DownloadLetter(uvclight.Form):
     require('manage.company')
     uvclight.context(IClassSession)
     uvclight.layer(ICompanyRequest)
+    label = u"Musteranschreiben / Serienbrief"
+    description = DESC
 
     fields = uvclight.Fields(ILetter)
     actions = Actions(GenerateLetter('Download'))
+    ignoreContent = False
+
+    def update(self):
+        from dolmen.forms.base.datamanagers import DictDataManager
+        DE = DEFAULT % (
+            self.context.startdate.strftime('%d.%m.%Y'),
+            self.context.enddate.strftime('%d.%m.%Y'),
+            self.application_url()
+            )
+        defaults = dict(text=DE)
+        self.setContentData(
+            DictDataManager(defaults))
 
     def updateForm(self):
+        wysiwyg.need()
         action, result = self.updateActions()
         if IResponse.providedBy(result):
             return result
