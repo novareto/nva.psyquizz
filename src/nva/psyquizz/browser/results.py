@@ -214,32 +214,22 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, PageBreak
 from tempfile import TemporaryFile
+from dolmen.forms.base.actions import Action, Actions
+from zope.interface import Interface
+from zope.schema import Text
+from cromlech.browser.interfaces import IResponse
+from cromlech.browser.exceptions import HTTPRedirect
+from cromlech.browser.utils import redirect_exception_response
 
-class DownloadLetter(uvclight.View):
-    require('manage.company')
-    uvclight.context(IClassSession)
-    uvclight.layer(ICompanyRequest)
 
-    def update(self):
-        app_url = self.application_url()
-        _all = itertools.chain(
-            self.context.uncomplete, self.context.uncomplete)
-        self.tokens = ['%s' % (a.access) for a in _all]
+class GenerateLetter(Action):
 
-    def make_response(self, result):
-        response = self.responseFactory(app_iter=result)
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = 'attachment; \
-                filename="serienbrief.pdf"'
-        return response
-
-    def render(self):
+    def generate(self, tokens, text):
         style = getSampleStyleSheet()
         story = []
-        for i, x in enumerate(self.tokens):
+        for i, x in enumerate(tokens):
             story.append(Paragraph('Serienbrief', style['Heading1']))
-            story.append(Paragraph(self.context.about, style['Normal']))
-            story.append(Paragraph(u"Die Befragung steht Ihnen unter dem Link http://gbpb.bgetem.de zur Verfügung. <br/> Sie können sich mit diesem Kennwort anmelden %s " %x, style['Normal']))
+            story.append(Paragraph(text + x, style['Normal']))
             story.append(PageBreak())
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)
@@ -247,27 +237,96 @@ class DownloadLetter(uvclight.View):
         tf.seek(0)
         return tf
 
+    def tokens(self, form):
+        _all = itertools.chain(
+            form.context.complete, form.context.uncomplete)
+        return ['%s' % (a.access) for a in _all]
+    
+    def __call__(self, form):
+        data, errors = form.extractData()
+        if errors:
+            form.flash(_(u'An error occurred.'))
+            return FAILURE
+
+        tokens = self.tokens(form)
+        data = self.generate(tokens, data['text'] + '<br />')
+        response = form.responseFactory(app_iter=data)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'attachment; \
+                filename="serienbrief.pdf"'
+        return response
+
+
+class ILetter(Interface):
+    text = Text(title=u"Text", required=True)
+    
+
+class DownloadLetter(uvclight.Form):
+    require('manage.company')
+    uvclight.context(IClassSession)
+    uvclight.layer(ICompanyRequest)
+
+    fields = uvclight.Fields(ILetter)
+    actions = Actions(GenerateLetter('Download'))
+
+    def updateForm(self):
+        action, result = self.updateActions()
+        if IResponse.providedBy(result):
+            return result
+        self.updateWidgets()
+
+    def __call__(self, *args, **kwargs):
+        try:
+            self.update(*args, **kwargs)
+            response = self.updateForm()
+            if response is not None:
+                return response
+            result = self.render(*args, **kwargs)
+            return self.make_response(result, *args, **kwargs)
+        except HTTPRedirect, exc:
+            return redirect_exception_response(self.responseFactory, exc)
 
 
 class XSLX(object):
 
-    def generateXLSX(self, folder, filename="ouput.xlsx"):
+    def generateXLSX(self, folder, filename="Ergebnischart.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
-        worksheet = workbook.add_worksheet()
+        worksheet = workbook.add_worksheet('Durchschnitt')
 
+        # Add a format for the header cells.
+        header_format = workbook.add_format({
+            'border': 1,
+            'bg_color': '#C6EFCE',
+            'bold': True,
+            'text_wrap': True,
+            'valign': 'vcenter',
+            'indent': 1,
+            'locked': 1,
+        })
+
+        question_format = workbook.add_format({
+            'border': 0,
+            'color': '#000000',
+            'bold': True,
+            'text_wrap': False,
+            'valign': 'vcenter',
+            'indent': 0,
+            'locked': 1,
+        })
+        
         for i, x in enumerate(self.statistics['global.averages']):
             worksheet.write(i, 0, x.title)
             worksheet.write(i, 1, x.average)
 
         chart1 = workbook.add_chart({'type': 'radar'})
         chart1.add_series({
-            'name':       'Durchscnitt',
-            'categories': '=Sheet1!$A$1:$A$11',
-            'values':     '=Sheet1!$B$1:$B$11',
+            'name':       'Durchschnitt',
+            'categories': '=Durchschnitt!$A$1:$A$11',
+            'values':     '=Durchschnitt!$B$1:$B$11',
             })
 
-        chart1.set_title({'name': 'Results of sample analysis'})
+        chart1.set_title({'name': 'Durchschnitt'})
         chart1.set_x_axis({'name': 'Test number'})
         chart1.set_y_axis({'name': 'Sample length (mm)'})
         chart1.set_style(11)
@@ -275,38 +334,43 @@ class XSLX(object):
         # Insert the chart into the worksheet (with an offset).
         worksheet.insert_chart('A13', chart1, {'x_offset': 25, 'y_offset': 10})
 
+        worksheet = workbook.add_worksheet('Mittelwerte')
+
         data = json.loads(self.series)
         for y, x in enumerate(data):
             name = x['name']
-            r = 27
-            worksheet.write(27, y, name)
+            r = 1 
+            worksheet.write(0, y, name)
             for i, z in enumerate(x['data']):
                 worksheet.write((r+1+i), y, z)
+
+        worksheet = workbook.add_worksheet('Verteilung')
 
         chart3 = workbook.add_chart(
             {'type': 'bar', 'subtype': 'percent_stacked'})
 
         # Configure the first series.
         chart3.add_series({
-            'name':       '=Sheet1!$A$27',
-            'categories': '=Sheet1!$A$28:$A$39',
-            'values':     '=Sheet1!$A$28:$A$39',
+            'name':       '=Mittelwerte!$A$1',
+            'categories': '=Mittelwerte!$A$3:$A$11',
+            'values':     '=Mittelwerte!$A$3:$A$11',
         })
 
         chart3.add_series({
-            'name':       '=Sheet1!$B$27',
-            'categories': '=Sheet1!$B$28:$B$39',
-            'values':     '=Sheet1!$B$28:$B$39',
+            'name':       '=Mittelwerte!$B$1',
+            'categories': '=Mittelwerte!$B$3:$B$11',
+            'values':     '=Mittelwerte!$B$3:$B$11',
         })
 
         chart3.add_series({
-            'name':       '=Sheet1!$C$27',
-            'categories': '=Sheet1!$C$28:$C$39',
-            'values':     '=Sheet1!$C$28:$C$39',
+            'name':       '=Mittelwerte!$C$1',
+            'categories': '=Mittelwerte!$C$3:$C$11',
+            'values':     '=Mittelwerte!$C$3:$C$11',
         })
-        worksheet.insert_chart("G27", chart3, {'x_offset': 25, 'y_offset': 10})
+        worksheet.insert_chart("A1", chart3, {'x_offset': 15, 'y_offset': 10})
 
-        offset = 43
+        worksheet = workbook.add_worksheet('Datenbasis')
+        offset = 1 
         for cname, cvalues in self.statistics['criterias'].items():
             for v in cvalues:
                 offset += 1
@@ -316,14 +380,29 @@ class XSLX(object):
 
 
         offset += 2
-        worksheet.write("A%i" % offset, "Question")
-        worksheet.write("B%i" % offset, "Average")
+        worksheet.write("A%i" % offset, "Frage")
+        worksheet.write("B%i" % offset, "Durchschnitt")
         
         for avg in self.statistics['per_question_averages']:
             offset += 1
             worksheet.write("A%i" % offset, avg.title)
             worksheet.write("B%i" % offset, avg.average)
 
+        worksheet = workbook.add_worksheet('RAW')
+        worksheet.set_column('A:A', 25)
+        worksheet.set_column('B:END', 30)
+        
+        worksheet.write(0, 0, "Questions", header_format)
+        
+        for i in range(1, self.statistics['total'] + 1, 1):
+            worksheet.write(0, i, "Student %s" % i, header_format)
+        
+        for question, answers in self.statistics['raw'].items():
+            line = int(question)
+            worksheet.write(line, 0, "Question %s" % question, question_format)
+            for idx, answer in enumerate(answers, 1):
+                worksheet.write(line, idx, answer.result_title)
+ 
         workbook.close()
         return filepath
 
