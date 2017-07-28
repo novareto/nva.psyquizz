@@ -101,6 +101,7 @@
             <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
             Papierfragebögen eingeben 
 	  </a>
+    <!--
 	  <br />
           <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/offlinequizz')">
             <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
@@ -111,6 +112,7 @@
             <span class="glyphicon glyphicon-upload"
 		  aria-hidden="true"></span> Ausgefüllte Vorlage importieren
 	  </a>
+    -->
 	</dd>
       </div>
       <dt>

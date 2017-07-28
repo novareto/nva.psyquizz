@@ -214,36 +214,29 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, PageBreak
 from tempfile import TemporaryFile
+from dolmen.forms.base.actions import Action, Actions
+from zope.interface import Interface
+from zope.schema import Text
+from cromlech.browser.interfaces import IResponse
+from cromlech.browser.exceptions import HTTPRedirect
+from cromlech.browser.utils import redirect_exception_response
 
-class DownloadLetter(uvclight.View):
-    require('manage.company')
-    uvclight.context(IClassSession)
-    uvclight.layer(ICompanyRequest)
 
-    def update(self):
-        app_url = self.application_url()
-        _all = itertools.chain(
-            self.context.uncomplete, self.context.uncomplete)
-        self.tokens = ['%s' % (a.access) for a in _all]
+class GenerateLetter(Action):
 
-    def make_response(self, result):
-        response = self.responseFactory(app_iter=result)
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = 'attachment; \
-                filename="serienbrief.pdf"'
-        return response
-
-    def render(self):
+    def generate(self, tokens, text):
         style = getSampleStyleSheet()
         nm = style['Normal']
         nm.leading = 14
-        print nm
-        print self.context.about
         story = []
-        for i, x in enumerate(self.tokens):
-            story.append(Paragraph('Serienbrief', style['Heading2']))
-            story.append(Paragraph(self.context.about.replace('</p>', '</p><br/><br/>'), nm))
-            story.append(Paragraph(u"Die Befragung steht Ihnen unter dem Link http://gbpb.bgetem.de zur Verfügung. <br/> Sie können sich mit diesem Kennwort anmelden %s " %x, style['Normal']))
+        #for i, x in enumerate(self.tokens):
+        #    story.append(Paragraph('Serienbrief', style['Heading2']))
+        #    story.append(Paragraph(self.context.about.replace('</p>', '</p><br/><br/>'), nm))
+        #    story.append(Paragraph(u"Die Befragung steht Ihnen unter dem Link http://gbpb.bgetem.de zur Verfügung. <br/> Sie können sich mit diesem Kennwort anmelden %s " %x, style['Normal']))
+        print text
+        for i, x in enumerate(tokens):
+            story.append(Paragraph('Serienbrief', style['Heading1']))
+            story.append(Paragraph(text.replace('<br>','<br/>').replace('</p>', '</p><br/>') + x, nm))
             story.append(PageBreak())
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)
@@ -251,6 +244,96 @@ class DownloadLetter(uvclight.View):
         tf.seek(0)
         return tf
 
+    def tokens(self, form):
+        _all = itertools.chain(
+            form.context.complete, form.context.uncomplete)
+        return ['%s' % (a.access) for a in _all]
+    
+    def __call__(self, form):
+        data, errors = form.extractData()
+        if errors:
+            form.flash(_(u'An error occurred.'))
+            return FAILURE
+
+        tokens = self.tokens(form)
+        data = self.generate(tokens, data['text'] + '<br />')
+        response = form.responseFactory(app_iter=data)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'attachment; \
+                filename="serienbrief.pdf"'
+        return response
+
+
+DEFAULT = u"""
+<p class="lead">Liebe Kolleginnen und Kollegen, </p>
+<p>wie bereits angekündigt, erhalten Sie heute Ihre Einladung zur Teilnahme an unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“.</p>
+<p>Ziel der Befragung ist es, Ihre Arbeitsbedingungen zu beurteilen und ggf. entsprechende Verbesserungsmaßnahmen einleiten zu können. Bitte beantworten Sie alle Fragen off
+<p> Keine Mitarbeiterin und kein Mitarbeiter unserer Firma wird Einblick in die originalen Datensätze erhalten, eine Rückverfolgung wird nicht möglich sein.</p>
+<p>Die Aussagekraft der Ergebnisse hängt von einer möglichst hohen Beteiligung ab. Geben Sie Ihrer Meinung Gewicht!</p>
+<p>Die Befragung läuft vom %s - %s . Während dieses Zeitraums haben Sie die Möglichkeit, über folgende Internetadresse an unserer Befragung teilzunehmen:
+<br/>
+
+<br/> <b>%s/quizz/</b> </p>
+<br/>
+<p>Über diesen Link gelangen Sie direkt auf den Fragebogen unseres Unternehmens. Das Ausfüllen wird etwa 5 Minuten in Anspruch nehmen. </p>
+<p>Nehmen Sie sich diese Zeit, Ihre Meinung zu äußern, wir freuen uns auf Ihre Rückmeldung und bedanken uns bei Ihnen für Ihre Mitarbeit!</p>
+<p>Sollten Sie Fragen oder Anmerkungen haben, wenden Sie sich bitte an: <br/> Ansprechpartner und Kontaktdaten</p>
+"""
+
+
+class ILetter(Interface):
+    text = Text(title=u"Text", required=True)
+    
+
+DESC = u"""Sie können den folgenden Text nutzen bzw. Ihren Vorstellungen entsprechend anpassen, um Ihre Beschäftigten
+ über die Befragung zu informieren und den Link sowie das Kennwort zum „Fragebogen“ zu verteilen.
+  Über die Funktion Serienbrief wird für jeden Beschäftigten ein Anschreiben inkl. Kennwort erzeugt.
+  Alternativ können Sie den Text als Grundlage für eine Serien E-Mail nutzen.
+  Hier müssen Sie die Kennwörter über die Kennwortliste einfügen."""
+
+
+from nva.psyquizz import  wysiwyg 
+
+
+class DownloadLetter(uvclight.Form):
+    require('manage.company')
+    uvclight.context(IClassSession)
+    uvclight.layer(ICompanyRequest)
+    label = u"Musteranschreiben / Serienbrief"
+    description = DESC
+
+    fields = uvclight.Fields(ILetter)
+    actions = Actions(GenerateLetter('Download'))
+    ignoreContent = False
+
+    def update(self):
+        from dolmen.forms.base.datamanagers import DictDataManager
+        DE = DEFAULT % (
+            self.context.startdate.strftime('%d.%m.%Y'),
+            self.context.enddate.strftime('%d.%m.%Y'),
+            self.application_url()
+            )
+        defaults = dict(text=DE)
+        self.setContentData(
+            DictDataManager(defaults))
+
+    def updateForm(self):
+        wysiwyg.need()
+        action, result = self.updateActions()
+        if IResponse.providedBy(result):
+            return result
+        self.updateWidgets()
+
+    def __call__(self, *args, **kwargs):
+        try:
+            self.update(*args, **kwargs)
+            response = self.updateForm()
+            if response is not None:
+                return response
+            result = self.render(*args, **kwargs)
+            return self.make_response(result, *args, **kwargs)
+        except HTTPRedirect, exc:
+            return redirect_exception_response(self.responseFactory, exc)
 
 
 class XSLX(object):
@@ -260,6 +343,27 @@ class XSLX(object):
         workbook = xlsxwriter.Workbook(filepath)
         worksheet = workbook.add_worksheet('Durchschnitt')
 
+        # Add a format for the header cells.
+        header_format = workbook.add_format({
+            'border': 1,
+            'bg_color': '#C6EFCE',
+            'bold': True,
+            'text_wrap': True,
+            'valign': 'vcenter',
+            'indent': 1,
+            'locked': 1,
+        })
+
+        question_format = workbook.add_format({
+            'border': 0,
+            'color': '#000000',
+            'bold': True,
+            'text_wrap': False,
+            'valign': 'vcenter',
+            'indent': 0,
+            'locked': 1,
+        })
+        
         for i, x in enumerate(self.statistics['global.averages']):
             worksheet.write(i, 0, x.title)
             worksheet.write(i, 1, x.average)
@@ -314,8 +418,6 @@ class XSLX(object):
         })
         worksheet.insert_chart("A1", chart3, {'x_offset': 15, 'y_offset': 10})
 
-
-
         worksheet = workbook.add_worksheet('Datenbasis')
         offset = 1 
         for cname, cvalues in self.statistics['criterias'].items():
@@ -335,6 +437,21 @@ class XSLX(object):
             worksheet.write("A%i" % offset, avg.title)
             worksheet.write("B%i" % offset, avg.average)
 
+        worksheet = workbook.add_worksheet('RAW')
+        worksheet.set_column('A:A', 25)
+        worksheet.set_column('B:END', 30)
+        
+        worksheet.write(0, 0, "Questions", header_format)
+        
+        for i in range(1, self.statistics['total'] + 1, 1):
+            worksheet.write(0, i, "Student %s" % i, header_format)
+        
+        for question, answers in self.statistics['raw'].items():
+            line = int(question)
+            worksheet.write(line, 0, "Question %s" % question, question_format)
+            for idx, answer in enumerate(answers, 1):
+                worksheet.write(line, idx, answer.result_title)
+ 
         workbook.close()
         return filepath
 

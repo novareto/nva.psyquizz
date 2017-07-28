@@ -1028,7 +1028,7 @@ class GenericAnswerQuizz(AnswerQuizz):
         form = Form.render(self)
         jscontent = u"""
 <style>
-   label {  display: none; }
+   label {  float: left; padding-right: 20px; }
    .highlight {
      background-color: #f7dada;
    }
