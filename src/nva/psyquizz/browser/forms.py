@@ -837,7 +837,7 @@ class SaveQuizz(Action):
 
         session.add(form.context)
         session.add(quizz)
-        form.flash(_(u'Thank you for answering the quizz'))
+        #form.flash(_(u'Thank you for answering the quizz'))
         form.redirect(form.request.url + '/finishquizz')
         return SUCCESS
 

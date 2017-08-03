@@ -62,7 +62,7 @@ class QuizzErrorPage(Page):
 
     def render(self):
         if self.context.location.completion_date.date() == date.today():
-            return _(u"My message of completion ! THANK YOU")
+            return _(u"Vielen Dank für Ihre Teilnahme. Ihre Angaben wurden gespeichert.")
         return _(u"This quizz is already completed and therefore closed.")
 
 

@@ -45,7 +45,7 @@ class GeneratePDF(uvclight.Page):
         response = self.responseFactory(app_iter=result)
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'attachment; \
-                filename="charts.pdf"'
+                filename="Resultate_Befragung.pdf"'
         return response
 
     def headerfooter(self, canvas, doc):
@@ -93,7 +93,7 @@ class GeneratePDF(uvclight.Page):
         tf.write(unicode(pSVG).encode('utf-8'))
         tf.seek(0)
         drawing = svg2rlg(tf.name)
-        drawing.height = 320.0
+        drawing.height = 340.0
         pSVG1 = self.request.form.get('pSVG1')
         tf = tempfile.NamedTemporaryFile()
         tf.write(unicode(pSVG1).encode('utf-8'))
@@ -101,11 +101,12 @@ class GeneratePDF(uvclight.Page):
         drawing1 = svg2rlg(tf.name)
         #svg2rlg(pSVG)
         parts.append(Spacer(0, 2*cm))
-        parts.append(Paragraph(u'Anzahl Fragebögen %s' % self.request.form['total'], styles['Normal']))
-        parts.append(Paragraph(u'Auswertungsgruppe', styles['Normal']))
         parts.append(Paragraph(crit_style, styles['Normal']))
         from reportlab.graphics.shapes import Drawing
         parts.append(drawing)
+        parts.append(Paragraph(u'Anzahl Fragebögen %s' % self.request.form['total'], styles['Normal']))
+        parts.append(Paragraph(u'Auswertungsgruppe', styles['Normal']))
+        parts.append(Paragraph(crit_style, styles['Normal']))
         parts.append(Paragraph(LEGEND, styles['Normal']))
         parts.append(PageBreak())
         parts.append(Spacer(0, 4*cm))
@@ -120,7 +121,6 @@ class GeneratePDF(uvclight.Page):
         parts.append(table)
         parts.append(PageBreak())
         parts.append(Spacer(0, 1*cm))
-        parts.append(Paragraph(u'Verteilung der Antworten', styles['Normal']))
         parts.append(drawing1)
         doc.build(parts, onFirstPage=self.headerfooter, onLaterPages=self.headerfooter)
         pdf = doc.filename
