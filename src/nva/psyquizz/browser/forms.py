@@ -6,6 +6,7 @@ import json
 import uuid
 import datetime
 import html2text
+import uvclight
 
 from .. import wysiwyg, quizzjs, startendpicker
 from ..apps.anonymous import QuizzBoard
@@ -42,6 +43,18 @@ from zope.interface import provider
 from zope.schema import Bool, Int, Choice, Password, TextLine
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
+from grokcore.component import adapter, implementer, adapts
+from dolmen.forms.base.interfaces import IForm
+from cromlech.browser import ITemplate
+from ..interfaces import IQuizzLayer
+
+
+@adapter(IForm, IQuizzLayer)
+@implementer(ITemplate)
+def form_template(context, request):
+    """default template for the menu"""
+    return uvclight.get_template('form.cpt', __file__)
+
 
 
 with open(os.path.join(os.path.dirname(__file__), 'mail.tpl'), 'r') as fd:
@@ -125,7 +138,8 @@ class CreateCriterias(Form):
     fields = Fields(ICriteria).select('title', 'items')
     label = u"Auswertungsgruppen anlegen"
     description = u"""
-Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.  
+Bitte geben Sie einen Oberbegriff <i class="glyphicon glyphicon-question-sign" data-container="body" data-trigger="hover" data-toggle="popover" data-placement="top"
+data-content="Beschreibung der Auswertungsgruppen, z.B. Abteilung, Team, Standort, Funktion…."> </i> für Ihre Auswertungsgruppen an (z.B.  
 „Abteilung“). Zu jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen (z.B.  
 „Personalabteilung“ und „Produktion“). <b>Aus Datenschutzgründen werden nur Ergebnisse von Auswertungsgruppen angezeigt, 
 von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
@@ -133,6 +147,7 @@ von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
 
     @property
     def action_url(self):
+        quizzjs.need()
         return self.request.path
 
     @action(_(u'Add'))
