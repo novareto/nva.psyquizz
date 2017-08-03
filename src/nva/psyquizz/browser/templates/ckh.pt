@@ -123,7 +123,7 @@
            data-content="E-Mail Vorlage mit Link zum Fragebogen und Befragungszeitraum, die an die Beschäftigten verschickt werden kann">&nbsp;</i>
       </dt> 
       <dd>
-	<a href="" tal:attributes="href  view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/exampletext')"> <span class="glyphicon glyphicon-comment"> </span> Ihre Vorlage  </a> 
+	<a href="" tal:condition="session.strategy != 'fixed'" tal:attributes="href  view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/exampletext')"> <span class="glyphicon glyphicon-comment"> </span> Ihre Vorlage  </a> 
 	<a tal:condition="session.strategy == 'fixed'" href="" tal:attributes="href
     view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' +
     str(session.id) + '/downloadletter')"> <span class="glyphicon

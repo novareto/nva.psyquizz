@@ -303,7 +303,7 @@ class DownloadLetter(uvclight.Form):
     description = DESC
 
     fields = uvclight.Fields(ILetter)
-    actions = Actions(GenerateLetter('Download'))
+    actions = Actions(GenerateLetter('Serienbrief erstellen'))
     ignoreContent = False
 
     def update(self):
