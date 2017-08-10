@@ -35,7 +35,7 @@
 	       data-toggle="popover" data-placement="top"
                data-content="Bereiche nach denen ausgewertet werden soll, z.B. Organisationseinheiten oder Tätigkeiten">&nbsp;</i>
 	    <small>
-              <a href="" tal:attributes="href view.url(context, str(company.id) + '/criterias/add.criteria')" data-toggle="tooltip" data-placement="left" title="Neue Auswertungsgruppe anlegen" class="pull-top">(Neue Gruppe anlegen)</a>
+              <a href="" tal:attributes="href view.url(context, str(company.id) + '/criterias/add.criteria')" data-toggle="tooltip" data-placement="left" class="pull-top">(Neue Gruppe anlegen)</a>
 	    </small>
 	  </h3>
           <ul>
@@ -53,17 +53,13 @@
           <hr>
             <h3> Befragungen 
               <small>
-		<a href="" data-toggle="tooltip" data-placement="left"
-		   title="weitere Erhebung anlegen"
-		   tal:attributes="href view.url(context, str(company.id) + '/add.course')"> (Neue Befragung anlegen)  </a>
+		<a href="" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/add.course')"> (Neue Befragung anlegen)  </a>
               </small>
             </h3>
             <div class="befragung" tal:repeat="course sorted(company.courses, key=lambda x: x.id, reverse=True)">
               <span class="lead" tal:content="course.title"> </span> 
 	      <a href="" onclick="_paq.push(['trackEvent', 'Alle Befragun löschen']);"
-		 data-toggle="tooltip" data-placement="left"
-                 title="Alle Befragungen löschen"
-		 tal:attributes="href view.url(context,
+		 data-toggle="tooltip" data-placement="left" title="" tal:attributes="href view.url(context,
 				 str(company.id) + '/' +
 				  str(course.id) + '/delete')">
 			    <span class="glyphicon glyphicon-trash"> </span> </a>
@@ -103,8 +99,9 @@
 	  <br />
           <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/answer')">
             <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-            Papierfragebögen im Batchverfahren eintragen
+            Papierfragebögen eingeben 
 	  </a>
+    <!--
 	  <br />
           <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/offlinequizz')">
             <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
@@ -115,6 +112,7 @@
             <span class="glyphicon glyphicon-upload"
 		  aria-hidden="true"></span> Ausgefüllte Vorlage importieren
 	  </a>
+    -->
 	</dd>
       </div>
       <dt>
@@ -125,7 +123,7 @@
            data-content="E-Mail Vorlage mit Link zum Fragebogen und Befragungszeitraum, die an die Beschäftigten verschickt werden kann">&nbsp;</i>
       </dt> 
       <dd>
-	<a href="" tal:attributes="href  view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/exampletext')"> <span class="glyphicon glyphicon-comment"> </span> Ihre Vorlage  </a> 
+	<a href="" tal:condition="session.strategy != 'fixed'" tal:attributes="href  view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/exampletext')"> <span class="glyphicon glyphicon-comment"> </span> Ihre Vorlage  </a> 
 	<a tal:condition="session.strategy == 'fixed'" href="" tal:attributes="href
     view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' +
     str(session.id) + '/downloadletter')"> <span class="glyphicon
@@ -251,7 +249,7 @@
       </dl>
     </fieldset>
   </div>
-  <a href="" class="pull-right btn btn-primary" data-toggle="tooltip" data-placement="left" title="Unternehmen löschen" tal:attributes="href view.url(context, str(company.id) + '/delete')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Betrieb löschen </a>
+  <a href="" class="pull-right btn btn-primary" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/delete')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Betrieb löschen </a>
   <div tal:condition="len(list(company.courses)) == 0">
     <p> Sie haben bis jetzt für Ihr Unternehmen <span tal:content="company.name"/> noch keine Befragung angelegt.
     Klicken Sie bitte <a href="" tal:attributes="href view.url(context, str(company.id) + '/add.course')">hier </a> um eine neue Befragung anzulegen.
@@ -262,7 +260,7 @@
 </div>
 <br /><br />
 <div class="actions pull-right">
-  <a href="" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="Weiteres Unternehmen anlegen" tal:attributes="href view.url(context, 'add.company')"> <span class="glyphicon glyphicon-plus"> </span>  Betrieb anlegen  </a>
+  <a href="" class="btn btn-default" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, 'add.company')"> <span class="glyphicon glyphicon-plus"> </span>  Betrieb anlegen  </a>
 </div>
 <br />
 </div>
