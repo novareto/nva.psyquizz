@@ -6,17 +6,20 @@ $( document ).ready(function() {
     $('span.field-required').hide();
 
     $('.panel').on('hidden.bs.collapse', function (e) {
-	sessionStorage.removeItem("accordion");
+        console.log('CLOSE')
+	  //sessionStorage.removeItem("accordion");
     })
 
     $('.panel').on('show.bs.collapse', function (e) {
-	var panel = $(this).children('.panel-collapse').attr('id');
-	sessionStorage.setItem("accordion", panel);
+      console.log('OPEN')
+	  var panel = $(this).children('.panel-collapse').attr('id');
+	  sessionStorage.setItem("accordion", panel);
     })
 
     var panels = $('div.panel')
 
     var panel = sessionStorage.getItem("accordion");
+    console.log(panel)
     if (panel == null) {
         if (panels.length == 1)
         {

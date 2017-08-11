@@ -159,6 +159,14 @@ class SessionStatistics(CourseStatistics):
         return CourseStatistics.update(self, filters)
         
 
+DOKU_TEXT = """Falls Sie die Kennwörter nicht mit Hilfe des Serienbriefes verteilen möchten können
+Sie diese Excel Liste für eine alternative Form der Verteilung nutzen, z.B. Serien E-
+Mail (Funktion ist nicht Bestandteil des Online Tools) nutzen.
+Unter „Kennwörter“ finden Sie eine Übersicht der für den Zugang zur Befragung
+benötigten Kennwörter. Unter „Links &amp; Kennwörter“ sind Link und individuelles
+Kennwort zusammengeführt, so dass sich nach Klick auf den Link direkt der
+Fragebogen öffnen lässt."""
+
 class DownloadTokens(uvclight.View):
     require('manage.company')
     uvclight.context(IClassSession)
@@ -173,15 +181,14 @@ class DownloadTokens(uvclight.View):
     def generateXLSX(self, folder, filename="ouput.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
+        worksheet = workbook.add_worksheet(u'Dokumentation')
+        worksheet.insert_textbox(1, 1, DOKU_TEXT)
         worksheet = workbook.add_worksheet(u'Kennwörter')
         for i, x in enumerate(self.tokens):
             worksheet.write(i, 0, x.split('/')[-1:][0])
-        worksheet = workbook.add_worksheet(u'Links')
+        worksheet = workbook.add_worksheet(u'Links & Kennwörter')
         for i, x in enumerate(self.tokens):
             worksheet.write(i, 0, x)
-        worksheet = workbook.add_worksheet(u'Dokumentation')
-        text = 'DOKUMENTATION TBD'
-        worksheet.insert_textbox(1, 1, text)
         
         workbook.close()
         return filepath

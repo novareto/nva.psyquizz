@@ -78,10 +78,6 @@
       <dd tal:content="view.quizz_name(course)"> </dd> 
       <dt>
 	Befragungszeitraum
-	<i class="glyphicon glyphicon-question-sign"
-	   data-container="body" data-trigger="hover"
-	   data-toggle="popover" data-placement="top"
-           data-content="Zeitraum in dem der Fragebogen für die Beschäftigten zugänglich ist">&nbsp;</i>
       </dt>
       <dd>
       	<span class="glyphicon glyphicon-calendar"> </span>
@@ -117,17 +113,24 @@
       </div>
       <dt>
 	Musteranschreiben
-	<i class="glyphicon glyphicon-question-sign"
+	<i tal:condition="session.strategy != 'fixed'" class="glyphicon glyphicon-question-sign"
 	   data-container="body" data-trigger="hover"
 	   data-toggle="popover" data-placement="top"
            data-content="E-Mail Vorlage mit Link zum Fragebogen und Befragungszeitraum, die an die Beschäftigten verschickt werden kann">&nbsp;</i>
+	<i tal:condition="session.strategy == 'fixed'" class="glyphicon glyphicon-question-sign"
+	   data-container="body" data-trigger="hover"
+	   data-toggle="popover" data-placement="top"
+           data-content="Anpassbarer Serienbrief zum Ausdrucken, um individuelles Kennwort und Link zur Befragung an die Beschäftigten zu verteilen">&nbsp;</i>
       </dt> 
       <dd>
-	<a href="" tal:condition="session.strategy != 'fixed'" tal:attributes="href  view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/exampletext')"> <span class="glyphicon glyphicon-comment"> </span> Ihre Vorlage  </a> 
+	<a href="" tal:condition="session.strategy != 'fixed'" tal:attributes="href
+    view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' +
+    str(session.id) + '/exampletext')"> <span class="glyphicon
+      glyphicon-comment"> </span> Vorlage E-Mail  </a> 
 	<a tal:condition="session.strategy == 'fixed'" href="" tal:attributes="href
     view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' +
     str(session.id) + '/downloadletter')"> <span class="glyphicon
-      glyphicon-download" aria-hidden="true"> </span> Serienbrief </a> 
+      glyphicon-download" aria-hidden="true"> </span> Druckvorlage Serienbrief </a> 
       </dd>
       <dt> Zugang zur Befragung: </dt> 
       <dd>
@@ -167,7 +170,7 @@
 	  <i class="glyphicon glyphicon-question-sign"
 	     data-container="body" data-trigger="hover"
 	     data-toggle="popover" data-placement="top"
-             data-content="Kennwörter die für den Zugang zum Fragebogen benötigt werden, müssen an die Beschäftigten verteilt werden">&nbsp;</i>
+             data-content="Excel Liste der Kennwörter für den Zugang zur Befragung">&nbsp;</i>
 	</dt>
         <dd>
 	<a href="" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/downloadtokens')">

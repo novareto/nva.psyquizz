@@ -97,9 +97,6 @@ class ICriteria(IContent):
 
     items = schema.Text(
         description=_(u'Bitte geben Sie jede Auswertungsgruppe \
-                <i class="glyphicon glyphicon-question-sign" data-container="body"\
-                data-trigger="hover" data-toggle="popover" data-placement="top"\
-                data-content="z.B. Personalabteilung, Vertrieb und Produktion"> </i>\
                  in eine neue Zeile ein, indem Sie die Eingabetaste („Return“) betätigen.'),
         title=_(u"Please enter one criteria per line"),
         #description=_(u"Description items"),
@@ -220,9 +217,7 @@ class IClassSession(ILocation, IContent):
         )
 
     about = schema.Text(
-        title=_(u'Einführungstext <i class="glyphicon glyphicon-question-sign" data-container="body"\
-                data-trigger="hover" data-toggle="popover" data-placement="top"\
-                data-content="Anpassbare „Startseite“ des Fragebogens; wird auch für Papierfragebogen verwendet."> </i>'),
+        title=_(u'Einführungstext'),
         description=_("This Text gives Information about the Course to Participants"),
         required=False,
         default=ABOUT_TEXT,

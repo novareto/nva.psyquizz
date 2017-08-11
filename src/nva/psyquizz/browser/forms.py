@@ -138,8 +138,7 @@ class CreateCriterias(Form):
     fields = Fields(ICriteria).select('title', 'items')
     label = u"Auswertungsgruppen anlegen"
     description = u"""
-Bitte geben Sie einen Oberbegriff <i class="glyphicon glyphicon-question-sign" data-container="body" data-trigger="hover" data-toggle="popover" data-placement="top"
-data-content="Beschreibung der Auswertungsgruppen, z.B. Abteilung, Team, Standort, Funktion…."> </i> für Ihre Auswertungsgruppen an (z.B.  
+Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.  
 „Abteilung“). Zu jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen (z.B.  
 „Personalabteilung“ und „Produktion“). <b>Aus Datenschutzgründen werden nur Ergebnisse von Auswertungsgruppen angezeigt, 
 von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
