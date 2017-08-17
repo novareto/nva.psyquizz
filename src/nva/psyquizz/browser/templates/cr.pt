@@ -176,9 +176,19 @@
 	yAxis: {
             gridLineInterpolation: 'polygon',
             lineWidth: 0,
-            tickAmount: 3,
+            tickAmount: 5,
+	    startOnTick: true,
+	    showLastLabel: true,
+	    endOnTick: true,
             min: 1,
 	    max: 5,
+            labels: {
+                style: {
+                    color: 'black',
+                    fontSize: '15px',
+		    fontWeight: 'bold'
+                    }
+		},
             plotBands: [
 		{
 		    color: '#D8262B',
@@ -203,6 +213,16 @@
             enabled: true,
             floating: true,
             verticalAlign: 'top'
+	},
+	plotOptions: {
+           line: {
+               events: {
+                    legendItemClick: function () {
+                       return false; 
+                     }
+                },
+                showInLegend: true
+            }
 	},
 	series: [{
             name: 'gesamt',

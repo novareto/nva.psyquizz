@@ -472,6 +472,17 @@ class DeletedCompany(DeleteForm):
         return SUCCESS
 
 
+#from uvclight.form_components.widgets import InOutWidget
+#from dolmen.forms.ztk.widgets.collection import CollectionSchemaField
+#from dolmen.forms.ztk.widgets.choice import ChoiceSchemaField
+#from zope.interface import Interface
+#
+#class InOutWidget(InOutWidget):
+#    adapts(CollectionSchemaField, ChoiceSchemaField, Interface, Interface)
+
+
+
+
 @menuentry(IContextualActionsMenu, order=10)
 class CreateCourse(Form):
     context(Company)
@@ -1021,9 +1032,11 @@ class GenericAnswerQuizz(AnswerQuizz):
     require('manage.company')
     title(_(u'Answer the quizz'))
     dataValidators = []
+    label = u"Eingabe Papierfragebögen"
+    description =u"Eingabe kann per DropDown Menü oder über die Tastatur (Kreuz ganz links Eingabe 1 bis Kreuz ganz rechts Eingabe 5) erfolgen."
 
     fmode = 'input'
-    actions = Actions(CompanyAnswerQuizz(_(u'Answer')))
+    actions = Actions(CompanyAnswerQuizz(u'speichern'))
 
     def update(self):
         self.template = Form.template

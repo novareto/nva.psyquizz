@@ -94,7 +94,7 @@
 	  </a>
 	  <br />
           <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/answer')">
-            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+            <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
             Papierfragebögen eingeben 
 	  </a>
     <!--

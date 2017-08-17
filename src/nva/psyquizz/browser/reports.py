@@ -80,6 +80,7 @@ class GeneratePDF(uvclight.Page):
                 )
         if not rc:
             rc.append('alle')
+        import pdb; pdb.set_trace() 
         crit_style = "<ul> %s </ul>" % "".join(rc)
 
         avg = json.loads(self.request.form['averages'])
@@ -93,7 +94,7 @@ class GeneratePDF(uvclight.Page):
         tf.write(unicode(pSVG).encode('utf-8'))
         tf.seek(0)
         drawing = svg2rlg(tf.name)
-        drawing.height = 340.0
+        drawing.height = 350.0
         pSVG1 = self.request.form.get('pSVG1')
         tf = tempfile.NamedTemporaryFile()
         tf.write(unicode(pSVG1).encode('utf-8'))

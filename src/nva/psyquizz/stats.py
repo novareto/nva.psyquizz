@@ -12,12 +12,12 @@ from zope.schema import getFieldsInOrder
 
 Result = namedtuple(
     'Result',
-    ('answer', 'id', 'result', 'result_title'))
+    ('answer', 'id', 'result', 'result_title', 'description'))
 
 
 Average = namedtuple(
     'Average',
-    ('title', 'average'))
+    ('title', 'average') )
 
 
 def average_computation(data):
@@ -117,7 +117,8 @@ def compute(quizz, averages, filters):
                 field,
                 dd.title,
                 field_answer,
-                dd.source.getTerm(field_answer).title
+                dd.source.getTerm(field_answer).title,
+                dd.description
             )]
 
             # For the global computation
@@ -130,7 +131,8 @@ def compute(quizz, averages, filters):
                     field,
                     dd.title,
                     field_answer,
-                    dd.source.getTerm(field_answer).title
+                    dd.source.getTerm(field_answer).title,
+                    dd.description
                 )
             )
         # The computation for a single user is done.

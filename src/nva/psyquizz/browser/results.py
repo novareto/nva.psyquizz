@@ -159,7 +159,7 @@ class SessionStatistics(CourseStatistics):
         return CourseStatistics.update(self, filters)
         
 
-DOKU_TEXT = """Falls Sie die Kennwörter nicht mit Hilfe des Serienbriefes verteilen möchten können
+DOKU_TEXT = u"""Falls Sie die Kennwörter nicht mit Hilfe des Serienbriefes verteilen möchten können
 Sie diese Excel Liste für eine alternative Form der Verteilung nutzen, z.B. Serien E-
 Mail (Funktion ist nicht Bestandteil des Online Tools) nutzen.
 Unter „Kennwörter“ finden Sie eine Übersicht der für den Zugang zur Befragung
@@ -182,7 +182,7 @@ class DownloadTokens(uvclight.View):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
         worksheet = workbook.add_worksheet(u'Dokumentation')
-        worksheet.insert_textbox(1, 1, DOKU_TEXT)
+        worksheet.insert_textbox(0, 0, DOKU_TEXT, {'width': 450, 'height': 700, 'font': {'size': 13}})
         worksheet = workbook.add_worksheet(u'Kennwörter')
         for i, x in enumerate(self.tokens):
             worksheet.write(i, 0, x.split('/')[-1:][0])
@@ -231,7 +231,7 @@ from cromlech.browser.utils import redirect_exception_response
 
 class GenerateLetter(Action):
 
-    def generate(self, tokens, text):
+    def generate(self, tokens, text, form):
         style = getSampleStyleSheet()
         nm = style['Normal']
         nm.leading = 14
@@ -243,7 +243,8 @@ class GenerateLetter(Action):
         print text
         for i, x in enumerate(tokens):
             story.append(Paragraph('Serienbrief', style['Heading1']))
-            story.append(Paragraph(text.replace('<br>','<br/>').replace('</p>', '</p><br/>') + x, nm))
+            story.append(Paragraph(text.replace('<br>','<br/>').replace('</p>', '</p><br/>'), nm))
+            story.append(Paragraph('Die Internetadresse lautet: <b> %s/quizz</b> <br/> Ihr Kennwort lautet: <b> %s</b> ' % (form.application_url(), x), nm))
             story.append(PageBreak())
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)
@@ -263,7 +264,7 @@ class GenerateLetter(Action):
             return FAILURE
 
         tokens = self.tokens(form)
-        data = self.generate(tokens, data['text'] + '<br />')
+        data = self.generate(tokens, data['text'] + '<br />', form)
         response = form.responseFactory(app_iter=data)
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'attachment; \
@@ -280,23 +281,23 @@ DEFAULT = u"""
 <p>Die Befragung läuft vom %s - %s . Während dieses Zeitraums haben Sie die Möglichkeit, über folgende Internetadresse an unserer Befragung teilzunehmen:
 <br/>
 
-<br/> <b>%s/quizz/</b> </p>
-<br/>
 <p>Über diesen Link gelangen Sie direkt auf den Fragebogen unseres Unternehmens. Das Ausfüllen wird etwa 5 Minuten in Anspruch nehmen. </p>
 <p>Nehmen Sie sich diese Zeit, Ihre Meinung zu äußern, wir freuen uns auf Ihre Rückmeldung und bedanken uns bei Ihnen für Ihre Mitarbeit!</p>
-<p>Sollten Sie Fragen oder Anmerkungen haben, wenden Sie sich bitte an: <br/> Ansprechpartner und Kontaktdaten</p>
+<p>Sollten Sie Fragen oder Anmerkungen haben, wenden Sie sich bitte an:</p> <p><span> A n s p r e c h p a r t n e r   &nbsp;    und   &nbsp;     K o n t a k t d a t e n </span></p>
 """
 
+from nva.psyquizz.models.interfaces import v_about
 
 class ILetter(Interface):
-    text = Text(title=u"Text", required=True)
+    text = Text(title=u" ", required=True, constraint=v_about)
     
 
-DESC = u"""Sie können den folgenden Text nutzen bzw. Ihren Vorstellungen entsprechend anpassen, um Ihre Beschäftigten
- über die Befragung zu informieren und den Link sowie das Kennwort zum „Fragebogen“ zu verteilen.
-  Über die Funktion Serienbrief wird für jeden Beschäftigten ein Anschreiben inkl. Kennwort erzeugt.
-  Alternativ können Sie den Text als Grundlage für eine Serien E-Mail nutzen.
-  Hier müssen Sie die Kennwörter über die Kennwortliste einfügen."""
+
+DESC = u"""Nutzen Sie die folgende (anpassbaren) Vorlage, um Ihre Beschäftigten über die Befragung zu informieren.
+Über die Funktion „Serienbrief erstellen“, wird eine PDF Datei mit Anschreiben für jeden
+Beschäftigten - inkl. Link zur Befragung und einem individuellen Kennwort - erzeugt. Drucken
+Sie die Anschreiben aus und verteilen Sie diese an die Beschäftigten.
+"""
 
 
 from nva.psyquizz import  wysiwyg 
@@ -306,7 +307,7 @@ class DownloadLetter(uvclight.Form):
     require('manage.company')
     uvclight.context(IClassSession)
     uvclight.layer(ICompanyRequest)
-    label = u"Musteranschreiben / Serienbrief"
+    label = u"Serienbrief"
     description = DESC
 
     fields = uvclight.Fields(ILetter)
@@ -318,7 +319,6 @@ class DownloadLetter(uvclight.Form):
         DE = DEFAULT % (
             self.context.startdate.strftime('%d.%m.%Y'),
             self.context.enddate.strftime('%d.%m.%Y'),
-            self.application_url()
             )
         defaults = dict(text=DE)
         self.setContentData(
@@ -348,7 +348,9 @@ class XSLX(object):
     def generateXLSX(self, folder, filename="Ergebnischart.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
-        worksheet = workbook.add_worksheet('Durchschnitt')
+        worksheet = workbook.add_worksheet('Mittelwerte')
+        nformat = workbook.add_format()
+        nformat.set_num_format('0.00')
 
         # Add a format for the header cells.
         header_format = workbook.add_format({
@@ -373,13 +375,13 @@ class XSLX(object):
         
         for i, x in enumerate(self.statistics['global.averages']):
             worksheet.write(i, 0, x.title)
-            worksheet.write(i, 1, x.average)
+            worksheet.write(i, 1, x.average, nformat)
 
         chart1 = workbook.add_chart({'type': 'radar'})
         chart1.add_series({
-            'name':       'Durchschnitt',
-            'categories': '=Durchschnitt!$A$1:$A$11',
-            'values':     '=Durchschnitt!$B$1:$B$11',
+            'name':       'Mittelwerte',
+            'categories': '=Mittelwerte!$A$1:$A$11',
+            'values':     '=Mittelwerte!$B$1:$B$11',
             })
 
         chart1.set_title({'name': 'Durchschnitt'})
@@ -390,7 +392,7 @@ class XSLX(object):
         # Insert the chart into the worksheet (with an offset).
         worksheet.insert_chart('A13', chart1, {'x_offset': 25, 'y_offset': 10})
 
-        worksheet = workbook.add_worksheet('Mittelwerte')
+        worksheet = workbook.add_worksheet('Verteilung')
 
         data = json.loads(self.series)
         for y, x in enumerate(data):
@@ -400,32 +402,33 @@ class XSLX(object):
             for i, z in enumerate(x['data']):
                 worksheet.write((r+1+i), y, z)
 
-        worksheet = workbook.add_worksheet('Verteilung')
+        #worksheet = workbook.add_worksheet('Verteilung')
 
         chart3 = workbook.add_chart(
             {'type': 'bar', 'subtype': 'percent_stacked'})
 
+        chart3.set_title({'name': 'Verteilung'})
         # Configure the first series.
         chart3.add_series({
-            'name':       '=Mittelwerte!$A$1',
-            'categories': '=Mittelwerte!$A$3:$A$11',
-            'values':     '=Mittelwerte!$A$3:$A$11',
+            'name':       '=Verteilung!$A$1',
+            'categories': '=Verteilung!$A$3:$A$11',
+            'values':     '=Verteilung!$A$3:$A$11',
         })
 
         chart3.add_series({
-            'name':       '=Mittelwerte!$B$1',
-            'categories': '=Mittelwerte!$B$3:$B$11',
-            'values':     '=Mittelwerte!$B$3:$B$11',
+            'name':       '=Verteilung!$B$1',
+            'categories': '=Verteilung!$B$3:$B$11',
+            'values':     '=Verteilung!$B$3:$B$11',
         })
 
         chart3.add_series({
-            'name':       '=Mittelwerte!$C$1',
-            'categories': '=Mittelwerte!$C$3:$C$11',
-            'values':     '=Mittelwerte!$C$3:$C$11',
+            'name':       '=Verteilung!$C$1',
+            'categories': '=Verteilung!$C$3:$C$11',
+            'values':     '=Verteilung!$C$3:$C$11',
         })
-        worksheet.insert_chart("A1", chart3, {'x_offset': 15, 'y_offset': 10})
+        worksheet.insert_chart("A20", chart3, {'x_offset': 15, 'y_offset': 10})
 
-        worksheet = workbook.add_worksheet('Datenbasis')
+        worksheet = workbook.add_worksheet('Mittelwerte pro Frage')
         offset = 1 
         for cname, cvalues in self.statistics['criterias'].items():
             for v in cvalues:
@@ -437,27 +440,27 @@ class XSLX(object):
 
         offset += 2
         worksheet.write("A%i" % offset, "Frage")
-        worksheet.write("B%i" % offset, "Durchschnitt")
+        worksheet.write("B%i" % offset, "Mittelwert")
         
         for avg in self.statistics['per_question_averages']:
             offset += 1
             worksheet.write("A%i" % offset, avg.title)
             worksheet.write("B%i" % offset, avg.average)
 
-        worksheet = workbook.add_worksheet('RAW')
-        worksheet.set_column('A:A', 25)
-        worksheet.set_column('B:END', 30)
+        #worksheet = workbook.add_worksheet('RAW')
+        #worksheet.set_column('A:A', 25)
+        #worksheet.set_column('B:END', 30)
         
-        worksheet.write(0, 0, "Questions", header_format)
+        #worksheet.write(0, 0, "Questions", header_format)
         
-        for i in range(1, self.statistics['total'] + 1, 1):
-            worksheet.write(0, i, "Student %s" % i, header_format)
+        #for i in range(1, self.statistics['total'] + 1, 1):
+        #    worksheet.write(0, i, "Student %s" % i, header_format)
         
-        for question, answers in self.statistics['raw'].items():
-            line = int(question)
-            worksheet.write(line, 0, "Question %s" % question, question_format)
-            for idx, answer in enumerate(answers, 1):
-                worksheet.write(line, idx, answer.result_title)
+        #for question, answers in self.statistics['raw'].items():
+        #    line = int(question)
+        #    worksheet.write(line, 0, "Question %s" % question, question_format)
+        #    for idx, answer in enumerate(answers, 1):
+        #        worksheet.write(line, idx, answer.result_title)
  
         workbook.close()
         return filepath
@@ -617,7 +620,7 @@ class Excel(uvclight.Page):
         response.headers['Content-Type'] = (
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response.headers['Content-Disposition'] = (
-            u'attachment; filename="output.xlsx"')
+            u'attachment; filename="Resultate_Befragung.xlsx"')
 
         def filebody(r):
             data = r.read(CHUNK)
