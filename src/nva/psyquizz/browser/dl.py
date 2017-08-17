@@ -15,9 +15,9 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, PageBreak
 
 
-HINWEIS = """Hinweis <br/>
+HINWEIS = """ <b>Hinweis</b> 
 Bitte beantworten Sie alle Fragen und setzen Sie pro Frage nur ein Kreuz. 
-Fehlerhafte Fragebögen können leider nicht ausgewertet werden"""
+Fehlerhafte Fragebögen können leider nicht ausgewertet werden <br/> <br/> """
 
 
 class DownloadCourse(uvclight.View):
@@ -44,14 +44,15 @@ class DownloadCourse(uvclight.View):
         nm = style['Normal']
         nm.leading = 14
         story = []
-        story.append(Paragraph('KFZA-Fragebogen', style['Heading2']))
-        story.append(Paragraph(self.context.about.replace('\r\n', '<br/>'), style['Normal']))
+        story.append(Paragraph('Gemeinsam zu gesunden Arbeitsbedingungen', style['Heading2']))
+        print self.context.about
+        story.append(Paragraph(self.context.about.replace('\r\n', '<br/>').replace('</p>', '</p><br/>'), nm))
         story.append(Paragraph(HINWEIS, style['Normal']))
         if self.context.course.criterias:
-            story.append(Paragraph('Bitte kreuzen Sie das zutreffende an', style['Heading2']))
+            story.append(Paragraph('<b>Bitte kreuzen Sie das zutreffende an </b>', style['Normal']))
             for crit in self.context.course.criterias:
-                story.append(Paragraph(crit.title, style['Heading3']))
-                story.append(Paragraph(self.genStuff(crit.items.split('\n')), style['Normal']))
+                story.append(Paragraph('<b> %s </b> %s ' % (crit.title, self.genStuff(crit.items.split('\n'))), style['Normal']))
+                #story.append(Paragraph(self.genStuff(crit.items.split('\n')), style['Normal']))
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)
         pdf.build(story)

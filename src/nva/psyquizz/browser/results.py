@@ -236,13 +236,8 @@ class GenerateLetter(Action):
         nm = style['Normal']
         nm.leading = 14
         story = []
-        #for i, x in enumerate(self.tokens):
-        #    story.append(Paragraph('Serienbrief', style['Heading2']))
-        #    story.append(Paragraph(self.context.about.replace('</p>', '</p><br/><br/>'), nm))
-        #    story.append(Paragraph(u"Die Befragung steht Ihnen unter dem Link http://gbpb.bgetem.de zur Verfügung. <br/> Sie können sich mit diesem Kennwort anmelden %s " %x, style['Normal']))
-        print text
         for i, x in enumerate(tokens):
-            story.append(Paragraph('Serienbrief', style['Heading1']))
+            #story.append(Paragraph('Serienbrief', style['Heading1']))
             story.append(Paragraph(text.replace('<br>','<br/>').replace('</p>', '</p><br/>'), nm))
             story.append(Paragraph('Die Internetadresse lautet: <b> %s/quizz</b> <br/> Ihr Kennwort lautet: <b> %s</b> ' % (form.application_url(), x), nm))
             story.append(PageBreak())
@@ -445,7 +440,7 @@ class XSLX(object):
         for avg in self.statistics['per_question_averages']:
             offset += 1
             worksheet.write("A%i" % offset, avg.title)
-            worksheet.write("B%i" % offset, avg.average)
+            worksheet.write("B%i" % offset, avg.average, nformat)
 
         #worksheet = workbook.add_worksheet('RAW')
         #worksheet.set_column('A:A', 25)

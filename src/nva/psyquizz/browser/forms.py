@@ -1019,8 +1019,7 @@ class CompanyAnswerQuizz(Action):
 
         session.add(student)
         session.add(quizz)
-
-        form.flash(_(u'Thank you for answering the quizz'))
+        form.flash(_(u'Eingabe wurde gespeichert.'))
         form.redirect(form.request.url)
         return SUCCESS
 
