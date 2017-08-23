@@ -1,7 +1,11 @@
 <form id="result" method="POST"
       tal:attributes="action view.url(context) + '/pdf'">
 
-  <input type="hidden" value="" tal:attributes="value view.json_criterias" name="criterias" />
+  <input type="hidden" value="" name="has_criterias"
+         tal:attributes="value data[qname]['has_criterias_filter']" />
+
+  <input type="hidden" value=""
+         tal:attributes="value view.json_criterias" name="criterias" />
 
   <div class="panel" tal:define="data dict(view.display());">
     

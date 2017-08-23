@@ -2,7 +2,7 @@
       novalidate="novalidate"
       metal:define-macro="editform" role="form" action="."
       tal:attributes="action view.action_url;
-                      id view.htmlId();
+                      id view.__class__.__name__;
                       method view.formMethod;
                       enctype view.enctype">
   <h1 tal:condition="view.label" tal:content="view.label">Label</h1>
