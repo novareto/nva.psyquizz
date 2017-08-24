@@ -1,3 +1,7 @@
+.tooltip-inner {
+  white-space: normal !important;
+}
+
 .wizard-block {
     -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
