@@ -172,6 +172,13 @@
 	    categories: <span tal:replace="view.stats.xAxis"/>,
             tickmarkPlacement: 'on',
             lineWidth: 0,
+            labels: {
+	        distance: 25,
+                style: {
+                    color: 'black',
+                    fontSize: '15px',
+                }
+	    },
 	},
 	yAxis: {
             gridLineInterpolation: 'polygon',
@@ -183,6 +190,8 @@
             min: 1,
 	    max: 5,
             labels: {
+	        x: 20,
+	        y: 10,
                 style: {
                     color: 'black',
                     fontSize: '15px',
