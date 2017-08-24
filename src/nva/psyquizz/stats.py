@@ -163,6 +163,7 @@ def compute(quizz, averages, filters):
         'users.grouped': users_averages,
         'global.averages': global_averages,
         'criterias': merged_criterias,
+        'has_criterias_filter': bool(criterias is None),
         'per_question_averages': per_question_averages,
     }
 

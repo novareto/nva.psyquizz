@@ -377,11 +377,12 @@ class XSLX(object):
             'name':       'Mittelwerte',
             'categories': '=Mittelwerte!$A$1:$A$11',
             'values':     '=Mittelwerte!$B$1:$B$11',
+            'min': 1,
             })
 
         chart1.set_title({'name': 'Durchschnitt'})
-        chart1.set_x_axis({'name': 'Test number'})
-        chart1.set_y_axis({'name': 'Sample length (mm)'})
+        chart1.set_x_axis({'name': 'Test number', "min": 1})
+        chart1.set_y_axis({'name': 'Sample length (mm)', "min": 1})
         chart1.set_style(11)
 
         # Insert the chart into the worksheet (with an offset).
@@ -397,6 +398,9 @@ class XSLX(object):
             for i, z in enumerate(x['data']):
                 worksheet.write((r+1+i), y, z)
 
+        for idx, titel in enumerate(self.xAxis):
+            worksheet.write((idx + 2), 3, unicode(titel, 'latin1'))
+
         #worksheet = workbook.add_worksheet('Verteilung')
 
         chart3 = workbook.add_chart(
@@ -406,40 +410,46 @@ class XSLX(object):
         # Configure the first series.
         chart3.add_series({
             'name':       '=Verteilung!$A$1',
-            'categories': '=Verteilung!$A$3:$A$11',
+            'categories': '=Verteilung!$D$3:$D$11',
             'values':     '=Verteilung!$A$3:$A$11',
         })
 
         chart3.add_series({
             'name':       '=Verteilung!$B$1',
-            'categories': '=Verteilung!$B$3:$B$11',
+            'categories': '=Verteilung!$D$3:$D$11',
             'values':     '=Verteilung!$B$3:$B$11',
         })
 
         chart3.add_series({
             'name':       '=Verteilung!$C$1',
-            'categories': '=Verteilung!$C$3:$C$11',
+            'categories': '=Verteilung!$D$3:$D$11',
             'values':     '=Verteilung!$C$3:$C$11',
         })
         worksheet.insert_chart("A20", chart3, {'x_offset': 15, 'y_offset': 10})
 
         worksheet = workbook.add_worksheet('Mittelwerte pro Frage')
         offset = 1 
-        for cname, cvalues in self.statistics['criterias'].items():
-            for v in cvalues:
-                offset += 1
-                worksheet.write("A%i" % offset, cname)
-                worksheet.write("B%i" % offset, v.name)
-                worksheet.write("C%i" % offset, v.amount)
 
+        if self.statistics['has_criterias_filter']:
+            for cname, cvalues in self.statistics['criterias'].items():
+                for v in cvalues:
+                    offset += 1
+                    worksheet.write("A%i" % offset, cname)
+                    worksheet.write("B%i" % offset, v.name)
+                    worksheet.write("C%i" % offset, v.amount)
+        else:
+            offset += 1
+            worksheet.write("A%i" % offset , "ALL CRITERIAS")
 
         offset += 2
         worksheet.write("A%i" % offset, "Frage")
         worksheet.write("B%i" % offset, "Mittelwert")
         
+        labels = {k.title: k.description for id, k in getFieldsInOrder(self.quizz.__schema__)}
         for avg in self.statistics['per_question_averages']:
             offset += 1
-            worksheet.write("A%i" % offset, avg.title)
+            assert avg.title in labels
+            worksheet.write("A%i" % offset, labels[avg.title])
             worksheet.write("B%i" % offset, avg.average, nformat)
 
         #worksheet = workbook.add_worksheet('RAW')

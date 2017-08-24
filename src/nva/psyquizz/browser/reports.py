@@ -72,15 +72,19 @@ class GeneratePDF(uvclight.Page):
         doc = SimpleDocTemplate(
             NamedTemporaryFile(), pagesize=landscape(letter))
         parts = []
-        rc = []
-        criterias = dict(json.loads(self.request.form['criterias']))
-        for k,v in criterias.items():
-            rc.append(
-                "<li> %s: %s </li>" %(k, v)
-                )
-        if not rc:
-            rc.append('alle')
-        import pdb; pdb.set_trace() 
+
+        if self.request.form.get('has_criterias', 'False') == 'True':
+            rc = []
+            criterias = dict(json.loads(self.request.form['criterias']))
+            for k,v in criterias.items():
+                rc.append(
+                    "<li> %s: %s </li>" %(k, v)
+                    )
+            if not rc:
+                rc.append('alle')
+        else:
+            rc = ['alle']
+
         crit_style = "<ul> %s </ul>" % "".join(rc)
 
         avg = json.loads(self.request.form['averages'])

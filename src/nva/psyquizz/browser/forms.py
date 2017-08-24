@@ -393,6 +393,9 @@ class CreateCompany(Form):
         'name', 'mnr', 'exp_db', 'type', 'employees')
     fields['mnr'].htmlAttributes = {'maxlength': 8}
 
+    def htmlId(self):
+        return u"add.course"
+
     def updateForm(self):
         super(CreateCompany, self).updateForm()
         self.fieldWidgets.get('form.field.exp_db').template = get_template(

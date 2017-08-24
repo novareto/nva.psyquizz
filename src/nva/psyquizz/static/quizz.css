@@ -169,3 +169,9 @@ div.befragung {
     margin-bottom: 1em;
     border-style: solid;
 }
+
+.custom-header {
+  font-weight: bold;
+  background-color: #666;
+  color: white;
+}
