@@ -493,6 +493,8 @@ class CreateCourse(Form):
     require('manage.company')
     title(_(u'Add a course'))
 
+    label = u"Befragung Anlegen"
+
     @property
     def fields(self):
         course_fields = Fields(ICourse).select(
