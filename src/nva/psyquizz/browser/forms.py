@@ -136,7 +136,7 @@ class CreateCriterias(Form):
     require('zope.Public')
 
     fields = Fields(ICriteria).select('title', 'items')
-    label = u"Auswertungsgruppen anlegen"
+    label = u"Auswertungsgruppen anlegen <a href='' data-toggle='modal' data-target='#myModal'> <span class='glyphicon glyphicon-question-sign' aria-hidden='true'></span> </a>"
     description = u"""
 Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.  
 „Abteilung“). Zu jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen (z.B.  

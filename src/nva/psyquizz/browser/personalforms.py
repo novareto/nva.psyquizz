@@ -36,9 +36,9 @@ class EditAccount(EditForm):
         super(EditAccount, self).__init__(context, request)
         self.setContentData(context.context)
 
-    fields = Fields(IAccount).select('name', 'email', 'password')
+    fields = Fields(IAccount).select('name', 'password')
     fields['name'].description = u"Vor- und Zuname ändern"
-    fields['email'].description = u"E-Mail-Adresse ändern"
+    #fields['email'].description = u"E-Mail-Adresse ändern"
     fields['password'].description = u"Passwort ändern (mindestens acht Zeichen)"
 
     def updateForm(self):
