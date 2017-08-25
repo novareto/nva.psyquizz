@@ -1,5 +1,5 @@
 <form id="result" method="POST"
-      tal:attributes="action view.url(context) + '/pdf'">
+      tal:attributes="action view.url(context) + '/export'">
 
   <input type="hidden" value="" name="has_criterias"
          tal:attributes="value data[qname]['has_criterias_filter']" />

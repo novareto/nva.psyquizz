@@ -34,8 +34,6 @@ LEGEND = """
   </div>
 """
 
-
-
 class GeneratePDF(uvclight.Page):
     uvclight.context(Interface)
     uvclight.name('pdf')
