@@ -74,7 +74,7 @@
       <dt>Fragebogen:</dt>  
       <dd tal:content="view.quizz_name(course)"> </dd> 
       <dt>
-	Befragungszeitraum
+	Befragungszeitraum:
       </dt>
       <dd>
       	<span class="glyphicon glyphicon-calendar"> </span>
@@ -111,10 +111,10 @@
       <dt>
 	<span tal:condition="session.strategy != 'fixed'" 
 	   data-toggle="tooltip" data-placement="left"
-           title="E-Mail Vorlage mit Link zum Fragebogen und Befragungszeitraum, die an die Beschäftigten verschickt werden kann">Musteranschreiben</span>
+           title="E-Mail Vorlage mit Link zum Fragebogen und Befragungszeitraum, die an die Beschäftigten verschickt werden kann">Musteranschreiben:</span>
 	<span tal:condition="session.strategy == 'fixed'" 
 	   data-toggle="hover" data-placement="right"
-           title="Anpassbarer Serienbrief zum Ausdrucken, um individuelles Kennwort und Link zur Befragung an die Beschäftigten zu verteilen">Musteranschreiben</span>
+           title="Anpassbarer Serienbrief zum Ausdrucken, um individuelles Kennwort und Link zur Befragung an die Beschäftigten zu verteilen">Musteranschreiben:</span>
       </dt> 
       <dd>
 	<a href="" tal:condition="session.strategy != 'fixed'" tal:attributes="href
@@ -160,11 +160,7 @@
         <span tal:content="'%s/quizz' % (view.application_url())"></span> 
         </dd>
         <dt>
-	  Kennwortliste
-	  <i class="glyphicon glyphicon-question-sign"
-	     data-container="body" data-trigger="hover"
-	     data-toggle="popover" data-placement="top"
-             data-content="Excel Liste der Kennwörter für den Zugang zur Befragung">&nbsp;</i>
+        <span data-toggle="tooltip" data-placement="left" title="Excel Liste der Kennwörter für den Zugang zur Befragung"> Kennwortliste </span>
 	</dt>
         <dd>
 	<a href="" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/downloadtokens')">
