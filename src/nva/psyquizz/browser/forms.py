@@ -18,6 +18,7 @@ from ..models import Account, Company, Course, ClassSession, Student
 from ..models import ICourseSession, IAccount, ICompany, ICourse, IClassSession
 from ..models import IQuizz, TrueOrFalse
 from ..models import Criteria, CriteriaAnswer, ICriteria, ICriterias
+from ..models.criterias import criterias_table
 from .emailer import SecureMailer, prepare, ENCODING
 
 from cromlech.sqlalchemy import get_session
@@ -498,8 +499,7 @@ class CreateCourse(Form):
     @property
     def fields(self):
         course_fields = Fields(ICourse).select(
-            'name', 'criterias', 'quizz_type')
-        course_fields['criterias'].mode = "INOUT"
+            'name', 'criterias', 'quizz_type')        
         populate_fields = Fields(IPopulateCourse)
         populate_fields['strategy'].mode = "radio"
         session_fields = Fields(IClassSession).select(
@@ -555,6 +555,7 @@ class CreateCourse(Form):
         )
         #data['quizz_type'] = "quizz2"
         course = Course(**data)
+        
         course.company_id = self.context.id
         session.add(course)
         session.flush()
@@ -572,6 +573,18 @@ class CreateCourse(Form):
                 return FAILURE
             for student in clssession.generate_students(strategy['nb_students']):
                 clssession.append(student)
+
+        # update order
+        for idx, criteria in enumerate(data['criterias'], 1):
+            query = criterias_table.update().where(
+                criterias_table.c.courses_id == course.id
+            ).where(
+                criterias_table.c.criterias_id == criteria.id
+            ).where(
+                criterias_table.c.company_id == self.context.id
+            ).values(order=idx)
+        session.execute(query)
+
         self.flash(_(u'Course added with success.'))
         self.redirect(self.application_url())
         return SUCCESS
@@ -929,6 +942,7 @@ class AnswerQuizz(Form):
         fields.sort(key=lambda c: c.interface[c.identifier].order)
 
         criteria_fields = []
+        
         for criteria in self.context.course.criterias:
             values = SimpleVocabulary([
                     SimpleTerm(value=c.strip(), token=idx, title=c.strip())

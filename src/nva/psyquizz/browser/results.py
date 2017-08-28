@@ -114,10 +114,11 @@ def get_filters(request):
 
 class CourseStatistics(object):
 
-    def __init__(self, quizz, course):
+    def __init__(self, quizz, course, request):
         self.quizz = quizz
         self.averages = quizz.__schema__.getTaggedValue('averages')
         self.course = course
+        self.request = request
         session_ids = [x.id for x in self.course.sessions]
 
     def update(self, filters):
@@ -148,11 +149,12 @@ class CourseStatistics(object):
 
 class SessionStatistics(CourseStatistics):
 
-    def __init__(self, quizz, session):
+    def __init__(self, quizz, session, request):
         self.quizz = quizz
         self.course = session.course
         self.session = session
         self.averages = quizz.__schema__.getTaggedValue('averages')
+        self.request = request
 
     def update(self, filters):
         filters['session'] = self.session.id
@@ -430,8 +432,8 @@ class XSLX(object):
 
         worksheet = workbook.add_worksheet('Mittelwerte pro Frage')
         offset = 1 
-
-        if self.statistics['has_criterias_filter']:
+        
+        if 'criterias' in self.filters:
             for cname, cvalues in self.statistics['criterias'].items():
                 for v in cvalues:
                     offset += 1
@@ -446,7 +448,8 @@ class XSLX(object):
         worksheet.write("A%i" % offset, "Frage")
         worksheet.write("B%i" % offset, "Mittelwert")
         
-        labels = {k.title: k.description for id, k in getFieldsInOrder(self.quizz.__schema__)}
+        labels = {k.title: k.description for id, k in
+                  getFieldsInOrder(self.quizz.__schema__)}
         for avg in self.statistics['per_question_averages']:
             offset += 1
             assert avg.title in labels
@@ -557,11 +560,11 @@ class SR(uvclight.Page):
     def update(self):
         quizz = getUtility(IQuizz, self.context.course.quizz_type)
         filters = get_filters(self.request)
-        stats = SessionStatistics(quizz, self.context)
+        stats = SessionStatistics(quizz, self.context, self.request)
         stats.update(filters)
 
         if 'criterias' in filters:
-            general_stats = SessionStatistics(quizz, self.context)
+            general_stats = SessionStatistics(quizz, self.context, self.request)
             general_stats.update({})
         else:
             general_stats = None
@@ -594,7 +597,7 @@ class CR(uvclight.Page):
         stats.update(filters)
 
         if 'criterias' in filters:
-            general_stats = CourseStatistics(quizz, self.context)
+            general_stats = CourseStatistics(quizz, self.context, self.request)
             general_stats.update({})
         else:
             general_stats = None
@@ -607,6 +610,32 @@ class CR(uvclight.Page):
         return self.charts.render()
 
 
+class Export(uvclight.View):
+    require('manage.company')
+    uvclight.context(IClassSession)
+    uvclight.layer(ICompanyRequest)
+
+    def update(self):
+        action = self.request.form.get('action', None)
+        assert action is not None
+        if action == 'PDF':
+            self.view = getMultiAdapter(
+                (self.context, self.request), name="pdf")
+            self.view.update()
+        elif action == 'Excel':
+            self.view = getMultiAdapter(
+                (self.context, self.request), name="excel")
+            self.view.update()
+        else:
+            raise NotImplementedError('Action unknown')
+
+    def render(self):
+        return self.view.render()
+
+    def make_response(self, result):
+        return self.view.make_response(result)
+
+
 class Excel(uvclight.Page):
     require('manage.company')
     uvclight.context(IClassSession)
@@ -614,8 +643,8 @@ class Excel(uvclight.Page):
 
     def update(self):
         quizz = getUtility(IQuizz, self.context.quizz_type)
+        self.stats = SessionXSLX(quizz, self.context, self.request)
         filters = get_filters(self.request)
-        self.stats = SessionXSLX(quizz, self.context)
         self.stats.update(filters)
 
     def render(self):
@@ -636,7 +665,6 @@ class Excel(uvclight.Page):
 
         response.app_iter = filebody(result)
         return response
-
 
 
 @provider(IContextSourceBinder)

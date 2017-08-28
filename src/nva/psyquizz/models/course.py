@@ -39,8 +39,8 @@ class Course(Base, Location):
 
     criterias = relationship(
         "Criteria", secondary=criterias_table, backref="courses",
-        collection_class=set, cascade="save-update",
-        lazy='subquery', single_parent=True)
+        cascade="save-update", lazy='subquery', single_parent=True,
+        order_by=criterias_table.c.order)
 
     def __init__(self, **kwargs):
         Base.__init__(self, **kwargs)

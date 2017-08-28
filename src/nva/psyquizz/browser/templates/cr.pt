@@ -67,7 +67,7 @@
   <div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
 
   <form id="result" method="POST"
-	tal:attributes="action view.url(context) + '/pdf'">
+	tal:attributes="action view.url(context) + '/export'">
 
     <input type="hidden" value=""
 	   tal:attributes="value view.stats.json_criterias" name="criterias" />
@@ -84,8 +84,16 @@
     <textarea type="text" id="userschart" name="userschart" style="display: none"></textarea>
     <textarea type="text" id="pSVG" name="pSVG" style="display:none"></textarea>
     <textarea type="text" id="pSVG1" name="pSVG1" style="display:none"></textarea>
-    <button class="btn btn-default" value="pdf export"> <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> PDF Export </button>
-    <a href="excel" class="btn btn-default">  <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Excel Export </a>
+
+    <button class="btn btn-default" name="action" value="PDF">
+      <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+      </span>&nbsp; PDF export
+    </button>
+
+    <a class="btn btn-default"
+       tal:attributes="href 'excel?' + request.environment['QUERY_STRING']"
+       ><span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+       </span>&nbsp; Excel export</a>
   </form>
 
   <script>
@@ -172,6 +180,13 @@
 	    categories: <span tal:replace="view.stats.xAxis"/>,
             tickmarkPlacement: 'on',
             lineWidth: 0,
+            labels: {
+	        distance: 25,
+                style: {
+                    color: 'black',
+                    fontSize: '15px',
+                }
+	    },
 	},
 	yAxis: {
             gridLineInterpolation: 'polygon',
@@ -183,6 +198,8 @@
             min: 1,
 	    max: 5,
             labels: {
+	        x: 20,
+	        y: 10,
                 style: {
                     color: 'black',
                     fontSize: '10px',

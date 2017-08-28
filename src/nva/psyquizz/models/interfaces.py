@@ -11,9 +11,9 @@ from zope.location import ILocation
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from uvc.validation.validation import validateZahl
-
-
+from uvclight.form_components.fields import OrderedChoices
 from zope.schema import ValidationError
+
 
 class VKontaktdaten(ValidationError):
     u""" Bitte geben Sie einen Ansprechpartner an oder löschen Sie die Zeile Ansprechpartner und Kontaktdaten."""
@@ -245,7 +245,7 @@ class ICourse(ILocation, IContent):
         required=True,
         )
 
-    criterias = schema.Set(
+    criterias = OrderedChoices(
         title=_(u"Auswertungsgruppen festlegen"),
         description=u"Sie können die Reihenfolge der Abfrage im „Fragebogen“ \
                       verändern, indem Sie die Auswertungsgruppen im rechten \
