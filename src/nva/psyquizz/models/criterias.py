@@ -10,6 +10,7 @@ from uvc.content.interfaces import IDescriptiveSchema
 
 
 criterias_table = Table('criterias_courses', Base.metadata,
+    Column('order', Integer),
     Column('courses_id', Integer, ForeignKey('courses.id')),
     Column('criterias_id', Integer, ForeignKey('criterias.id')),
     Column('company_id', Integer, ForeignKey('companies.id')),
@@ -32,7 +33,6 @@ class Criteria(Base):
     @property
     def traversable_id(self):
         return str(self.id)
-
 
 
 class CriteriaAnswer(Base):
