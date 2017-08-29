@@ -17,7 +17,7 @@ from reportlab.platypus import Paragraph, SimpleDocTemplate, PageBreak
 
 HINWEIS = """ <b>Hinweis</b> 
 Bitte beantworten Sie alle Fragen und setzen Sie pro Frage nur ein Kreuz. 
-Fehlerhafte Fragebögen können leider nicht ausgewertet werden <br/> <br/> """
+Fehlerhafte Fragebögen können leider nicht ausgewertet werden. <br/> <br/> """
 
 
 class DownloadCourse(uvclight.View):
@@ -45,13 +45,12 @@ class DownloadCourse(uvclight.View):
         nm.leading = 14
         story = []
         story.append(Paragraph('Gemeinsam zu gesunden Arbeitsbedingungen', style['Heading2']))
-        print self.context.about
         story.append(Paragraph(self.context.about.replace('\r\n', '<br/>').replace('</p>', '</p><br/>'), nm))
         story.append(Paragraph(HINWEIS, style['Normal']))
         if self.context.course.criterias:
             story.append(Paragraph('<b>Bitte kreuzen Sie das zutreffende an </b>', style['Normal']))
             for crit in self.context.course.criterias:
-                story.append(Paragraph('<b> %s </b> %s ' % (crit.title, self.genStuff(crit.items.split('\n'))), style['Normal']))
+                story.append(Paragraph('<b> %s </b> <br/> %s ' % (crit.title, self.genStuff(crit.items.split('\n'))), style['Normal']))
                 #story.append(Paragraph(self.genStuff(crit.items.split('\n')), style['Normal']))
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)

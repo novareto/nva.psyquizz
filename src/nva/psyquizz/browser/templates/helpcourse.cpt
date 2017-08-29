@@ -1,7 +1,9 @@
 <div class="row">
+<!--
 <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
   Hilfe 
 </button>
+-->
 <div class="modal fade" id="myModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -10,25 +12,54 @@
         <h4 class="modal-title">Hilfe</h4>
       </div>
       <div class="modal-body">
-        <p class="lead"> Auswertungsgruppen festlegen </p>
+        <p class="lead"> Befragung anlegen </p>
+        <h3> Fragebogen auswählen </h3> 
+        <p>
+        Sie können aus zwei verschiedenen universell einsetzbaren Fragebögen auswählen.
+        <p>
+        <p>
+        <b> Kurzfragebogen zur Arbeitsanalyse (KFzA)</b> <br/>
+        Detaillierteres Verfahren mit 26 Fragen mit jeweils fünf Antwortmöglichkeiten. Liefert genauere 
+        Ergebnisse über einzelne Belastungsschwerpunkte („Screening Verfahren“).  
+        <a target="_blank" href="fanstatic/nva.psyquizz/KFzA.pdf"> Download KFzA</a>
+        <br/>
+        <b> Prüfliste Psychische Belastung</b> <br/>
+        Einfach gehaltener Fragebogen mit 19 Fragen mit jeweils zwei Antwortmöglichkeiten. Liefert 
+        erste Hinweis auf Belastungsschwerpunkte („orientierendes Verfahren“).  
+        <a target="_blank" href="fanstatic/nva.psyquizz/pruefliste.pdf"> Download Prüfliste </a>
+        </p>
+        </p>
+        <h3> Auswertungsgruppen festlegen </h3> 
         <p> Diese Auswahl erscheint später auf der ersten Seite des „Fragebogens“ und die Beschäftigten wählen
         aus, zu welcher Auswertungsgruppe Sie gehören. Nur für diese Auswertungsgruppen können Sie sich
         nach Ablauf der Befragung separate Ergebnisse anzeigen lassen.</p>
-        <p>
-        Hier sind standardmäßig alle Auswertungsgruppen ausgewählt. Sollten Sie einzelnen
-        Auswertungsgruppen in der Befragung nicht benötigen, entfernen Sie bitte das Häkchen.
+        <p> <h3> Zugang zur Befragung </h3> </p>
+        <p> Es stehen zwei Alternativen zur Verfügung: </p>
+
+
+        <p><b> Zugang mit Kennwort: </b><br/>
+Für jeden Beschäftigten wird ein individuelles Kennwort erzeugt, das an die Beschäftigten verteilt 
+werden muss. Nach Teilnahme an der Befragung verfällt das Kennwort. 
+Um das Kennwort zu verteilen, wird Ihnen auf der Startseite eine Druckvorlage für einen 
+Serienbrief zur Verfügung gestellt. Diese besteht aus einem anpassbaren Text, dem Link zur 
+Befragung sowie dem individuellem Kennwort. Der Serienbrief muss ausgedruckt und an die 
+Beschäftigten verteilt werden. 
+Außerdem wird eine Excel Liste mit den Kennwörtern für alle Beschäftigten erzeugt. Diese kann 
+für alternative Verteilungsformen, wie z.B. eine Serien E-Mail (Funktionalität wird nicht vom 
+System zur Verfügung gestellt) genutzt werden.
+        <br/>
+        <b> Offener Zugang:</b><br/>
+Es wird ein Link zum Fragebogen ihres Unternehmens erzeugt. Um an der 
+Befragung teilzunehmen wird lediglich der Link benötigt. Dieser kann bspw. in einer E-Mail 
+gleichzeitig an alle Beschäftigten verschickt werden.
         </p>
-        <p class="lead">Startdatum und Dauer der Befragung </p>
-        <p> Hier geben Sie an ab wann und wie lange die Befragung für Ihre Beschäftigten. Wählen Sie einen
-       Zeitraum, in dem auch möglichst viele Beschäftigte auch tatsächlich im Betrieb sind (also z.B. keine
-       Hauptferienzeiten). Bei der Dauer der Befragung hat sich in der Praxis ein Zeitraum von 3 Wochen
-       bewährt. Dieser ist so lang, dass alle Beschäftigten die Möglichkeit haben komfortabel an der
-       Befragung teilzunehmen aber nicht so lange, dass die Befragung „in Vergessenheit“ gerät. </p>
-        <p class="lead">Einführungstext </p>
-        <p>Dieser Text wird Ihren Beschäftigten angezeigt, wenn Sie auf den Link zur Befragung klicken. Der Text
-       ist frei editierbar, der Textvorschlag hat sich jedoch in der Praxis bewährt. Achten Sie darauf, einen
-       Ansprechpartner für Rückfragen der Beschäftigten zu benennen. </p>
-      </div>
+
+        <p><h3>Paper2Disk</h3> </p>
+        <p> Der Fragebogen Ihres Unternehmens wird zusätzlich im PDF Format erzeugt. Sie können diesen 
+        Ausdrucken und an Beschäftigte ohne Internetzugang verteilen. Die Eingabe erfolgt nach 
+        Rückgabe der Fragebögen per Maus oder Tastatur auf der Startseite.
+        </p>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
       </div>

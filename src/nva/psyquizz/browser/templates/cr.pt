@@ -69,6 +69,7 @@
   <form id="result" method="POST"
 	tal:attributes="action view.url(context) + '/export'">
 
+  <input type="hidden" value="" name="has_criterias" tal:attributes="value len(view.stats.filters.get('criterias', {}))" />
     <input type="hidden" value=""
 	   tal:attributes="value view.stats.json_criterias" name="criterias" />
     
@@ -202,7 +203,7 @@
 	        y: 10,
                 style: {
                     color: 'black',
-                    fontSize: '15px',
+                    fontSize: '10px',
 		    fontWeight: 'bold'
                     }
 		},

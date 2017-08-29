@@ -71,11 +71,12 @@ class EditAccount(EditForm):
 @menuentry(IDocumentActions, order=10)
 class TransferCompany(Form):
     name('transfer_company')
-    # uvclight.provides(ITab)
+    #uvclight.provides(ITab)
     context(MyPrefs)
     layer(ICompanyRequest)
     title(_(u'Transfer the company'))
     require('manage.company')
+    #uvclight.baseclass()
 
     dataValidators = []
     fields = Fields(ICompanyTransfer)
@@ -91,7 +92,6 @@ class TransferCompany(Form):
         if errors:
             self.flash(_(u'An error occurred.'))
             return FAILURE
-
         account = data['account']
         self.context.account_id = account
 

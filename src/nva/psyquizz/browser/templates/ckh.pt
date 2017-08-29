@@ -74,7 +74,7 @@
       <dt>Fragebogen:</dt>  
       <dd tal:content="view.quizz_name(course)"> </dd> 
       <dt>
-	Befragungszeitraum
+	Befragungszeitraum:
       </dt>
       <dd>
       	<span class="glyphicon glyphicon-calendar"> </span>
@@ -111,10 +111,10 @@
       <dt>
 	<span tal:condition="session.strategy != 'fixed'" 
 	   data-toggle="tooltip" data-placement="left"
-           title="E-Mail Vorlage mit Link zum Fragebogen und Befragungszeitraum, die an die Beschäftigten verschickt werden kann">Musteranschreiben</span>
+           title="E-Mail Vorlage mit Link zum Fragebogen und Befragungszeitraum, die an die Beschäftigten verschickt werden kann">Musteranschreiben:</span>
 	<span tal:condition="session.strategy == 'fixed'" 
 	   data-toggle="hover" data-placement="right"
-           title="Anpassbarer Serienbrief zum Ausdrucken, um individuelles Kennwort und Link zur Befragung an die Beschäftigten zu verteilen">Musteranschreiben</span>
+           title="Anpassbarer Serienbrief zum Ausdrucken, um individuelles Kennwort und Link zur Befragung an die Beschäftigten zu verteilen">Musteranschreiben:</span>
       </dt> 
       <dd>
 	<a href="" tal:condition="session.strategy != 'fixed'" tal:attributes="href
@@ -160,18 +160,16 @@
         <span tal:content="'%s/quizz' % (view.application_url())"></span> 
         </dd>
         <dt>
-	  Kennwortliste
-	  <i class="glyphicon glyphicon-question-sign"
-	     data-container="body" data-trigger="hover"
-	     data-toggle="popover" data-placement="top"
-             data-content="Excel Liste der Kennwörter für den Zugang zur Befragung">&nbsp;</i>
+        <span data-toggle="tooltip" data-placement="left" title="Excel Liste der Kennwörter für den Zugang zur Befragung"> Kennwortliste </span>
 	</dt>
         <dd>
 	<a href="" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/downloadtokens')">
 	  <span class="glyphicon glyphicon-download" aria-hidden="true"></span></a>
-         <span data-toggle="collapse" data-target="#tokens" href=""> +
+         <span data-toggle="collapse" data-target="#tokens" href=""
+           tal:attributes="data-target '#tokens-' + str(session.id)"> +
           anzeigen </span>
-          <div id="tokens" class="collapse">
+        <div id="tokens" class="collapse" tal:attributes="id 'tokens-' +
+          str(session.id)">
            <row tal:repeat="unc session.uncomplete">
              <a tal:attributes="href '%s/quizz/%s' %(view.application_url(),
                unc.access)"> <span class="col-md-5" tal:content="unc.access"/> </a>
@@ -183,7 +181,7 @@
         <dd> 
         <a href="" tal:condition="len(list(session.complete)) >= view.maxResults" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/sr')"> <span class="glyphicon glyphicon-stats"> </span> Grafische Darstellung 
         </a> 
-        <span tal:condition="len(list(session.complete)) <= view.maxResults">
+        <span tal:condition="len(list(session.complete)) < view.maxResults">
           Die Auswertung wird erst ab dem <b> <span
               tal:content="view.maxResults"> </span>.</b> ausgefüllten
           Fragebogen angezeigt </span>
@@ -213,8 +211,8 @@
                unc[0].access)"> <span class="col-md-5"
                  tal:content="unc[0].access"/> </a>
              <a tal:attributes="href '%s/quizz/%s' %(view.application_url(),
-               unc[0].access)"> <span class="col-md-5"
-                 tal:content="unc[0].access"/></a>
+               unc[1].access)"> <span class="col-md-5"
+                 tal:content="unc[1].access"/></a>
            </row>
          </div>
         </dd>

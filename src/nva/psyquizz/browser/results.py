@@ -165,7 +165,7 @@ DOKU_TEXT = u"""Falls Sie die Kennwörter nicht mit Hilfe des Serienbriefes vert
 Sie diese Excel Liste für eine alternative Form der Verteilung nutzen, z.B. Serien E-
 Mail (Funktion ist nicht Bestandteil des Online Tools) nutzen.
 Unter „Kennwörter“ finden Sie eine Übersicht der für den Zugang zur Befragung
-benötigten Kennwörter. Unter „Links &amp; Kennwörter“ sind Link und individuelles
+benötigten Kennwörter. Unter „Links & Kennwörter“ sind Link und individuelles
 Kennwort zusammengeführt, so dass sich nach Klick auf den Link direkt der
 Fragebogen öffnen lässt."""
 
@@ -177,7 +177,7 @@ class DownloadTokens(uvclight.View):
     def update(self):
         app_url = self.application_url()
         _all = itertools.chain(
-            self.context.uncomplete, self.context.uncomplete)
+            self.context.uncomplete, self.context.complete)
         self.tokens = ['%s/quizz/%s' % (app_url, a.access) for a in _all]
 
     def generateXLSX(self, folder, filename="ouput.xlsx"):
@@ -238,6 +238,7 @@ class GenerateLetter(Action):
         nm = style['Normal']
         nm.leading = 14
         story = []
+        print text
         for i, x in enumerate(tokens):
             #story.append(Paragraph('Serienbrief', style['Heading1']))
             story.append(Paragraph(text.replace('<br>','<br/>').replace('</p>', '</p><br/>'), nm))
@@ -257,7 +258,7 @@ class GenerateLetter(Action):
     def __call__(self, form):
         data, errors = form.extractData()
         if errors:
-            form.flash(_(u'An error occurred.'))
+            form.flash(u"Es ist ein Fehler aufgetreten")
             return FAILURE
 
         tokens = self.tokens(form)
@@ -270,7 +271,7 @@ class GenerateLetter(Action):
 
 
 DEFAULT = u"""
-<p class="lead">Liebe Kolleginnen und Kollegen, </p>
+<p><b>Liebe Kolleginnen und Kollegen, </b></p>
 <p>wie bereits angekündigt, erhalten Sie heute Ihre Einladung zur Teilnahme an unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“.</p>
 <p>Ziel der Befragung ist es, Ihre Arbeitsbedingungen zu beurteilen und ggf. entsprechende Verbesserungsmaßnahmen einleiten zu können. Bitte beantworten Sie alle Fragen off
 <p> Keine Mitarbeiterin und kein Mitarbeiter unserer Firma wird Einblick in die originalen Datensätze erhalten, eine Rückverfolgung wird nicht möglich sein.</p>
@@ -345,6 +346,17 @@ class XSLX(object):
     def generateXLSX(self, folder, filename="Ergebnischart.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
+        worksheet = workbook.add_worksheet('Dokumentation')
+
+        worksheet.write(0,0, 'Datenbasis')
+
+        amounts = dict(json.loads(self.json_criterias))
+        ii = 1
+        for k,v in self.filters.get('criterias', {}).items():
+            worksheet.write(ii, 0,  "%s %s" % (v.name, amounts.get(v.name)))
+            ii += 1
+
+
         worksheet = workbook.add_worksheet('Mittelwerte')
         nformat = workbook.add_format()
         nformat.set_num_format('0.00')

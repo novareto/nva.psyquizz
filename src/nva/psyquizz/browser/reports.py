@@ -70,8 +70,7 @@ class GeneratePDF(uvclight.Page):
         doc = SimpleDocTemplate(
             NamedTemporaryFile(), pagesize=landscape(letter))
         parts = []
-
-        if self.request.form.get('has_criterias', 'False') == 'True':
+        if int(self.request.form.get('has_criterias', 0)) > 0:
             rc = []
             criterias = dict(json.loads(self.request.form['criterias']))
             for k,v in criterias.items():
@@ -104,12 +103,19 @@ class GeneratePDF(uvclight.Page):
         drawing1 = svg2rlg(tf.name)
         #svg2rlg(pSVG)
         parts.append(Spacer(0, 2*cm))
-        parts.append(Paragraph(crit_style, styles['Normal']))
-        from reportlab.graphics.shapes import Drawing
-        parts.append(drawing)
+        ## Page1
+        parts.append(Paragraph(u'Dokumentation', styles['Heading1']))
+        parts.append(Paragraph(u'Auf den folgenden Seiten können Sie ich die Ergebnisse der Auswertung ansehen.', styles['Heading2']))
+        parts.append(Paragraph('Grundlage dieser Auswertung', styles['Heading3']))
         parts.append(Paragraph(u'Anzahl Fragebögen %s' % self.request.form['total'], styles['Normal']))
         parts.append(Paragraph(u'Auswertungsgruppe', styles['Normal']))
         parts.append(Paragraph(crit_style, styles['Normal']))
+        parts.append(PageBreak())
+        ## Page2
+        parts.append(Spacer(0, 2*cm))
+        parts.append(Paragraph(crit_style, styles['Normal']))
+        from reportlab.graphics.shapes import Drawing
+        parts.append(drawing)
         parts.append(Paragraph(LEGEND, styles['Normal']))
         parts.append(PageBreak())
         parts.append(Spacer(0, 4*cm))

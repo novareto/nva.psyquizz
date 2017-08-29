@@ -119,6 +119,9 @@ class IPopulateCourse(Interface):
 
     nb_students = Int(
         title=_(u"Number of students"),
+        description=u"Für jeden der Teilnehmer wird ein Kennwort angelegt.\
+        Legen Sie im Zweifelsfall einige Teilnehmer zu viel als\
+        „Sicherheitsreserve“ an, falls z.B. Teilnehmer ihr Kennwort verlieren.",
         required=False,
         )
 
@@ -389,6 +392,8 @@ class CreateCompany(Form):
     title(_(u'Add a company'))
     require('manage.company')
 
+    label = u'Betrieb anlegen <a href="" data-toggle="modal" data-target="#myModal"> <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>'
+
     dataValidators = []
     fields = Fields(ICompany).select(
         'name', 'mnr', 'exp_db', 'type', 'employees')
@@ -494,7 +499,7 @@ class CreateCourse(Form):
     require('manage.company')
     title(_(u'Add a course'))
 
-    label = u"Befragung Anlegen"
+    label = u'Befragung anlegen <a href="" data-toggle="modal" data-target="#myModal"> <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>'
 
     @property
     def fields(self):
@@ -798,6 +803,12 @@ class DeleteSession(DeleteForm):
     require('manage.company')
     title(_(u'Delete'))
 
+    label = u"Befragung löschen"
+
+    @property
+    def description(self):
+        return u"Wollen sie die Befragung %s wirklich löschen" % self.context.title
+
     @property
     def action_url(self):
         return self.request.path
@@ -813,7 +824,7 @@ class DeleteSession(DeleteForm):
 
     @action(_(u'Cancel'))
     def handle_cancel(self):
-        self.redirect(self.url(self.application_url()))
+        self.redirect(self.application_url())
         return SUCCESS
 
 
