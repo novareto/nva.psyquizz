@@ -421,24 +421,30 @@ class XSLX(object):
             {'type': 'bar', 'subtype': 'percent_stacked'})
 
         chart3.set_title({'name': 'Verteilung'})
+
         # Configure the first series.
         chart3.add_series({
             'name':       '=Verteilung!$A$1',
-            'categories': '=Verteilung!$D$3:$D$11',
-            'values':     '=Verteilung!$A$3:$A$11',
+            'categories': '=Verteilung!$D$3:$D$13',
+            'values':     '=Verteilung!$A$3:$A$13',
+            'fill':   {'color': data[2]['color']},
         })
 
         chart3.add_series({
             'name':       '=Verteilung!$B$1',
-            'categories': '=Verteilung!$D$3:$D$11',
-            'values':     '=Verteilung!$B$3:$B$11',
+            'categories': '=Verteilung!$D$3:$D$13',
+            'values':     '=Verteilung!$B$3:$B$13',
+            'fill':   {'color': data[1]['color']},
         })
 
         chart3.add_series({
             'name':       '=Verteilung!$C$1',
-            'categories': '=Verteilung!$D$3:$D$11',
-            'values':     '=Verteilung!$C$3:$C$11',
+            'categories': '=Verteilung!$D$3:$D$13',
+            'values':     '=Verteilung!$C$3:$C$13',
+            'fill':   {'color': data[0]['color']},
         })
+
+        chart3.set_y_axis({'reverse': True})
         worksheet.insert_chart("A20", chart3, {'x_offset': 15, 'y_offset': 10})
 
         worksheet = workbook.add_worksheet('Mittelwerte pro Frage')
