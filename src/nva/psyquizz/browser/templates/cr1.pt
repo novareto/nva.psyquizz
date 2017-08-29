@@ -78,6 +78,7 @@
         };
      }
 
+    var myValues = jQuery.parseJSON('<tal:json replace="view.descriptions" />');
     var myChart = Highcharts.chart('container', {
 	chart: {
             type: 'bar'
@@ -93,7 +94,7 @@
 	},
 	xAxis: {
             categories: <span tal:replace="view.xAxis"/>,
-	    labels: { step: 1, useHTML: true, formatter: function() { return '<div id="label_'+this.value.replace(/ /g,'') +'">'+this.value+'</div>'; } },
+	    labels: { step: 1, useHTML: true, formatter: function() { return '<div id="label_'+this.value.replace(/ /g,'') +'">'+myValues[this.value]+'</div>'; } },
 	},
 	yAxis: {
             min: 0,

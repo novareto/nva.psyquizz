@@ -170,6 +170,29 @@ IQuizz1.setTaggedValue(
         (u'Sozialen Umfeld', map(str, range(18, 20))),
     )))
 
+IQuizz1.setTaggedValue(
+    'descriptions', {
+        "1": u" Selbst organisiertes Arbeiten",
+        "2": u" Abwechslungsreichtum",
+        "3": u" Wechselnde Körperhaltung",
+        "4": u" Informationen zum Arbeitsbereich",
+        "5": u" Entsprechende Qualifikation",
+        "6": u" Frei von erhöhter Verletzungsgefahr",
+        "7": u" Frei von ungünstigen Arbeitsbedingungen",
+        "8": u" Frei von erhöhten emotionalen Anforderungen",
+        "9": u" Einfluss Zeiteinteilung",
+        "10": u" Einfluss Vorgehensweise",
+        "11": u" Informationen zur Entwicklung",
+        "12": u" Frei von Störungen",
+        "13": u" Frei von Zeitdruck",
+        "14": u" Ausreichende Rückmeldung",
+        "15": u" Klare Entscheidungsstrukturen",
+        "16": u" Ausnahme angeordnete Überstunden",
+        "17": u" Zeitnaher Freizeitausgleich",
+        "18": u" Möglichkeit zur kollegialen Zusammenarbeit",
+        "19": u" Positives soziales Klima",
+    })
+
 
 @implementer(IQuizz1)
 class Quizz1(Base, Location):

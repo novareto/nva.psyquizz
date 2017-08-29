@@ -524,12 +524,13 @@ class Quizz1Charts(uvclight.Page):
         self.stats = stats
         self.general_stats = general_stats
 
-        good = dict(name="viel / zutreffend", data=[], color="#62B645")
-        bad = dict(name="wenig / nicht zutreffend", data=[], color="#D8262B")
-        
+        good = dict(name="Eher Ja", data=[], color="#62B645")
+        bad = dict(name="Eher Nein", data=[], color="#D8262B")
+
         xAxis = []
         percents = {}
 
+        self.descriptions = json.dumps(self.context.__schema__.getTaggedValue('descriptions'))
         self.xAxis_labels = {k.title: k.description for id, k in getFieldsInOrder(self.context.__schema__)}
 
         for key, answers in self.stats.statistics['raw'].items():
