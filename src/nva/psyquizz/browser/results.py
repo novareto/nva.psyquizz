@@ -177,7 +177,7 @@ class DownloadTokens(uvclight.View):
     def update(self):
         app_url = self.application_url()
         _all = itertools.chain(
-            self.context.uncomplete, self.context.uncomplete)
+            self.context.uncomplete, self.context.complete)
         self.tokens = ['%s/quizz/%s' % (app_url, a.access) for a in _all]
 
     def generateXLSX(self, folder, filename="ouput.xlsx"):
@@ -346,6 +346,17 @@ class XSLX(object):
     def generateXLSX(self, folder, filename="Ergebnischart.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
+        worksheet = workbook.add_worksheet('Dokumentation')
+
+        worksheet.write(0,0, 'Datenbasis')
+
+        amounts = dict(json.loads(self.json_criterias))
+        ii = 1
+        for k,v in self.filters.get('criterias').items():
+            worksheet.write(ii, 0,  "%s %s" % (v.name, amounts.get(v.name)))
+            ii += 1
+
+
         worksheet = workbook.add_worksheet('Mittelwerte')
         nformat = workbook.add_format()
         nformat.set_num_format('0.00')
