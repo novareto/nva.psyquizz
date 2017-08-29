@@ -70,7 +70,7 @@ class GeneratePDF(uvclight.Page):
         doc = SimpleDocTemplate(
             NamedTemporaryFile(), pagesize=landscape(letter))
         parts = []
-        if self.request.form.get('has_criterias', 0) > 0:
+        if int(self.request.form.get('has_criterias', 0)) > 0:
             rc = []
             criterias = dict(json.loads(self.request.form['criterias']))
             for k,v in criterias.items():

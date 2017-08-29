@@ -165,9 +165,11 @@
         <dd>
 	<a href="" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/downloadtokens')">
 	  <span class="glyphicon glyphicon-download" aria-hidden="true"></span></a>
-         <span data-toggle="collapse" data-target="#tokens" href=""> +
+         <span data-toggle="collapse" data-target="#tokens" href=""
+           tal:attributes="data-target '#tokens-' + str(session.id)"> +
           anzeigen </span>
-          <div id="tokens" class="collapse">
+        <div id="tokens" class="collapse" tal:attributes="id 'tokens-' +
+          str(session.id)">
            <row tal:repeat="unc session.uncomplete">
              <a tal:attributes="href '%s/quizz/%s' %(view.application_url(),
                unc.access)"> <span class="col-md-5" tal:content="unc.access"/> </a>

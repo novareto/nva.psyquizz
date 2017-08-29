@@ -352,7 +352,7 @@ class XSLX(object):
 
         amounts = dict(json.loads(self.json_criterias))
         ii = 1
-        for k,v in self.filters.get('criterias').items():
+        for k,v in self.filters.get('criterias', {}).items():
             worksheet.write(ii, 0,  "%s %s" % (v.name, amounts.get(v.name)))
             ii += 1
 
