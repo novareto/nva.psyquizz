@@ -1,7 +1,9 @@
 <div class="row">
+<!--
 <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
   Hilfe 
 </button>
+-->
 <div class="modal fade" id="myModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -10,47 +12,49 @@
         <h4 class="modal-title">Hilfe</h4>
       </div>
       <div class="modal-body">
-        <p class="lead">Auswertungsgruppe <p>
+        <p class="lead">Auswertungsgruppen anlegen <p>
         <p>
-Mit Hilfe der Auswertungsgruppen bilden Sie Gruppen von Arbeitsplätzen oder Tätigkeiten die 
-hinsichtlich Ihrer psychischen Belastungen vergleichbar sind. Diese Gruppenbildung kann bspw. 
-anhand des Organigramms erfolgen (s. Schritt 1 Vorbereitung).
+        Um die Auswertungsgruppen anzulegen, wählen Sie zunächst einen Oberbegriff für Ihre 
+        Auswertungsgruppen, und legen anschließend die zugehörigen Auswertungsgruppen fest. 
         </p>
         <p>
-Zunächst legen Sie einen Oberbegriff für Ihre Auswertungsgruppen an. Mögliche Oberbegriffe 
-könnten z.B. sein „Abteilung“, „Arbeitsgruppe“, „Standort“, „Führungskraft“ usw.
+        <b> Beispiele </b>
         </p>
-        <p>
-Zu jedem Oberbegriff gehören mehrere Auswertungsgruppen. Der Oberbegriff „Abteilung“ würde als 
-Auswertungsgruppen alle Abteilungen Ihres Betriebes beinhalten, wie z.B. „Personalabteilung“, 
-„Produktion“, „Einkauf“ usw. Zum Oberbegriff „Führungskraft“ gehören die Auswertungsgruppen 
-„Führungskraft“ und „keine Führungskraft“.
-        </p>
-        <p>
-Über die Funktion „Auswertungsgruppen anlegen“ auf der Startseite können Sie beliebig viele 
-Auswertungsgruppen für Ihre Befragung anlegen.
-        </p>
-        <p>
-Starten Ihre Beschäftigten die Befragungen, müssen Sie zunächst angeben, zu welcher 
-Auswertungsgruppe Sie gehören. Haben Sie bspw. „Abteilung“ angelegt, würden Ihre Beschäftigten 
-zunächst angeben, ob Sie zur „Personalabteilung“, zur „Produktion“, oder zum „Einkauf“ gehören.
-        </p>
-        <p>
-Zu jeder Auswertungsgruppe können Sie nach Abschluss der Befragung eine separate Auswertung 
-erzeugen. Sie haben auch die Möglichkeit, Auswertungsgruppen zu kombinieren. So könnten Sie sich 
-bspw. eine Auswertung für alle „Führungskräfte“ in der „Personalabteilung“ anzeigen lassen.
-        </p>
-        <p>
-           <b>
-             Bitte beachten Sie aber: Sie können sich aus Datenschutzgründen nur Befragungsergebnisse von 
-             Auswertungsgruppen oder Kombinationen anzeigen lassen, von denen mindestens sieben 
-             ausgefüllte „Fragebögen“ vorliegen.
-           </b>
-        </p>
-        <p>
+         <table class="table">
+           <tr>
+             <th> Oberbegriff </th>
+             <th> Auswertungsgruppen</th>
+           </tr>
+           <tr>
+             <td>Abteilung </td>
+             <td> Produktion, Vertrib, Personal</td>
+           </tr>
+           <tr>
+             <td>Arbeitsgruppe </td>
+             <td> Team1, Team2 Team3</td>
+           </tr>
+           <tr>
+             <td>Standort </td>
+             <td>Köln, Bonn, Düsseldorf </td>
+           </tr>
+           <tr>
+             <td>Führungskraft </td>
+             <td> Führungskraft, keine Führungskraft</td>
+           </tr>
+         </table>
 
+        <p>
+        Sie können für Ihren Betrieb auch mehrere Auswertungsgruppen anlegen. Starten Ihre 
+        Beschäftigten die Befragungen, müssen Sie sich zunächst den von Ihnen angelegten 
+        Auswertungsgruppen zuordnen.
         </p>
-
+        <p>
+        Zu jeder Auswertungsgruppe können Sie nach Abschluss der Befragung eine eigene Auswertung 
+        erzeugen. Sie haben auch die Möglichkeit, Auswertungsgruppen zu kombinieren, z.B. 
+        Produktionsabteilung am Standort Düsseldorf. 
+        Allerdings werden Ihnen aus Datenschutzgründen nur Auswertungen von Gruppen angezeigt, für 
+        die mindestens sieben ausgefüllte Fragebögen vorliegen.
+        </p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
