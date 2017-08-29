@@ -50,7 +50,7 @@ class DownloadCourse(uvclight.View):
         if self.context.course.criterias:
             story.append(Paragraph('<b>Bitte kreuzen Sie das zutreffende an </b>', style['Normal']))
             for crit in self.context.course.criterias:
-                story.append(Paragraph('<b> %s </b> %s ' % (crit.title, self.genStuff(crit.items.split('\n'))), style['Normal']))
+                story.append(Paragraph('<b> %s </b> <br/> %s ' % (crit.title, self.genStuff(crit.items.split('\n'))), style['Normal']))
                 #story.append(Paragraph(self.genStuff(crit.items.split('\n')), style['Normal']))
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)
