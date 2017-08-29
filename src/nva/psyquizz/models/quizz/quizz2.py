@@ -219,6 +219,7 @@ class Quizz2(Base, Location):
     __tablename__ = 'quizz2'
     __schema__ = IQuizz2
     __title__ = u"KFZA Kurzfragebogen zur Arbeitsanalyse"
+    __base_pdf__ = "kfza.pdf"
 
     id = Column('id', Integer, primary_key=True)
 

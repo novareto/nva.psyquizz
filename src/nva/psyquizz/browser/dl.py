@@ -13,6 +13,8 @@ from pyPdf import PdfFileWriter, PdfFileReader
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, PageBreak
+from zope.component import getUtility
+from nva.psyquizz.models import IQuizz
 
 
 HINWEIS = """ <b>Hinweis</b> 
@@ -21,9 +23,12 @@ Fehlerhafte Fragebögen können leider nicht ausgewertet werden. <br/> <br/> """
 
 
 class DownloadCourse(uvclight.View):
-    uvclight.name('kfza.pdf')
+    uvclight.name('paper.pdf')
     uvclight.auth.require('zope.Public')
     uvclight.context(interface.Interface)
+
+    heading = u"Gemeinsam zu gesunden Arbeitsbedingungen"
+    base_pdf = "kfza.pdf"
 
     def make_response(self, result):
         response = self.responseFactory(app_iter=result)
@@ -39,12 +44,17 @@ class DownloadCourse(uvclight.View):
                 rc.append('[ ] %s &nbsp; &nbsp;' % item)
         return ''.join(rc)
 
+    def update(self):
+        util = getUtility(IQuizz, name=self.context.quizz_type)
+        self.heading = util.__title__
+        self.base_pdf = util.__base_pdf__
+
     def generate_page_one(self):
         style = getSampleStyleSheet()
         nm = style['Normal']
         nm.leading = 14
         story = []
-        story.append(Paragraph('Gemeinsam zu gesunden Arbeitsbedingungen', style['Heading2']))
+        story.append(Paragraph(self.heading, style['Heading2']))
         story.append(Paragraph(self.context.about.replace('\r\n', '<br/>').replace('</p>', '</p><br/>'), nm))
         story.append(Paragraph(HINWEIS, style['Normal']))
         if self.context.course.criterias:
@@ -62,8 +72,8 @@ class DownloadCourse(uvclight.View):
         if self.context.course.criterias:
             p1 = PdfFileReader(self.generate_page_one())
             output.addPage(p1.getPage(0))
-        kfza_pdf = "%s/kfza.pdf" %  path.dirname(__file__)
-        with open(kfza_pdf, 'rb') as pdf:
+        bpdf = "%s/%s" % (path.dirname(__file__), self.base_pdf)
+        with open(bpdf, 'rb') as pdf:
             pf = PdfFileReader(pdf)
             for page in range(pf.getNumPages()):
                 output.addPage(pf.getPage(page))
@@ -71,4 +81,3 @@ class DownloadCourse(uvclight.View):
             output.write(ntf)
         ntf.seek(0)
         return ntf
-        
