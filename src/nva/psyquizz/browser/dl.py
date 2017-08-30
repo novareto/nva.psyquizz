@@ -9,7 +9,7 @@ from zope import interface
 from tempfile import TemporaryFile
 
 from pyPdf import PdfFileWriter, PdfFileReader
-
+from BeautifulSoup import BeautifulSoup
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, PageBreak
@@ -54,13 +54,16 @@ class DownloadCourse(uvclight.View):
         nm = style['Normal']
         nm.leading = 14
         story = []
+        na = self.context.about.replace('\r\n', '<br/>').replace('</p>', '</p><br/>')
+        bs = BeautifulSoup(na)
+        doc = bs.prettify()
         story.append(Paragraph(self.heading, style['Heading2']))
-        story.append(Paragraph(self.context.about.replace('\r\n', '<br/>').replace('</p>', '</p><br/>'), nm))
+        story.append(Paragraph(doc, nm))
         story.append(Paragraph(HINWEIS, style['Normal']))
         if self.context.course.criterias:
             story.append(Paragraph('<b>Bitte kreuzen Sie das zutreffende an </b>', style['Normal']))
             for crit in self.context.course.criterias:
-                story.append(Paragraph('<b> %s </b> %s ' % (crit.title, self.genStuff(crit.items.split('\n'))), style['Normal']))
+                story.append(Paragraph('<b> %s </b> <br/> %s ' % (crit.title, self.genStuff(crit.items.split('\n'))), style['Normal']))
                 #story.append(Paragraph(self.genStuff(crit.items.split('\n')), style['Normal']))
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)
@@ -75,6 +78,8 @@ class DownloadCourse(uvclight.View):
         bpdf = "%s/%s" % (path.dirname(__file__), self.base_pdf)
         with open(bpdf, 'rb') as pdf:
             pf = PdfFileReader(pdf)
+            if pf.isEncrypted:
+                pf.decrypt('')
             for page in range(pf.getNumPages()):
                 output.addPage(pf.getPage(page))
             ntf = TemporaryFile()

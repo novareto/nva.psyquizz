@@ -60,7 +60,6 @@
     <textarea type="text" id="pSVG1" name="pSVG1" style="display: none"></textarea>
 
     <button class="btn btn-default" value="pdf export"> <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> PDF Export </button>
-    <a href="excel" class="btn btn-default">  <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Excel Export </a>
   </form>
 
   <script>
@@ -78,6 +77,7 @@
         };
      }
 
+    var myValues = jQuery.parseJSON('<tal:json replace="view.descriptions" />');
     var myChart = Highcharts.chart('container', {
 	chart: {
             type: 'bar'
@@ -93,7 +93,7 @@
 	},
 	xAxis: {
             categories: <span tal:replace="view.xAxis"/>,
-	    labels: { step: 1, useHTML: true, formatter: function() { return '<div id="label_'+this.value.replace(/ /g,'') +'">'+this.value+'</div>'; } },
+	    labels: { step: 1, useHTML: true, formatter: function() { return '<div id="label_'+this.value.replace(/ /g,'') +'">'+myValues[this.value]+'</div>'; } },
 	},
 	yAxis: {
             min: 0,
