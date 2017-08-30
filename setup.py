@@ -40,6 +40,7 @@ install_requires = [
     'js.jqueryui',
     'shortid',
     'svglib',
+    'BeautifulSoup',
     ]
 
 tests_require = [
