@@ -427,7 +427,7 @@ class XSLX(object):
             'name':       '=Verteilung!$A$1',
             'categories': '=Verteilung!$D$3:$D$13',
             'values':     '=Verteilung!$A$3:$A$13',
-            'fill':   {'color': data[2]['color']},
+            'fill':   {'color': data[0]['color']},
         })
 
         chart3.add_series({
@@ -441,7 +441,7 @@ class XSLX(object):
             'name':       '=Verteilung!$C$1',
             'categories': '=Verteilung!$D$3:$D$13',
             'values':     '=Verteilung!$C$3:$C$13',
-            'fill':   {'color': data[0]['color']},
+            'fill':   {'color': data[2]['color']},
         })
 
         chart3.set_y_axis({'reverse': True})
