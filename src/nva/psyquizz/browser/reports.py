@@ -5,6 +5,8 @@
 import json
 import uvclight
 import datetime
+import tempfile
+
 from cStringIO import StringIO
 from zope.interface import Interface
 from reportlab.lib.pagesizes import letter, landscape
@@ -16,14 +18,12 @@ from binascii import a2b_base64
 from reportlab.lib import colors
 from reportlab.lib.units import mm, cm
 from reportlab.lib.styles import ParagraphStyle
+from svglib.svglib import svg2rlg
+
+from nva.psyquizz.models.quizz.quizz2 import IQuizz2
+from nva.psyquizz.models.quizz.quizz1 import IQuizz1
 
 styles = getSampleStyleSheet()
-
-
-ps = ParagraphStyle(
-        name='Normal',
-        fontStyle = 24,
-        )
 
 
 def read_data_uri(uri):
@@ -35,24 +35,15 @@ def read_data_uri(uri):
     return fd
 
 
-FRONTPAGE = u"""<div>
-<b>Auswertungsbericht</b> <br/> <br/>
-„Gemeinsam zu gesunden Arbeitsbedingungen“ – Psychische Belastung erfassen <br/> 
-<p>
+FRONTPAGE = u"""
 %s<br/>
-%s
-</p>
-<p>
+%s <br/>
 Befragungszeitraum: %s – %s <br/> <br/>
 <u>Grundlage der Ergebnisse</u> <br/>
 Auswertungsgruppe: %s <br/>
 Anzahl Fragebögen: %s <br/>
 Auswertung erzeugt: %s <br/>
-</font-size>
-<div>
 """
-
-
 
 LEGEND = """
     <em><font color="#62B645"><b> > 3,5: </b></font> in diesem Bereich scheint alles in Ordnung</em><br/>
@@ -66,13 +57,44 @@ class GeneratePDF(uvclight.Page):
     uvclight.name('pdf')
     uvclight.auth.require('zope.Public')
 
+    def crit_style(self):
+        if int(self.request.form.get('has_criterias', 0)) > 0:
+            rc = []
+            criterias = dict(json.loads(self.request.form['criterias']))
+            for k,v in criterias.items():
+                rc.append(
+                    "<li> %s: %s </li>" %(k, v)
+                    )
+            if not rc:
+                rc.append('alle')
+        else:
+            rc = ['alle']
+
+        crit_style = "<ul> %s </ul>" % "".join(rc)
+        return crit_style
+
+    def frontpage(self, parts):
+        crit_style = self.crit_style()
+        parts.append(Paragraph(u'Auswertungsbericht', styles['Heading1']))
+        parts.append(Paragraph(u'„Gemeinsam zu gesunden Arbeitsbedingungen“ – Psychische Belastung erfassen', styles['Heading2']))
+        fp = FRONTPAGE % (
+            self.context.course.company.name, 
+            self.context.course.title, 
+            self.context.startdate.strftime('%d.%m.%Y'), 
+            self.context.enddate.strftime('%d.%m.%Y'),
+            self.request.form['total'],
+            crit_style,
+            datetime.datetime.now().strftime('%d.%m.%Y'))
+        parts.append(Paragraph(fp.strip(), styles['Normal']))
+        parts.append(PageBreak())
+        return 
+
     def make_response(self, result):
         response = self.responseFactory(app_iter=result)
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'attachment; \
                 filename="Resultate_Befragung.pdf"'
         return response
-
 
     def headerfooter(self, canvas, doc):
         canvas.setFont("Helvetica", 9)
@@ -98,27 +120,10 @@ class GeneratePDF(uvclight.Page):
         doc = SimpleDocTemplate(
             NamedTemporaryFile(), pagesize=landscape(letter))
         parts = []
-        if int(self.request.form.get('has_criterias', 0)) > 0:
-            rc = []
-            criterias = dict(json.loads(self.request.form['criterias']))
-            for k,v in criterias.items():
-                rc.append(
-                    "<li> %s: %s </li>" %(k, v)
-                    )
-            if not rc:
-                rc.append('alle')
-        else:
-            rc = ['alle']
-
-        crit_style = "<ul> %s </ul>" % "".join(rc)
-
         avg = json.loads(self.request.form['averages'])
-
         chart = read_data_uri(self.request.form['chart'])
         userschart = read_data_uri(self.request.form['userschart'])
         pSVG = self.request.form.get('pSVG')
-        from svglib.svglib import svg2rlg
-        import tempfile
         tf = tempfile.NamedTemporaryFile()
         tf.write(unicode(pSVG).encode('utf-8'))
         tf.seek(0)
@@ -132,25 +137,10 @@ class GeneratePDF(uvclight.Page):
         #svg2rlg(pSVG)
         parts.append(Spacer(0, 2*cm))
         ## Page1
-        ns = styles['Normal']
-        ns.fontSize = 16
-        ns.leading = 16
-        ns
-        fp = FRONTPAGE % (
-            self.context.course.company.name, 
-            self.context.course.title, 
-            self.context.startdate.strftime('%d.%m.%Y'), 
-            self.context.enddate.strftime('%d.%m.%Y'),
-            self.request.form['total'],
-            crit_style,
-            datetime.datetime.now().strftime('%d.%m.%Y'))
-        print fp
-        parts.append(Paragraph(fp.strip(), ns))
-        parts.append(PageBreak())
+        self.frontpage(parts)
         ## Page2
         parts.append(Spacer(0, 2*cm))
-        parts.append(Paragraph(crit_style, styles['Normal']))
-        from reportlab.graphics.shapes import Drawing
+        #parts.append(Paragraph(crit_style, styles['Normal']))
         parts.append(drawing)
         parts.append(Paragraph(LEGEND, styles['Normal']))
         parts.append(PageBreak())
@@ -172,9 +162,6 @@ class GeneratePDF(uvclight.Page):
         pdf.seek(0)
         return pdf.read()
 
-
-from nva.psyquizz.models.quizz.quizz2 import IQuizz2
-from nva.psyquizz.models.quizz.quizz1 import IQuizz1
 
 class PDFPL(GeneratePDF):
     uvclight.context(IQuizz1)
@@ -205,38 +192,17 @@ class PDFPL(GeneratePDF):
         doc = SimpleDocTemplate(
             NamedTemporaryFile(), pagesize=landscape(letter))
         parts = []
-        if int(self.request.form.get('has_criterias', 0)) > 0:
-            rc = []
-            criterias = dict(json.loads(self.request.form['criterias']))
-            for k,v in criterias.items():
-                rc.append(
-                    "<li> %s: %s </li>" %(k, v)
-                    )
-            if not rc:
-                rc.append('alle')
-        else:
-            rc = ['alle']
-
-        crit_style = "<ul> %s </ul>" % "".join(rc)
         pSVG = self.request.form.get('pSVG1')
-        from svglib.svglib import svg2rlg
-        import tempfile
         tf = tempfile.NamedTemporaryFile()
         tf.write(unicode(pSVG).encode('utf-8'))
         tf.seek(0)
         drawing = svg2rlg(tf.name)
-        drawing.height = 456.0
-        #import pdb; pdb.set_trace() 
-        parts.append(Spacer(0, 2*cm))
+        drawing.width = 900.0
+        drawing.renderScale = 0.55
         ## Page1
-        parts.append(Paragraph(u'Dokumentation', styles['Heading1']))
-        parts.append(Paragraph(u'Auf den folgenden Seiten können Sie ich die Ergebnisse der Auswertung ansehen.', styles['Heading2']))
-        parts.append(Paragraph('Grundlage dieser Auswertung', styles['Heading3']))
-        parts.append(Paragraph(u'Anzahl Fragebögen %s' % self.request.form['total'], styles['Normal']))
-        parts.append(Paragraph(u'Auswertungsgruppe', styles['Normal']))
-        parts.append(Paragraph(crit_style, styles['Normal']))
-        parts.append(PageBreak())
         parts.append(Spacer(0, 2*cm))
+        self.frontpage(parts)
+        parts.append(Spacer(0, 0.4*cm))
         parts.append(drawing)
         doc.build(parts, onFirstPage=self.headerfooter, onLaterPages=self.headerfooter)
         pdf = doc.filename
