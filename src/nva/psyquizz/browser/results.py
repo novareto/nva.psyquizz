@@ -9,6 +9,7 @@ import xlsxwriter
 import cStringIO
 import itertools
 import shutil
+import datetime
 from backports import tempfile
 
 from collections import OrderedDict, namedtuple
@@ -160,6 +161,8 @@ class SessionStatistics(CourseStatistics):
         filters['session'] = self.session.id
         return CourseStatistics.update(self, filters)
         
+
+from .reports import FRONTPAGE
 
 DOKU_TEXT = u"""Falls Sie die Kennwörter nicht mit Hilfe des Serienbriefes verteilen möchten können
 Sie diese Excel Liste für eine alternative Form der Verteilung nutzen, z.B. Serien E-
@@ -340,6 +343,18 @@ class DownloadLetter(uvclight.Form):
         except HTTPRedirect, exc:
             return redirect_exception_response(self.responseFactory, exc)
 
+FRONTPAGE = u"""
+Auswertungsbericht 
+„Gemeinsam zu gesunden Arbeitsbedingungen“ – Psychische Belastung erfassen 
+%s
+%s
+
+Befragungszeitraum: %s – %s 
+Grundlage der Ergebnisse
+Auswertungsgruppe: %s 
+Anzahl Fragebögen: %s 
+Auswertung erzeugt: %s 
+"""
 
 class XSLX(object):
 
@@ -347,8 +362,20 @@ class XSLX(object):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
         worksheet = workbook.add_worksheet('Dokumentation')
-
-        worksheet.write(0,0, 'Datenbasis')
+        amounts = dict(json.loads(self.json_criterias))
+        ii = 1
+        db = ""
+        for k,v in self.filters.get('criterias', {}).items():
+            db +=  "%s %s" % (v.name, amounts.get(v.name))
+        fp = FRONTPAGE % (
+            self.course.company.name, 
+            self.course.title, 
+            self.session.startdate.strftime('%d.%m.%Y'), 
+            self.session.enddate.strftime('%d.%m.%Y'),
+            self.request.form.get('total'),
+            db,
+            datetime.datetime.now().strftime('%d.%m.%Y'))
+        worksheet.insert_textbox(0, 0, fp, {'width': 800, 'height': 300, 'font': {'size': 13}})
 
         amounts = dict(json.loads(self.json_criterias))
         ii = 1
@@ -410,7 +437,7 @@ class XSLX(object):
             r = 1 
             worksheet.write(0, y, name)
             for i, z in enumerate(x['data']):
-                worksheet.write((r+1+i), y, z)
+                worksheet.write((r+1+i), y, z, nformat)
 
         for idx, titel in enumerate(self.xAxis):
             worksheet.write((idx + 2), 3, unicode(titel, 'latin1'))
@@ -427,7 +454,7 @@ class XSLX(object):
             'name':       '=Verteilung!$A$1',
             'categories': '=Verteilung!$D$3:$D$13',
             'values':     '=Verteilung!$A$3:$A$13',
-            'fill':   {'color': data[2]['color']},
+            'fill':   {'color': data[0]['color']},
         })
 
         chart3.add_series({
@@ -441,7 +468,7 @@ class XSLX(object):
             'name':       '=Verteilung!$C$1',
             'categories': '=Verteilung!$D$3:$D$13',
             'values':     '=Verteilung!$C$3:$C$13',
-            'fill':   {'color': data[0]['color']},
+            'fill':   {'color': data[2]['color']},
         })
 
         chart3.set_y_axis({'reverse': True})
@@ -459,7 +486,6 @@ class XSLX(object):
                     worksheet.write("C%i" % offset, v.amount)
         else:
             offset += 1
-            worksheet.write("A%i" % offset , "ALL CRITERIAS")
 
         offset += 2
         worksheet.write("A%i" % offset, "Frage")

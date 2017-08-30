@@ -36,16 +36,15 @@ def read_data_uri(uri):
 
 
 FRONTPAGE = u"""<div>
-<font-size=50>
-<b><font-size=20>Auswertungsbericht</font-size></b> <br/>
+<b>Auswertungsbericht</b> <br/> <br/>
 „Gemeinsam zu gesunden Arbeitsbedingungen“ – Psychische Belastung erfassen <br/> 
 <p>
 %s<br/>
 %s
 </p>
 <p>
-Befragungszeitraum: %s – %s <br/>
-Grundlage der Ergebnisse: <br/>
+Befragungszeitraum: %s – %s <br/> <br/>
+<u>Grundlage der Ergebnisse</u> <br/>
 Auswertungsgruppe: %s <br/>
 Anzahl Fragebögen: %s <br/>
 Auswertung erzeugt: %s <br/>
@@ -133,6 +132,10 @@ class GeneratePDF(uvclight.Page):
         #svg2rlg(pSVG)
         parts.append(Spacer(0, 2*cm))
         ## Page1
+        ns = styles['Normal']
+        ns.fontSize = 16
+        ns.leading = 16
+        ns
         fp = FRONTPAGE % (
             self.context.course.company.name, 
             self.context.course.title, 
@@ -142,7 +145,7 @@ class GeneratePDF(uvclight.Page):
             crit_style,
             datetime.datetime.now().strftime('%d.%m.%Y'))
         print fp
-        parts.append(Paragraph(fp.strip(), ps))
+        parts.append(Paragraph(fp.strip(), ns))
         parts.append(PageBreak())
         ## Page2
         parts.append(Spacer(0, 2*cm))
