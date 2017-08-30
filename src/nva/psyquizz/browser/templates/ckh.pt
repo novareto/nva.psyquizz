@@ -85,7 +85,7 @@
 	<dt>Paper2Disk:</dt> 
 	<dd>
           <a tal:attributes="href view.url(context, str(company.id) + '/' +
-			     str(course.id) + '/sessions/' + str(session.id) + '/kfza.pdf')">
+			     str(course.id) + '/sessions/' + str(session.id) + '/paper.pdf')">
             <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
             Download Papierfragebogen
 	  </a>

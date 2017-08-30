@@ -200,6 +200,7 @@ class Quizz1(Base, Location):
     __tablename__ = 'quizz1'
     __schema__ = IQuizz1
     __title__ = u"Prüfliste Psychische Belastung"
+    __base_pdf__ = "pruefliste.pdf"
 
     id = Column('id', Integer, primary_key=True)
 

@@ -98,3 +98,14 @@ class ClassSession(Base, Location):
         if not self.strategy:
             return "free"
         return source.getTermByToken(self.strategy).title
+
+
+# standard decorator style
+from sqlalchemy import event
+from zope.component import getUtility
+from zope.interface import alsoProvides
+@event.listens_for(ClassSession, 'load')
+def receive_load(target, context):
+    from nva.psyquizz.models.quizz.quizz2 import IQuizz
+    util = getUtility(IQuizz, target.quizz_type)
+    alsoProvides(target, util.__schema__)

@@ -4,6 +4,7 @@
 
 import json
 import uvclight
+import datetime
 from cStringIO import StringIO
 from zope.interface import Interface
 from reportlab.lib.pagesizes import letter, landscape
@@ -14,8 +15,15 @@ from tempfile import NamedTemporaryFile
 from binascii import a2b_base64
 from reportlab.lib import colors
 from reportlab.lib.units import mm, cm
+from reportlab.lib.styles import ParagraphStyle
 
 styles = getSampleStyleSheet()
+
+
+ps = ParagraphStyle(
+        name='Normal',
+        fontStyle = 24,
+        )
 
 
 def read_data_uri(uri):
@@ -25,6 +33,25 @@ def read_data_uri(uri):
     fd.write(binary_data)
     fd.seek(0)
     return fd
+
+
+FRONTPAGE = u"""<div>
+<b>Auswertungsbericht</b> <br/> <br/>
+„Gemeinsam zu gesunden Arbeitsbedingungen“ – Psychische Belastung erfassen <br/> 
+<p>
+%s<br/>
+%s
+</p>
+<p>
+Befragungszeitraum: %s – %s <br/> <br/>
+<u>Grundlage der Ergebnisse</u> <br/>
+Auswertungsgruppe: %s <br/>
+Anzahl Fragebögen: %s <br/>
+Auswertung erzeugt: %s <br/>
+</font-size>
+<div>
+"""
+
 
 
 LEGEND = """
@@ -45,6 +72,7 @@ class GeneratePDF(uvclight.Page):
         response.headers['Content-Disposition'] = 'attachment; \
                 filename="Resultate_Befragung.pdf"'
         return response
+
 
     def headerfooter(self, canvas, doc):
         canvas.setFont("Helvetica", 9)
@@ -104,12 +132,20 @@ class GeneratePDF(uvclight.Page):
         #svg2rlg(pSVG)
         parts.append(Spacer(0, 2*cm))
         ## Page1
-        parts.append(Paragraph(u'Dokumentation', styles['Heading1']))
-        parts.append(Paragraph(u'Auf den folgenden Seiten können Sie ich die Ergebnisse der Auswertung ansehen.', styles['Heading2']))
-        parts.append(Paragraph('Grundlage dieser Auswertung', styles['Heading3']))
-        parts.append(Paragraph(u'Anzahl Fragebögen %s' % self.request.form['total'], styles['Normal']))
-        parts.append(Paragraph(u'Auswertungsgruppe', styles['Normal']))
-        parts.append(Paragraph(crit_style, styles['Normal']))
+        ns = styles['Normal']
+        ns.fontSize = 16
+        ns.leading = 16
+        ns
+        fp = FRONTPAGE % (
+            self.context.course.company.name, 
+            self.context.course.title, 
+            self.context.startdate.strftime('%d.%m.%Y'), 
+            self.context.enddate.strftime('%d.%m.%Y'),
+            self.request.form['total'],
+            crit_style,
+            datetime.datetime.now().strftime('%d.%m.%Y'))
+        print fp
+        parts.append(Paragraph(fp.strip(), ns))
         parts.append(PageBreak())
         ## Page2
         parts.append(Spacer(0, 2*cm))
@@ -131,6 +167,77 @@ class GeneratePDF(uvclight.Page):
         parts.append(PageBreak())
         parts.append(Spacer(0, 1*cm))
         parts.append(drawing1)
+        doc.build(parts, onFirstPage=self.headerfooter, onLaterPages=self.headerfooter)
+        pdf = doc.filename
+        pdf.seek(0)
+        return pdf.read()
+
+
+from nva.psyquizz.models.quizz.quizz2 import IQuizz2
+from nva.psyquizz.models.quizz.quizz1 import IQuizz1
+
+class PDFPL(GeneratePDF):
+    uvclight.context(IQuizz1)
+    uvclight.name('pdf')
+    uvclight.auth.require('zope.Public')
+
+    def headerfooter(self, canvas, doc):
+        canvas.setFont("Helvetica", 9)
+        canvas.drawString(1 * cm, 2 * cm, u"Gemeinsam zu gesunden Arbeitsbedingungen")
+        canvas.drawString(1 * cm, 1.6 * cm, u"Psychische Belastungen online erfassen")
+        canvas.drawString(1 * cm, 1.2 * cm, u"Ein Programm der BG ETEM")
+        canvas.drawString(18 * cm, 2 * cm, u"Grundlage der Befragung:  Prüfliste Psychische")
+        canvas.drawString(18 * cm, 1.6 *cm, u"Belastung")
+        canvas.drawString(18 * cm, 1.2 * cm, u"Unfallversicherung Bund und Bahn")
+        canvas.line(0.5 * cm , 2.5 * cm, 26 * cm, 2.5 * cm)
+        canvas.setFont("Helvetica", 12)
+        canvas.drawString(1 * cm, 20 * cm, self.context.course.company.name)
+        canvas.drawString(1 * cm, 19.5 * cm, self.context.course.title)
+        try:
+            canvas.drawString(1 * cm, 19.0 * cm, u"Befragungszeitraum %s - %s" % (
+                self.context.startdate.strftime('%d.%m.%Y'),
+                self.context.enddate.strftime('%d.%m.%Y')))
+        except:
+            print "ERROR"
+        canvas.line(0.5 * cm , 18.5 * cm, 26 * cm, 18.5 * cm)
+
+    def render(self):
+        doc = SimpleDocTemplate(
+            NamedTemporaryFile(), pagesize=landscape(letter))
+        parts = []
+        if int(self.request.form.get('has_criterias', 0)) > 0:
+            rc = []
+            criterias = dict(json.loads(self.request.form['criterias']))
+            for k,v in criterias.items():
+                rc.append(
+                    "<li> %s: %s </li>" %(k, v)
+                    )
+            if not rc:
+                rc.append('alle')
+        else:
+            rc = ['alle']
+
+        crit_style = "<ul> %s </ul>" % "".join(rc)
+        pSVG = self.request.form.get('pSVG1')
+        from svglib.svglib import svg2rlg
+        import tempfile
+        tf = tempfile.NamedTemporaryFile()
+        tf.write(unicode(pSVG).encode('utf-8'))
+        tf.seek(0)
+        drawing = svg2rlg(tf.name)
+        drawing.height = 456.0
+        #import pdb; pdb.set_trace() 
+        parts.append(Spacer(0, 2*cm))
+        ## Page1
+        parts.append(Paragraph(u'Dokumentation', styles['Heading1']))
+        parts.append(Paragraph(u'Auf den folgenden Seiten können Sie ich die Ergebnisse der Auswertung ansehen.', styles['Heading2']))
+        parts.append(Paragraph('Grundlage dieser Auswertung', styles['Heading3']))
+        parts.append(Paragraph(u'Anzahl Fragebögen %s' % self.request.form['total'], styles['Normal']))
+        parts.append(Paragraph(u'Auswertungsgruppe', styles['Normal']))
+        parts.append(Paragraph(crit_style, styles['Normal']))
+        parts.append(PageBreak())
+        parts.append(Spacer(0, 2*cm))
+        parts.append(drawing)
         doc.build(parts, onFirstPage=self.headerfooter, onLaterPages=self.headerfooter)
         pdf = doc.filename
         pdf.seek(0)
