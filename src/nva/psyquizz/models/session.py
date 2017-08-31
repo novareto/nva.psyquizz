@@ -104,8 +104,9 @@ class ClassSession(Base, Location):
 from sqlalchemy import event
 from zope.component import getUtility
 from zope.interface import alsoProvides
+from nva.psyquizz.models import IQuizz
+
 @event.listens_for(ClassSession, 'load')
 def receive_load(target, context):
-    from nva.psyquizz.models.quizz.quizz2 import IQuizz
     util = getUtility(IQuizz, target.quizz_type)
     alsoProvides(target, util.__schema__)
