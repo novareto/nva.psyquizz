@@ -361,7 +361,7 @@ class XSLX(object):
     def generateXLSX(self, folder, filename="Ergebnischart.xlsx"):
         filepath = os.path.join(folder, filename)
         workbook = xlsxwriter.Workbook(filepath)
-        worksheet = workbook.add_worksheet('Dokumentation')
+        worksheet0 = workbook.add_worksheet('Dokumentation')
         amounts = dict(json.loads(self.json_criterias))
         ii = 1
         db = ""
@@ -375,13 +375,20 @@ class XSLX(object):
             self.request.form.get('total'),
             db,
             datetime.datetime.now().strftime('%d.%m.%Y'))
-        worksheet.insert_textbox(0, 0, fp, {'width': 800, 'height': 300, 'font': {'size': 13}})
+        #worksheet0.insert_textbox(10, 2, 'fp', {'width': 800, 'height': 300, 'font': {'size': 13}})
+        fm = workbook.add_format()
+        fm.set_font_size(16)
+        fm.set_text_wrap()
+        worksheet0.set_column(0, 0, 130) 
+
+        worksheet0.write(0, 0, fp, fm)
+
 
         amounts = dict(json.loads(self.json_criterias))
         ii = 1
-        for k,v in self.filters.get('criterias', {}).items():
-            worksheet.write(ii, 0,  "%s %s" % (v.name, amounts.get(v.name)))
-            ii += 1
+        #for k,v in self.filters.get('criterias', {}).items():
+        #    worksheet.write(ii, 0,  "%s %s" % (v.name, amounts.get(v.name)))
+        #    ii += 1
 
 
         worksheet = workbook.add_worksheet('Mittelwerte')
