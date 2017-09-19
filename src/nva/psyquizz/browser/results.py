@@ -385,8 +385,8 @@ class XSLX(object):
             self.course.title, 
             self.session.startdate.strftime('%d.%m.%Y'), 
             self.session.enddate.strftime('%d.%m.%Y'),
-            self.statistics.get('total'),
             db,
+            self.statistics.get('total'),
             datetime.datetime.now().strftime('%d.%m.%Y'))
         #worksheet0.insert_textbox(10, 2, 'fp', {'width': 800, 'height': 300, 'font': {'size': 13}})
         fm = workbook.add_format()
