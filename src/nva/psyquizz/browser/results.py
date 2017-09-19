@@ -282,13 +282,13 @@ DEFAULT = u"""
 <p>wie bereits angekündigt, erhalten Sie heute Ihre Einladung zur Teilnahme an unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“.</p>
 <p>Ziel der Befragung ist es, Ihre Arbeitsbedingungen zu beurteilen und ggf.
 entsprechende Verbesserungsmaßnahmen einleiten zu können. Bitte beantworten Sie
-alle Fragen offen und ehrlich. Wir sichern Ihnen vollständinge Vertraulichkeit
+alle Fragen offen und ehrlich. Wir sichern Ihnen vollständige Vertraulichkeit
 zu. Die Ergebnisse der einzelnen Fragebögen bleiben absolut anonym. Die
 Auswertung der Ergebnisse erfolgt automatisiert über unsere
 Berufsgenossenschaft Elektro, Textil, Energie und Medienerzeugnisse.</p> 
 <p> Keine Mitarbeiterin und kein Mitarbeiter unserer Firma wird Einblick in die originalen Datensätze erhalten, eine Rückverfolgung wird nicht möglich sein.</p>
 <p>Die Aussagekraft der Ergebnisse hängt von einer möglichst hohen Beteiligung ab. Geben Sie Ihrer Meinung Gewicht!</p>
-<p>Die Befragung läuft vom %s - %s . Während dieses Zeitraums haben Sie die
+<p>Die Befragung läuft vom %s - %s. Während dieses Zeitraums haben Sie die
 Möglichkeit, über  die unten genannte Internetadresse an unserer Befragung
 teilzunehmen. Über den Link gelangen Sie nach Eingabe des Kennwortes direkt auf
 den Fragebogen unseres Unternehmens. Das Ausfüllen wird etwa 5 Minuten in
