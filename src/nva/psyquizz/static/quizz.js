@@ -48,6 +48,9 @@ $( document ).ready(function() {
 
 
     $('div#field-form-field-nb_students').hide();
+    if ($('#form-field-strategy-0').val() == 'fixed') {
+       $('div#field-form-field-nb_students').show();
+    }
 
     $('div#field-form-field-strategy input:radio').click(function() {
         value = $(this).val()

@@ -9,7 +9,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Hilfe</h4>
+        <h1 class="modal-title">Hilfe</h1>
       </div>
       <div class="modal-body">
         <p class="lead">Auswertungsgruppen anlegen <p>
@@ -27,7 +27,7 @@
            </tr>
            <tr>
              <td>Abteilung </td>
-             <td> Produktion, Vertrib, Personal</td>
+             <td> Produktion, Vertrieb, Personal</td>
            </tr>
            <tr>
              <td>Arbeitsgruppe </td>

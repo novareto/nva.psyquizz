@@ -82,8 +82,8 @@ class GeneratePDF(uvclight.Page):
             self.context.course.title, 
             self.context.startdate.strftime('%d.%m.%Y'), 
             self.context.enddate.strftime('%d.%m.%Y'),
-            self.request.form['total'],
             crit_style,
+            self.request.form['total'],
             datetime.datetime.now().strftime('%d.%m.%Y'))
         parts.append(Paragraph(fp.strip(), styles['Normal']))
         parts.append(PageBreak())
@@ -106,15 +106,15 @@ class GeneratePDF(uvclight.Page):
         canvas.drawString(18 * cm, 1.2 * cm, u"Prümper, J., Hartmannsgruber, K. & Frese, M")
         canvas.line(0.5 * cm , 2.5 * cm, 26 * cm, 2.5 * cm)
         canvas.setFont("Helvetica", 12)
-        canvas.drawString(1 * cm, 20 * cm, self.context.course.company.name)
-        canvas.drawString(1 * cm, 19.5 * cm, self.context.course.title)
-        try:
-            canvas.drawString(1 * cm, 19.0 * cm, u"Befragungszeitraum %s - %s" % (
-                self.context.startdate.strftime('%d.%m.%Y'),
-                self.context.enddate.strftime('%d.%m.%Y')))
-        except:
-            print "ERROR"
-        canvas.line(0.5 * cm , 18.5 * cm, 26 * cm, 18.5 * cm)
+        #canvas.drawString(1 * cm, 20 * cm, self.context.course.company.name)
+        #canvas.drawString(1 * cm, 19.5 * cm, self.context.course.title)
+        #try:
+        #    canvas.drawString(1 * cm, 19.0 * cm, u"Befragungszeitraum %s - %s" % (
+        #        self.context.startdate.strftime('%d.%m.%Y'),
+        #        self.context.enddate.strftime('%d.%m.%Y')))
+        #except:
+        #    print "ERROR"
+        #canvas.line(0.5 * cm , 18.5 * cm, 26 * cm, 18.5 * cm)
 
     def render(self):
         doc = SimpleDocTemplate(
@@ -134,17 +134,12 @@ class GeneratePDF(uvclight.Page):
         tf.write(unicode(pSVG1).encode('utf-8'))
         tf.seek(0)
         drawing1 = svg2rlg(tf.name)
-        #svg2rlg(pSVG)
-        parts.append(Spacer(0, 2*cm))
         ## Page1
         self.frontpage(parts)
         ## Page2
-        parts.append(Spacer(0, 2*cm))
-        #parts.append(Paragraph(crit_style, styles['Normal']))
         parts.append(drawing)
         parts.append(Paragraph(LEGEND, styles['Normal']))
         parts.append(PageBreak())
-        parts.append(Spacer(0, 4*cm))
         parts.append(Paragraph(u'Mittelwerte', styles['Normal']))
 
         table = Table(data=avg)
@@ -177,16 +172,16 @@ class PDFPL(GeneratePDF):
         canvas.drawString(18 * cm, 1.6 *cm, u"Belastung")
         canvas.drawString(18 * cm, 1.2 * cm, u"Unfallversicherung Bund und Bahn")
         canvas.line(0.5 * cm , 2.5 * cm, 26 * cm, 2.5 * cm)
-        canvas.setFont("Helvetica", 12)
-        canvas.drawString(1 * cm, 20 * cm, self.context.course.company.name)
-        canvas.drawString(1 * cm, 19.5 * cm, self.context.course.title)
-        try:
-            canvas.drawString(1 * cm, 19.0 * cm, u"Befragungszeitraum %s - %s" % (
-                self.context.startdate.strftime('%d.%m.%Y'),
-                self.context.enddate.strftime('%d.%m.%Y')))
-        except:
-            print "ERROR"
-        canvas.line(0.5 * cm , 18.5 * cm, 26 * cm, 18.5 * cm)
+        #canvas.setFont("Helvetica", 12)
+        #canvas.drawString(1 * cm, 20 * cm, self.context.course.company.name)
+        #canvas.drawString(1 * cm, 19.5 * cm, self.context.course.title)
+        #try:
+        #    canvas.drawString(1 * cm, 19.0 * cm, u"Befragungszeitraum %s - %s" % (
+        #        self.context.startdate.strftime('%d.%m.%Y'),
+        #        self.context.enddate.strftime('%d.%m.%Y')))
+        #except:
+        #    print "ERROR"
+        #canvas.line(0.5 * cm , 18.5 * cm, 26 * cm, 18.5 * cm)
 
     def render(self):
         doc = SimpleDocTemplate(
@@ -197,12 +192,11 @@ class PDFPL(GeneratePDF):
         tf.write(unicode(pSVG).encode('utf-8'))
         tf.seek(0)
         drawing = svg2rlg(tf.name)
-        drawing.width = 900.0
-        drawing.renderScale = 0.55
+        #drawing.width = 40.0
+        drawing.renderScale = 0.57
         ## Page1
-        parts.append(Spacer(0, 2*cm))
         self.frontpage(parts)
-        parts.append(Spacer(0, 0.4*cm))
+        #parts.append(Spacer(0, 0.2*cm))
         parts.append(drawing)
         doc.build(parts, onFirstPage=self.headerfooter, onLaterPages=self.headerfooter)
         pdf = doc.filename

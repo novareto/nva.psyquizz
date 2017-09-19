@@ -22,7 +22,7 @@ from ..models.criterias import criterias_table
 from .emailer import SecureMailer, prepare, ENCODING
 
 from cromlech.sqlalchemy import get_session
-from dolmen.forms.base import SuccessMarker, makeAdaptiveDataManager
+from dolmen.forms.base import SuccessMarker, makeAdaptiveDataManager, NO_VALUE
 from dolmen.forms.base.actions import Action, Actions
 from dolmen.forms.base.errors import Error
 from dolmen.forms.base.utils import apply_data_event
@@ -573,7 +573,7 @@ class CreateCourse(Form):
         session.flush()
         session.refresh(clssession)
         if strategy.get('strategy') in ('mixed','fixed'):
-            if strategy['nb_students'] <= 7:
+            if strategy['nb_students'] <= 7 or strategy['nb_students'] is NO_VALUE:
                 self.flash(u'Auswertungen sind erst ab 7 Teilnehmer zulässig. Bitte erhöhen Sie die Anzahl der Teilnehmer auf mindestens 7')
                 return FAILURE
             for student in clssession.generate_students(strategy['nb_students']):
