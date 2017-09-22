@@ -232,6 +232,7 @@ from zope.schema import Text
 from cromlech.browser.interfaces import IResponse
 from cromlech.browser.exceptions import HTTPRedirect
 from cromlech.browser.utils import redirect_exception_response
+from BeautifulSoup import BeautifulSoup
 
 
 class GenerateLetter(Action):
@@ -241,10 +242,13 @@ class GenerateLetter(Action):
         nm = style['Normal']
         nm.leading = 14
         story = []
-        print text
+        na = text.replace('\r\n', '<br/>').replace('</p>', '</p><br/>')
+        bs = BeautifulSoup(na)
+        doc = bs.prettify()
+        print doc 
         for i, x in enumerate(tokens):
             #story.append(Paragraph('Serienbrief', style['Heading1']))
-            story.append(Paragraph(text.replace('<br>','<br/>').replace('</p>', '</p><br/>'), nm))
+            story.append(Paragraph(doc, nm))
             story.append(Paragraph('Die Internetadresse lautet: <b> %s/befragung</b> <br/> Ihr Kennwort lautet: <b> %s</b> ' % (form.application_url(), x), nm))
             story.append(PageBreak())
         tf = TemporaryFile()
@@ -276,14 +280,21 @@ class GenerateLetter(Action):
 DEFAULT = u"""
 <p><b>Liebe Kolleginnen und Kollegen, </b></p>
 <p>wie bereits angekündigt, erhalten Sie heute Ihre Einladung zur Teilnahme an unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“.</p>
-<p>Ziel der Befragung ist es, Ihre Arbeitsbedingungen zu beurteilen und ggf. entsprechende Verbesserungsmaßnahmen einleiten zu können. Bitte beantworten Sie alle Fragen off
+<p>Ziel der Befragung ist es, Ihre Arbeitsbedingungen zu beurteilen und ggf.
+entsprechende Verbesserungsmaßnahmen einleiten zu können. Bitte beantworten Sie
+alle Fragen offen und ehrlich. Wir sichern Ihnen vollständige Vertraulichkeit
+zu. Die Ergebnisse der einzelnen Fragebögen bleiben absolut anonym. Die
+Auswertung der Ergebnisse erfolgt automatisiert über unsere
+Berufsgenossenschaft Elektro, Textil, Energie und Medienerzeugnisse.</p> 
 <p> Keine Mitarbeiterin und kein Mitarbeiter unserer Firma wird Einblick in die originalen Datensätze erhalten, eine Rückverfolgung wird nicht möglich sein.</p>
 <p>Die Aussagekraft der Ergebnisse hängt von einer möglichst hohen Beteiligung ab. Geben Sie Ihrer Meinung Gewicht!</p>
-<p>Die Befragung läuft vom %s - %s . Während dieses Zeitraums haben Sie die Möglichkeit, über folgende Internetadresse an unserer Befragung teilzunehmen:
-<br/>
+<p>Die Befragung läuft vom %s - %s. Während dieses Zeitraums haben Sie die
+Möglichkeit, über  die unten genannte Internetadresse an unserer Befragung
+teilzunehmen. Über den Link gelangen Sie nach Eingabe des Kennwortes direkt auf
+den Fragebogen unseres Unternehmens. Das Ausfüllen wird etwa 5 Minuten in
+Anspruch nehmen. Nehmen Sie sich diese Zeit, Ihre Meinung zu äußern, wir freuen
+uns auf Ihre Rückmeldung und bedanken uns bei Ihnen für Ihre Mitarbeit! </p>
 
-<p>Über diesen Link gelangen Sie direkt auf den Fragebogen unseres Unternehmens. Das Ausfüllen wird etwa 5 Minuten in Anspruch nehmen. </p>
-<p>Nehmen Sie sich diese Zeit, Ihre Meinung zu äußern, wir freuen uns auf Ihre Rückmeldung und bedanken uns bei Ihnen für Ihre Mitarbeit!</p>
 <p>Sollten Sie Fragen oder Anmerkungen haben, wenden Sie sich bitte an:</p> <p><span> A n s p r e c h p a r t n e r   &nbsp;    und   &nbsp;     K o n t a k t d a t e n </span></p>
 """
 
@@ -296,7 +307,7 @@ class ILetter(Interface):
 
 DESC = u"""Nutzen Sie die folgende (anpassbaren) Vorlage, um Ihre Beschäftigten über die Befragung zu informieren.
 Über die Funktion „Serienbrief erstellen“, wird eine PDF Datei mit Anschreiben für jeden
-Beschäftigten - inkl. Link zur Befragung und einem individuellen Kennwort - erzeugt. Drucken
+Beschäftigten - <b> inkl. Link zur Befragung und einem individuellen Kennwort </b> - erzeugt. Drucken
 Sie die Anschreiben aus und verteilen Sie diese an die Beschäftigten.
 """
 
@@ -365,6 +376,8 @@ class XSLX(object):
         amounts = dict(json.loads(self.json_criterias))
         ii = 1
         db = ""
+        if len(self.filters.get('criterias', {})) == 0:
+            db = "alle"
         for k,v in self.filters.get('criterias', {}).items():
             db +=  "%s %s" % (v.name, amounts.get(v.name))
         fp = FRONTPAGE % (
@@ -372,8 +385,8 @@ class XSLX(object):
             self.course.title, 
             self.session.startdate.strftime('%d.%m.%Y'), 
             self.session.enddate.strftime('%d.%m.%Y'),
-            self.request.form.get('total'),
             db,
+            self.statistics.get('total'),
             datetime.datetime.now().strftime('%d.%m.%Y'))
         #worksheet0.insert_textbox(10, 2, 'fp', {'width': 800, 'height': 300, 'font': {'size': 13}})
         fm = workbook.add_format()
