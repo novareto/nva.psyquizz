@@ -181,7 +181,7 @@ class DownloadTokens(uvclight.View):
         app_url = self.application_url()
         _all = itertools.chain(
             self.context.uncomplete, self.context.complete)
-        self.tokens = ['%s/quizz/%s' % (app_url, a.access) for a in _all]
+        self.tokens = ['%s/befragung/%s' % (app_url, a.access) for a in _all]
 
     def generateXLSX(self, folder, filename="ouput.xlsx"):
         filepath = os.path.join(folder, filename)
@@ -245,7 +245,7 @@ class GenerateLetter(Action):
         for i, x in enumerate(tokens):
             #story.append(Paragraph('Serienbrief', style['Heading1']))
             story.append(Paragraph(text.replace('<br>','<br/>').replace('</p>', '</p><br/>'), nm))
-            story.append(Paragraph('Die Internetadresse lautet: <b> %s/quizz</b> <br/> Ihr Kennwort lautet: <b> %s</b> ' % (form.application_url(), x), nm))
+            story.append(Paragraph('Die Internetadresse lautet: <b> %s/befragung</b> <br/> Ihr Kennwort lautet: <b> %s</b> ' % (form.application_url(), x), nm))
             story.append(PageBreak())
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)

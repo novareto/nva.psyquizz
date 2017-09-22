@@ -133,9 +133,9 @@
       <div tal:condition="session.strategy == 'free'">
         <dt>Link zum Fragebogen:</dt> 
         <dd>
-          <a target="_blank" href="" tal:attributes="href '%s/quizz/generic-%s' % (view.application_url(), view.generic_id(session.id))"><span class="glyphicon glyphicon-play-circle"></span> 
+          <a target="_blank" href="" tal:attributes="href '%s/befragung/generic-%s' % (view.application_url(), view.generic_id(session.id))"><span class="glyphicon glyphicon-play-circle"></span> 
           </a>
-          <span tal:content="'%s/quizz/generic-%s' % (view.application_url(), view.generic_id(session.id))"></span> 
+          <span tal:content="'%s/befragung/generic-%s' % (view.application_url(), view.generic_id(session.id))"></span> 
         </dd>
         <dt>Auswertung:</dt> 
         <dd> 
@@ -154,10 +154,10 @@
       <div tal:condition="session.strategy == 'fixed'">
         <dt>Link zum Fragebogen:</dt> 
         <dd>
-              <a target="_blank" href="" tal:attributes="href '%s/quizz' % (view.application_url())"> 
+              <a target="_blank" href="" tal:attributes="href '%s/befragung' % (view.application_url())"> 
               <span class="glyphicon glyphicon-play-circle"></span> 
               </a>
-        <span tal:content="'%s/quizz' % (view.application_url())"></span> 
+        <span tal:content="'%s/befragung' % (view.application_url())"></span> 
         </dd>
         <dt>
         <span data-toggle="tooltip" data-placement="left" title="Excel Liste der Kennwörter für den Zugang zur Befragung"> Kennwortliste </span>
@@ -171,7 +171,7 @@
         <div id="tokens" class="collapse" tal:attributes="id 'tokens-' +
           str(session.id)">
            <row tal:repeat="unc session.uncomplete">
-             <a tal:attributes="href '%s/quizz/%s' %(view.application_url(),
+             <a tal:attributes="href '%s/befragung/%s' %(view.application_url(),
                unc.access)"> <span class="col-md-5" tal:content="unc.access"/> </a>
            </row>
          </div>
@@ -195,22 +195,22 @@
         <dt>Link zum Fragebogen:</dt> 
         <dd>
         <h3> Allegmeiner Link </h3>
-        <a target="_blank" href="" tal:attributes="href '%s/quizz/generic-%s' % (view.application_url(), view.generic_id(session.id))"> 
+        <a target="_blank" href="" tal:attributes="href '%s/befragung/generic-%s' % (view.application_url(), view.generic_id(session.id))"> 
           <span class="glyphicon glyphicon-play-circle"></span> 
         </a> 
-        <span tal:content="'%s/quizz/generic-%s' % (view.application_url(), view.generic_id(session.id))"></span> 
+        <span tal:content="'%s/befragung/generic-%s' % (view.application_url(), view.generic_id(session.id))"></span> 
         <h3> Fixierte Links </h3>
-        <span tal:content="'%s/quizz/%s' % (view.application_url(), 'TOKEN')"></span> 
+        <span tal:content="'%s/befragung/%s' % (view.application_url(), 'TOKEN')"></span> 
         </dd>
         <dt> Tokens: </dt> 
         <dd> <span data-toggle="collapse" data-target="#tokens" href=""> +
           anzeigen </span>
           <div id="tokens" class="collapse">
            <row tal:repeat="unc zip(session.uncomplete, session.uncomplete)">
-             <a tal:attributes="href '%s/quizz/%s' %(view.application_url(),
+             <a tal:attributes="href '%s/befragung/%s' %(view.application_url(),
                unc[0].access)"> <span class="col-md-5"
                  tal:content="unc[0].access"/> </a>
-             <a tal:attributes="href '%s/quizz/%s' %(view.application_url(),
+             <a tal:attributes="href '%s/befragung/%s' %(view.application_url(),
                unc[1].access)"> <span class="col-md-5"
                  tal:content="unc[1].access"/></a>
            </row>

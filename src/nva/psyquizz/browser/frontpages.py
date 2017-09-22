@@ -33,7 +33,7 @@ class AccountHomepage(Page):
 
     template = get_template('ckh.pt', __file__)
 
-    maxResults = 1
+    maxResults = 7 
 
     def update(self):
         quizzjs.need()
