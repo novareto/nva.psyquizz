@@ -580,7 +580,7 @@ class CreateCourse(Form):
                 clssession.append(student)
 
         # update order
-        for idx, criteria in enumerate(data['criterias'], 1):
+        for idx, criteria in enumerate(data.get('criterias', []), 1):
             query = criterias_table.update().where(
                 criterias_table.c.courses_id == course.id
             ).where(
@@ -588,7 +588,7 @@ class CreateCourse(Form):
             ).where(
                 criterias_table.c.company_id == self.context.id
             ).values(order=idx)
-        session.execute(query)
+            session.execute(query)
 
         self.flash(_(u'Course added with success.'))
         self.redirect(self.application_url())
