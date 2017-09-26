@@ -60,10 +60,10 @@ class GeneratePDF(uvclight.Page):
     def crit_style(self):
         if int(self.request.form.get('has_criterias', 0)) > 0:
             rc = []
-            criterias = dict(json.loads(self.request.form['criterias']))
-            for k,v in criterias.items():
+            criterias = json.loads(self.request.form.get('criterias', {}))
+            for k, v in criterias.items():
                 rc.append(
-                    "<li> %s: %s </li>" %(k, v)
+                    "<li> %s </li>" %(v[1])
                     )
             if not rc:
                 rc.append('alle')
@@ -121,8 +121,8 @@ class GeneratePDF(uvclight.Page):
             NamedTemporaryFile(), pagesize=landscape(letter))
         parts = []
         avg = json.loads(self.request.form['averages'])
-        chart = read_data_uri(self.request.form['chart'])
-        userschart = read_data_uri(self.request.form['userschart'])
+        #chart = read_data_uri(self.request.form['chart'])
+        #userschart = read_data_uri(self.request.form['userschart'])
         pSVG = self.request.form.get('pSVG')
         tf = tempfile.NamedTemporaryFile()
         tf.write(unicode(pSVG).encode('utf-8'))
