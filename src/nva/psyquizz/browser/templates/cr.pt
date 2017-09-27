@@ -166,6 +166,7 @@
             polar: true,
             type: 'line'
 	},
+       colors: ['#333333', '#004994', '#00CCFF'],
        credits: {
              enabled: false
         },
@@ -244,20 +245,27 @@
                 showInLegend: true
             }
 	},
-	series: [{
-            name: 'gesamt',
+	series: [
+	<tal:no_criterias condition="not view.general_stats">
+	  {
+	    name: 'gesamt',
             data: <span tal:replace="view.stats.rd"/>,
             pointPlacement: 'on'
-	    }
-	    <tal:general condition="view.general_stats">
-	      ,
-	      {
-            name: 'Ihre Auswahl',
+	  }
+	</tal:no_criterias>
+	<tal:criterias condition="view.general_stats">
+	  {
+	    name: 'gesamt',
             data: <span tal:replace="view.general_stats.rd"/>,
             pointPlacement: 'on'
-	    }
-	    </tal:general>
-	    ]
+	  },
+	  {    
+            name: 'Ihre Auswahl',
+            data: <span tal:replace="view.stats.rd"/>,
+            pointPlacement: 'on'
+	  }
+	</tal:criterias>
+	]
      });
      svgToCanvas(usersChart, 'userschart');
 
