@@ -107,7 +107,8 @@ class SevenSteps(MenuItem):
 
     @property
     def url(self):
-        return "https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung"
+        return
+    "https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/gbpb-in-grossbetrieben"
 
 
 class SevenStepsView(Page):
@@ -153,7 +154,7 @@ class QRLink(View):
         return binascii.hexlify(base64.urlsafe_b64encode(str(id) + ' complexificator'))
 
     def render(self):
-        url = '%s/generic-%s' % (
+        url = '%s/befragung/generic-%s' % (
             self.application_url(), self.generic_id(self.context.id))
         img = qrcode.make(url)
 

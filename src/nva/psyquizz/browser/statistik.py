@@ -35,9 +35,9 @@ class Statistik(uvclight.Page):
         for session in sessions:
             if session.startdate > now:
                 future += 1
-            elif now > session.startdate and now < session.startdate + timedelta(days=session.duration):
+            elif now > session.startdate and now < session.enddate:
                 present += 1
-            elif now > session.startdate + timedelta(days=session.duration):
+            elif now > session.enddate:
                 past += 1
         return dict(alle=len(sessions), past=past, present=present, future=future)
 
