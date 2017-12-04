@@ -29,6 +29,27 @@ class TimeoutException(Exception):
 
 class TimeoutFileCache(FileCache):
 
+    def _cull(self):
+        '''Remove items in cache to make room.'''
+        num, maxcull = 0, self._maxcull
+        # Cull number of items allowed (set by self._maxcull)
+        for key in self.keys():
+            # Remove only maximum # of items allowed by maxcull
+            if num <= maxcull:
+                # Remove items if expired
+                try:
+                    if self.get(key) is None:
+                        num += 1
+                except TimeoutException:
+                    num += 1
+            else:
+                break
+        # Remove any additional items up to max # of items allowed by maxcull
+        while len(self.keys()) >= self._max_entries and num <= maxcull:
+            # Cull remainder of allowed quota at random
+            self.delete(random.choice(self.keys()))
+            num += 1
+
     def get(self, key, default=None):
         try:
             exp, value = pickle.load(open(self._key_to_file(key), 'rb'))

@@ -67,13 +67,13 @@ class CourseStatistics(object):
             self.statistics['users.grouped'])
         self.xAxis = [
         x.encode('iso-8859-1') for x in self.users_statistics.keys() if x]
-        good = dict(name="viel / zutreffend", data=[], color="#62B645")
+        bad = dict(name="viel / zutreffend", data=[], color="#62B645")
         mid = dict(name="mittelmäßig", data=[], color="#FFCC00")
-        bad = dict(name="wenig / nicht zutreffend", data=[], color="#D8262B")
+        good = dict(name="wenig / nicht zutreffend", data=[], color="#D8262B")
         for x in self.users_statistics.values():
-            good['data'].append(x[0].percentage)
-            mid['data'].append(x[1].percentage)
-            bad['data'].append(x[2].percentage)
+            good['data'].append(float("%.2f" % x[0].percentage))
+            mid['data'].append(float("%.2f" % x[1].percentage))
+            bad['data'].append(float("%.2f" % x[2].percentage))
         self.series = json.dumps([good, mid, bad])
         self.rd1 = [x.average for x in self.statistics['global.averages']]
         self.rd = [float("%.2f" % x.average)
