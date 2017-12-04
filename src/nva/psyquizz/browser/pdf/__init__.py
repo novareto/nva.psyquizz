@@ -10,18 +10,14 @@ import tempfile
 from cStringIO import StringIO
 from zope.interface import Interface
 from reportlab.lib.pagesizes import letter, landscape
-from reportlab.platypus import (SimpleDocTemplate, PageBreak, Image,
+from reportlab.platypus import (SimpleDocTemplate, PageBreak,
         Paragraph, Table, TableStyle, Spacer)
 from reportlab.lib.styles import getSampleStyleSheet
 from tempfile import NamedTemporaryFile
 from binascii import a2b_base64
 from reportlab.lib import colors
-from reportlab.lib.units import mm, cm
-from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.units import cm
 from svglib.svglib import svg2rlg
-
-from nva.psyquizz.models.quizz.quizz2 import IQuizz2
-from nva.psyquizz.models.quizz.quizz1 import IQuizz1
 
 styles = getSampleStyleSheet()
 
@@ -90,6 +86,9 @@ class GeneratePDF(uvclight.Page):
         return 
 
     def make_response(self, result):
+        if result is None:  # We don't have anything to return, we redirect
+            self.redirect(self.url(self.context))
+
         response = self.responseFactory(app_iter=result)
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'attachment; \
@@ -106,23 +105,10 @@ class GeneratePDF(uvclight.Page):
         canvas.drawString(18 * cm, 1.2 * cm, u"Prümper, J., Hartmannsgruber, K. & Frese, M")
         canvas.line(0.5 * cm , 2.5 * cm, 26 * cm, 2.5 * cm)
         canvas.setFont("Helvetica", 12)
-        #canvas.drawString(1 * cm, 20 * cm, self.context.course.company.name)
-        #canvas.drawString(1 * cm, 19.5 * cm, self.context.course.title)
-        #try:
-        #    canvas.drawString(1 * cm, 19.0 * cm, u"Befragungszeitraum %s - %s" % (
-        #        self.context.startdate.strftime('%d.%m.%Y'),
-        #        self.context.enddate.strftime('%d.%m.%Y')))
-        #except:
-        #    print "ERROR"
-        #canvas.line(0.5 * cm , 18.5 * cm, 26 * cm, 18.5 * cm)
 
-    def render(self):
-        doc = SimpleDocTemplate(
-            NamedTemporaryFile(), pagesize=landscape(letter))
+    def generate(self):
         parts = []
         avg = json.loads(self.request.form['averages'])
-        chart = read_data_uri(self.request.form['chart'])
-        userschart = read_data_uri(self.request.form['userschart'])
         pSVG = self.request.form.get('pSVG')
         tf = tempfile.NamedTemporaryFile()
         tf.write(unicode(pSVG).encode('utf-8'))
@@ -152,52 +138,14 @@ class GeneratePDF(uvclight.Page):
         parts.append(PageBreak())
         parts.append(Spacer(0, 1*cm))
         parts.append(drawing1)
-        doc.build(parts, onFirstPage=self.headerfooter, onLaterPages=self.headerfooter)
-        pdf = doc.filename
-        pdf.seek(0)
-        return pdf.read()
-
-
-class PDFPL(GeneratePDF):
-    uvclight.context(IQuizz1)
-    uvclight.name('pdf')
-    uvclight.auth.require('zope.Public')
-
-    def headerfooter(self, canvas, doc):
-        canvas.setFont("Helvetica", 9)
-        canvas.drawString(1 * cm, 2 * cm, u"Gemeinsam zu gesunden Arbeitsbedingungen")
-        canvas.drawString(1 * cm, 1.6 * cm, u"Psychische Belastungen online erfassen")
-        canvas.drawString(1 * cm, 1.2 * cm, u"Ein Programm der BG ETEM")
-        canvas.drawString(18 * cm, 2 * cm, u"Grundlage der Befragung:  Prüfliste Psychische")
-        canvas.drawString(18 * cm, 1.6 *cm, u"Belastung")
-        canvas.drawString(18 * cm, 1.2 * cm, u"Unfallversicherung Bund und Bahn")
-        canvas.line(0.5 * cm , 2.5 * cm, 26 * cm, 2.5 * cm)
-        #canvas.setFont("Helvetica", 12)
-        #canvas.drawString(1 * cm, 20 * cm, self.context.course.company.name)
-        #canvas.drawString(1 * cm, 19.5 * cm, self.context.course.title)
-        #try:
-        #    canvas.drawString(1 * cm, 19.0 * cm, u"Befragungszeitraum %s - %s" % (
-        #        self.context.startdate.strftime('%d.%m.%Y'),
-        #        self.context.enddate.strftime('%d.%m.%Y')))
-        #except:
-        #    print "ERROR"
-        #canvas.line(0.5 * cm , 18.5 * cm, 26 * cm, 18.5 * cm)
+        return parts
 
     def render(self):
+        if self.request.form.get('chart', None) == None:
+            return None
         doc = SimpleDocTemplate(
             NamedTemporaryFile(), pagesize=landscape(letter))
-        parts = []
-        pSVG = self.request.form.get('pSVG1')
-        tf = tempfile.NamedTemporaryFile()
-        tf.write(unicode(pSVG).encode('utf-8'))
-        tf.seek(0)
-        drawing = svg2rlg(tf.name)
-        #drawing.width = 40.0
-        drawing.renderScale = 0.57
-        ## Page1
-        self.frontpage(parts)
-        #parts.append(Spacer(0, 0.2*cm))
-        parts.append(drawing)
+        parts = self.generate()
         doc.build(parts, onFirstPage=self.headerfooter, onLaterPages=self.headerfooter)
         pdf = doc.filename
         pdf.seek(0)

@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
+
 from datetime import date
-import binascii
-import base64
-from cStringIO import StringIO
-import qrcode
 
 from ..i18n import _
 from ..interfaces import ICompanyRequest, IRegistrationRequest
 from ..interfaces import QuizzAlreadyCompleted, QuizzClosed
-from ..models import Company, ClassSession
+from ..models import Company
 from uvc.design.canvas import IContextualActionsMenu
 from cromlech.browser import getSession
 from uvclight import Page, View, MenuItem
@@ -20,7 +19,12 @@ from uvc.design.canvas import IFooterMenu
 from zope.interface import Interface
 from uvc.design.canvas.menus import INavigationMenu
 from uvclight import order, get_template
-from .. import clipboard_js
+from ..interfaces import IAnonymousRequest
+from ..apps.anonymous import QuizzBoard
+from ul.browser.errors import PageError500, PageError404
+
+
+log = logging.getLogger('UVCPsyquizz')
 
 
 class LogoutMenu(MenuItem):
@@ -124,56 +128,21 @@ class SevenStepsView(Page):
         return panel
 
 
-class ExampleText(Page):
-    context(ClassSession)
-    layer(ICompanyRequest)
-    require('manage.company')
-
-    @property
-    def template(self):
-        template = "example_text.pt"
-        if self.context.strategy == "fixed":
-            template = "example_text_fixed.pt"
-        return get_template(template, __file__)
-
-    def update(self):
-        clipboard_js.need()
-        Page.update(self)
-
-    def generic_id(self, id):
-        return binascii.hexlify(base64.urlsafe_b64encode(str(id) + ' complexificator'))
-
-
-class QRLink(View):
-    context(ClassSession)
-    layer(ICompanyRequest)
-    require('manage.company')
-
-    def generic_id(self, id):
-        return binascii.hexlify(base64.urlsafe_b64encode(str(id) + ' complexificator'))
-
-    def render(self):
-        url = '%s/generic-%s' % (
-            self.application_url(), self.generic_id(self.context.id))
-        img = qrcode.make(url)
-
-        output = StringIO()
-        img.save(output, format="PNG")
-        output.seek(0)
-        return output
-        
-    def make_response(self, result):
-        response = self.responseFactory(app_iter=result)
-        response.headers['Content-Type'] = 'image/png'
-        response.headers['Content-Disposition'] = (
-            'attachment; filename="qrcode.png"')
-        return response
-
-from ..interfaces import IAnonymousRequest
-from ..apps.anonymous import QuizzBoard
 class FinishQuizz(Page):
     context(QuizzBoard)
     layer(IAnonymousRequest)
 
     def render(self):
         return u"Vielen Danke für die Teilnahme an der Befragung"
+
+
+class PageError500(PageError500):
+    def render(self):
+        log.exception(self.context)
+        return u"Es ist ein Fehler aufgetreten"
+
+
+class PageError404(PageError404):
+    def render(self):
+        log.exception(self.context)
+        return u"Diese Seite kann nicht gefunden werden."

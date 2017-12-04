@@ -1,0 +1,67 @@
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Arbeitsfähigkeit</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr tal:repeat="sum view.board.items()">
+      <td tal:content="sum[0]" />
+      <td tal:content="sum[1]" />
+    </tr>
+  </tbody>
+</table>
+
+<div id="q3sums" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+
+<script>
+Highcharts.chart('q3sums', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: 'Arbeitsfähigkeit'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+            }
+        }
+    },
+    colors: [
+        '#ff0000',
+        '#ffc000',
+        '#ffff00',
+        '#00b050'
+    ],
+    series: [{
+        name: 'Brands',
+        colorByPoint: true,
+	innerSize: '20%',
+        data: [{
+            name: 'schlecht',
+            y: <tal:percent replace="view.percent(view.board[u'schlecht'])" />
+        }, {
+            name: 'mittelmäßig',
+            y: <tal:percent replace="view.percent(view.board[u'mittelmäßig'])" />
+        }, {
+            name: 'gut',
+            y: <tal:percent replace="view.percent(view.board[u'gut'])" />
+        }, {
+            name: 'sehr gut',
+            y: <tal:percent replace="view.percent(view.board[u'sehr gut'])" />
+        }]
+    }]
+});
+</script>

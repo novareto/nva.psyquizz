@@ -10,7 +10,7 @@ from datetime import datetime
 from string import Template
 
 from . import Site
-from ..browser.emailer import prepare, SecureMailer, ENCODING
+from nva.psyquizz.browser.lib.emailer import prepare, SecureMailer, ENCODING
 from ..interfaces import ICompanyRequest, IRegistrationRequest
 from ..models import Account
 from .. import quizzjs, lbg

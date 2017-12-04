@@ -2,23 +2,17 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
-import os.path
 import json
 import uvclight
-import xlsxwriter
-import cStringIO
-import itertools
-import shutil
-import datetime
-from backports import tempfile
 
 from collections import OrderedDict, namedtuple
 from cromlech.browser import IView
 from grokcore.component import name, provider
 from nva.psyquizz import hs
 from nva.psyquizz.models import IQuizz, IClassSession, ICourse
-from nva.psyquizz.models.quizz.quizz2 import Quizz2
+from nva.psyquizz.models.quizz.quizz2 import IQuizz2
 from nva.psyquizz.models.quizz.quizz1 import Quizz1
+from nva.psyquizz.models.quizz.quizz3 import IQuizz3
 from uvclight.auth import require
 from zope.component import getUtility, getMultiAdapter
 from zope.interface import Interface
@@ -32,67 +26,6 @@ from ..stats import compute, groups_scaling
 from zope.schema import Choice
 from dolmen.forms.base import FAILURE, SUCCESS
 from nva.psyquizz.i18n import MessageFactory as _
-
-
-CHUNK = 4096
-
-
-Result = namedtuple(
-    'Result',
-    ('answer', 'id', 'result', 'result_title'))
-
-
-Average = namedtuple(
-    'Average',
-    ('title', 'average'))
-
-
-def average_computation(data):
-    for k, v in data.items():
-        yield Average(k, float(sum([x.result for x in v]))/len(v))
-
-
-def sort_data(order, data):
-
-    def sorter(id):
-        for k, v in order.items():
-            if id in v:
-                return k
-
-    ordered = OrderedDict()
-    for id, values in data.items():
-        title = sorter(id)
-        current = ordered.setdefault(title, [])
-        current += values
-
-    return ordered
-
-
-class Scale(object):
-
-    percentage = 0
-    number = 0
-
-    def __init__(self, name, weight):
-        self.name = name
-        self.weight = weight
-
-
-class Statistics(object):
-
-    averages = OrderedDict((
-        (u'Vielseitiges Arbeiten', ('1', '2', '3')),
-        (u'Ganzheitliches Arbeiten', ('4', '5')),
-        (u'Passende inhaltliche Arbeitsanforderungen', ('6', '7')),
-        (u'Passende mengenmäßige Arbeit', ('8', '9')),
-        (u'Passende Arbeitsabläufe', ('10', '11')),
-        (u'Passende Arbeitsumgebung', ('12', '13')),
-        (u'Handlungsspielraum', ('14', '15', '16')),
-        (u'Soziale Rückendeckung', ('17', '18', '19')),
-        (u'Zusammenarbeit', ('20', '21', '22')),
-        (u'Information und Mitsprache', ('23', '24')),
-        (u'Entwicklungsmöglichkeiten', ('25', '26')),
-        ))
 
 
 def get_filters(request):
@@ -117,15 +50,19 @@ class CourseStatistics(object):
 
     def __init__(self, quizz, course, request):
         self.quizz = quizz
-        self.averages = quizz.__schema__.getTaggedValue('averages')
+        self.averages = quizz.__schema__.queryTaggedValue('averages') or {}
+        self.sums = quizz.__schema__.queryTaggedValue('sums') or {}        
         self.course = course
         self.request = request
+
+        # THIS IS ASSIGNED AND NOT USED ?  FIXME !
         session_ids = [x.id for x in self.course.sessions]
 
     def update(self, filters):
         self.filters = filters
         self.statistics = compute(
-            self.quizz, self.averages, self.filters)
+            self.quizz, self.averages, self.sums, self.filters)
+
         self.users_statistics = groups_scaling(
             self.statistics['users.grouped'])
         self.xAxis = [
@@ -139,7 +76,8 @@ class CourseStatistics(object):
             bad['data'].append(x[2].percentage)
         self.series = json.dumps([good, mid, bad])
         self.rd1 = [x.average for x in self.statistics['global.averages']]
-        self.rd = [float("%.2f" % x.average) for x in self.statistics['global.averages']]
+        self.rd = [float("%.2f" % x.average)
+                   for x in self.statistics['global.averages']]
 
         criterias = []
         for crits in self.statistics['criterias'].values():
@@ -154,412 +92,19 @@ class SessionStatistics(CourseStatistics):
         self.quizz = quizz
         self.course = session.course
         self.session = session
-        self.averages = quizz.__schema__.getTaggedValue('averages')
+        self.averages = quizz.__schema__.queryTaggedValue('averages') or {}
+        self.sums = quizz.__schema__.queryTaggedValue('sums') or {}        
         self.request = request
 
     def update(self, filters):
         filters['session'] = self.session.id
         return CourseStatistics.update(self, filters)
-        
 
-from .reports import FRONTPAGE
 
-DOKU_TEXT = u"""Falls Sie die Kennwörter nicht mit Hilfe des Serienbriefes verteilen möchten können
-Sie diese Excel Liste für eine alternative Form der Verteilung nutzen, z.B. Serien E-
-Mail (Funktion ist nicht Bestandteil des Online Tools) nutzen.
-Unter „Kennwörter“ finden Sie eine Übersicht der für den Zugang zur Befragung
-benötigten Kennwörter. Unter „Links & Kennwörter“ sind Link und individuelles
-Kennwort zusammengeführt, so dass sich nach Klick auf den Link direkt der
-Fragebogen öffnen lässt."""
-
-class DownloadTokens(uvclight.View):
-    require('manage.company')
-    uvclight.context(IClassSession)
-    uvclight.layer(ICompanyRequest)
-
-    def update(self):
-        app_url = self.application_url()
-        _all = itertools.chain(
-            self.context.uncomplete, self.context.complete)
-        self.tokens = ['%s/befragung/%s' % (app_url, a.access) for a in _all]
-
-    def generateXLSX(self, folder, filename="ouput.xlsx"):
-        filepath = os.path.join(folder, filename)
-        workbook = xlsxwriter.Workbook(filepath)
-        worksheet = workbook.add_worksheet(u'Dokumentation')
-        worksheet.insert_textbox(0, 0, DOKU_TEXT, {'width': 450, 'height': 700, 'font': {'size': 13}})
-        worksheet = workbook.add_worksheet(u'Kennwörter')
-        for i, x in enumerate(self.tokens):
-            worksheet.write(i, 0, x.split('/')[-1:][0])
-        worksheet = workbook.add_worksheet(u'Links & Kennwörter')
-        for i, x in enumerate(self.tokens):
-            worksheet.write(i, 0, x)
-        
-        workbook.close()
-        return filepath
-
-    def render(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            filepath = self.generateXLSX(temp_dir)
-            output = cStringIO.StringIO()
-            with open(filepath, 'rb') as fd:
-                shutil.copyfileobj(fd, output)
-            output.seek(0)
-        return output
-
-    def make_response(self, result):
-        response = self.responseFactory()
-        response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        response.headers['Content-Disposition'] = (
-            u'attachment; filename="Kennwortliste.xlsx"')
-
-        def filebody(r):
-            data = r.read(CHUNK)
-            while data:
-                yield data
-                data = r.read(CHUNK)
-
-        response.app_iter = filebody(result)
-        return response
-
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Paragraph, SimpleDocTemplate, PageBreak
-from tempfile import TemporaryFile
-from dolmen.forms.base.actions import Action, Actions
-from zope.interface import Interface
-from zope.schema import Text
-from cromlech.browser.interfaces import IResponse
-from cromlech.browser.exceptions import HTTPRedirect
-from cromlech.browser.utils import redirect_exception_response
-from BeautifulSoup import BeautifulSoup
-
-
-class GenerateLetter(Action):
-
-    def generate(self, tokens, text, form):
-        style = getSampleStyleSheet()
-        nm = style['Normal']
-        nm.leading = 14
-        story = []
-        na = text.replace('\r\n', '<br/>').replace('</p>', '</p><br/>')
-        bs = BeautifulSoup(na)
-        doc = bs.prettify()
-        print doc 
-        for i, x in enumerate(tokens):
-            #story.append(Paragraph('Serienbrief', style['Heading1']))
-            story.append(Paragraph(doc, nm))
-            story.append(Paragraph('Die Internetadresse lautet: <b> %s/befragung</b> <br/> Ihr Kennwort lautet: <b> %s</b> ' % (form.application_url(), x), nm))
-            story.append(PageBreak())
-        tf = TemporaryFile()
-        pdf = SimpleDocTemplate(tf, pagesize=A4)
-        pdf.build(story)
-        tf.seek(0)
-        return tf
-
-    def tokens(self, form):
-        _all = itertools.chain(
-            form.context.complete, form.context.uncomplete)
-        return ['%s' % (a.access) for a in _all]
-    
-    def __call__(self, form):
-        data, errors = form.extractData()
-        if errors:
-            form.flash(u"Es ist ein Fehler aufgetreten")
-            return FAILURE
-
-        tokens = self.tokens(form)
-        data = self.generate(tokens, data['text'] + '<br />', form)
-        response = form.responseFactory(app_iter=data)
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = 'attachment; \
-                filename="serienbrief.pdf"'
-        return response
-
-
-DEFAULT = u"""
-<p><b>Liebe Kolleginnen und Kollegen, </b></p>
-<p>wie bereits angekündigt, erhalten Sie heute Ihre Einladung zur Teilnahme an unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“.</p>
-<p>Ziel der Befragung ist es, Ihre Arbeitsbedingungen zu beurteilen und ggf.
-entsprechende Verbesserungsmaßnahmen einleiten zu können. Bitte beantworten Sie
-alle Fragen offen und ehrlich. Wir sichern Ihnen vollständige Vertraulichkeit
-zu. Die Ergebnisse der einzelnen Fragebögen bleiben absolut anonym. Die
-Auswertung der Ergebnisse erfolgt automatisiert über unsere
-Berufsgenossenschaft Elektro, Textil, Energie und Medienerzeugnisse.</p> 
-<p> Keine Mitarbeiterin und kein Mitarbeiter unserer Firma wird Einblick in die originalen Datensätze erhalten, eine Rückverfolgung wird nicht möglich sein.</p>
-<p>Die Aussagekraft der Ergebnisse hängt von einer möglichst hohen Beteiligung ab. Geben Sie Ihrer Meinung Gewicht!</p>
-<p>Die Befragung läuft vom %s - %s. Während dieses Zeitraums haben Sie die
-Möglichkeit, über  die unten genannte Internetadresse an unserer Befragung
-teilzunehmen. Über den Link gelangen Sie nach Eingabe des Kennwortes direkt auf
-den Fragebogen unseres Unternehmens. Das Ausfüllen wird etwa 5 Minuten in
-Anspruch nehmen. Nehmen Sie sich diese Zeit, Ihre Meinung zu äußern, wir freuen
-uns auf Ihre Rückmeldung und bedanken uns bei Ihnen für Ihre Mitarbeit! </p>
-
-<p>Sollten Sie Fragen oder Anmerkungen haben, wenden Sie sich bitte an:</p> <p><span> A n s p r e c h p a r t n e r   &nbsp;    und   &nbsp;     K o n t a k t d a t e n </span></p>
-"""
-
-from nva.psyquizz.models.interfaces import v_about
-
-class ILetter(Interface):
-    text = Text(title=u" ", required=True, constraint=v_about)
-    
-
-
-DESC = u"""Nutzen Sie die folgende (anpassbaren) Vorlage, um Ihre Beschäftigten über die Befragung zu informieren.
-Über die Funktion „Serienbrief erstellen“, wird eine PDF Datei mit Anschreiben für jeden
-Beschäftigten - <b> inkl. Link zur Befragung und einem individuellen Kennwort </b> - erzeugt. Drucken
-Sie die Anschreiben aus und verteilen Sie diese an die Beschäftigten.
-"""
-
-
-from nva.psyquizz import  wysiwyg 
-
-
-class DownloadLetter(uvclight.Form):
-    require('manage.company')
-    uvclight.context(IClassSession)
-    uvclight.layer(ICompanyRequest)
-    label = u"Serienbrief"
-    description = DESC
-
-    fields = uvclight.Fields(ILetter)
-    actions = Actions(GenerateLetter('Serienbrief erstellen'))
-    ignoreContent = False
-
-    def update(self):
-        from dolmen.forms.base.datamanagers import DictDataManager
-        DE = DEFAULT % (
-            self.context.startdate.strftime('%d.%m.%Y'),
-            self.context.enddate.strftime('%d.%m.%Y'),
-            )
-        defaults = dict(text=DE)
-        self.setContentData(
-            DictDataManager(defaults))
-
-    def updateForm(self):
-        wysiwyg.need()
-        action, result = self.updateActions()
-        if IResponse.providedBy(result):
-            return result
-        self.updateWidgets()
-
-    def __call__(self, *args, **kwargs):
-        try:
-            self.update(*args, **kwargs)
-            response = self.updateForm()
-            if response is not None:
-                return response
-            result = self.render(*args, **kwargs)
-            return self.make_response(result, *args, **kwargs)
-        except HTTPRedirect, exc:
-            return redirect_exception_response(self.responseFactory, exc)
-
-FRONTPAGE = u"""
-Auswertungsbericht 
-„Gemeinsam zu gesunden Arbeitsbedingungen“ – Psychische Belastung erfassen 
-%s
-%s
-
-Befragungszeitraum: %s – %s 
-Grundlage der Ergebnisse
-Auswertungsgruppe: %s 
-Anzahl Fragebögen: %s 
-Auswertung erzeugt: %s 
-"""
-
-class XSLX(object):
-
-    def generateXLSX(self, folder, filename="Ergebnischart.xlsx"):
-        filepath = os.path.join(folder, filename)
-        workbook = xlsxwriter.Workbook(filepath)
-        worksheet0 = workbook.add_worksheet('Dokumentation')
-        amounts = dict(json.loads(self.json_criterias))
-        ii = 1
-        db = ""
-        if len(self.filters.get('criterias', {})) == 0:
-            db = "alle"
-        for k,v in self.filters.get('criterias', {}).items():
-            db +=  "%s %s" % (v.name, amounts.get(v.name))
-        fp = FRONTPAGE % (
-            self.course.company.name, 
-            self.course.title, 
-            self.session.startdate.strftime('%d.%m.%Y'), 
-            self.session.enddate.strftime('%d.%m.%Y'),
-            db,
-            self.statistics.get('total'),
-            datetime.datetime.now().strftime('%d.%m.%Y'))
-        #worksheet0.insert_textbox(10, 2, 'fp', {'width': 800, 'height': 300, 'font': {'size': 13}})
-        fm = workbook.add_format()
-        fm.set_font_size(16)
-        fm.set_text_wrap()
-        worksheet0.set_column(0, 0, 130) 
-
-        worksheet0.write(0, 0, fp, fm)
-
-
-        amounts = dict(json.loads(self.json_criterias))
-        ii = 1
-        #for k,v in self.filters.get('criterias', {}).items():
-        #    worksheet.write(ii, 0,  "%s %s" % (v.name, amounts.get(v.name)))
-        #    ii += 1
-
-
-        worksheet = workbook.add_worksheet('Mittelwerte')
-        nformat = workbook.add_format()
-        nformat.set_num_format('0.00')
-
-        # Add a format for the header cells.
-        header_format = workbook.add_format({
-            'border': 1,
-            'bg_color': '#C6EFCE',
-            'bold': True,
-            'text_wrap': True,
-            'valign': 'vcenter',
-            'indent': 1,
-            'locked': 1,
-        })
-
-        question_format = workbook.add_format({
-            'border': 0,
-            'color': '#000000',
-            'bold': True,
-            'text_wrap': False,
-            'valign': 'vcenter',
-            'indent': 0,
-            'locked': 1,
-        })
-        
-        for i, x in enumerate(self.statistics['global.averages']):
-            worksheet.write(i, 0, x.title)
-            worksheet.write(i, 1, x.average, nformat)
-
-        chart1 = workbook.add_chart({'type': 'radar'})
-        chart1.add_series({
-            'name':       'Mittelwerte',
-            'categories': '=Mittelwerte!$A$1:$A$11',
-            'values':     '=Mittelwerte!$B$1:$B$11',
-            'min': 1,
-            })
-
-        chart1.set_title({'name': 'Durchschnitt'})
-        chart1.set_x_axis({'name': 'Test number', "min": 1})
-        chart1.set_y_axis({'name': 'Sample length (mm)', "min": 1})
-        chart1.set_style(11)
-
-        # Insert the chart into the worksheet (with an offset).
-        worksheet.insert_chart('A13', chart1, {'x_offset': 25, 'y_offset': 10})
-
-        worksheet = workbook.add_worksheet('Verteilung')
-
-        data = json.loads(self.series)
-        for y, x in enumerate(data):
-            name = x['name']
-            r = 1 
-            worksheet.write(0, y, name)
-            for i, z in enumerate(x['data']):
-                worksheet.write((r+1+i), y, z, nformat)
-
-        for idx, titel in enumerate(self.xAxis):
-            worksheet.write((idx + 2), 3, unicode(titel, 'latin1'))
-
-        #worksheet = workbook.add_worksheet('Verteilung')
-
-        chart3 = workbook.add_chart(
-            {'type': 'bar', 'subtype': 'percent_stacked'})
-
-        chart3.set_title({'name': 'Verteilung'})
-
-        # Configure the first series.
-        chart3.add_series({
-            'name':       '=Verteilung!$A$1',
-            'categories': '=Verteilung!$D$3:$D$13',
-            'values':     '=Verteilung!$A$3:$A$13',
-            'fill':   {'color': data[0]['color']},
-        })
-
-        chart3.add_series({
-            'name':       '=Verteilung!$B$1',
-            'categories': '=Verteilung!$D$3:$D$13',
-            'values':     '=Verteilung!$B$3:$B$13',
-            'fill':   {'color': data[1]['color']},
-        })
-
-        chart3.add_series({
-            'name':       '=Verteilung!$C$1',
-            'categories': '=Verteilung!$D$3:$D$13',
-            'values':     '=Verteilung!$C$3:$C$13',
-            'fill':   {'color': data[2]['color']},
-        })
-
-        chart3.set_y_axis({'reverse': True})
-        worksheet.insert_chart("A20", chart3, {'x_offset': 15, 'y_offset': 10})
-
-        worksheet = workbook.add_worksheet('Mittelwerte pro Frage')
-        offset = 1 
-        
-        if 'criterias' in self.filters:
-            for cname, cvalues in self.statistics['criterias'].items():
-                for v in cvalues:
-                    offset += 1
-                    worksheet.write("A%i" % offset, cname)
-                    worksheet.write("B%i" % offset, v.name)
-                    worksheet.write("C%i" % offset, v.amount)
-        else:
-            offset += 1
-
-        offset += 2
-        worksheet.write("A%i" % offset, "Frage")
-        worksheet.write("B%i" % offset, "Mittelwert")
-        
-        labels = {k.title: k.description for id, k in
-                  getFieldsInOrder(self.quizz.__schema__)}
-        for avg in self.statistics['per_question_averages']:
-            offset += 1
-            assert avg.title in labels
-            worksheet.write("A%i" % offset, labels[avg.title])
-            worksheet.write("B%i" % offset, avg.average, nformat)
-
-        #worksheet = workbook.add_worksheet('RAW')
-        #worksheet.set_column('A:A', 25)
-        #worksheet.set_column('B:END', 30)
-        
-        #worksheet.write(0, 0, "Questions", header_format)
-        
-        #for i in range(1, self.statistics['total'] + 1, 1):
-        #    worksheet.write(0, i, "Student %s" % i, header_format)
-        
-        #for question, answers in self.statistics['raw'].items():
-        #    line = int(question)
-        #    worksheet.write(line, 0, "Question %s" % question, question_format)
-        #    for idx, answer in enumerate(answers, 1):
-        #        worksheet.write(line, idx, answer.result_title)
- 
-        workbook.close()
-        return filepath
-
-    def render(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            filepath = self.generateXLSX(temp_dir)
-            output = cStringIO.StringIO()
-            with open(filepath, 'rb') as fd:
-                shutil.copyfileobj(fd, output)
-
-            output.seek(0)
-        return output
-
-
-class CourseXSLX(CourseStatistics, XSLX):
-    name('xslx')
-    
-
-class SessionXSLX(SessionStatistics, XSLX):
-    name('xslx')
-
-
-class Quizz2Charts(uvclight.Page):
+class Quizz2Charts(uvclight.View):
     require('manage.company')
     name('charts')
-    uvclight.context(Quizz2)
+    uvclight.context(IQuizz2)
 
     template = uvclight.get_template('cr.pt', __file__)
     general_stats = None
@@ -573,7 +118,117 @@ class Quizz2Charts(uvclight.Page):
         self.general_stats = general_stats
 
 
-class Quizz1Charts(uvclight.Page):
+class Quizz3Charts(Quizz2Charts):
+    uvclight.context(IQuizz3)
+    template = uvclight.get_template('quizz3_result.pt', __file__)
+
+    def percent(self, nb):
+        return (float(nb) / self.nb_answer) * 100
+
+    def update(self, stats, general_stats=None):
+        super(Quizz3Charts, self).update(stats, general_stats = None)
+        self.stats = stats
+        self.general_stats = general_stats
+
+        self.board = OrderedDict((
+            (u"schlecht", 0),
+            (u"mittelmäßig", 0),
+            (u"gut", 0),
+            (u"sehr gut", 0),
+        ))
+
+        users_results = {}
+        sums = self.stats.statistics['users.sums']
+        self.nb_answer = len(sums.values()[0])
+
+        for id, answers in sums.iteritems():
+            for idx, answer in enumerate(answers):
+                if not idx in users_results:
+                    users_results[idx] = 0
+                if id in summing_methods:
+                    total = summing_methods[id](answer.total)
+                else:
+                    total = answer.total
+
+                users_results[idx] += total
+        summe = 0
+        for result in users_results.values():
+            if result < 21:
+                self.board[u"schlecht"] += 1
+            elif result < 28:
+                self.board[u"mittelmäßig"] += 1
+            elif result < 33:
+                self.board[u"gut"] += 1
+            else:
+                self.board[u"sehr gut"] += 1
+            summe += result
+        self.users_results = users_results
+        self.av = float(summe) / len(users_results)
+
+
+def psychische_leistungsreserven(total):
+    if total < 4:
+        return 1
+    if total < 7:
+        return 2
+    if total < 9:
+        return 3
+    return 4
+
+
+summing_methods = {
+    u'Psychische Leistungsreserven': psychische_leistungsreserven,
+}
+
+        
+#class Quizz3Sums(uvclight.View):
+#    require('manage.company')
+#    name('sums')
+#    uvclight.context(IQuizz3)
+#    template = uvclight.get_template('q3sums.pt', __file__)
+#
+#    def percent(self, nb):
+#        return (float(nb) / self.nb_answer) * 100
+#
+#    def update(self, stats, general_stats=None):
+#        self.stats = stats
+#        self.general_stats = general_stats
+#
+#        self.board = OrderedDict((
+#            (u"schlecht", 0),
+#            (u"mittelmäßig", 0),
+#            (u"gut", 0),
+#            (u"sehr gut", 0),
+#        ))
+#
+#        users_results = {}
+#        sums = self.stats.statistics['users.sums']
+#        self.nb_answer = len(sums.values()[0])
+#        import pdb; pdb.set_trace() 
+#
+#        for id, answers in sums.iteritems():
+#            for idx, answer in enumerate(answers):
+#                if not idx in users_results:
+#                    users_results[idx] = 0
+#                if id in summing_methods:
+#                    total = summing_methods[id](answer.total)
+#                else:
+#                    total = answer.total
+#
+#                users_results[idx] += total
+#
+#        for result in users_results.values():
+#            if result < 21:
+#                self.board[u"schlecht"] += 1
+#            elif result < 28:
+#                self.board[u"mittelmäßig"] += 1
+#            elif result < 33:
+#                self.board[u"gut"] += 1
+#            else:
+#                self.board[u"sehr gut"] += 1
+
+
+class Quizz1Charts(uvclight.View):
     require('manage.company')
     name('charts')
     uvclight.context(Quizz1)
@@ -591,12 +246,14 @@ class Quizz1Charts(uvclight.Page):
         good = dict(name="Eher Ja", data=[], color="#62B645")
         bad = dict(name="Eher Nein", data=[], color="#D8262B")
 
+        self.descriptions = json.dumps(
+            self.context.__schema__.getTaggedValue('descriptions'))
+
+        self.xAxis_labels = {
+            k.title: k.description for id, k in
+            getFieldsInOrder(self.context.__schema__)}
+
         xAxis = []
-        percents = {}
-
-        self.descriptions = json.dumps(self.context.__schema__.getTaggedValue('descriptions'))
-        self.xAxis_labels = {k.title: k.description for id, k in getFieldsInOrder(self.context.__schema__)}
-
         for key, answers in self.stats.statistics['raw'].items():
             xAxis.append(key)
             yesses = 0
@@ -639,7 +296,8 @@ class SR(uvclight.Page):
         self.charts.update(stats, general_stats)
 
     def render(self):
-        return self.charts.render()
+        result = self.charts.render()
+        return result
 
 
 class CR(uvclight.Page):
@@ -698,37 +356,6 @@ class Export(uvclight.View):
 
     def make_response(self, result):
         return self.view.make_response(result)
-
-
-class Excel(uvclight.Page):
-    require('manage.company')
-    uvclight.context(IClassSession)
-    uvclight.layer(ICompanyRequest)
-
-    def update(self):
-        quizz = getUtility(IQuizz, self.context.quizz_type)
-        self.stats = SessionXSLX(quizz, self.context, self.request)
-        filters = get_filters(self.request)
-        self.stats.update(filters)
-
-    def render(self):
-        return self.stats.render()
-
-    def make_response(self, result):
-        response = self.responseFactory()
-        response.headers['Content-Type'] = (
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response.headers['Content-Disposition'] = (
-            u'attachment; filename="Resultate_Befragung.xlsx"')
-
-        def filebody(r):
-            data = r.read(CHUNK)
-            while data:
-                yield data
-                data = r.read(CHUNK)
-
-        response.app_iter = filebody(result)
-        return response
 
 
 @provider(IContextSourceBinder)

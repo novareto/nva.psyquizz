@@ -7,7 +7,7 @@ import uvclight
 from zope.interface import Interface
 from uvc.design.canvas import IAboveContent
 from .forms import CreateCourse, CreateCompany, CreateCriterias, EditCriteria
-from .views import ExampleText
+from .invitations import ExampleText
 
 
 class HelpPage(uvclight.Viewlet):

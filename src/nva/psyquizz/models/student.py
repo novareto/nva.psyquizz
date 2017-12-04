@@ -11,6 +11,7 @@ from zope.interface import implementer
 from zope.location import Location
 from uvclight import getRequest
 
+
 @implementer(IQuizz, IStudent)
 class Student(Base, Location):
 

@@ -19,7 +19,7 @@ from ..models import ICourseSession, IAccount, ICompany, ICourse, IClassSession
 from ..models import IQuizz, TrueOrFalse
 from ..models import Criteria, CriteriaAnswer, ICriteria, ICriterias
 from ..models.criterias import criterias_table
-from .emailer import SecureMailer, prepare, ENCODING
+from nva.psyquizz.browser.lib.emailer import SecureMailer, prepare, ENCODING
 
 from cromlech.sqlalchemy import get_session
 from dolmen.forms.base import SuccessMarker, makeAdaptiveDataManager, NO_VALUE
@@ -58,7 +58,7 @@ def form_template(context, request):
 
 
 
-with open(os.path.join(os.path.dirname(__file__), 'mail.tpl'), 'r') as fd:
+with open(os.path.join(os.path.dirname(__file__), 'lib', 'mail.tpl'), 'r') as fd:
     data = unicode(fd.read(), 'utf-8')
     mail_template = Template(data.encode(ENCODING))
 
@@ -1052,83 +1052,3 @@ class CompanyAnswerQuizz(Action):
         form.flash(_(u'Eingabe wurde gespeichert.'))
         form.redirect(form.request.url)
         return SUCCESS
-
-    
-class GenericAnswerQuizz(AnswerQuizz):
-    context(IClassSession)
-    layer(ICompanyRequest)
-    name('answer')
-    require('manage.company')
-    title(_(u'Answer the quizz'))
-    dataValidators = []
-    label = u"Eingabe Papierfragebögen"
-    description =u"Eingabe kann per DropDown Menü oder über die Tastatur (Kreuz ganz links Eingabe 1 bis Kreuz ganz rechts Eingabe 5) erfolgen."
-
-    fmode = 'input'
-    actions = Actions(CompanyAnswerQuizz(u'speichern'))
-
-    def update(self):
-        self.template = Form.template
-        course = self.context.course
-        self.quizz = getUtility(IQuizz, name=course.quizz_type)
-        startdate = self.context.startdate
-        if datetime.date.today() < startdate:
-            self.flash(u'Die Befragung beginnt erst am %s deshalb werden Ihre Ergebnisse nicht gespeichert' % startdate.strftime('%d.%m.%Y'))
-        Form.update(self)
-    
-    @property
-    def action_url(self):
-        return self.request.url
-
-    def render(self):
-        form = Form.render(self)
-        jscontent = u"""
-<style>
-   label {  float: left; padding-right: 20px; }
-   .highlight {
-     background-color: #f7dada;
-   }
-</style>
-<script type="text/javascript">
-   $(document).ready(function() {
-        $('select').each(function(sidx) {
-           $('option', $(this)).each(function(oidx) {
-              $(this).html((oidx + 1).toString() + ' - ' + $(this).html());
-           });
-           $(this).prepend("<option value=''></option>").val('');
-           $(this).bind('keypress',function(e) {
-              if (e.which === 49) {
-                  $(this).val($('select:nth-child(2)', $(this)).val());
-              } else if (e.which === 50) {
-                  $(this).val($('select:nth-child(3)', $(this)).val());
-              } else if (e.which === 51) {
-                  $(this).val($('select:nth-child(4)', $(this)).val());
-              } else if (e.which === 52) {
-                  $(this).val($('select:nth-child(5)', $(this)).val());
-              } else if (e.which === 53) {
-                  $(this).val($('select:nth-child(6)', $(this)).val());
-              }
-           });
-        });
-
-        $('select').first().focus();
-
-        $("form").submit(function(){
-            var isFormValid = true;
-            $("select").each(function() {
-               if ($.trim($(this).val()).length == 0) {
-                  $(this).parent().addClass("highlight");
-                  isFormValid = false;
-               } else {
-                  $(this).parent().removeClass("highlight");
-               }
-            });
-            if (!isFormValid) {
-                alert("Bitte füllen Sie zunächst alle Felder. Im Anschluss können Sie das Formular absenden.");
-            }
-            return isFormValid;
-        });
-   });
-</script>
-"""
-        return jscontent + form

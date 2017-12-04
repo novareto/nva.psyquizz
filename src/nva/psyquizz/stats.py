@@ -2,6 +2,7 @@
 # cklinger@novareto.de
 
 from copy import deepcopy
+from itertools import chain
 from collections import OrderedDict, namedtuple
 from cromlech.sqlalchemy import get_session
 from nva.psyquizz.models.criterias import CriteriaAnswer
@@ -12,23 +13,39 @@ from zope.schema import getFieldsInOrder
 
 Result = namedtuple(
     'Result',
-    ('answer', 'id', 'result', 'result_title', 'description'))
+    ('answer', 'id', 'result', 'result_title', 'description'),
+)
 
 
 Average = namedtuple(
     'Average',
-    ('title', 'average') )
+    ('title', 'average'),
+)
+
+Sum = namedtuple(
+    'Sum',
+    ('title', 'total'),
+)
 
 
-def average_computation(data):
-    for k, v in data.items():
-        yield Average(k, float(sum([x.result for x in v]))/len(v))
+
+def computation(averages, sums, data):
+    averages_data = []
+    sums_data = []
+    for k, v in data.items():        
+        if k in averages:
+            averages_data.append(
+                Average(k, float(sum([x.result for x in v]))/len(v)))
+        elif k in sums:
+            sums_data.append(
+                Sum(k, sum([x.result for x in v])))
+    return averages_data, sums_data
 
 
-def sort_data(order, data):
+def sort_data(averages, sums, data):
 
     def sorter(id):
-        for k, v in order.items():
+        for k, v in chain(averages.items(), sums.items()):
             if id in v:
                 return k
 
@@ -61,10 +78,11 @@ def available_criterias(criterias, session_id):
     return available_criterias
 
 
-def compute(quizz, averages, filters):
+def compute(quizz, averages, sums, filters):
 
     global_data = OrderedDict()
     users_averages = OrderedDict()
+    users_sums = OrderedDict()
 
     session = get_session('school')
     answers = session.query(quizz)
@@ -135,19 +153,33 @@ def compute(quizz, averages, filters):
                     dd.description
                 )
             )
+
         # The computation for a single user is done.
         # We now compute its average.
-        sorted_user_answers = sort_data(averages, user_data)
-        user_averages = average_computation(sorted_user_answers)
+        sorted_user_answers = sort_data(
+            averages, sums, user_data)
+        user_averages, user_sums = computation(
+            averages, sums, sorted_user_answers)
+
         for av in user_averages:
             group_averages = users_averages.setdefault(av.title, [])
             group_averages.append(av)
 
+        for su in user_sums:
+            group_sums = users_sums.setdefault(su.title, [])
+            group_sums.append(su)
+
+        
     # We do the computation for the global data as well
-    per_question_averages = tuple(average_computation(global_data))
-    sorted_global_answers = sort_data(averages, global_data)
-    global_averages = tuple(average_computation(sorted_global_answers))
-    
+    per_question_averages, per_question_sums = computation(
+        averages, sums, global_data)
+
+    sorted_global_answers = sort_data(
+        averages, sums, global_data)
+
+    global_averages, global_sums = computation(
+        averages, sums, sorted_global_answers)
+
     Criteria = namedtuple('Criteria', ('id', 'name', 'amount', 'uid'))
     merged_criterias = {}
     for fid, fc in filtered_criterias.items():
@@ -161,10 +193,13 @@ def compute(quizz, averages, filters):
         'raw': global_data,
         'total': total,
         'users.grouped': users_averages,
+        'users.sums': users_sums,
         'global.averages': global_averages,
+        'global.sums': global_sums,
         'criterias': merged_criterias,
         'has_criterias_filter': bool(criterias is None),
         'per_question_averages': per_question_averages,
+        'per_question_sums': per_question_sums,
     }
 
 

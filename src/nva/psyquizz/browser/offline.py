@@ -2,317 +2,173 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
-import cgi
-import string
-import xlsxwriter
-import cStringIO
-import shutil
-import os
-import base64
+import uvclight
+import datetime
 
-from backports import tempfile
-from cromlech.sqlalchemy import get_session
-from datetime import date
-from nva.psyquizz.models import IQuizz
-from openpyxl import load_workbook
-from uvclight import Fields, Page
-from uvclight import layer, title, name, menu, context, get_template
-from uvclight.auth import require
+from uvclight import Form
+from os import path
+from zope import interface
+from tempfile import TemporaryFile
+
+from pyPdf import PdfFileWriter, PdfFileReader
+from BeautifulSoup import BeautifulSoup
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph, SimpleDocTemplate
 from zope.component import getUtility
-from zope.schema import Choice
-from zope.interface.verify import verifyObject
-from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
-
-from ..i18n import _
+from nva.psyquizz.models import IQuizz
+from nva.psyquizz.browser.forms import AnswerQuizz, CompanyAnswerQuizz
+from ..models import IClassSession
 from ..interfaces import ICompanyRequest
-from ..models import ClassSession, Student, CriteriaAnswer
-from ..interfaces import QuizzAlreadyCompleted, QuizzClosed
+from ..i18n import _
+from dolmen.forms.base.actions import Actions
 
 
-CHUNK = 4096
+HINWEIS = """ <b>Hinweis</b>
+Bitte beantworten Sie alle Fragen und setzen Sie pro Frage nur ein Kreuz.
+Fehlerhafte Fragebögen können leider nicht ausgewertet werden. <br/> <br/> """
 
 
-class OfflineQuizz(Page):
-    context(ClassSession)
-    layer(ICompanyRequest)
-    require('manage.company')
+class DownloadCourse(uvclight.View):
+    uvclight.name('paper.pdf')
+    uvclight.auth.require('zope.Public')
+    uvclight.context(interface.Interface)
 
-    def get_criterias_questions(self):
-        for criteria in self.context.course.criterias:
-            values = SimpleVocabulary([
-                    SimpleTerm(value=c.strip(), token=idx, title=c.strip())
-                    for idx, c in enumerate(criteria.items.split('\n'), 1)
-                    if c.strip()])
-
-            criteria_field = Choice(
-                __name__='criteria_%s' % criteria.id,
-                title=criteria.title,
-                description=u"Wählen Sie das Zutreffende aus.",
-                vocabulary=values,
-                required=True,
-            )
-            yield criteria_field
-
-    def get_quizz_questions(self):
-        quizz = getUtility(IQuizz, self.context.quizz_type)
-        fields = Fields(quizz.__schema__)
-        fields.sort(key=lambda c: c.interface[c.identifier].order)
-        criterias_questions = Fields(*list(self.get_criterias_questions()))
-        for criteria_field in criterias_questions:
-            yield (
-                criteria_field,
-                criteria_field.identifier,
-                criteria_field.title)
-
-        for field in fields:
-            yield field, field.identifier, field.description
-        
-        questions_text = self.context.course.extra_questions
-        if questions_text:
-            for idx, q in enumerate(questions_text.strip().split('\n')):
-                yield None, 'extra%s' % idx, q
-
-
-                
-    def generateXLSX(self, folder, filename="ouput.xlsx"):
-        filepath = os.path.join(folder, filename)
-        workbook = xlsxwriter.Workbook(filepath)
-
-        worksheet = workbook.add_worksheet()
-        worksheet.freeze_panes(0, 2)
-        worksheet.set_row(1, None, None, {'hidden': True})
-        worksheet.set_column('AA:END', None, None, {'hidden': True})
-        worksheet.set_default_row(hide_unused_rows=True)
-        
-        # Add a format for the header cells.
-        header_format = workbook.add_format({
-            'border': 1,
-            'bg_color': '#C6EFCE',
-            'bold': True,
-            'text_wrap': True,
-            'valign': 'vcenter',
-            'indent': 1,
-            'locked': 1,
-        })
-
-        uuid_format = workbook.add_format({
-            'border': 1,
-            'color': '#8f0000',
-            'bold': True,
-            'text_wrap': False,
-            'valign': 'vcenter',
-            'indent': 0,
-            'locked': 1,
-        })
-
-        question_format = workbook.add_format({
-            'border': 0,
-            'color': '#000000',
-            'bold': True,
-            'text_wrap': False,
-            'valign': 'vcenter',
-            'indent': 0,
-            'locked': 1,
-        })
-
-        # Set up layout of the worksheet.
-        worksheet.set_column('A:A', 20)
-        worksheet.set_column('B:B', 135)
-
-        # Assign styles to headers
-        worksheet.write('A1', 'Identifier', header_format)
-        worksheet.write('B1', 'Question', header_format)
-
-        worksheet.write('A2', 'UUID', question_format)
-        worksheet.write('B2', 'UUID', question_format)
-
-        # Answer columns with their uuids
-        for column in string.ascii_uppercase[2:]:
-            worksheet.set_column('%s:%s' % (column, column), 40)
-            worksheet.write('%s1' % column, 'Answer', header_format)
-            uuid = Student.generate_access()
-            worksheet.write('%s2' % column, uuid, uuid_format)
-
-        # Filling up lines
-        idx = 2
-        for field, id, title in self.get_quizz_questions():
-            worksheet.write(idx, 0, id, question_format)
-            worksheet.write(idx, 1, title, question_format)
-            if field is not None:
-                vocabulary = getattr(field, 'source', None)
-                if vocabulary is not None:
-                    # flattened = [i.title for i in vocabulary]
-                    # They want to try Values instead of the Title to have a
-                    # faster typing of the results
-                    flattened = [i.value for i in vocabulary]
-                    for column in string.ascii_uppercase[2:]:
-                        worksheet.data_validation(
-                            '%s%d' % (column, idx + 1),
-                            {'validate': 'list',
-                             'source': flattened})
-
-            idx += 1
-        workbook.close()
-        return filepath
-
-    def render(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            filepath = self.generateXLSX(temp_dir)
-            output = cStringIO.StringIO()
-            with open(filepath, 'rb') as fd:
-                shutil.copyfileobj(fd, output)
-            output.seek(0)
-        return output
+    heading = u"Gemeinsam zu gesunden Arbeitsbedingungen"
+    base_pdf = "kfza.pdf"
 
     def make_response(self, result):
-        response = self.responseFactory()
-        response.headers['Content-Type'] = (
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response.headers['Content-Disposition'] = (
-            u'attachment; filename="offline.xlsx"')
-
-        def filebody(r):
-            data = r.read(CHUNK)
-            while data:
-                yield data
-                data = r.read(CHUNK)
-
-        response.app_iter = filebody(result)
+        response = self.responseFactory(app_iter=result)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'attachment; \
+                filename="Papierfragebogen.pdf"'
         return response
 
-
-
-class UploadOfflineQuizz(Page):
-    context(ClassSession)
-    layer(ICompanyRequest)
-    require('manage.company')
-
-    template = get_template('upload.cpt', __file__)
-
-    def get_quizz(self):
-        quizz = getUtility(IQuizz, self.context.quizz_type)
-        fields = Fields(quizz.__schema__)
-        fields.sort(key=lambda c: c.interface[c.identifier].order)
-        return quizz, fields
-
-    def read_xls(self, fields, finput):
-        answer_objects = {}
-        
-        wb = load_workbook(filename=finput, read_only=True)
-        sheet = wb['Sheet1']
-        rows = sheet.rows
-        rows.next() # passing headers
-        for row in rows:
-             identifier, title = [c.value for c in row[0:2]]
-             answers = [c.value for c in row[2:]]
-             errors = set()
-             print identifier
-             if identifier == 'UUID':
-                 for idx, answer in enumerate(answers):
-                     answer_object = answer_objects.setdefault(idx, {})
-                     answer_object[identifier] = answer
-             elif identifier == None:
-                 continue
-             else:
-                field = fields.get(identifier)
-                if field is not None:
-                    for idx, answer in enumerate(answers):
-                        if answer is not None and idx not in errors:
-                            answer_object = answer_objects.setdefault(idx, {})
-                            if not field.source:
-                                answer_object[identifier] = answer
-                            else:
-                                try:
-                                    #import pdb; pdb.set_trace()
-                                    #token = base64.b64encode(
-                                    #    answer.encode('utf8'))
-                                    value = field.source.getTerm(int(answer))
-                                    answer_object[identifier] = value.value
-                                except:
-                                    # Value doesn't exist, HELP !
-                                    raise
-                        else:
-                            if idx not in errors:
-                                if idx in answer_objects:
-                                    del answer_objects[idx]
-                                errors.add(idx)
-                            continue
-                else:
-                    # this is a big error, handle me
-                    raise NotImplementedError
- 
-        return answer_objects
+    def genStuff(self, items):
+        rc = []
+        for item in items:
+            if item:
+                rc.append('[ ] %s &nbsp; &nbsp;' % item)
+        return ''.join(rc)
 
     def update(self):
+        util = getUtility(IQuizz, name=self.context.quizz_type)
+        self.heading = util.__title__
+        self.base_pdf = util.__base_pdf__
 
-        #if date.today() > self.context.enddate:
-        #    raise QuizzClosed(self)
+    def generate_page_one(self):
+        style = getSampleStyleSheet()
+        nm = style['Normal']
+        nm.leading = 14
+        story = []
+        na = self.context.about.replace('\r\n', '<br/>').replace('</p>', '</p><br/>')
+        bs = BeautifulSoup(na)
+        doc = bs.prettify()
+        story.append(Paragraph(self.heading, style['Heading2']))
+        story.append(Paragraph(doc, nm))
+        story.append(Paragraph(HINWEIS, style['Normal']))
+        if self.context.course.criterias:
+            story.append(Paragraph('<b>Bitte kreuzen Sie das zutreffende an </b>', style['Normal']))
+            for crit in self.context.course.criterias:
+                story.append(Paragraph('<b> %s </b> <br/> %s ' % (crit.title, self.genStuff(crit.items.split('\n'))), style['Normal']))
+        tf = TemporaryFile()
+        pdf = SimpleDocTemplate(tf, pagesize=A4)
+        pdf.build(story)
+        return tf
 
-        if self.request.method.upper() == 'POST':
-            if self.request.form.get('submit') == u'Upload':
-                f = self.request.form.get('file')
-                if isinstance(f, cgi.FieldStorage):
+    def render(self):
+        output = PdfFileWriter()
+        if self.context.course.criterias:
+            p1 = PdfFileReader(self.generate_page_one())
+            output.addPage(p1.getPage(0))
+        bpdf = "%s/lib/%s" % (path.dirname(__file__), self.base_pdf)
+        with open(bpdf, 'rb') as pdf:
+            pf = PdfFileReader(pdf)
+            if pf.isEncrypted:
+                pf.decrypt('')
+            for page in range(pf.getNumPages()):
+                output.addPage(pf.getPage(page))
+            ntf = TemporaryFile()
+            output.write(ntf)
+        ntf.seek(0)
+        return ntf
 
-                    quizz, fields = self.get_quizz()
-                    session = get_session('school')
-                    
-                    with tempfile.TemporaryDirectory() as temp_dir:
-                        path = os.path.join(temp_dir, 'upload.xlsx')
-                        with open(path, 'wb+') as fd:
-                            shutil.copyfileobj(f.file, fd)
-                        answers = self.read_xls(fields, path)
 
-                    # create answers
-                    for idx, answer in answers.items():
+class GenericAnswerQuizz(AnswerQuizz):
+    uvclight.context(IClassSession)
+    uvclight.layer(ICompanyRequest)
+    uvclight.name('answer')
+    uvclight.auth.require('manage.company')
+    uvclight.title(_(u'Answer the quizz'))
+    dataValidators = []
+    label = u"Eingabe Papierfragebögen"
+    description = u"Eingabe kann per DropDown Menü oder über die Tastatur (Kreuz ganz links Eingabe 1 bis Kreuz ganz rechts Eingabe 5) erfolgen."
 
-                        if 'UUID' not in answer:
-                            uuid = Student.generate_access()
-                        else:
-                            uuid = answer.pop('UUID')
+    fmode = 'input'
+    actions = Actions(CompanyAnswerQuizz(u'speichern'))
 
-                        student = Student(
-                            anonymous=True,
-                            access=uuid,
-                            completion_date=date.today(),
-                            company_id=self.context.course.company_id,
-                            session_id=self.context.id,
-                            course=self.context.course,
-                            quizz_type=self.context.course.quizz_type)
+    def update(self):
+        self.template = Form.template
+        course = self.context.course
+        self.quizz = getUtility(IQuizz, name=course.quizz_type)
+        startdate = self.context.startdate
+        if datetime.date.today() < startdate:
+            self.flash(u'Die Befragung beginnt erst am %s deshalb werden Ihre Ergebnisse nicht gespeichert' % startdate.strftime('%d.%m.%Y'))
+        Form.update(self)
 
-                        criterias = []
-                        for key in answer:
-                            if key.startswith('criteria_'):
-                                cid = key.split('_', 1)[1]
-                                value = answer.pop(key)
-                                criteria_answer = CriteriaAnswer(
-                                    criteria_id=cid,
-                                    student_id=student.access,
-                                    session_id=self.context.id,
-                                    answer=value,
-                                )
-                                criterias.append(criteria_answer)
+    @property
+    def action_url(self):
+        return self.request.url
 
-                        answer = quizz(
-                            student_id=student.access,
-                            course_id=student.course_id,
-                            session_id=student.session_id,
-                            company_id=student.company_id,
-                            completion_date = student.completion_date,
-                            **answer)
+    def render(self):
+        form = Form.render(self)
+        jscontent = u"""
+<style>
+   label {  float: left; padding-right: 20px; }
+   .highlight {
+     background-color: #f7dada;
+   }
+</style>
+<script type="text/javascript">
+   $(document).ready(function() {
+        $('select').each(function(sidx) {
+           $('option', $(this)).each(function(oidx) {
+              $(this).html((oidx + 1).toString() + ' - ' + $(this).html());
+           });
+           $(this).prepend("<option value=''></option>").val('');
+           $(this).bind('keypress',function(e) {
+              if (e.which === 49) {
+                  $(this).val($('select:nth-child(2)', $(this)).val());
+              } else if (e.which === 50) {
+                  $(this).val($('select:nth-child(3)', $(this)).val());
+              } else if (e.which === 51) {
+                  $(this).val($('select:nth-child(4)', $(this)).val());
+              } else if (e.which === 52) {
+                  $(this).val($('select:nth-child(5)', $(this)).val());
+              } else if (e.which === 53) {
+                  $(this).val($('select:nth-child(6)', $(this)).val());
+              }
+           });
+        });
 
-                        assert verifyObject(quizz.__schema__, answer)
-                        session.add(student)
-                        session.add(answer)
-                        for ca in criterias:
-                            session.add(ca)
-                        self.flash('Ihre Vorlage wurde Erfolgreich importiert')
-                    self.redirect(self.application_url())
-                        
-                else:
-                    # error, malformed form
-                    raise NotImplementedError
-            else:
-                # error, wrong action
-                raise NotImplementedError
+        $('select').first().focus();
 
-                        
+        $("form").submit(function(){
+            var isFormValid = true;
+            $("select").each(function() {
+               if ($.trim($(this).val()).length == 0) {
+                  $(this).parent().addClass("highlight");
+                  isFormValid = false;
+               } else {
+                  $(this).parent().removeClass("highlight");
+               }
+            });
+            if (!isFormValid) {
+                alert("Bitte füllen Sie zunächst alle Felder. Im Anschluss können Sie das Formular absenden.");
+            }
+            return isFormValid;
+        });
+   });
+</script>
+"""
+        return jscontent + form

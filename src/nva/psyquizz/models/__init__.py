@@ -52,3 +52,4 @@ from .session import IClassSession, ClassSession
 from .student import IStudent, Student
 from .account import IAccount, Account
 from .vocabularies import TrueOrFalse, MoreToLess, MoreToLessN, LessToMore
+from .vocabularies import FREQUENCY, ASSESMENT, TIMESPAN, GOODBAD, AF 
