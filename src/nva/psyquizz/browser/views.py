@@ -139,26 +139,8 @@ class FinishQuizz(Page):
 
 class PageError500(PageError500):
     def render(self):
-<<<<<<< HEAD
         log.exception(self.context)
         return u"Es ist ein Fehler aufgetreten"
-=======
-        url = '%s/befragung/generic-%s' % (
-            self.application_url(), self.generic_id(self.context.id))
-        img = qrcode.make(url)
-
-        output = StringIO()
-        img.save(output, format="PNG")
-        output.seek(0)
-        return output
-        
-    def make_response(self, result):
-        response = self.responseFactory(app_iter=result)
-        response.headers['Content-Type'] = 'image/png'
-        response.headers['Content-Disposition'] = (
-            'attachment; filename="qrcode.png"')
-        return response
->>>>>>> e6b3c9ec1ec7300bd7c3c567db2c2b21ba7708c0
 
 
 class PageError404(PageError404):
