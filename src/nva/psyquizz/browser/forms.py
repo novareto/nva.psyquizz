@@ -63,8 +63,8 @@ with open(os.path.join(os.path.dirname(__file__), 'lib', 'mail.tpl'), 'r') as fd
     mail_template = Template(data.encode(ENCODING))
 
 
-def send_activation_code(company_name, email, code, base_url):
-    mailer = SecureMailer('smtprelay.bg10.bgfe.local')  # BBB
+def send_activation_code(smtp, company_name, email, code, base_url):
+    mailer = SecureMailer(smtp)  # BBB
     from_ = 'extranet@bgetem.de'
     title = (u'Gemeinsam zu gesunden Arbeitsbedingungen – Aktivierung').encode(
         ENCODING)
@@ -352,7 +352,12 @@ class CreateAccount(Form):
         session.refresh(account)
 
         base_url = self.application_url().replace('/register', '')
-        send_activation_code(data['name'], data['email'], code, base_url)
+
+        # We send the email.
+        send_activation_code(
+            self.context.configuration.smtp_server,
+            data['name'], data['email'], code, base_url)
+
         self.flash(_(u'Account added with success.'))
         self.redirect('%s/registered' % self.application_url())
         return SUCCESS

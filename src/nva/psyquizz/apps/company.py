@@ -124,7 +124,8 @@ class IActivation(Interface):
 
 def send_forgotten_password(email, password):
     # mailer = SecureMailer('localhost')
-    mailer = SecureMailer('smtprelay.bg10.bgfe.local')
+    #mailer = SecureMailer('smtprelay.bg10.bgfe.local')
+    mailer = SecureMailer('10.33.115.55')
     from_ = 'extranet@bgetem.de'
     title = (u'Ihre Passwortanfrage').encode(ENCODING)
     with mailer as sender:
