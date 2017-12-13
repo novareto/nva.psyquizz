@@ -84,11 +84,25 @@
     </tr>
   </tbody>
   </table>
- <h3> Der Gesamtdurchschnitt beträgt: <span tal:content="view.av"/> </h3>
+  <table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Summenscore</th>
+      <th>Anzahl Probanten</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr tal:repeat="sum view.results_count.items()">
+      <td tal:content="sum[0]" />
+      <td tal:content="sum[1]" />
+    </tr>
+  </tbody>
+  </table>
+ <h3> Der Gesamtdurchschnitt beträgt: <span tal:content="'%2.f' % view.av"/> </h3>
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th>Arbeitsfähigkeit</th>
+      <th>Arbeitsfähigkeit / Summenscore</th>
       <th>Total</th>
     </tr>
   </thead>
@@ -116,6 +130,10 @@
     <textarea type="text" id="averages" name="averages" style="display:none">
       <tal:data
            content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
+    </textarea>
+
+    <textarea type="text" name="vp" style="display:none">
+      <tal:data content="view.jsonify(view.results_count)" />
     </textarea>
     
     <textarea type="text" id="chart" name="chart" style="display: none"></textarea>
@@ -159,6 +177,12 @@ var donut = Highcharts.chart('q3sums', {
         plotShadow: false,
         type: 'pie'
     },
+       credits: {
+             enabled: false
+        },
+  exporting: {
+    enabled: false
+  },
     title: {
         text: 'Arbeitsfähigkeit'
     },

@@ -3,7 +3,7 @@
 
 from .quizz2 import Quizz2, IQuizz2
 from .. import MoreToLess, MoreToLessN, LessToMore, IQuizz
-from .. import AF, GOODBAD, TIMESPAN, FREQUENCY, ASSESMENT
+from .. import AF, GOODBAD, TIMESPAN, FREQUENCY, FREQUENCY1, FREQUENCY2, ASSESMENT
 
 from collections import OrderedDict
 from nva.psyquizz import Base
@@ -21,21 +21,21 @@ class IQuizz3(IQuizz2):
 
     question27 = schema.Choice(
         title=u"27",
-        description=u"Wenn Sie Ihre beste, je erreichte Arbeitsfähigkeit mit 10 Punkten bewerten: Wie viele Punkte würden Sie dann für Ihre derzeitige Arbeitsfähigkeit geben? (0 bedeutet, dass Sie derzeit arbeitsunfähig sind)",
+        description=u"Wenn Sie Ihre beste, je erreichte Arbeitsfähigkeit mit 10 Punkten bewerten:<br/> Wie viele Punkte würden Sie dann für Ihre derzeitige Arbeitsfähigkeit geben? (0 bedeutet, dass Sie derzeit arbeitsunfähig sind)",
         vocabulary=AF,
         required=True,
         )
 
     question28 = schema.Choice(
         title=u"28",
-        description=u"Wie schätzen Sie Ihre derzeitige Arbeitsfähigkeit in Bezug auf die körperlichen Arbeitsanforderungen ein?",
+        description=u"Wie schätzen Sie Ihre derzeitige Arbeitsfähigkeit in Bezug auf die <u>körperlichen</u> Arbeitsanforderungen ein?",
         vocabulary=GOODBAD,
         required=True,
         )
 
     question29 = schema.Choice(
         title=u"29",
-        description=u"Wie schätzen Sie Ihre derzeitige Arbeitsfähigkeit in Bezug auf die psychischen Arbeitsanforderungen ein?",
+        description=u"Wie schätzen Sie Ihre derzeitige Arbeitsfähigkeit in Bezug auf die <i>psychischen</i> Arbeitsanforderungen ein?",
         vocabulary=GOODBAD,
         required=True,
         )
@@ -49,7 +49,7 @@ class IQuizz3(IQuizz2):
 
     question31 = schema.Choice(
         title=u"31",
-        description=u"Glauben Sie, dass Sie, ausgehend von Ihrem jetzigen Gesundheitszustand, Ihre derzeitige Arbeit auch in den nächsten zwei Jahren ausüben können?	unwahrscheinlich",
+        description=u"Glauben Sie, dass Sie, ausgehend von Ihrem jetzigen Gesundheitszustand, Ihre derzeitige Arbeit auch in den nächsten zwei Jahren ausüben können?",
         vocabulary=ASSESMENT,
         required=True,
         )
@@ -64,14 +64,14 @@ class IQuizz3(IQuizz2):
     question33 = schema.Choice(
         title=u"33",
         description=u"Waren Sie in letzter Zeit aktiv und rege?",
-        vocabulary=FREQUENCY,
+        vocabulary=FREQUENCY1,
         required=True,
         )
 
     question34 = schema.Choice(
         title=u"34",
         description=u"Waren Sie in der letzten Zeit zuversichtlich, was die Zukunft betrifft?",
-        vocabulary=FREQUENCY,
+        vocabulary=FREQUENCY2,
         required=True,
         )
 

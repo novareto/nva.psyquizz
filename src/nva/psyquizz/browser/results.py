@@ -137,13 +137,14 @@ class Quizz3Charts(Quizz2Charts):
             (u"sehr gut", 0),
         ))
 
+        results_count = {}
         users_results = {}
         sums = self.stats.statistics['users.sums']
         self.nb_answer = len(sums.values()[0])
 
         for id, answers in sums.iteritems():
             for idx, answer in enumerate(answers):
-                if not idx in users_results:
+                if idx not in users_results:
                     users_results[idx] = 0
                 if id in summing_methods:
                     total = summing_methods[id](answer.total)
@@ -162,6 +163,10 @@ class Quizz3Charts(Quizz2Charts):
             else:
                 self.board[u"sehr gut"] += 1
             summe += result
+            if result not in results_count:
+                results_count[result] = 0
+            results_count[result] += 1
+        self.results_count = results_count
         self.users_results = users_results
         self.av = float(summe) / len(users_results)
 
@@ -179,53 +184,6 @@ def psychische_leistungsreserven(total):
 summing_methods = {
     u'Psychische Leistungsreserven': psychische_leistungsreserven,
 }
-
-        
-#class Quizz3Sums(uvclight.View):
-#    require('manage.company')
-#    name('sums')
-#    uvclight.context(IQuizz3)
-#    template = uvclight.get_template('q3sums.pt', __file__)
-#
-#    def percent(self, nb):
-#        return (float(nb) / self.nb_answer) * 100
-#
-#    def update(self, stats, general_stats=None):
-#        self.stats = stats
-#        self.general_stats = general_stats
-#
-#        self.board = OrderedDict((
-#            (u"schlecht", 0),
-#            (u"mittelmäßig", 0),
-#            (u"gut", 0),
-#            (u"sehr gut", 0),
-#        ))
-#
-#        users_results = {}
-#        sums = self.stats.statistics['users.sums']
-#        self.nb_answer = len(sums.values()[0])
-#        import pdb; pdb.set_trace() 
-#
-#        for id, answers in sums.iteritems():
-#            for idx, answer in enumerate(answers):
-#                if not idx in users_results:
-#                    users_results[idx] = 0
-#                if id in summing_methods:
-#                    total = summing_methods[id](answer.total)
-#                else:
-#                    total = answer.total
-#
-#                users_results[idx] += total
-#
-#        for result in users_results.values():
-#            if result < 21:
-#                self.board[u"schlecht"] += 1
-#            elif result < 28:
-#                self.board[u"mittelmäßig"] += 1
-#            elif result < 33:
-#                self.board[u"gut"] += 1
-#            else:
-#                self.board[u"sehr gut"] += 1
 
 
 class Quizz1Charts(uvclight.View):

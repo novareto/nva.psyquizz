@@ -53,3 +53,4 @@ from .student import IStudent, Student
 from .account import IAccount, Account
 from .vocabularies import TrueOrFalse, MoreToLess, MoreToLessN, LessToMore
 from .vocabularies import FREQUENCY, ASSESMENT, TIMESPAN, GOODBAD, AF 
+from .vocabularies import FREQUENCY1, FREQUENCY2
