@@ -1,39 +1,44 @@
 <form id="result" method="POST"
       tal:attributes="action view.url(context) + '/export'">
-
+  
   <input type="hidden" value="" name="has_criterias"
          tal:attributes="value data[qname]['has_criterias_filter']" />
-
+  
   <input type="hidden" value=""
          tal:attributes="value view.json_criterias" name="criterias" />
-
+  
   <div class="panel" tal:define="data dict(view.display());">
     
     <div tal:repeat="qname data.keys()" 
 	 tal:attributes="id qname;
-	     class repeat['qname'].start and 'collapse in' or 'collapse'">
-    <div>
-      <input type="hidden" tal:attributes="value data[qname]['total']" name="total"/>
-      Grundlage dieser Auswertung sind <b tal:content="data[qname]['total']"> </b> Fragebögen.
-    </div>
-      <input type="submit" class="btn btn-primary" value="Als PDF exportieren" />
+			 class repeat['qname'].start and 'collapse in' or 'collapse'">
+      <div>
+	<input type="hidden"
+	       tal:attributes="value data[qname]['total']"
+	       name="total" />
+	Grundlage dieser Auswertung sind
+	<b tal:content="data[qname]['total']" /> Fragebögen.
+      </div>
+      <input type="submit" class="btn btn-primary"
+	     value="Als PDF exportieren" />
       <tal:chart condition="data[qname]['chart'] is not None">
-	<textarea type="text" id="chart" name="chart" style="display: none"></textarea>
-<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
-  Glossar 
-</button>
+	<textarea type="text" id="chart"
+		  name="chart" style="display: none"></textarea>
+	<button type="button" class="btn btn-primary pull-right"
+		data-toggle="modal" data-target="#myModal">
+	  Glossar
+	</button>
 	<canvas id="myChart" width="800" height="400"></canvas>
-
-  <div class="legend" style="width: 550px; margin: 0 auto 5em auto; text-align: center; border: 2px solid #666;">
-    <em><b style="color: #62B645;">> 3,5</b>: in diesem Bereich scheint alles in Ordnung</em><br>
-    <em><b style="color: #FFCC00;">> 2,5 < 3,5</b>: diesen Bereich sollten Sie sich noch mal genauer ansehen</em><br>
-    <em><b style="color: #D8262B;"> < 2,5  </b>: in diesem Bereich scheint Handlungsbedarf zu bestehen </em>&nbsp;&nbsp;
-  </div>
-
+	<div class="legend" style="width: 550px; margin: 0 auto 5em auto; text-align: center; border: 2px solid #666;">
+	  <em><b style="color: #62B645;">> 3,5</b>: in diesem Bereich scheint alles in Ordnung</em><br />
+	  <em><b style="color: #FFCC00;">> 2,5 < 3,5</b>: diesen Bereich sollten Sie sich noch mal genauer ansehen</em><br />
+	  <em><b style="color: #D8262B;"> < 2,5  </b>: in diesem Bereich scheint Handlungsbedarf zu bestehen </em>&nbsp;&nbsp;
+	</div>
+	
 	<script language="Javascript"
                 tal:define="length len(data[qname]['chart'].keys())">
 	  // Get the context of the canvas element we want to select
-
+	  
 	  var data = {
 	  labels: <span tal:replace="[k.encode('iso-8859-1') for k in data[qname]['chart'].keys()]" />,
 	  datasets: [
@@ -103,40 +108,45 @@
 	</script>
       </tal:chart>
 
-<tal:users condition="data[qname]['users'] is not None">
-
-    <textarea type="text" id="averages" name="averages" style="display:none">
-      <tal:data
-           content="view.jsonify([[res[0], '%.2f' % res[1]['avg']] for res in data[qname]['chart'].items()])" />
-    </textarea>
-
-    <div class="row"> 
-    <p class="lead">Mittelwerte</p>
-    <div class="col-md-offset-2 col-md-8"> 
-    <table  id="mt" class="table table-bordered table-stripped">
-      <tr tal:repeat="res data[qname]['chart'].items()">
-        <th style="border-bottom: 2px solid #dddddd;"
-	    tal:content="res[0]" />
-        <td style="border-bottom: 2px solid #dddddd;"
-	    tal:content="str('%.2f' % res[1]['avg'])" />
-      </tr>
-    </table>
-    </div>
-    </div>
-    <div class="row">
-
-      <p class="lead">Verteilung der Antworten</p>
-<p>Hier sehen Sie zusätzlich die Verteilung der Antworten. Bei Auffälligen Verteilungen z.B. 50% der Beschäftigten antworten sehr positiv, 
-50% sehr negativ sollten Sie sich diesen Bereich trotz eines unauffälligen Mittelwertes noch einmal genauer anschauen.</p>
-  
-	<textarea type="text" id="userschart" name="userschart" style="display: none"></textarea>
-        <canvas id="myUsersChart" width="800" height="800"></canvas>
+      <tal:users condition="data[qname]['users'] is not None">
+	<textarea type="text" id="averages"
+		  name="averages" style="display:none">
+	  <tal:data
+              content="view.jsonify([[res[0], '%.2f' % res[1]['avg']] for res in data[qname]['chart'].items()])" />
+	</textarea>
 	
-        <script language="Javascript">
-          // Get the context of the canvas element we want to select
+	<div class="row"> 
+	  <p class="lead">Mittelwerte</p>
+	  <div class="col-md-offset-2 col-md-8"> 
+	    <table  id="mt" class="table table-bordered table-stripped">
+	      <tr tal:repeat="res data[qname]['chart'].items()">
+		<th style="border-bottom: 2px solid #dddddd;"
+		    tal:content="res[0]" />
+		<td style="border-bottom: 2px solid #dddddd;"
+		    tal:content="str('%.2f' % res[1]['avg'])" />
+	      </tr>
+	    </table>
+	  </div>
+	</div>
+	<div class="row">
+	  
+	  <p class="lead">Verteilung der Antworten</p>
+	  <p>
+	    Hier sehen Sie zusätzlich die Verteilung der
+	    Antworten. Bei Auffälligen Verteilungen z.B. 50% der
+	    Beschäftigten antworten sehr positiv, 50% sehr negativ
+	    sollten Sie sich diesen Bereich trotz eines unauffälligen
+	    Mittelwertes noch einmal genauer anschauen.
+	  </p>
+	  <textarea type="text" id="userschart"
+		    name="userschart" style="display: none"></textarea>
+          <canvas id="myUsersChart" width="800" height="800"></canvas>
 
+          <script language="Javascript">
+            // Get the context of the canvas element we want to select
+	    
 	    var data = {
-	      labels: <span tal:replace="[k.encode('iso-8859-1') for k in reversed(data[qname]['users'].keys())]" />,
+	    labels: <span tal:replace="[k.encode('iso-8859-1') for k in reversed(data[qname]['users'].keys())]" />,
 	      datasets: [
               {
               title: "+",
@@ -191,60 +201,89 @@
 	     var url = document.getElementById("myUsersChart").toDataURL();
 	     document.getElementById("userschart").value = url;
 	  }
-        </script>
-      </tal:users>
-
+          </script>
+	</div>
+      </tal:users>      
     </div>
-    </div>
+  </div>
 </form>
-
 
 <div class="modal fade" id="myModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close"
+		data-dismiss="modal" aria-label="Close">
+	  <span aria-hidden="true">&times;</span>
+	</button>
         <h4 class="modal-title">Glossar</h4>
       </div>
       <div class="modal-body">
         <p class="lead">Dimensionsbeschreibung: </p>
         <dl class="dl-horizontal">
-          <dt>Passende Arbeitsumgebung: </dt>
-          <dd>Die physische Arbeitsumgebung: Lärm, Klima, Beleuchtung </dd>
-          <dt>Ganzheitliches Arbeiten: </dt>
-          <dd>Möglichkeit den Anteil der eigenen Arbeit am Gesamtprodukt zu erkennen 
-         sowie am Arbeitsergebnis die Qualität der eigenen Leistungen beurteilen zu können </dd>
-          <dt>Passende Arbeitsabläufe: </dt>
-          <dd>Hindernisse bei der Ausführungen der Arbeitsaufgabe: unpassende 
-         Arbeitsmittel sowie Störungen und Unterbrechungen bei der Arbeit </dd>
-          <dt>Zusammenarbeit: </dt>
-          <dd>Qualität der Zusammenarbeit, Kommunikationsmöglichkeiten sowie die 
-         Rückmeldung (Feedback) über die eigene Arbeit durch Vorgesetzte und Kollegen </dd>
+          <dt>Passende Arbeitsumgebung:</dt>
+          <dd>Die physische Arbeitsumgebung: Lärm, Klima, Beleuchtung</dd>
+          <dt>Ganzheitliches Arbeiten:</dt>
+          <dd>
+	    Möglichkeit den Anteil der eigenen Arbeit am Gesamtprodukt
+	    zu erkennen sowie am Arbeitsergebnis die Qualität der
+	    eigenen Leistungen beurteilen zu können
+	  </dd>
+          <dt>Passende Arbeitsabläufe:</dt>
+          <dd>
+	    Hindernisse bei der Ausführungen der Arbeitsaufgabe:
+	    unpassende Arbeitsmittel sowie Störungen und Unterbrechungen
+	    bei der Arbeit
+	  </dd>
+          <dt>Zusammenarbeit:</dt>
+          <dd>
+	    Qualität der Zusammenarbeit, Kommunikationsmöglichkeiten
+	    sowie die Rückmeldung (Feedback) über die eigene Arbeit
+	    durch Vorgesetzte und Kollegen
+	  </dd>
           <dt>Passende inhaltliche Arbeitsanforderungen: </dt>
-          <dd>Das Zueinanderpassen der Anforderungen aus den 
-         Arbeitsaufgaben zu den Leistungsvoraussetzungen der Beschäftigten </dd>
+          <dd>
+	    Das Zueinanderpassen der Anforderungen aus den 
+            Arbeitsaufgaben zu den Leistungsvoraussetzungen der
+	    Beschäftigten
+	  </dd>
           <dt>Information und Mitsprache: </dt>
-          <dd>Betriebliche Informationspolitik und Beteiligung der Beschäftigten </dd>
+          <dd>
+	    Betriebliche Informationspolitik und Beteiligung der
+	    Beschäftigten
+	  </dd>
           <dt>Vielseitiges Arbeiten: </dt>
-          <dd>Möglichkeiten die eigenen Fähigkeiten und Fertigkeiten zur Bewältigung der 
-         Arbeitsaufgaben einzusetzen und Neues dazu zu lernen </dd>
+          <dd>
+	    Möglichkeiten die eigenen Fähigkeiten und Fertigkeiten zur
+	    Bewältigung der Arbeitsaufgaben einzusetzen und Neues dazu
+	    zu lernen
+	  </dd>
           <dt>Passende mengenmäßige Arbeit: </dt>
-          <dd>Ausmaß der Arbeitsmenge sowie der Zeitdruck unter dem 
-         gearbeitet wird </dd>
-          <dt>Handlungsspielraum: </dt>
-          <dd>Einfluss auf Arbeitsweise, verwendete Arbeitsmittel und die zeitliche 
-         Organisation der Arbeit </dd>
+          <dd>
+	    Ausmaß der Arbeitsmenge sowie der Zeitdruck unter dem
+	    gearbeitet wird
+	  </dd>
+          <dt>Handlungsspielraum:</dt>
+          <dd>
+	    Einfluss auf Arbeitsweise, verwendete Arbeitsmittel und
+	    die zeitliche Organisation der Arbeit
+	  </dd>
           <dt>Entwicklungsmöglichkeiten: </dt>
-          <dd>Weiterbildungsmöglichkeiten und Aufstiegschancen im Unternehmen </dd>
+          <dd>
+	    Weiterbildungsmöglichkeiten und Aufstiegschancen im
+	    Unternehmen
+	  </dd>
           <dt>Soziale Rückendeckung: </dt>
-          <dd>Die Qualität des Umgangs unter den Kolleginnen und Kollegen innerhalb des 
-         eigenen Arbeitsbereiches sowie mit dem direkten Vorgesetzten </dd>
-          <dt> </dt>
-          <dd> </dd>
+          <dd>
+	    Die Qualität des Umgangs unter den Kolleginnen und
+	    Kollegen innerhalb des eigenen Arbeitsbereiches sowie mit
+	    dem direkten Vorgesetzten
+	  </dd>
         </dl>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+        <button type="button" class="btn btn-default"
+		data-dismiss="modal">Schließen</button>
       </div>
     </div>
   </div>

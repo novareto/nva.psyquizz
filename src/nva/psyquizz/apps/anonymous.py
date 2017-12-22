@@ -99,5 +99,5 @@ class Application(SQLPublication):
     @property
     def layers(self):
         if self.configuration.layer is not None:
-            return self._layers + [self.configuration.layer]
+            return [self.configuration.layer] + self._layers
         return self._layers

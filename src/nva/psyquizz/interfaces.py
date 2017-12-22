@@ -2,6 +2,7 @@
 
 from cromlech.browser import exceptions
 from siguvtheme.uvclight import IDGUVRequest
+from zope.interface import Interface
 
 
 class IQuizzLayer(IDGUVRequest):
@@ -20,14 +21,13 @@ class IAnonymousRequest(IQuizzLayer):
     pass
 
 
-from zope.interface import Interface
-class ISomeLayer(Interface):
-    pass
-
-
 class QuizzAlreadyCompleted(exceptions.HTTPForbidden):
     pass
 
 
 class QuizzClosed(exceptions.HTTPForbidden):
+    pass
+
+
+class ISomeLayer(Interface):
     pass
