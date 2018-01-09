@@ -24,6 +24,7 @@ class Quizz3Excel(SessionXSLX):
             (u"sehr gut", 0),
         ))
 
+        results_count = {}
         users_results = {}
         sums = self.statistics['users.sums']
         self.nb_answer = len(sums.values()[0])
@@ -49,6 +50,9 @@ class Quizz3Excel(SessionXSLX):
             else:
                 self.board[u"sehr gut"] += 1
             summe += result
+            if result not in results_count:
+                results_count[result] = 0
+            results_count[result] += 1
         self.users_results = users_results
         self.av = float(summe) / len(users_results)
         # Proband
@@ -95,6 +99,15 @@ class Quizz3Excel(SessionXSLX):
         })
 
         ws.insert_chart("E%s" % ni, chart)
+        ws = workbook.add_worksheet('WAI Fragebogen II')
+        ws.write(0, 0, u'Summenscore pro Proband')
+        ws.write(2, 0, u'Summenscore')
+        ws.write(2, 1, u'Anzahl Proband')
+        index = 3 
+        for score, count in results_count.items():
+            ws.write(index, 0, score)
+            ws.write(index, 1, count)
+            index += 1
         return workbook
 
 

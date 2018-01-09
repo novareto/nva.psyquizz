@@ -1,30 +1,24 @@
 <div>
-<div class="header">
-
-  <h1>Ergebnisse</h1>
-  <p>Hier sehen Sie die Auswertung für alle Beschäftigten. 
-  </p>
-
-
-
-  <p>
-  Durch Auswahl einer oder mehrerer Auswertungsgruppen haben Sie die Möglichkeit sich eine
-  detaillierte Auswertung anzeigen zu lassen. (Bitte beachten Sie: Einzelne Auswertungsgruppen 
-  können erst ausgewählt werden, wenn für diese Auswertungsgruppe mindestens sieben 
-  ausgefüllte Fragebögen vorliegen.)
-  </p>
-  <p>
-  Der weitere Umgang mit den Ergebnissen ist in der „Übersicht 7 Schritte“ unter 4.  Lösungsworkshops beschrieben.
-  </p>
-
-</div>
-
+  <div class="header">
+    <h1>Ergebnisse</h1>
+    <p>Hier sehen Sie die Auswertung für alle Beschäftigten.</p>
+    <p>
+      Durch Auswahl einer oder mehrerer Auswertungsgruppen haben Sie
+      die Möglichkeit sich eine detaillierte Auswertung anzeigen zu
+      lassen. (Bitte beachten Sie: Einzelne Auswertungsgruppen können
+      erst ausgewählt werden, wenn für diese Auswertungsgruppe
+      mindestens sieben ausgefüllte Fragebögen vorliegen.)
+    </p>
+    <p>
+      Der weitere Umgang mit den Ergebnissen ist in der „Übersicht 7
+      Schritte“ unter 4. Lösungsworkshops beschrieben.
+    </p>
+  </div>
   <form action="." tal:attributes="action view.request.url"
 	tal:define="current view.stats.filters.get('criterias', {})">
-<div><a name="uncheckall">Alle</a>
-
-
- </div>
+    <div>
+      <a name="uncheckall">Alle</a>
+    </div>
     <dl tal:define="crits view.stats.statistics['criterias']">
       <tal:dl tal:repeat="crit crits">
 	<dt><h3 tal:content="crit" /></dt>
@@ -37,7 +31,8 @@
 				     checked opt.uid in current;
 				     disabled disabled and 'disabled' or None" />
 	      <span tal:content="'%s (%s)' % (opt.name, opt.amount)"
-		    tal:attributes="class disabled and 'text-muted' or ''"/>
+		    tal:attributes="class disabled and 'text-muted' or
+				    ''" />
 	    </tal:disabled>
 	  </div>
 	</dd>
@@ -46,59 +41,60 @@
     <input id="form-action-filter" type="submit" value="filter" />
   </form>
   
-  <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
-      Glossar 
+  <button type="button" class="btn btn-primary pull-right"
+	  data-toggle="modal" data-target="#myModal">
+    Glossar 
   </button>
   <div id="container1" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
 
   <div class="legend" style="width: 550px; margin: 0 auto 5em auto; text-align: center; border: 2px solid #666;">
     <em><b style="color: #62B645;">> 3,5</b>:
-    in diesem Bereich scheint alles in Ordnung</em><br>
+    in diesem Bereich scheint alles in Ordnung</em><br />
     <em><b style="color: #FFCC00;">> 2,5 < 3,5</b>:
-    diesen Bereich sollten Sie sich noch mal genauer ansehen</em><br>
+    diesen Bereich sollten Sie sich noch mal genauer ansehen</em><br />
     <em><b style="color: #D8262B;"> < 2,5  </b>:
     in diesem Bereich scheint Handlungsbedarf zu bestehen </em>&nbsp;&nbsp;
   </div>
-
+  
   <table id="mt" class="table table-bordered table-striped">
     <tr tal:repeat="data view.stats.statistics['global.averages']">
       <td tal:content="data.title"></td> 
       <td tal:content="str('%.2f' % data.average).replace('.',',')"></td> 
     </tr>
   </table>
-
+  
   <div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
-
+  
   <form id="result" method="POST"
 	tal:attributes="action view.url(context) + '/export'">
-
-  <input type="hidden" value="" name="has_criterias" tal:attributes="value len(view.stats.filters.get('criterias', {}))" />
-  <input type="hidden" value="" tal:attributes="value view.jsonify(view.stats.filters.get('criterias', {}))" name="criterias" />
+    
+    <input type="hidden" value="" name="has_criterias" tal:attributes="value len(view.stats.filters.get('criterias', {}))" />
+    <input type="hidden" value="" tal:attributes="value view.jsonify(view.stats.filters.get('criterias', {}))" name="criterias" />
     
     <input type="hidden"
 	   tal:attributes="value view.stats.statistics['total']" name="total"/>
     
     <textarea type="text" id="averages" name="averages" style="display:none">
       <tal:data
-           content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
+          content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
     </textarea>
     
     <textarea type="text" id="chart" name="chart" style="display: none"></textarea>
     <textarea type="text" id="userschart" name="userschart" style="display: none"></textarea>
     <textarea type="text" id="pSVG" name="pSVG" style="display:none"></textarea>
     <textarea type="text" id="pSVG1" name="pSVG1" style="display:none"></textarea>
-
+    
     <button class="btn btn-default" name="action" value="PDF">
       <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
-      </span>&nbsp; PDF export
+	</span>&nbsp; PDF export
     </button>
-
+    
     <a class="btn btn-default"
        tal:attributes="href 'excel?' + request.environment['QUERY_STRING']"
        ><span class="glyphicon glyphicon-download-alt" aria-hidden="true">
-       </span>&nbsp; Excel export</a>
+    </span>&nbsp; Excel export</a>
   </form>
-
+  
   <script>
      function svgToCanvas(chart, target_id) {
         var svg = chart.getSVG();
@@ -285,54 +281,54 @@
     });
   </script>
 
-<div class="modal fade" id="myModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Glossar</h4>
-      </div>
-      <div class="modal-body">
-        <p class="lead">Dimensionsbeschreibung: </p>
-        <dl class="dl-horizontal">
-          <dt>Passende Arbeitsumgebung: </dt>
-          <dd>Die physische Arbeitsumgebung: Lärm, Klima, Beleuchtung </dd>
-          <dt>Ganzheitliches Arbeiten: </dt>
-          <dd>Möglichkeit den Anteil der eigenen Arbeit am Gesamtprodukt zu erkennen 
-         sowie am Arbeitsergebnis die Qualität der eigenen Leistungen beurteilen zu können </dd>
-          <dt>Passende Arbeitsabläufe: </dt>
-          <dd>Hindernisse bei der Ausführungen der Arbeitsaufgabe: unpassende 
-         Arbeitsmittel sowie Störungen und Unterbrechungen bei der Arbeit </dd>
-          <dt>Zusammenarbeit: </dt>
-          <dd>Qualität der Zusammenarbeit, Kommunikationsmöglichkeiten sowie die 
-         Rückmeldung (Feedback) über die eigene Arbeit durch Vorgesetzte und Kollegen </dd>
-          <dt>Passende inhaltliche Arbeitsanforderungen: </dt>
-          <dd>Das Zueinanderpassen der Anforderungen aus den 
-         Arbeitsaufgaben zu den Leistungsvoraussetzungen der Beschäftigten </dd>
-          <dt>Information und Mitsprache: </dt>
-          <dd>Betriebliche Informationspolitik und Beteiligung der Beschäftigten </dd>
-          <dt>Vielseitiges Arbeiten: </dt>
-          <dd>Möglichkeiten die eigenen Fähigkeiten und Fertigkeiten zur Bewältigung der 
-         Arbeitsaufgaben einzusetzen und Neues dazu zu lernen </dd>
-          <dt>Passende mengenmäßige Arbeit: </dt>
-          <dd>Ausmaß der Arbeitsmenge sowie der Zeitdruck unter dem 
-         gearbeitet wird </dd>
-          <dt>Handlungsspielraum: </dt>
-          <dd>Einfluss auf Arbeitsweise, verwendete Arbeitsmittel und die zeitliche 
-         Organisation der Arbeit </dd>
-          <dt>Entwicklungsmöglichkeiten: </dt>
-          <dd>Weiterbildungsmöglichkeiten und Aufstiegschancen im Unternehmen </dd>
-          <dt>Soziale Rückendeckung: </dt>
-          <dd>Die Qualität des Umgangs unter den Kolleginnen und Kollegen innerhalb des 
-         eigenen Arbeitsbereiches sowie mit dem direkten Vorgesetzten </dd>
-          <dt> </dt>
-          <dd> </dd>
-        </dl>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+  <div class="modal fade" id="myModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+	<div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Glossar</h4>
+	</div>
+	<div class="modal-body">
+          <p class="lead">Dimensionsbeschreibung: </p>
+          <dl class="dl-horizontal">
+            <dt>Passende Arbeitsumgebung: </dt>
+            <dd>Die physische Arbeitsumgebung: Lärm, Klima, Beleuchtung </dd>
+            <dt>Ganzheitliches Arbeiten: </dt>
+            <dd>Möglichkeit den Anteil der eigenen Arbeit am Gesamtprodukt zu erkennen 
+            sowie am Arbeitsergebnis die Qualität der eigenen Leistungen beurteilen zu können </dd>
+            <dt>Passende Arbeitsabläufe: </dt>
+            <dd>Hindernisse bei der Ausführungen der Arbeitsaufgabe: unpassende 
+            Arbeitsmittel sowie Störungen und Unterbrechungen bei der Arbeit </dd>
+            <dt>Zusammenarbeit: </dt>
+            <dd>Qualität der Zusammenarbeit, Kommunikationsmöglichkeiten sowie die 
+            Rückmeldung (Feedback) über die eigene Arbeit durch Vorgesetzte und Kollegen </dd>
+            <dt>Passende inhaltliche Arbeitsanforderungen: </dt>
+            <dd>Das Zueinanderpassen der Anforderungen aus den 
+            Arbeitsaufgaben zu den Leistungsvoraussetzungen der Beschäftigten </dd>
+            <dt>Information und Mitsprache: </dt>
+            <dd>Betriebliche Informationspolitik und Beteiligung der Beschäftigten </dd>
+            <dt>Vielseitiges Arbeiten: </dt>
+            <dd>Möglichkeiten die eigenen Fähigkeiten und Fertigkeiten zur Bewältigung der 
+            Arbeitsaufgaben einzusetzen und Neues dazu zu lernen </dd>
+            <dt>Passende mengenmäßige Arbeit: </dt>
+            <dd>Ausmaß der Arbeitsmenge sowie der Zeitdruck unter dem 
+            gearbeitet wird </dd>
+            <dt>Handlungsspielraum: </dt>
+            <dd>Einfluss auf Arbeitsweise, verwendete Arbeitsmittel und die zeitliche 
+            Organisation der Arbeit </dd>
+            <dt>Entwicklungsmöglichkeiten: </dt>
+            <dd>Weiterbildungsmöglichkeiten und Aufstiegschancen im Unternehmen </dd>
+            <dt>Soziale Rückendeckung: </dt>
+            <dd>Die Qualität des Umgangs unter den Kolleginnen und Kollegen innerhalb des 
+            eigenen Arbeitsbereiches sowie mit dem direkten Vorgesetzten </dd>
+            <dt> </dt>
+            <dd> </dd>
+          </dl>
+	</div>
+	<div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+	</div>
       </div>
     </div>
   </div>
- 
 </div>

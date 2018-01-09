@@ -13,6 +13,10 @@ from zope.security.management import setSecurityPolicy
 
 
 marker = object()
+Configuration = namedtuple(
+    'Configuration',
+    ('session_key', 'engine', 'name', 'fs_store', 'layer', 'smtp_server')
+)
 
 
 def eval_loader(expr):
@@ -75,9 +79,9 @@ def routing(conf, files, session_key, **kwargs):
         layer_iface = None
 
     # Applications configuration
-    factory = namedtuple(
-        'Setupuration', ('session_key', 'engine', 'name', 'fs_store', 'layer'))
-    setup = factory(session_key, engine, name, None, layer_iface)
+    smtp = kwargs.get('smtp', '10.33.115.55')
+    setup = Configuration(
+        session_key, engine, name, None, layer_iface, smtp)
 
     # Router
     root = URLMap()

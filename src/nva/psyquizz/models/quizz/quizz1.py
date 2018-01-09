@@ -202,6 +202,8 @@ class Quizz1(Base, Location):
     __title__ = u"Prüfliste Psychische Belastung"
     __base_pdf__ = "pruefliste.pdf"
 
+    __table_args__ = {'extend_existing':True}
+
     id = Column('id', Integer, primary_key=True)
 
     # Link

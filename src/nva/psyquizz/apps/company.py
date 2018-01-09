@@ -124,7 +124,8 @@ class IActivation(Interface):
 
 def send_forgotten_password(email, password):
     # mailer = SecureMailer('localhost')
-    mailer = SecureMailer('smtprelay.bg10.bgfe.local')
+    #mailer = SecureMailer('smtprelay.bg10.bgfe.local')
+    mailer = SecureMailer('10.33.115.55')
     from_ = 'extranet@bgetem.de'
     title = (u'Ihre Passwortanfrage').encode(ENCODING)
     with mailer as sender:
@@ -259,7 +260,7 @@ class Application(SQLPublication, SecurePublication):
     @property
     def layers(self):
         if self.configuration.layer is not None:
-            return self._layers + [self.configuration.layer]
+            return [self.configuration.layer] + self._layers
         return self._layers
 
     def setup_database(self, engine):

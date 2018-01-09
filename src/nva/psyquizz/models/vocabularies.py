@@ -86,7 +86,7 @@ durations = SimpleVocabulary([
 
 AF = SimpleVocabulary([
     SimpleTerm(value=0,
-               title=u'0 - Völlig arbeitsunfähig'),
+               title=u'0 - völlig arbeitsunfähig'),
     SimpleTerm(value=1,
                title=u'1'),
     SimpleTerm(value=2,
@@ -112,51 +112,77 @@ AF = SimpleVocabulary([
 
 GOODBAD = SimpleVocabulary([
     SimpleTerm(value=5,
-               title=u'Sehr gut'),
+               title=u'sehr gut'),
     SimpleTerm(value=4,
-               title=u'Eher gut'),
+               title=u'eher gut'),
     SimpleTerm(value=3,
-               title=u'Mittelmäßig'),
+               title=u'mittelmäßig'),
     SimpleTerm(value=2,
-               title=u'Eher schlecht'),
+               title=u'eher schlecht'),
     SimpleTerm(value=1,
-               title=u'Sehr schlecht'),
+               title=u'sehr schlecht'),
     ])
 
 
 TIMESPAN = SimpleVocabulary([
     SimpleTerm(value=5,
-               title=u'Überhaupt keinen'),
+               title=u'überhaupt keinen'),
     SimpleTerm(value=4,
-               title=u'Höchstens 9 Tage'),
+               title=u'höchstens 9 Tage'),
     SimpleTerm(value=3,
-               title=u'10 - 24 Tage'),
+               title=u'10 bis 24 Tage'),
     SimpleTerm(value=2,
-               title=u'25 - 99 Tage'),
+               title=u'25 bis 99 Tage'),
     SimpleTerm(value=1,
-               title=u'100 - 365 Tage'),
+               title=u'100 bis 365 Tage'),
     ])
 
 
 ASSESMENT = SimpleVocabulary([
     SimpleTerm(value=1,
-               title=u'Unwahrscheinlich'),
+               title=u'unwahrscheinlich'),
     SimpleTerm(value=4,
-               title=u'Nicht sicher'),
+               title=u'nicht sicher'),
     SimpleTerm(value=7,
-               title=u'Ziemlich sicher'),
+               title=u'ziemlich sicher'),
     ])
 
 
 FREQUENCY = SimpleVocabulary([
     SimpleTerm(value=4,
-               title=u'Ständig'),
+               title=u'häufig'),
     SimpleTerm(value=3,
-               title=u'Eher häufig'),
+               title=u'eher häufig'),
     SimpleTerm(value=2,
-               title=u'Manchmal'),
+               title=u'manchmal'),
     SimpleTerm(value=1,
-               title=u'Eher selten'),
+               title=u'eher selten'),
     SimpleTerm(value=0,
-               title=u'Niemals'),
+               title=u'niemals'),
+    ])
+
+FREQUENCY1 = SimpleVocabulary([
+    SimpleTerm(value=4,
+               title=u'immer'),
+    SimpleTerm(value=3,
+               title=u'eher häufig'),
+    SimpleTerm(value=2,
+               title=u'manchmal'),
+    SimpleTerm(value=1,
+               title=u'eher selten'),
+    SimpleTerm(value=0,
+               title=u'niemals'),
+    ])
+
+FREQUENCY2 = SimpleVocabulary([
+    SimpleTerm(value=4,
+               title=u'ständig'),
+    SimpleTerm(value=3,
+               title=u'eher häufig'),
+    SimpleTerm(value=2,
+               title=u'manchmal'),
+    SimpleTerm(value=1,
+               title=u'eher selten'),
+    SimpleTerm(value=0,
+               title=u'niemals'),
     ])

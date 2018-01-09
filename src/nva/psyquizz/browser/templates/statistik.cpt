@@ -15,5 +15,8 @@ abgeschlossen <span tal:content="b['past']"> </span>
 </p>
 
 <p>
- Befragungen: <span tal:content="view.getAnswers()"/>
+ ausgefüllte Fragebögen 
+   <ul tal:repeat="answer view.getAnswers()">
+     <li> <span tal:content="answer['title']"> </span>: <span tal:content="answer['count']"></span></li>
+   </ul>
 </p>
