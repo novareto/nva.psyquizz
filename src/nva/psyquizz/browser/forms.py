@@ -680,8 +680,6 @@ class EditCourse(Form):
         return fields
 
     def update(self):
-        startendpicker.need()
-        jqueryui.need()
         wysiwyg.need()
         Form.update(self)
 

@@ -5,7 +5,6 @@
 
   <include package="uvclight" />
   <include package="ul.auth" />
-  <include package="siguvtheme.uvclight" />
   <include package="cromlech.dawnlight" file="consumers.zcml" />
   <include package="dolmen.clockwork" />
   <include package="dolmen.forms.base" />
