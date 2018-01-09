@@ -102,13 +102,15 @@
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th>Arbeitsfähigkeit / Summenscore</th>
+      <th>Arbeitsfähigkeit </th>
+      <th>Summenscore</th>
       <th>Total</th>
     </tr>
   </thead>
   <tbody>
     <tr tal:repeat="sum view.board.items()">
       <td tal:content="sum[0]" />
+      <td tal:content="view.ausp.get(sum[0])" />
       <td tal:content="sum[1]" />
     </tr>
   </tbody>

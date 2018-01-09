@@ -137,12 +137,20 @@ class Quizz3Charts(Quizz2Charts):
             (u"sehr gut", 0),
         ))
 
+        self.ausp = { 
+                u"schlecht":"5 bis 20",
+                u"mittelmäßig":"21 bis 27",
+                u"gut":"28 bis 32",
+                u"sehr gut":"33 bis 36",
+                }
+
         results_count = {}
         users_results = {}
         sums = self.stats.statistics['users.sums']
         self.nb_answer = len(sums.values()[0])
 
         for id, answers in sums.iteritems():
+            print id, answers
             for idx, answer in enumerate(answers):
                 if idx not in users_results:
                     users_results[idx] = 0
@@ -176,7 +184,7 @@ def psychische_leistungsreserven(total):
         return 1
     if total < 7:
         return 2
-    if total < 9:
+    if total < 10:
         return 3
     return 4
 

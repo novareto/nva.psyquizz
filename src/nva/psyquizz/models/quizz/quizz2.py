@@ -16,7 +16,7 @@ class IQuizz2(Interface):
 
     question1 = schema.Choice(
         title=u"1",
-        description=u"Können Sie bei Ihrer Arbeit Neues dazulernen?",
+        description=u"<blockquote>Fragenteil: Kurzfragebogen zur Arbeitsanalyse </blockquote> Können Sie bei Ihrer Arbeit Neues dazulernen?",
         vocabulary=LessToMore,
         required=True,
         )

@@ -29,7 +29,7 @@ class PDF_WAI(GeneratePDF):
         if doc.page >= 3:
             canvas.drawString(18 * cm, 2 * cm, u"Grundlage der Befragung")
             canvas.drawString(18 * cm, 1.6 *cm, u"Work Ability Index (WAI)")
-            canvas.drawString(18 * cm, 1.2 * cm, u"Ilmanien, Tuomi")
+            canvas.drawString(18 * cm, 1.2 * cm, u"Ilmarinen, Tuomi")
 
         else:
             canvas.drawString(18 * cm, 2 * cm, u"Grundlage der Befragung: KFZA - Kurzfragebogen")
@@ -50,10 +50,10 @@ class PDF_WAI(GeneratePDF):
         parts.append(drawing)
         parts.append(PageBreak())
         vp = json.loads(self.request.form.get('vp'))
-        td = [[u'Summenscore', 'Anzahl Probanten']]
+        td = [[u'Summenscore', 'Anzahl Probanden']]
         for x, y in vp.items():
             td.append([x, y])
-        parts.append(Paragraph(u'Summenscore pro Proband', styles['Normal']))
+        parts.append(Paragraph(u'Häufigkeitsauswertung', styles['Normal']))
         table = Table(data=td)
         ts = TableStyle([
             ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),

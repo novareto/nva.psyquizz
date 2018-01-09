@@ -8,6 +8,8 @@ from uvclight.auth import require
 from cromlech.sqlalchemy import get_session
 from nva.psyquizz import models
 from datetime import datetime, timedelta
+from zope.component import getUtilitiesFor
+from nva.psyquizz.models.interfaces import IQuizz
 
 
 class Statistik(uvclight.Page):
@@ -43,6 +45,8 @@ class Statistik(uvclight.Page):
 
     def getAnswers(self):
         session = get_session('school')
-        from nva.psyquizz.models.quizz.quizz2 import Quizz2
-        return session.query(Quizz2).count()
-
+        ret = [] 
+        for quizz in getUtilitiesFor(IQuizz):
+            name, klass = quizz
+            ret.append({'title': klass.__title__, 'count': session.query(klass).count()})
+        return ret

@@ -179,3 +179,7 @@ div.befragung {
   background-color: #666;
   color: white;
 }
+
+div.question > .radio input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
+    margin-left: -17px;
+}

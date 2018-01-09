@@ -32,7 +32,7 @@ Sum = namedtuple(
 def computation(averages, sums, data):
     averages_data = []
     sums_data = []
-    for k, v in data.items():        
+    for k, v in data.items():
         if k in averages:
             averages_data.append(
                 Average(k, float(sum([x.result for x in v]))/len(v)))

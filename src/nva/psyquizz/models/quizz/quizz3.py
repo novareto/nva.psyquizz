@@ -21,7 +21,7 @@ class IQuizz3(IQuizz2):
 
     question27 = schema.Choice(
         title=u"27",
-        description=u"Wenn Sie Ihre beste, je erreichte Arbeitsfähigkeit mit 10 Punkten bewerten:<br/> Wie viele Punkte würden Sie dann für Ihre derzeitige Arbeitsfähigkeit geben? (0 bedeutet, dass Sie derzeit arbeitsunfähig sind)",
+        description=u"<blockquote> Frageteil:  Work Ability Index </blockquote> Wenn Sie Ihre beste, je erreichte Arbeitsfähigkeit mit 10 Punkten bewerten:<br/> Wie viele Punkte würden Sie dann für Ihre derzeitige Arbeitsfähigkeit geben? (0 bedeutet, dass Sie derzeit arbeitsunfähig sind)",
         vocabulary=AF,
         required=True,
         )
@@ -35,7 +35,7 @@ class IQuizz3(IQuizz2):
 
     question29 = schema.Choice(
         title=u"29",
-        description=u"Wie schätzen Sie Ihre derzeitige Arbeitsfähigkeit in Bezug auf die <i>psychischen</i> Arbeitsanforderungen ein?",
+        description=u"Wie schätzen Sie Ihre derzeitige Arbeitsfähigkeit in Bezug auf die <u>psychischen</u> Arbeitsanforderungen ein?",
         vocabulary=GOODBAD,
         required=True,
         )
