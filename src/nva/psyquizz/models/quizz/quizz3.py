@@ -75,12 +75,6 @@ class IQuizz3(IQuizz2):
         required=True,
         )
 
-
-for tag in IQuizz2.getTaggedValueTags():
-    IQuizz3.setTaggedValue(
-        tag, IQuizz2.getTaggedValue(tag),
-    )
-
 IQuizz3.setTaggedValue(
     'sums', OrderedDict((
         ('27', ('27',)),
@@ -91,6 +85,11 @@ IQuizz3.setTaggedValue(
         (u'Psychische Leistungsreserven', ('32', '33', '34')),
         )))
 
+for tag in IQuizz2.getTaggedValueTags():
+    value = IQuizz2.getTaggedValue(tag)
+    if tag == 'averages':
+        value.update(IQuizz3.getTaggedValue('sums'))
+    IQuizz3.setTaggedValue(tag, value)
 
 
 @implementer(IQuizz3)

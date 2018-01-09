@@ -182,6 +182,7 @@ class XSLX(object):
         
         labels = {k.title: k.description for id, k in
                   getFieldsInOrder(self.quizz.__schema__)}
+
         for avg in self.statistics['per_question_averages']:
             offset += 1
             assert avg.title in labels

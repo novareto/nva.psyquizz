@@ -32,20 +32,35 @@ Sum = namedtuple(
 def computation(averages, sums, data):
     averages_data = []
     sums_data = []
-    for k, v in data.items():        
+    for k, v in data.items():
         if k in averages:
             averages_data.append(
                 Average(k, float(sum([x.result for x in v]))/len(v)))
-        elif k in sums:
+        if k in sums:  # not elif, it could be in both
             sums_data.append(
                 Sum(k, sum([x.result for x in v])))
+    return averages_data, sums_data
+
+
+def question_computation(averages, sums, data):
+    averages_data = []
+    sums_data = []
+    for k, v in data.items():
+        for at, av in averages.items():
+            if k in av:
+                averages_data.append(
+                    Average(k, float(sum([x.result for x in v]))/len(v)))
+        for at, av in sums.items():
+            if k in av:
+                sums_data.append(
+                    Sum(k, sum([x.result for x in v])))
     return averages_data, sums_data
 
 
 def sort_data(averages, sums, data):
 
     def sorter(id):
-        for k, v in chain(averages.items(), sums.items()):
+        for k, v in set(chain(averages.items(), sums.items())):
             if id in v:
                 return k
 
@@ -169,11 +184,10 @@ def compute(quizz, averages, sums, filters):
             group_sums = users_sums.setdefault(su.title, [])
             group_sums.append(su)
 
-        
     # We do the computation for the global data as well
-    per_question_averages, per_question_sums = computation(
+    per_question_averages, per_question_sums = question_computation(
         averages, sums, global_data)
-
+    
     sorted_global_answers = sort_data(
         averages, sums, global_data)
 
