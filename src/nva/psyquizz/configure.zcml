@@ -10,6 +10,7 @@
   <include package="dolmen.forms.base" />
   <include package="dolmen.forms.crud" />
   <include package="dolmen.breadcrumbs" />
+  <include package="siguvtheme.uvclight" />
 
   <include package="zope.i18n" />
   <include package="zope.i18n" file="meta.zcml" />
