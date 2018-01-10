@@ -509,7 +509,7 @@ class CreateCourse(Form):
     @property
     def fields(self):
         course_fields = Fields(ICourse).select(
-            'name', 'criterias', 'quizz_type')        
+            'name', 'criterias', 'quizz_type', 'extra_questions')        
         populate_fields = Fields(IPopulateCourse)
         populate_fields['strategy'].mode = "radio"
         session_fields = Fields(IClassSession).select(
