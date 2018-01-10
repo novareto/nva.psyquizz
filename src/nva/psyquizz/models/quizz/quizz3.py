@@ -4,14 +4,15 @@
 from .quizz2 import Quizz2, IQuizz2
 from .. import MoreToLess, MoreToLessN, LessToMore, IQuizz
 from .. import AF, GOODBAD, TIMESPAN, FREQUENCY, FREQUENCY1, FREQUENCY2, ASSESMENT
+from ..interfaces import IQuizzSecurity
 
 from collections import OrderedDict
 from nva.psyquizz import Base
-from grokcore.component import global_utility
+from grokcore.component import provides, context, global_utility, Subscription
 from sqlalchemy import *
 from zope import schema
 from zope.location import Location
-from zope.interface import implementer
+from zope.interface import implementer, Interface
 from sqlalchemy.orm import relationship, backref
 
 
@@ -75,6 +76,7 @@ class IQuizz3(IQuizz2):
         required=True,
         )
 
+    
 IQuizz3.setTaggedValue(
     'sums', OrderedDict((
         ('27', ('27',)),
@@ -85,10 +87,20 @@ IQuizz3.setTaggedValue(
         (u'Psychische Leistungsreserven', ('32', '33', '34')),
         )))
 
+
+IQuizz3.setTaggedValue(
+    'titles', {
+        '1': 'Title to display for question 1',
+        '27': 'Title to display for question 27',
+    }
+)
+
 for tag in IQuizz2.getTaggedValueTags():
     value = IQuizz2.getTaggedValue(tag)
     if tag == 'averages':
         value.update(IQuizz3.getTaggedValue('sums'))
+    if tag == 'titles':
+        continue  # We do not copy titles
     IQuizz3.setTaggedValue(tag, value)
 
 
@@ -153,3 +165,11 @@ class Quizz3(Base, Location):
 
 
 global_utility(Quizz3, provides=IQuizz, name='quizz3', direct=True)
+
+
+# @implementer(IQuizzSecurity)
+# class SecurityCheck(Subscription):
+#     context(Interface)
+    
+#     def check(self, name, quizz, context):
+#         return False

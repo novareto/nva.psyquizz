@@ -941,6 +941,7 @@ class AnswerQuizz(Form):
     def update(self):
         course = self.context.course
         self.quizz = getUtility(IQuizz, name=course.quizz_type)
+        self.titles = self.quizz.__schema__.getTaggedValue('titles') or {}
         startdate = course.sessions[self.context.session_id].startdate
         if datetime.date.today() < startdate:
             self.flash(u'Die Befragung beginnt erst am %s deshalb werden Ihre Ergebnisse nicht gespeichert' % startdate.strftime('%d.%m.%Y'))
