@@ -90,10 +90,23 @@ IQuizz3.setTaggedValue(
 
 IQuizz3.setTaggedValue(
     'titles', {
-        '1': 'Title to display for question 1',
-        '27': 'Title to display for question 27',
+        '1': 'Fragenteil: Kurzfragebogen zur Arbeitsanalyse',
+        '27': 'Fragenteil:  Work Ability Index',
     }
 )
+
+
+IQuizz3.setTaggedValue(
+    'descriptions', {
+        "27": u" beste Arbeitsfähigkeit",
+        "28": u" aktuelle Arbeitsfähigkeit",
+        "29": u" Arbeitsfähigkeit hinsichtlich psychische Belastungen",
+        "30": u" Krankheitstage wegen gesundheitlicher Probleme",
+        "31": u" Zukünfitige Arbeitsfähigkeit",
+        "32": u" Selbst organisiertes Arbeiten",
+    }
+)
+
 
 for tag in IQuizz2.getTaggedValueTags():
     value = IQuizz2.getTaggedValue(tag)

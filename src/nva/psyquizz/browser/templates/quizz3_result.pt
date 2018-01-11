@@ -149,6 +149,15 @@
       </span>&nbsp; PDF export
     </button>
 
+    <button class="btn btn-default" name="action" value="kfza">
+      <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+      </span>&nbsp; KFZA export
+    </button>
+
+    <button class="btn btn-default" name="action" value="wai">
+      <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+      </span>&nbsp; WAI export
+    </button>
     <a class="btn btn-default"
        tal:attributes="href 'excel?' + request.environment['QUERY_STRING']"
        ><span class="glyphicon glyphicon-download-alt" aria-hidden="true">

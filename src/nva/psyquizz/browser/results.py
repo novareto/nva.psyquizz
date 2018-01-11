@@ -306,7 +306,7 @@ class Export(uvclight.View):
     def update(self):
         action = self.request.form.get('action', None)
         assert action is not None
-        if action == 'PDF':
+        if action == 'PDF' or action == "wai" or action== 'kfza':
             self.view = getMultiAdapter(
                 (self.context, self.request), name="pdf")
             self.view.update()

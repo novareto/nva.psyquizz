@@ -22,11 +22,12 @@ class PDF_WAI(GeneratePDF):
     uvclight.auth.require('zope.Public')
 
     def headerfooter(self, canvas, doc):
+        action = self.request.form.get('action')
         canvas.setFont("Helvetica", 9)
         canvas.drawString(1 * cm, 2 * cm, u"Gemeinsam zu gesunden Arbeitsbedingungen")
         canvas.drawString(1 * cm, 1.6 * cm, u"Psychische Belastungen online erfassen")
         canvas.drawString(1 * cm, 1.2 * cm, u"Ein Programm der BG ETEM")
-        if doc.page >= 3:
+        if doc.page >= 3 or action == "wai":
             canvas.drawString(18 * cm, 2 * cm, u"Grundlage der Befragung")
             canvas.drawString(18 * cm, 1.6 *cm, u"Work Ability Index (WAI)")
             canvas.drawString(18 * cm, 1.2 * cm, u"Ilmarinen, Tuomi")
@@ -39,8 +40,13 @@ class PDF_WAI(GeneratePDF):
         canvas.setFont("Helvetica", 12)
 
     def generate(self):
+        action = self.request.form.get('action')
         parts = super(PDF_WAI, self).generate()
+        if action == 'kfza':
+            return parts
         parts.append(PageBreak())
+        if action == 'wai':
+            parts = []
         donut = self.request.form.get('donut')
         tf = tempfile.NamedTemporaryFile()
         tf.write(unicode(donut).encode('utf-8'))
