@@ -80,7 +80,11 @@
       <tal:criteria condition="repeat['widget'].number <= view.nbcriterias">
       <h1><span tal:content="widget.title"/></h1>
       </tal:criteria>
-      
+
+      <blockquote tal:condition="widget.title in view.titles">
+	<span tal:replace="view.titles[widget.title]" />
+      </blockquote>
+
       <tal:description tal:condition="widget.description">
 	<span class="field-description lead"
               tal:content="structure widget.description">

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from .interfaces import IQuizz, ICompany
+from .interfaces import IQuizz, IQuizzSecurity, ICompany
 from .criterias import Criteria
 from . import Account, Company
 from . import deferred_vocabularies
 from cromlech.sqlalchemy import get_session
-from grokcore.component import provider
+from grokcore.component import provider, queryOrderedSubscriptions
 from zope.component import getUtilitiesFor
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
@@ -21,12 +21,23 @@ def get_company_id(node):
     raise RuntimeError('No company found')
 
 
+def check_quizz(name, quizz, context):
+    subs = queryOrderedSubscriptions(quizz, IQuizzSecurity)
+    for sub in subs:
+        success = sub.check(name, quizz, context)
+        if not success:
+            return False
+    return True
+
+
 @provider(IContextSourceBinder)
 def quizz_choice(context):
+    terms = []
     utils = getUtilitiesFor(IQuizz)
-    return SimpleVocabulary([
-        SimpleTerm(value=name, title=obj.__title__) for name, obj in utils
-    ])
+    for name, quizz in utils:
+        if check_quizz(name, quizz, context):
+            terms.append(SimpleTerm(value=name, title=quizz.__title__))
+    return SimpleVocabulary(terms)
 
 
 @provider(IContextSourceBinder)

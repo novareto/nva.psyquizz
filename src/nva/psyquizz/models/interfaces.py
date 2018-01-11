@@ -82,6 +82,12 @@ class IQuizz(Interface):
     pass
 
 
+class IQuizzSecurity(Interface):
+
+    def check(name, quizz, context):
+        pass
+
+
 class ICriterias(IContent):
     pass
 
