@@ -33,12 +33,12 @@ def computation(averages, sums, data):
     averages_data = []
     sums_data = []
     for k, v in data.items():
-        if k in averages:
-            averages_data.append(
-                Average(k, float(sum([x.result for x in v]))/len(v)))
         if k in sums:  # not elif, it could be in both
             sums_data.append(
                 Sum(k, sum([x.result for x in v])))
+        elif k in averages:
+            averages_data.append(
+                Average(k, float(sum([x.result for x in v]))/len(v)))
     return averages_data, sums_data
 
 
