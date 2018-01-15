@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
 
-from . import Base
-from .apps import company, anonymous, remote
+import Cookie
+from os import path
+
 from collections import namedtuple
 from cromlech.configuration.utils import load_zcml
 from cromlech.i18n import register_allowed_languages, setLanguage
+from cromlech.jwt.components import ExpiredToken
+from cromlech.sessions.jwt import JWTCookieSession
+from cromlech.sessions.jwt import key_from_file
 from cromlech.sqlalchemy import create_engine
 from cromlech.sqlalchemy.components import EngineServer
 from paste.urlmap import URLMap
 from ul.auth import GenericSecurityPolicy
 from zope.security.management import setSecurityPolicy
+
+from . import Base
+from .apps import company, anonymous, remote
 
 
 marker = object()
@@ -17,6 +24,22 @@ Configuration = namedtuple(
     'Configuration',
     ('session_key', 'engine', 'name', 'fs_store', 'layer', 'smtp_server')
 )
+
+
+class Session(JWTCookieSession):
+
+    def extract_session(self, environ):
+        if 'HTTP_COOKIE' in environ:
+            cookie = Cookie.SimpleCookie()
+            cookie.load(environ['HTTP_COOKIE'])
+            token = cookie.get(self.cookie_name)
+            if token is not None:
+                try:
+                    session_data = self.check_token(token.value)
+                    return session_data
+                except ExpiredToken:
+                    environ['session.timeout'] = True
+        return {}
 
 
 def eval_loader(expr):
@@ -48,7 +71,7 @@ def localize(application):
     return wrapper
 
 
-def routing(conf, files, session_key, **kwargs):
+def routing(conf, files, **kwargs):
     languages = kwargs['langs']
     allowed = languages.strip().replace(',', ' ').split()
     allowed = ('de',)
@@ -78,6 +101,11 @@ def routing(conf, files, session_key, **kwargs):
     else:
         layer_iface = None
 
+    # We create the session wrappper
+    session_key = "session"
+    key = key_from_file(path.join(kwargs['root'], 'jwt.key'))
+    session_wrapper = Session(key, 1, environ_key=session_key)
+
     # Applications configuration
     smtp = kwargs.get('smtp', '10.33.115.55')
     setup = Configuration(
@@ -91,4 +119,4 @@ def routing(conf, files, session_key, **kwargs):
     root['/quizz'] = quizz
     root['/befragung'] = quizz
     root['/json'] = localize(remote.Application(setup))
-    return root
+    return session_wrapper(root.__call__)

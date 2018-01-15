@@ -123,7 +123,7 @@ class Quizz3(Base, Location):
     __tablename__ = 'quizz3'
     __schema__ = IQuizz3
     __title__ = u"KFZA Kurzfragebogen zur Arbeitsanalyse + WAI Fragebogen"
-    __base_pdf__ = ""
+    __base_pdf__ = "kfza.pdf"
 
     id = Column('id', Integer, primary_key=True)
 
