@@ -39,6 +39,7 @@ install_requires = [
     'uvclight[sql]',
     'xlsxwriter',
     'zope.cachedescriptors',
+    'cromlech.sessions.jwt',
     ]
 
 tests_require = [

@@ -82,6 +82,7 @@ class DownloadCourse(uvclight.View):
             p1 = PdfFileReader(self.generate_page_one())
             output.addPage(p1.getPage(0))
         bpdf = "%s/lib/%s" % (path.dirname(__file__), self.base_pdf)
+        print bpdf
         with open(bpdf, 'rb') as pdf:
             pf = PdfFileReader(pdf)
             if pf.isEncrypted:
