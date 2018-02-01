@@ -22,7 +22,7 @@ class IQuizz3(IQuizz2):
 
     question27 = schema.Choice(
         title=u"27",
-        description=u"<blockquote> Frageteil:  Work Ability Index </blockquote> Wenn Sie Ihre beste, je erreichte Arbeitsfähigkeit mit 10 Punkten bewerten:<br/> Wie viele Punkte würden Sie dann für Ihre derzeitige Arbeitsfähigkeit geben? (0 bedeutet, dass Sie derzeit arbeitsunfähig sind)",
+        description=u"Wenn Sie Ihre beste, je erreichte Arbeitsfähigkeit mit 10 Punkten bewerten:<br/> Wie viele Punkte würden Sie dann für Ihre derzeitige Arbeitsfähigkeit geben? (0 bedeutet, dass Sie derzeit arbeitsunfähig sind)",
         vocabulary=AF,
         required=True,
         )
@@ -123,7 +123,7 @@ class Quizz3(Base, Location):
     __tablename__ = 'quizz3'
     __schema__ = IQuizz3
     __title__ = u"KFZA Kurzfragebogen zur Arbeitsanalyse + WAI Fragebogen"
-    __base_pdf__ = ""
+    __base_pdf__ = "kfza.pdf"
 
     id = Column('id', Integer, primary_key=True)
 
