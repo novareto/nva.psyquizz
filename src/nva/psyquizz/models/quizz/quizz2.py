@@ -37,7 +37,7 @@ class IQuizz2(Interface):
 
     question4 = schema.Choice(
         title=u"4",
-        description=u"Bei meiner Arbeit sehe ich selber am Ergebnis ob meine Arbeit, gut war oder nicht.",
+        description=u"Bei meiner Arbeit sehe ich selber am Ergebnis, ob meine Arbeit gut war oder nicht.",
         vocabulary=MoreToLess,
         required=True,
         )
@@ -100,7 +100,7 @@ class IQuizz2(Interface):
 
     question13 = schema.Choice(
         title=u"13",
-        description=u"An meinem Arbeitsplatz sind Räume und Raumausstattung ungenügend",
+        description=u"An meinem Arbeitsplatz sind Räume und Raumausstattung ungenügend.",
         vocabulary=MoreToLessN,
         required=True,
         )
