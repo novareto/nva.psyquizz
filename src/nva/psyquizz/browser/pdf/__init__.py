@@ -120,8 +120,10 @@ class GeneratePDF(uvclight.Page):
         tf.write(unicode(pSVG1).encode('utf-8'))
         tf.seek(0)
         drawing1 = svg2rlg(tf.name)
+
         ## Page1
         self.frontpage(parts)
+
         ## Page2
         parts.append(drawing)
         parts.append(Paragraph(LEGEND, styles['Normal']))
@@ -146,7 +148,10 @@ class GeneratePDF(uvclight.Page):
         doc = SimpleDocTemplate(
             NamedTemporaryFile(), pagesize=landscape(letter))
         parts = self.generate()
-        doc.build(parts, onFirstPage=self.headerfooter, onLaterPages=self.headerfooter)
+        doc.build(
+            parts, onFirstPage=self.headerfooter,
+            onLaterPages=self.headerfooter
+        )
         pdf = doc.filename
         pdf.seek(0)
         return pdf.read()

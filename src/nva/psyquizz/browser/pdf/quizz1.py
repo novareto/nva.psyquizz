@@ -44,8 +44,9 @@ class PDFPL(GeneratePDF):
         tf = tempfile.NamedTemporaryFile()
         tf.write(unicode(pSVG).encode('utf-8'))
         tf.seek(0)
-        drawing = svg2rlg(tf.name)
+        drawing = svg2rlg(tf.name)        
         drawing.renderScale = 0.57
+
         self.frontpage(parts)
         parts.append(drawing)
         doc.build(parts, onFirstPage=self.headerfooter,

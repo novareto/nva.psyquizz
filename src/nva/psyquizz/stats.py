@@ -60,7 +60,7 @@ def question_computation(averages, sums, data):
 def sort_data(averages, sums, data):
 
     def sorter(id):
-        for k, v in set(chain(averages.items(), sums.items())):
+        for k, v in chain(averages.items(), sums.items()):
             if id in v:
                 return k
 

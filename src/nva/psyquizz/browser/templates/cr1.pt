@@ -41,6 +41,7 @@
   </form>
 
   <div id="container" style="min-width: 310px; max-width: 800px; height: 800px; margin: 0 auto"></div>
+  <div id="container_nohtml" style="display: none; max-width: 800px; height: 800px;"></div>
 
   <form id="result" method="POST"
 	tal:attributes="action view.url(context) + '/pdf'">
@@ -66,7 +67,7 @@
      function svgToCanvas(chart, target_id) {
         var svg = chart.getSVG();
         var canvas = document.createElement('canvas');
-        canvas.width = "600";
+        canvas.width = "800";
         canvas.height = "800";
         var ctx = canvas.getContext('2d');
         var img = document.createElement("img");
@@ -78,6 +79,49 @@
      }
 
     var myValues = jQuery.parseJSON('<tal:json replace="view.descriptions" />');
+    var myChart_export = Highcharts.chart('container_nohtml', {
+	chart: {
+            type: 'bar'
+	    },
+	credits: {
+             enabled: false
+        },
+  exporting: {
+    enabled: false
+  },
+	title: {
+            text: 'Verteilung'
+	},
+	xAxis: {
+            categories: <span tal:replace="view.xAxis"/>,
+	    labels: { step: 1, useHTML: false, formatter: function() { return myValues[this.value]; } },
+	},
+	yAxis: {
+            min: 0,
+	    max: 100,
+            title: {
+		text: 'Antworten'
+            },
+	    labels: {
+		text: 'Anteil der Antworten'
+            },
+          labels: {
+              formatter:function() {
+                  return this.value + '%';
+              }
+           }
+	},
+	legend: {
+           reversed: true
+	},
+	plotOptions: {
+            series: {
+		stacking: 'normal'
+            }
+	},
+	series: <span tal:replace="view.series"/> 
+    });
+
     var myChart = Highcharts.chart('container', {
 	chart: {
             type: 'bar'
@@ -120,9 +164,9 @@
 	},
 	series: <span tal:replace="view.series"/> 
     });
-
-    svgToCanvas(myChart, 'chart');
-    $('#pSVG1').val(myChart.getSVGForExport());
+    
+    svgToCanvas(myChart_export, 'chart');
+    $('#pSVG1').val(myChart_export.getSVGForExport());
 
     
     $("a[name='checkall']").click(function () {

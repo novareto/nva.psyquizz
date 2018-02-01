@@ -5,7 +5,7 @@ from .quizz2 import Quizz2, IQuizz2
 from .. import MoreToLess, MoreToLessN, LessToMore, IQuizz
 from .. import AF, GOODBAD, TIMESPAN, FREQUENCY, FREQUENCY1, FREQUENCY2, ASSESMENT
 from ..interfaces import IQuizzSecurity
-
+from uvclight.utils import current_principal
 from collections import OrderedDict
 from nva.psyquizz import Base
 from grokcore.component import provides, context, global_utility, Subscription
@@ -180,9 +180,15 @@ class Quizz3(Base, Location):
 global_utility(Quizz3, provides=IQuizz, name='quizz3', direct=True)
 
 
-# @implementer(IQuizzSecurity)
-# class SecurityCheck(Subscription):
-#     context(Interface)
-    
-#     def check(self, name, quizz, context):
-#         return False
+@implementer(IQuizzSecurity)
+class SecurityCheck(Subscription):
+    context(Interface)
+  
+    def check(self, name, quizz, context):
+        if name == 'quizz3':
+            principal = current_principal()
+            if (principal.id.endswith("novareto.de") or
+                principal.id.endswith("bayernwerk.de")):
+                return True
+            return False
+        return True
