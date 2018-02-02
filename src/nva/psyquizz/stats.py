@@ -113,7 +113,7 @@ def compute(quizz, averages, sums, filters):
     total = 0
     if 'criterias' in filters:
         criterias = set(
-            tuple(v.split(':')) for v in filters['criterias'].keys())
+            tuple(v.split(':', 1)) for v in filters['criterias'].keys())
     else:
         criterias = None
 
