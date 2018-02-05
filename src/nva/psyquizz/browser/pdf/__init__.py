@@ -57,11 +57,11 @@ class GeneratePDF(uvclight.Page):
         if int(self.request.form.get('has_criterias', 0)) > 0:
             rc = []
             criterias = json.loads(self.request.form.get('criterias', {}))
-            #import pdb; pdb.set_trace()
-            for k, v in criterias:
-                rc.append(
-                    "<li> %s </li>" %(v)
-                    )
+            if isinstance(criterias, dict):
+                for k, v in criterias.values():
+                    rc.append(
+                        "<li> %s </li>" %(v)
+                        )
             if not rc:
                 rc.append('alle')
         else:
