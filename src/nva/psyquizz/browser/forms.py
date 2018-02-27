@@ -925,7 +925,6 @@ class AnonymousAccess(Form):
     actions = Actions(AnonymousLogin(_(u'anmelden')))
 
 
-    
 class AnswerQuizz(Form):
     context(Student)
     layer(IAnonymousRequest)

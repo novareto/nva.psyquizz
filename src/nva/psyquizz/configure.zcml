@@ -10,7 +10,6 @@
   <include package="dolmen.forms.base" />
   <include package="dolmen.forms.crud" />
   <include package="dolmen.breadcrumbs" />
-  <include package="dolmen.message" />
 
   <include package="zope.i18n" />
   <include package="zope.i18n" file="meta.zcml" />
