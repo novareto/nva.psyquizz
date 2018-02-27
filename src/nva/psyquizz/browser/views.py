@@ -111,8 +111,7 @@ class SevenSteps(MenuItem):
 
     @property
     def url(self):
-        return
-    "https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/gbpb-in-grossbetrieben"
+        return "https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/gbpb-in-grossbetrieben"
 
 
 class SevenStepsView(Page):

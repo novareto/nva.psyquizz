@@ -188,7 +188,8 @@ class SecurityCheck(Subscription):
         if name == 'quizz3':
             principal = current_principal()
             if (principal.id.endswith("novareto.de") or
-                principal.id.endswith("bayernwerk.de")):
+                principal.id.endswith("bayernwerk.de") or
+                principal.id.endswith("neymanns.thomas@bgetem.de")):
                 return True
             return False
         return True

@@ -197,7 +197,7 @@ def compute(quizz, averages, sums, filters):
     Criteria = namedtuple('Criteria', ('id', 'name', 'amount', 'uid'))
     merged_criterias = {}
     for fid, fc in filtered_criterias.items():
-        id, name = fid.split(':')
+        id, name = fid.split(':', 1)
         for fa, count in fc.items():
             uid = '%s:%s' % (id, fa)
             criterias = merged_criterias.setdefault(name, [])
