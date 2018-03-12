@@ -7,6 +7,7 @@ import uuid
 import datetime
 import html2text
 import uvclight
+import re
 
 from .. import wysiwyg, quizzjs, startendpicker
 from ..apps.anonymous import QuizzBoard
@@ -41,7 +42,7 @@ from uvclight.auth import require
 from zope.component import getUtility
 from zope.interface import Interface
 from zope.interface import provider
-from zope.schema import Bool, Int, Choice, Password, TextLine
+from zope.schema import Bool, List, Int, Choice, Password, TextLine
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from grokcore.component import adapter, implementer, adapts
@@ -55,7 +56,6 @@ from ..interfaces import IQuizzLayer
 def form_template(context, request):
     """default template for the menu"""
     return uvclight.get_template('form.cpt', __file__)
-
 
 
 with open(os.path.join(os.path.dirname(__file__), 'lib', 'mail.tpl'), 'r') as fd:
@@ -925,6 +925,78 @@ class AnonymousAccess(Form):
     actions = Actions(AnonymousLogin(_(u'anmelden')))
 
 
+def make_boolean_field(idx, question, *_):
+    field = Choice(
+        __name__='extra_question%s' % idx,
+        title=question,
+        vocabulary=TrueOrFalse,
+        required=True,
+    )
+    return field
+
+
+def make_choice_field(idx, question, *choices):
+    field = Choice(
+        __name__='extra_question%s' % idx,
+        title=question,
+        values=choices,
+        required=True,
+    )
+    return field
+
+
+def make_multi_field(idx, question, *choices):
+    field = List(
+        __name__='extra_question%s' % idx,
+        title=question,
+        value_type=Choice(values=choices),
+        required=True,
+    )
+    return field
+
+
+QTYPES = {
+    "choice": make_choice_field,
+    "multi": make_multi_field,
+    "bool": make_boolean_field,
+}
+
+
+def parse_extra_question(idx, question):
+    """examples:
+    To be or not to be ? => enum::Yes::Maybe::Never !!::Go and Die!
+    What do you like ? => multi::Movies::Sport::Music::Work::Reading
+    Is it True ?
+    Will you come ? => bool
+    """
+    sep = "=>"
+    exp = [e.strip() for e in re.split(sep, question, 1)]
+    label = exp[0]
+    if len(exp) == 1:
+        elements = ['bool']
+    else:
+        sep = "::"
+        elements = [e.strip() for e in re.split(sep, exp[1])]
+        if len(elements) < 2:
+            raise NotImplementedError(
+                u"Question %r doesn't have any possible values" % label)
+
+    factory = QTYPES.get(elements[0])
+    if factory is None:
+        raise NotImplementedError(u"Unknown field %s" % elements[0])
+    return factory(idx, label, *elements[1:])
+
+
+def generate_extra_questions(text):
+    fields = []
+    questions = text.strip().split('\n')
+    for idx, question in enumerate(questions, 1):
+        question = question.decode('utf-8').strip()
+        extra_field = parse_extra_question(idx, question)
+        append(extra_field)
+    return fields
+
+    
 class AnswerQuizz(Form):
     context(Student)
     layer(IAnonymousRequest)
@@ -975,19 +1047,9 @@ class AnswerQuizz(Form):
         fields = Fields(*criteria_fields) + fields
 
         questions_text = self.context.course.extra_questions
-        questions_fields = []
         if questions_text:
-            questions = questions_text.strip().split('\n')
-            for idx, question in enumerate(questions, 1):
-                question = question.decode('utf-8').strip()
-                extra_field = Choice(
-                    __name__='extra_question%s' % idx,
-                    title=question,
-                    vocabulary=TrueOrFalse,
-                    required=True,
-                    )
-                questions_fields.append(extra_field)
-        fields += Fields(*questions_fields)
+            extra_fields = generate_extra_questions(questions_text)
+            fields += Fields(*extra_fields)
 
         for field in fields:
             field.mode = self.fmode
