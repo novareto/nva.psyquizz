@@ -122,10 +122,10 @@ class IActivation(Interface):
         required=True)
 
 
-def send_forgotten_password(email, password):
+def send_forgotten_password(smtp, email, password):
     # mailer = SecureMailer('localhost')
     #mailer = SecureMailer('smtprelay.bg10.bgfe.local')
-    mailer = SecureMailer('10.33.115.55')
+    mailer = SecureMailer(smtp)
     from_ = 'extranet@bgetem.de'
     title = (u'Ihre Passwortanfrage').encode(ENCODING)
     with mailer as sender:
@@ -178,7 +178,8 @@ class ForgotPassword(Form):
                       identifier='form.field.username'))
             return FAILURE
         else:
-            send_forgotten_password(account.email, account.password)
+            smtp = self.context.configuration.smtp_server
+            send_forgotten_password(smtp, account.email, account.password)
             self.flash(_(
                 u'Ihr Passwort wurde an Ihre E-Mail-Adresse verschickt.'))
             self.redirect(self.application_url())
@@ -239,8 +240,9 @@ class AnonIndex(Page):
 @implementer(IPublicationRoot, IView, IResponseFactory)
 class NoAccess(Location):
 
-    def __init__(self, request):
+    def __init__(self, request, configuration):
         self.request = request
+        self.configuration = configuration
 
     def getSiteManager(self):
         return getGlobalSiteManager()
@@ -288,7 +290,7 @@ class Application(SQLPublication, SecurePublication):
                 account.getSiteManager = getGlobalSiteManager
                 alsoProvides(account, IPublicationRoot)
                 return Site(account)
-        return Site(NoAccess(request))
+        return Site(NoAccess(request, self.configuration))
 
     def publish_traverse(self, request):
         user = self.get_credentials(request.environment)
