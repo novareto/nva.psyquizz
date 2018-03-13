@@ -43,6 +43,14 @@ class IntIds(Location):
         return '%s(%r)' % (type(self).__name__, self._data)
 
 
+from .vocabularies import TrueOrFalse, MoreToLess, MoreToLessN, LessToMore
+from .vocabularies import FREQUENCY, ASSESMENT, TIMESPAN, GOODBAD, AF 
+from .vocabularies import FREQUENCY1, FREQUENCY2
+
+# important to have here as we need TrueOrFalse
+# but IQuizz needs generate_extra_questions
+from ..extra_questions import generate_extra_questions
+
 from .interfaces import ICourseSession
 from .interfaces import IQuizz, ICriterias, ICompanyTransfer, ICompanies
 from .company import ICompany, Company
@@ -51,6 +59,3 @@ from .criterias import ICriteria, Criteria, CriteriaAnswer
 from .session import IClassSession, ClassSession
 from .student import IStudent, Student
 from .account import IAccount, Account
-from .vocabularies import TrueOrFalse, MoreToLess, MoreToLessN, LessToMore
-from .vocabularies import FREQUENCY, ASSESMENT, TIMESPAN, GOODBAD, AF 
-from .vocabularies import FREQUENCY1, FREQUENCY2

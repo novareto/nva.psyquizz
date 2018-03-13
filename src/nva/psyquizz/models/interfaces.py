@@ -2,6 +2,7 @@
 
 import datetime
 from . import deferred_vocabularies, vocabularies
+from ..extra_questions import generate_extra_questions
 from grokcore.component import provider
 from nva.psyquizz.i18n import _
 from uvc.content.interfaces import IContent
@@ -268,7 +269,16 @@ class ICourse(ILocation, IContent):
         required=False,
         )
 
+    @invariant
+    def check_extra_questions(data):
+        extra_questions = getattr(data, 'extra_questions', None)
+        if extra_questions:
+            try:
+                generate_extra_questions(extra_questions)
+            except NotImplementedError:
+                raise Invalid('Invalid syntax')
 
+    
 class ICourseSession(IClassSession, ICourse):
     pass
 
