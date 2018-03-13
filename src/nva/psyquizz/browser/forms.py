@@ -30,7 +30,7 @@ from dolmen.forms.base.utils import apply_data_event
 from dolmen.forms.crud.actions import message
 from dolmen.forms.ztk.widgets.choice import ChoiceField
 from dolmen.menu import menuentry, order
-from grokcore.component import Adapter, provides, context
+from grokcore.component import Adapter, provides, context, baseclass
 from js.jqueryui import jqueryui
 from nva.psyquizz import quizzjs
 from siguvtheme.resources import all_dates, datepicker_de
@@ -134,6 +134,40 @@ class IPopulateCourse(Interface):
         )
 
 
+class PreviewCriterias(Form):
+    baseclass()
+
+    actions = Actions()
+    
+    def __init__(self, context, request, title, items):
+        Form.__init__(self, context, request)
+        self.criterias = items
+        self.title = title
+        self.prefix = 'preview'
+
+    @property
+    def action(self):
+        return ''
+
+    @property
+    def fields(self):
+        values = SimpleVocabulary([
+            SimpleTerm(value=c.strip(), token=idx, title=c.strip())
+            for idx, c in enumerate(self.criterias.split('\n'), 1)
+            if c.strip()])
+
+        return Fields(Choice(
+            __name__='criteria_1',
+            title=self.title.decode('utf-8'),
+            description=u"Wählen Sie das Zutreffende aus.",
+            vocabulary=values,
+            required=True,
+        ))
+
+    def render(self):
+        return """<div class="preview" style="border: 1px solid #; padding: 20px; margin: 5px"><h3>PREVIEW</h3>%s</div>""" % self.fieldWidgets['preview.field.criteria_1'].render()
+
+
 @menuentry(IContextualActionsMenu, order=10)
 class CreateCriterias(Form):
     context(ICriterias)
@@ -150,6 +184,8 @@ Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.
 von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
 """
 
+    preview = None
+    
     @property
     def action_url(self):
         quizzjs.need()
@@ -171,6 +207,23 @@ von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
         self.flash(_(u'Criteria added with success.'))
         self.redirect(self.application_url())
         return SUCCESS
+
+    @action(_(u'Preview'))
+    def handle_preview(self):
+        data, errors = self.extractData()
+        if errors:
+            self.flash(_(u'An error occurred.'))
+            return FAILURE
+
+        preview = PreviewCriterias(self.context, self.request, **data)
+        preview.updateForm()
+        self.preview = preview.render()
+
+    def render(self):
+        html = Form.render(self)
+        if self.preview:
+            html += self.preview
+        return html
 
 
 class EditCriteria(EditForm):
