@@ -41,4 +41,14 @@ hs = Resource(library, 'highcharts-more.js', depends=[hsb, hsb_export])
 
 startendpicker = Resource(library, 'picker.js', depends=[datepicker_de])
 
+
+# ExtraFieldsWidget
+
+efw_vendor = Resource(library, 'efw/vendor.fc61dbeb.js', bottom=True)
+efw_app = Resource(library, 'efw/app.5749619a.js', depends=[efw_vendor,], bottom=True)
+
+efw = Group([efw_vendor, efw_app])
+
+
+
 Base = declarative_base()

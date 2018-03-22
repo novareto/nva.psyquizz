@@ -165,7 +165,8 @@ class PreviewCriterias(Form):
         ))
 
     def render(self):
-        return """<div class="preview" style="border: 1px solid #; padding: 20px; margin: 5px"><h3>PREVIEW</h3>%s</div>""" % self.fieldWidgets['preview.field.criteria_1'].render()
+        field = self.fieldWidgets['preview.field.criteria_1']
+        return """<div class="preview" style="border: 5px solid #efefef; padding: 10px; margin: 5px"><h3>Vorschau</h3> <label> %s </label>%s</div>""" % (field.title, field.render())
 
 
 @menuentry(IContextualActionsMenu, order=10)
@@ -208,7 +209,7 @@ von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
         self.redirect(self.application_url())
         return SUCCESS
 
-    @action(_(u'Preview'))
+    @action(_(u'Vorschau'))
     def handle_preview(self):
         data, errors = self.extractData()
         if errors:
@@ -569,6 +570,7 @@ class CreateCourse(Form):
         populate_fields['strategy'].mode = "radio"
         session_fields = Fields(IClassSession).select(
             'startdate', 'enddate', 'about')
+        course_fields['extra_questions'].mode = "SpecialInput"
         return course_fields + populate_fields + session_fields
 
     def update(self):
