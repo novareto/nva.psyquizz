@@ -134,6 +134,43 @@ class IPopulateCourse(Interface):
         )
 
 
+class PreviewExtraQuestions(Form):
+    baseclass()
+
+    actions = Actions()
+    ignoreRequest = True
+    ignoreContent = True
+
+    def __init__(self, context, request, text):
+        Form.__init__(self, context, request)
+        extra_fields = generate_extra_questions(text)
+        self.fields = Fields(*extra_fields)
+
+    @property
+    def action(self):
+        return ''
+
+    def render(self):
+        preview = u'''<div id="extra_questions_preview">%s</div>'''
+        widgets = ['''<div>%s</div>''' % widget.render()
+                   for widget in self.fieldWidgets]
+        return preview % '\n'.join(widgets)
+
+
+class ExtraQuestions(uvclight.View):
+    context(Interface)
+    uvclight.name('preview_extra_questions')
+    require('zope.Public')
+    
+    def render(self):
+        questions = self.request.form.get('extra_questions', None)
+        if questions is None:
+            return ''
+        preview = PreviewExtraQuestions(self.context, self.request, questions)
+        preview.updateForm()
+        return preview.render()
+
+
 class PreviewCriterias(Form):
     baseclass()
 

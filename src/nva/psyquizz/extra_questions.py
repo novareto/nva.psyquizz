@@ -64,8 +64,9 @@ def parse_extra_question(idx, question):
         sep = "::"
         elements = [e.strip() for e in re.split(sep, exp[1])]
         if len(elements) < 2:
-            raise NotImplementedError(
-                u"Question %r doesn't have any possible values" % label)
+            if elements[0] != 'bool':
+                raise NotImplementedError(
+                    u"Question %r doesn't have any possible values" % label)
 
     factory = QTYPES.get(elements[0])
     if factory is None:
