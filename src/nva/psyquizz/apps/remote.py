@@ -41,7 +41,6 @@ def get_company(engine, environ, id=None):
 
 @route('/account/{email}')
 def get_account(engine, environ, email=None):
-    import pdb; pdb.set_trace()
     with SQLAlchemySession(engine) as session:
         account = session.query(Account).get(email)
         if account is None:
