@@ -253,6 +253,13 @@ class SR(uvclight.Page):
         if 'criterias' in filters:
             general_stats = SessionStatistics(quizz, self.context, self.request)
             general_stats.update({})
+
+            for criteria in filters['criterias']:
+                for title, cc in general_stats.statistics['criterias'].items():
+                    for c in cc:
+                        if criteria == c.uid and c.amount < 7:
+                            raise NotImplementedError()
+
         else:
             general_stats = None
 
@@ -287,6 +294,13 @@ class CR(uvclight.Page):
         if 'criterias' in filters:
             general_stats = CourseStatistics(quizz, self.context, self.request)
             general_stats.update({})
+
+            for criteria in filters['criterias']:
+                for title, cc in general_stats.statistics['criterias'].items():
+                    for c in cc:
+                        if criteria == c.uid and c.amount < 7:
+                            raise NotImplementedError()
+
         else:
             general_stats = None
 
