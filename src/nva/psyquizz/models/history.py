@@ -13,6 +13,7 @@ class HistoryEntry(Base):
     __tablename__ = 'history'
 
     id = Column(Integer, primary_key=True)
+    action = Column('action', String)
     type = Column('type', String)
     description = Column('description', String)
     date = Column('date', DateTime, default=datetime.utcnow)

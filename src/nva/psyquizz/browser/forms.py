@@ -320,7 +320,8 @@ class DeletedCriteria(DeleteForm):
         session = get_session('school')
         
         record = HistoryEntry(
-            type=u"Delete",
+            action=u"Delete",
+            type=u"Critera",
             description=u"Delete Criteria %s" % self.context.id)
 
         session.add(record)
@@ -479,7 +480,8 @@ class DeletedAccount(DeleteForm):
         session = get_session('school')
 
         record = HistoryEntry(
-            type=u"Delete",
+            action=u"Delete",
+            type=u"Account",
             description=u"Delete Account %s" % self.context.email)
 
         session.add(record)
@@ -582,7 +584,8 @@ class DeletedCompany(DeleteForm):
         session = get_session('school')
 
         record = HistoryEntry(
-            type=u"Delete",
+            action=u"Delete",
+            type=u"Company",
             description=u"Delete Company %s" % self.context.id)
 
         session.add(record)
@@ -875,7 +878,8 @@ class DeleteCourse(DeleteForm):
         session = get_session('school')
 
         record = HistoryEntry(
-            type=u"Delete",
+            action=u"Delete",
+            type=u"Course",
             description=u"Delete Course %s" % self.context.id)
 
         session.add(record)
@@ -940,7 +944,8 @@ class DeleteSession(DeleteForm):
         session = get_session('school')
 
         record = HistoryEntry(
-            type=u"Delete",
+            action=u"Delete",
+            type=u"Session",
             description=u"Delete Session %s" % self.context.id)
 
         session.add(record)

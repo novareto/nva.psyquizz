@@ -1,22 +1,35 @@
-<h1> Statistik </h1>
-
-<p>
-Registrierter Benutzer: <span tal:content="view.getAccounts()"> </span>
-</p>
-<p>
-Erstellte Unternehmen: <span tal:content="view.getCompanies()"> </span>
-</p>
-
-<p tal:define="b view.getSessions()">
-Erstellte Befragungen: <span tal:content="b['alle']"> </span>
-davon zukünftig <span tal:content="b['future']"> </span>
-aktive <span tal:content="b['present']"> </span>
-abgeschlossen <span tal:content="b['past']"> </span>
-</p>
-
-<p>
- ausgefüllte Fragebögen 
-   <ul tal:repeat="answer view.getAnswers()">
-     <li> <span tal:content="answer['title']"> </span>: <span tal:content="answer['count']"></span></li>
-   </ul>
-</p>
+<div id="statistiks">
+  <h1>Statistik</h1>
+  <p>
+    Registrierter Benutzer:
+    <span tal:content="view.getAccounts()" />
+  </p>
+  <p>
+    Erstellte Unternehmen:
+    <span tal:content="view.getCompanies()" />
+  </p>
+  <p>
+    Global deletions count:
+    <ul>
+      <li tal:repeat="deletion view.getDeletions()">
+	<span tal:content="deletion[0]" /> :
+	<span tal:content="int(deletion[1])" />
+      </li>
+    </ul>
+  </p>
+  <p tal:define="b view.getSessions()">
+    Erstellte Befragungen: <span tal:content="b['alle']" />
+    davon zukünftig <span tal:content="b['future']" />
+    aktive <span tal:content="b['present']" />
+    abgeschlossen <span tal:content="b['past']" />
+  </p>
+  <p>
+    ausgefüllte Fragebögen 
+    <ul>
+      <li tal:repeat="answer view.getAnswers()">
+	<span tal:content="answer['title']" /> :
+	<span tal:content="answer['count']" />
+      </li>
+    </ul>
+  </p>
+</div>
