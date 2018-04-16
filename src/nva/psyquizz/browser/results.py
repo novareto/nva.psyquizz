@@ -63,6 +63,14 @@ class CourseStatistics(object):
         self.statistics = compute(
             self.quizz, self.averages, self.sums, self.filters)
 
+        if 'criterias' in filters:
+            for criteria in filters['criterias']:
+                for title, cc in self.statistics['criterias'].items():
+                    for c in cc:
+                        if criteria == c.uid and c.amount < 7:
+                            raise NotImplementedError()
+
+
         self.users_statistics = groups_scaling(
             self.statistics['users.grouped'])
         self.xAxis = [

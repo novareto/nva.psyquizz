@@ -116,9 +116,16 @@ class ICriteria(IContent):
         msg = _('Bitte geben Sie mindestens 2 Kriterien in der Auswertungsgruppe an')
         if not items:
             raise Invalid(msg)
-        clean = filter(None, items.split('\n'))
+
+        clean = [i.strip() for i in items.split('\n') if i.strip()]
+
         if len(clean) < 2:
             raise Invalid(msg)
+
+        tokens = set((c.lower() for c in clean))
+        if len(tokens) != len(clean):
+            raise Invalid(_(u"Sie haben zwei identische Werte angegeben."))
+        
 
 
 class IAccount(ILocation, IContent):
