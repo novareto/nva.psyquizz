@@ -15,6 +15,7 @@ from ..i18n import _
 from ..interfaces import IAnonymousRequest, ICompanyRequest
 from ..interfaces import QuizzAlreadyCompleted, QuizzClosed
 from ..interfaces import IRegistrationRequest
+from ..models import HistoryEntry
 from ..models import Account, Company, Course, ClassSession, Student
 from ..models import ICourseSession, IAccount, ICompany, ICourse, IClassSession
 from ..models import IQuizz, TrueOrFalse
@@ -317,6 +318,12 @@ class DeletedCriteria(DeleteForm):
     @action(_(u'Delete'))
     def handle_save(self):
         session = get_session('school')
+        
+        record = HistoryEntry(
+            type=u"Delete",
+            description=u"Delete Criteria %s" % self.context.id)
+
+        session.add(record)
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
@@ -470,6 +477,12 @@ class DeletedAccount(DeleteForm):
     @action(_(u'Delete'))
     def handle_save(self):
         session = get_session('school')
+
+        record = HistoryEntry(
+            type=u"Delete",
+            description=u"Delete Account %s" % self.context.email)
+
+        session.add(record)
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
@@ -567,6 +580,12 @@ class DeletedCompany(DeleteForm):
     @action(_(u'Delete'))
     def handle_save(self):
         session = get_session('school')
+
+        record = HistoryEntry(
+            type=u"Delete",
+            description=u"Delete Company %s" % self.context.id)
+
+        session.add(record)
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
@@ -854,6 +873,12 @@ class DeleteCourse(DeleteForm):
     @action(_(u'Delete'))
     def handle_save(self):
         session = get_session('school')
+
+        record = HistoryEntry(
+            type=u"Delete",
+            description=u"Delete Course %s" % self.context.id)
+
+        session.add(record)
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
@@ -913,6 +938,12 @@ class DeleteSession(DeleteForm):
     @action(_(u'Delete'))
     def handle_save(self):
         session = get_session('school')
+
+        record = HistoryEntry(
+            type=u"Delete",
+            description=u"Delete Session %s" % self.context.id)
+
+        session.add(record)
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
