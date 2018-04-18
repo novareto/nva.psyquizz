@@ -232,12 +232,14 @@
             verticalAlign: 'top'
 	},
 	plotOptions: {
-           line: {
+            line: {
+		<tal:no_criterias condition="not view.general_stats">
                events: {
                     legendItemClick: function () {
                        return false; 
                      }
-                },
+               },
+		</tal:no_criterias>
                 showInLegend: true
             }
 	},
