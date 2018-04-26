@@ -9,7 +9,7 @@
     <span tal:content="view.getCompanies()" />
   </p>
   <p>
-    Global deletions count:
+    Globale Löschungen:
     <ul>
       <li tal:repeat="deletion view.getDeletions()">
 	<span tal:content="deletion[0]" /> :

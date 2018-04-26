@@ -194,6 +194,7 @@ class ICompany(ILocation, IContent):
     exp_db = schema.Bool(
         title=_(u'Forschungsdatenbank'),
         description=_(u'Dürfen wir die Ergebnisse in der ForschungsDB verwenden'),
+        default=True,
         required=True,
     )
 

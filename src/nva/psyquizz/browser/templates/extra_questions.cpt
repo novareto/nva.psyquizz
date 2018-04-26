@@ -10,21 +10,6 @@
     </script>
 
     <extra-fields-widget id="app"></extra-fields-widget>
-    <a id="extra_preview" class='btn btn-primary'>Preview</a>
 
-    <div id="preview">
-
-    </div>
-
-    <script type="text/javascript">     
-      $('#extra_preview').click(function(event) {
-        event.preventDefault();
-        var value = $("input[name='form.field.extra_questions']").val();
-	$.post('/preview_extra_questions', {extra_questions : value})
-	  .done(function(data) {
-	      $('#preview').html(data);
-           });
-      });
-    </script>
     
 </div>
