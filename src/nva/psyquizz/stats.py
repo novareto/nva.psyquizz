@@ -1,6 +1,7 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
+import json
 from copy import deepcopy
 from itertools import chain
 from collections import OrderedDict, namedtuple
@@ -95,6 +96,7 @@ def available_criterias(criterias, session_id):
 
 def compute(quizz, averages, sums, filters):
 
+    extra_data = OrderedDict()
     global_data = OrderedDict()
     users_averages = OrderedDict()
     users_sums = OrderedDict()
@@ -169,6 +171,22 @@ def compute(quizz, averages, sums, filters):
                 )
             )
 
+        extra_questions = getattr(answer, 'extra_questions', None)
+        if extra_questions is not None:
+            xquestions = json.loads(extra_questions)
+            for xk, xv in xquestions.items():
+                if not xk in extra_data:
+                    extra_data[xk] = {}
+                xkres = extra_data[xk]
+                if not isinstance(xv, list):
+                    xv = [xv]
+
+                for v in xv:
+                    if not v in xkres:
+                        xkres[v] = 1
+                    else:
+                        xkres[v] += 1
+
         # The computation for a single user is done.
         # We now compute its average.
         sorted_user_answers = sort_data(
@@ -211,6 +229,7 @@ def compute(quizz, averages, sums, filters):
         'global.averages': global_averages,
         'global.sums': global_sums,
         'criterias': merged_criterias,
+        'extra_data': extra_data,
         'has_criterias_filter': bool(criterias is None),
         'per_question_averages': per_question_averages,
         'per_question_sums': per_question_sums,

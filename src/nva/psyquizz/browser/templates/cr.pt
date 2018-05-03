@@ -40,7 +40,7 @@
     </dl>
     <input id="form-action-filter" type="submit" value="filter" />
   </form>
-  
+
   <button type="button" class="btn btn-primary pull-right"
 	  data-toggle="modal" data-target="#myModal">
     Glossar 
@@ -60,6 +60,21 @@
     <tr tal:repeat="data view.stats.statistics['global.averages']">
       <td tal:content="data.title"></td> 
       <td tal:content="str('%.2f' % data.average).replace('.',',')"></td> 
+    </tr>
+  </table>
+
+  <table id="mt" class="table table-bordered table-striped"
+	 tal:condition="view.stats.statistics['extra_data']">
+    <tr tal:repeat="data view.stats.statistics['extra_data'].items()">
+      <td tal:content="data[0]"></td> 
+      <td>
+	<ul>
+	  <li tal:repeat="answer data[1].items()">
+	    <span tal:content="answer[0]" /> :
+	    <span tal:content="answer[1]" />
+	  </li>
+	</ul>
+      </td>
     </tr>
   </table>
   
@@ -233,13 +248,13 @@
 	},
 	plotOptions: {
             line: {
-		<tal:no_criterias condition="not view.general_stats">
+	       <tal:no_criterias condition="not view.general_stats">
                events: {
                     legendItemClick: function () {
                        return false; 
                      }
                },
-		</tal:no_criterias>
+	       </tal:no_criterias>
                 showInLegend: true
             }
 	},

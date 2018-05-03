@@ -20,7 +20,6 @@
 	tal:define="current view.stats.filters.get('criterias', {})">
 <div><a name="uncheckall">Alle</a>
 
-
  </div>
     <dl tal:define="crits view.stats.statistics['criterias']">
       <tal:dl tal:repeat="crit crits">
