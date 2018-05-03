@@ -43,10 +43,10 @@ startendpicker = Resource(library, 'picker.js', depends=[datepicker_de])
 
 
 # ExtraFieldsWidget
-
-efw_vendor = Resource(library, 'efw/vendor.js', bottom=True)
+efw_manifest = Resource(library, 'efw/manifest.js', bottom=True)
+efw_vendor = Resource(library, 'efw/vendor.js', depends=[efw_manifest,], bottom=True)
 efw_app = Resource(library, 'efw/app.js', depends=[efw_vendor,], bottom=True)
-efw_manifest = Resource(library, 'efw/manifest.js', depends=[efw_vendor,], bottom=True)
+
 
 efw = Group([efw_vendor, efw_app, efw_manifest])
 
