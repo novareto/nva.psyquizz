@@ -4,7 +4,7 @@
 
 import uvclight
 from zope.interface import Interface
-from grokcore.component import adapts
+from grokcore.component import adapts, name
 from dolmen.forms.ztk.widgets import choice, date
 from uvc.themes.btwidgets.widgets.date import DateFieldWidget
 from uvc.themes.btwidgets.widgets.choice import RadioFieldWidget
@@ -22,7 +22,8 @@ class DateFieldWidget(DateFieldWidget):
 
 
 class RadioFieldWidget(RadioFieldWidget):
-    adapts(choice.ChoiceField, Interface, IQuizzLayer)
+    name('blockradio')
+    adapts(choice.ChoiceField, Interface, Interface)
     template = uvclight.get_template('radiofieldwidget.cpt', __file__)
 
 

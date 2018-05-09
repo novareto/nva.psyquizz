@@ -24,7 +24,7 @@ from ..models.criterias import criterias_table
 from nva.psyquizz.browser.lib.emailer import SecureMailer, prepare, ENCODING
 
 from cromlech.sqlalchemy import get_session
-from dolmen.forms.base import SuccessMarker, makeAdaptiveDataManager, NO_VALUE
+from dolmen.forms.base import Field, SuccessMarker, makeAdaptiveDataManager, NO_VALUE
 from dolmen.forms.base.actions import Action, Actions
 from dolmen.forms.base.errors import Error
 from dolmen.forms.base.utils import apply_data_event
@@ -42,8 +42,7 @@ from uvclight import Form, EditForm, DeleteForm, Fields, SUCCESS, FAILURE
 from uvclight import action, layer, name, title, get_template
 from uvclight.auth import require
 from zope.component import getUtility
-from zope.interface import Interface
-from zope.interface import provider
+from zope.interface import Interface, provider
 from zope.schema import Bool, List, Int, Choice, Password, TextLine
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
@@ -146,6 +145,9 @@ class PreviewExtraQuestions(Form):
         Form.__init__(self, context, request)
         extra_fields = generate_extra_questions(text)
         self.fields = Fields(*extra_fields)
+        for field in self.fields:
+            if isinstance(field, Choice):
+                field.mode = 'radio'
 
     @property
     def action(self):
@@ -194,13 +196,15 @@ class PreviewCriterias(Form):
             for idx, c in enumerate(self.criterias.split('\n'), 1)
             if c.strip()])
 
-        return Fields(Choice(
+        fields = Fields(Choice(
             __name__='criteria_1',
             title=self.title.decode('utf-8'),
             description=u"Wählen Sie das Zutreffende aus.",
             vocabulary=values,
             required=True,
         ))
+        fields['criteria_1'].mode = 'radio'
+        return fields
 
     def render(self):
         field = self.fieldWidgets['preview.field.criteria_1']
@@ -511,7 +515,7 @@ class CreateCompany(Form):
     fields = Fields(ICompany).select(
         'name', 'mnr', 'exp_db', 'type', 'employees')
     fields['mnr'].htmlAttributes = {'maxlength': 8}
-    fields['exp_db'].mode = "radio"
+    fields['exp_db'].mode = "blockradio"
 
     def htmlId(self):
         return u"add.course"
@@ -1114,7 +1118,10 @@ class AnswerQuizz(Form):
 
         questions_text = self.context.course.extra_questions
         if questions_text:
-            extra_fields = generate_extra_questions(questions_text)
+            extra_fields = Fields(*generate_extra_questions(questions_text))
+
+
+            
             fields += Fields(*extra_fields)
 
         for field in fields:
