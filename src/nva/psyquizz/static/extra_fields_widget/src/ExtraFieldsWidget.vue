@@ -66,7 +66,7 @@
 		    Nur eine Antwort Möglich
 		  </option>
 		  <option value="multi">mehrere Antworten möglich</option>
-		  <option value="bool">Wahr oder Falsch</option>
+          <!-- <option value="bool">Wahr oder Falsch</option> -->
 		</select>
               </div>
               <div class="form-group" v-if="question.need_answers">
