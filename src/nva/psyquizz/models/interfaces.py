@@ -79,6 +79,18 @@ def vocab_employees(context):
     return SimpleVocabulary(rc)
 
 
+@provider(IContextSourceBinder)
+def exp_db(context):
+    rc = [SimpleTerm('true', 'true', u'Ich möchte am Aufbau der Forschungsdatenbank \
+            mitwirken und stimme der anonymisierten Speicherung unserer \
+            Ergebnisse in der Forschungsdatenbank zu'),
+          SimpleTerm('false', 'false', u'Ich widerspreche der anonymisierte  \
+              Speicherung unserer Ergebnisse in der Forschungsdatenbank'),
+          ]
+    return SimpleVocabulary(rc)
+
+
+
 class IQuizz(Interface):
     pass
 
@@ -191,11 +203,11 @@ class ICompany(ILocation, IContent):
         required=False,
     )
 
-    exp_db = schema.Bool(
+    exp_db = schema.Choice(
         title=_(u'Forschungsdatenbank'),
         description=_(u'Dürfen wir die Ergebnisse in der ForschungsDB verwenden'),
-        default=True,
         required=True,
+        source=exp_db 
     )
 
     employees = schema.Choice(

@@ -511,14 +511,15 @@ class CreateCompany(Form):
     fields = Fields(ICompany).select(
         'name', 'mnr', 'exp_db', 'type', 'employees')
     fields['mnr'].htmlAttributes = {'maxlength': 8}
+    fields['exp_db'].mode = "radio"
 
     def htmlId(self):
         return u"add.course"
 
     def updateForm(self):
         super(CreateCompany, self).updateForm()
-        self.fieldWidgets.get('form.field.exp_db').template = get_template(
-            'checkbox.cpt', __file__)
+        #self.fieldWidgets.get('form.field.exp_db').template = get_template(
+        #    'checkbox.cpt', __file__)
         name = self.fieldWidgets['form.field.name']
         nv = u""
         name.value = {'form.field.name': nv}
