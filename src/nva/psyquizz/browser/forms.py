@@ -798,6 +798,8 @@ class EditCourse(Form):
         fields = Fields(ICourseSession).select('duration', 'about')
         if self.getContentData().content.startdate > now:
             fields += Fields(ICourseSession).select('startdate', 'criterias')
+        if self.getContentData().content.enddate > now:
+            fields += Fields(ICourseSession).select('enddate')
         return fields
 
     def update(self):
