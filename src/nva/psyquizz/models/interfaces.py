@@ -205,7 +205,10 @@ class ICompany(ILocation, IContent):
 
     exp_db = schema.Choice(
         title=_(u'Forschungsdatenbank'),
-        description=_(u'Dürfen wir die Ergebnisse in der ForschungsDB verwenden'),
+        description=u'Ich stimme einer anonymisierten Erfassung meiner Umfrageergebnisse in einer Gesamtdatenbank zu. \
+                     Erfasst werden Branche, Anzahl Beschäftigte sowie Ergebnisse der Befragung \
+                     gespeichert. Dies ermöglicht die Ableitung branchenspezifischer Präventionsangebote \
+                     sowie die Erstellung von Referenzwerten.',
         required=True,
         source=exp_db 
     )
