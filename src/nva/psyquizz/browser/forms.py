@@ -154,8 +154,9 @@ class PreviewExtraQuestions(Form):
         return ''
 
     def render(self):
-        preview = u'''<div id="extra_questions_preview">%s</div>'''
-        widgets = ['''<div>%s</div>''' % widget.render()
+        preview = u'''<div id="extra_questions_preview"> KLAUS KLAUS %s</div>'''
+        widgets = ['''<div> Vorschau - So wird die Frage nach der
+                Auswertungsgruppe im Fragebogen dargestellt:  %s</div>''' % widget.render()
                    for widget in self.fieldWidgets]
         return preview % '\n'.join(widgets)
 
@@ -208,7 +209,10 @@ class PreviewCriterias(Form):
 
     def render(self):
         field = self.fieldWidgets['preview.field.criteria_1']
-        return """<div class="preview" style="border: 5px solid #efefef; padding: 10px; margin: 5px"><h3>Vorschau</h3> <label> %s </label>%s</div>""" % (field.title, field.render())
+        return u"""<div class="preview" style="border: 5px solid #efefef;
+    padding: 10px; margin: 5px"><h3>Vorschau</h3> Vorschau - So wird die Frage
+    nach der Auswertungsgruppe im Fragebogen dargestellt: <label> %s </label>
+    <p> Wählen Sie das zutreffende aus. </p> <br> %s</div>""" % (field.title, field.render())
 
 
 @menuentry(IContextualActionsMenu, order=10)
@@ -798,7 +802,7 @@ class EditCourse(Form):
         fields = Fields(ICourseSession).select('duration', 'about')
         if self.getContentData().content.startdate > now:
             fields += Fields(ICourseSession).select('startdate', 'criterias')
-        if self.getContentData().content.enddate > now:
+        if self.getContentData().content.context.enddate > now:
             fields += Fields(ICourseSession).select('enddate')
         return fields
 

@@ -81,11 +81,9 @@ def vocab_employees(context):
 
 @provider(IContextSourceBinder)
 def exp_db(context):
-    rc = [SimpleTerm('true', 'true', u'Ich möchte am Aufbau der Forschungsdatenbank \
-            mitwirken und stimme der anonymisierten Speicherung unserer \
-            Ergebnisse in der Forschungsdatenbank zu'),
-          SimpleTerm('false', 'false', u'Ich widerspreche der anonymisierte  \
-              Speicherung unserer Ergebnisse in der Forschungsdatenbank'),
+    rc = [SimpleTerm('true', 'true', u'ja, ich stimme zu'),
+          SimpleTerm('false', 'false', u'nein, ich stimme einer anonymisierten \
+              Erfassung meiner Umfrageergebnisse nicht zu'),
           ]
     return SimpleVocabulary(rc)
 
