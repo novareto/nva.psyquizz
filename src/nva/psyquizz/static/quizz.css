@@ -183,3 +183,7 @@ div.befragung {
 div.question > .radio input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
     margin-left: -17px;
 }
+
+div#field-form-field-exp_db > div > label {
+    display: block;
+}
