@@ -273,6 +273,12 @@ class ICourse(ILocation, IContent):
         required=True,
         )
 
+    extra_questions = schema.Text(
+        title=_(u"Complementary questions for the course"),
+        description=_(u"Type your questions : one per line."),
+        required=False,
+        )
+
     criterias = OrderedChoices(
         title=_(u"Auswertungsgruppen festlegen"),
         description=u"Sie können die Reihenfolge der Abfrage im „Fragebogen“ \
@@ -281,12 +287,6 @@ class ICourse(ILocation, IContent):
                       Nicht benötigte Auswertungsgruppen verschieben \
                       Sie in den linken Kasten.",
         value_type=schema.Choice(source=deferred('criterias_choice')),
-        required=False,
-        )
-
-    extra_questions = schema.Text(
-        title=_(u"Complementary questions for the course"),
-        description=_(u"Type your questions : one per line."),
         required=False,
         )
 

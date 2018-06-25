@@ -156,7 +156,7 @@ class PreviewExtraQuestions(Form):
     def render(self):
         preview = u'''<div id="extra_questions_preview"> KLAUS KLAUS %s</div>'''
         widgets = ['''<div> Vorschau - So wird die Frage nach der
-                Auswertungsgruppe im Fragebogen dargestellt:  %s</div>''' % widget.render()
+                Auswertungsgruppe im Fragebogen dargestellt: <br> <br>  %s</div>''' % widget.render()
                    for widget in self.fieldWidgets]
         return preview % '\n'.join(widgets)
 
@@ -211,7 +211,7 @@ class PreviewCriterias(Form):
         field = self.fieldWidgets['preview.field.criteria_1']
         return u"""<div class="preview" style="border: 5px solid #efefef;
     padding: 10px; margin: 5px"><h3>Vorschau</h3> Vorschau - So wird die Frage
-    nach der Auswertungsgruppe im Fragebogen dargestellt: <label> %s </label>
+    nach der Auswertungsgruppe im Fragebogen dargestellt: <br> <br> <label> %s </label>
     <p> Wählen Sie das zutreffende aus. </p> <br> %s</div>""" % (field.title, field.render())
 
 

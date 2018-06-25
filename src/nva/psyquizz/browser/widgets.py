@@ -49,5 +49,5 @@ class SpecialInput(TextareaWidget):
 
     def update(self):
         super(SpecialInput, self).update()
-        efw.need()
+        #efw.need()
         print "NEEEED"

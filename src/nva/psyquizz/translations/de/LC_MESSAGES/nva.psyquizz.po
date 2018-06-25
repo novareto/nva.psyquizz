@@ -86,7 +86,7 @@ msgid "Complementary questions for the course"
 msgstr "Zusatzfragen für diese Befragung (optional)"
 
 msgid "Type your questions : one per line."
-msgstr "Zusatzfragen eingeben. Für jede Frage eine neue Zeile beginnen."
+msgstr "Gibt es weitere/zusätzliche Fragen, die Sie während der Befragung von Ihren Mitarbeitern unabhängig vom Fragebogen, erfahren möchten."
 
 msgid "Populate"
 msgstr "Anlegen"
