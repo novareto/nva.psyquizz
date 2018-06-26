@@ -154,8 +154,9 @@ class PreviewExtraQuestions(Form):
         return ''
 
     def render(self):
-        preview = u'''<div id="extra_questions_preview">%s</div>'''
-        widgets = ['''<div>%s</div>''' % widget.render()
+        preview = u'''<div id="extra_questions_preview"> KLAUS KLAUS %s</div>'''
+        widgets = ['''<div> Vorschau - So wird die Frage nach der
+                Auswertungsgruppe im Fragebogen dargestellt: <br> <br>  %s</div>''' % widget.render()
                    for widget in self.fieldWidgets]
         return preview % '\n'.join(widgets)
 
@@ -208,7 +209,10 @@ class PreviewCriterias(Form):
 
     def render(self):
         field = self.fieldWidgets['preview.field.criteria_1']
-        return """<div class="preview" style="border: 5px solid #efefef; padding: 10px; margin: 5px"><h3>Vorschau</h3> <label> %s </label>%s</div>""" % (field.title, field.render())
+        return u"""<div class="preview" style="border: 5px solid #efefef;
+    padding: 10px; margin: 5px"><h3>Vorschau</h3> Vorschau - So wird die Frage
+    nach der Auswertungsgruppe im Fragebogen dargestellt: <br> <br> <label> %s </label>
+    <p> Wählen Sie das zutreffende aus. </p> <br> %s</div>""" % (field.title, field.render())
 
 
 @menuentry(IContextualActionsMenu, order=10)
@@ -762,12 +766,12 @@ class CourseSession(Adapter):
         return property(fget, fset)
 
     @apply
-    def duration():
+    def enddate():
         def fget(self):
-            return self.context.duration
+            return self.context.enddate
 
         def fset(self, value):
-            self.context.duration = value
+            self.context.enddate = value
         return property(fget, fset)
 
     @apply
@@ -786,6 +790,8 @@ class EditCourse(Form):
     name('edit_course')
     require('manage.company')
     title(_(u'Edit the course'))
+    title = label = "Kurs Bearbeiten"
+    description = u"Hier können Sie den Kurs bearbeiten"
 
     ignoreContent = False
     ignoreRequest = False
@@ -795,15 +801,17 @@ class EditCourse(Form):
     @property
     def fields(self):
         now = datetime.date.today()
-        fields = Fields(ICourseSession).select('duration', 'about')
+        fields = Fields()
+        if self.getContentData().content.context.enddate > now:
+            fields += Fields(ICourseSession).select('enddate')
         if self.getContentData().content.startdate > now:
             fields += Fields(ICourseSession).select('startdate', 'criterias')
-        if self.getContentData().content.enddate > now:
-            fields += Fields(ICourseSession).select('enddate')
+        fields += Fields(ICourseSession).select('about')
         return fields
 
     def update(self):
         wysiwyg.need()
+        startendpicker.need();
         Form.update(self)
 
     @property

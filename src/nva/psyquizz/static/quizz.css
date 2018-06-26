@@ -184,6 +184,7 @@ div.question > .radio input[type="radio"], .radio-inline input[type="radio"], .c
     margin-left: -17px;
 }
 
+/*
 button[data-target='div#personalprefs-mobile']:after {
     content: "FIXME";
 }
@@ -209,5 +210,7 @@ button[data-target='div#personalprefs-mobile']:after {
     div#personalprefs-mobile {
 	background-color: white;
     }
-    
+*/    
+div#field-form-field-exp_db > div > label {
+    display: block;
 }

@@ -1,8 +1,5 @@
 <div class="form-group">
   <label>Zusatzfragen</label>
   <p class="help-block"> Hier können Sie eigene Zusatzfragen anlegen </p>
-
-  <!-- <script src="http://62.210.125.78:8080/app.js"></script> -->
   <extra-fields-widget id="app"></extra-fields-widget>
-
 </div>

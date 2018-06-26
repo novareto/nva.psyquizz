@@ -154,7 +154,8 @@ class Datenschutz(uvclight.MenuItem):
 
     @property
     def action(self):
-        return "https://www.bgetem.de/die-bgetem/impressum/oeffentliches-verfahrensverzeichnis/verfahrensverzeichnis-gemeinsam-zu-gesunden-arbeitsbedingungen-online"
+        return "https://www.bgetem.de/die-bgetem/datenschutz/datenschutz-erlaeuterung-gemeinsam-zu-gesunden-arbeitsbedingungen-online"
+        #return "https://www.bgetem.de/die-bgetem/impressum/oeffentliches-verfahrensverzeichnis/verfahrensverzeichnis-gemeinsam-zu-gesunden-arbeitsbedingungen-online"
 
 
 class Kontakt(uvclight.MenuItem):
@@ -167,4 +168,5 @@ class Kontakt(uvclight.MenuItem):
     @property
     def action(self):
         return "mailto://gzga@bgetem.de"
+
 

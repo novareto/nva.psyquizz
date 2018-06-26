@@ -188,6 +188,19 @@ class XSLX(object):
             worksheet.write("A%i" % offset, labels[avg.title])
             worksheet.write("B%i" % offset, avg.average, nformat)
 
+        if self.statistics['extra_data']:
+            offset = 0
+            worksheet = workbook.add_worksheet('extra')
+            worksheet.set_column('A:A', 40)
+            worksheet.set_column('B:B', 50)
+            for key, value in self.statistics['extra_data'].items():
+                worksheet.write("A%i" % (offset + 1), key)
+                content = ["%s: %s" % (question, answer) for 
+                           question, answer in value.items()]
+                worksheet.write("B%i" % (offset + 1), "\n".join(content))
+                worksheet.set_row(offset, 15 * len(value))
+                offset += 1
+            
         #worksheet = workbook.add_worksheet('RAW')
         #worksheet.set_column('A:A', 25)
         #worksheet.set_column('B:END', 30)

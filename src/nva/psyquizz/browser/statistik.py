@@ -28,6 +28,12 @@ class Statistik(uvclight.Page):
     def getCompanies(self):
         return self.session.query(models.Company).count()
 
+    def gCD(self, key):
+        dd = {}
+        for d in self.getDeletions():
+            dd[d[0]] = d[1]
+        return dd.get(key, 0)
+
     def getDeletions(self):
         #return session.query(models.HistoryEntry).filter(
         #    models.HistoryEntry.action=="Delete").group_by(

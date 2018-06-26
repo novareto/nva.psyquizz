@@ -81,11 +81,9 @@ def vocab_employees(context):
 
 @provider(IContextSourceBinder)
 def exp_db(context):
-    rc = [SimpleTerm('true', 'true', u'Ich möchte am Aufbau der Forschungsdatenbank \
-            mitwirken und stimme der anonymisierten Speicherung unserer \
-            Ergebnisse in der Forschungsdatenbank zu'),
-          SimpleTerm('false', 'false', u'Ich widerspreche der anonymisierte  \
-              Speicherung unserer Ergebnisse in der Forschungsdatenbank'),
+    rc = [SimpleTerm('true', 'true', u'ja, ich stimme zu'),
+          SimpleTerm('false', 'false', u'nein, ich stimme einer anonymisierten \
+              Erfassung meiner Umfrageergebnisse nicht zu'),
           ]
     return SimpleVocabulary(rc)
 
@@ -205,7 +203,10 @@ class ICompany(ILocation, IContent):
 
     exp_db = schema.Choice(
         title=_(u'Forschungsdatenbank'),
-        description=_(u'Dürfen wir die Ergebnisse in der ForschungsDB verwenden'),
+        description=u'Ich stimme einer anonymisierten Erfassung meiner Umfrageergebnisse in einer Gesamtdatenbank zu. \
+                     Erfasst werden Branche, Anzahl Beschäftigte sowie Ergebnisse der Befragung \
+                     gespeichert. Dies ermöglicht die Ableitung branchenspezifischer Präventionsangebote \
+                     sowie die Erstellung von Referenzwerten.',
         required=True,
         source=exp_db 
     )
@@ -272,6 +273,13 @@ class ICourse(ILocation, IContent):
         required=True,
         )
 
+    extra_questions = schema.Text(
+        title=_(u"Complementary questions for the course"),
+        description=_(u"Type your questions : one per line."),
+        required=False,
+        default=u"",
+        )
+
     criterias = OrderedChoices(
         title=_(u"Auswertungsgruppen festlegen"),
         description=u"Sie können die Reihenfolge der Abfrage im „Fragebogen“ \
@@ -280,12 +288,6 @@ class ICourse(ILocation, IContent):
                       Nicht benötigte Auswertungsgruppen verschieben \
                       Sie in den linken Kasten.",
         value_type=schema.Choice(source=deferred('criterias_choice')),
-        required=False,
-        )
-
-    extra_questions = schema.Text(
-        title=_(u"Complementary questions for the course"),
-        description=_(u"Type your questions : one per line."),
         required=False,
         )
 

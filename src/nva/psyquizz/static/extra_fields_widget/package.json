@@ -5,7 +5,7 @@
   "scripts": {
     "serve-karl": "vue-cli-service serve --open --host 62.210.125.78 --disableHostCheck=true",
     "serve": "vue-cli-service serve --open",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --dest ../efw/",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

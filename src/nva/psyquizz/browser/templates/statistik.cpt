@@ -1,35 +1,42 @@
 <div id="statistiks">
   <h1>Statistik</h1>
-  <p>
-    Registrierter Benutzer:
-    <span tal:content="view.getAccounts()" />
-  </p>
-  <p>
-    Erstellte Unternehmen:
-    <span tal:content="view.getCompanies()" />
-  </p>
-  <p>
-    Globale Löschungen:
-    <ul>
-      <li tal:repeat="deletion view.getDeletions()">
-	<span tal:content="deletion[0]" /> :
-	<span tal:content="int(deletion[1])" />
-      </li>
-    </ul>
-  </p>
-  <p tal:define="b view.getSessions()">
-    Erstellte Befragungen: <span tal:content="b['alle']" />
-    davon zukünftig <span tal:content="b['future']" />
-    aktive <span tal:content="b['present']" />
-    abgeschlossen <span tal:content="b['past']" />
-  </p>
-  <p>
-    ausgefüllte Fragebögen 
-    <ul>
-      <li tal:repeat="answer view.getAnswers()">
-	<span tal:content="answer['title']" /> :
-	<span tal:content="answer['count']" />
-      </li>
-    </ul>
-  </p>
+  <p class="lead"> Statistische Informationen </p>
+
+  <table class="table">
+    <tr>
+      <th>Objekt</th>
+      <th>aktiv</th>
+      <th>gelöscht</th>
+    </tr>
+    <tr>
+      <td> Registrierter Benutzer </td>
+      <td tal:content="view.getAccounts()">  </td>
+      <td>  </td>
+    </tr>
+    <tr>
+      <td> Unternehmen </td>
+      <td tal:content="view.getCompanies()">  </td>
+      <td tal:content="view.gCD('Company')"> </td>
+    </tr>
+    <tr>
+      <td> Befragungen </td>
+      <td tal:define="b view.getSessions()">
+        <b tal:content="b['alle']"> </b> <br>
+        davon zukünftig <span tal:content="b['future']" /> <br>
+        aktive <span tal:content="b['present']" /> <br>
+        abgeschlossen <span tal:content="b['past']" />
+      </td>
+      <td tal:content="view.gCD('Session')"> </td>
+    </tr>
+    <tr>
+      <td> Fragebögen</td>
+      <td tal:define="b view.getSessions()">
+        <li tal:repeat="answer view.getAnswers()">
+          <span tal:content="answer['title']" /> :
+          <span tal:content="answer['count']" />
+        </li>
+      </td>
+      <td> </td>
+    </tr>
+  </table>
 </div>

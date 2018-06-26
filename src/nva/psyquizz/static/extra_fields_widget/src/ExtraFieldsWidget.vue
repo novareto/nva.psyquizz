@@ -63,7 +63,7 @@
 		<select v-model="question.type" v-on:change="may_need_answers"
 			class="form-control" id="exampleInputEmail2">
 		  <option value="choice" selected="selected">
-		    Nur eine Antwort Möglich
+		    nur eine Antwort möglich
 		  </option>
 		  <option value="multi">mehrere Antworten möglich</option>
           <!-- <option value="bool">Wahr oder Falsch</option> -->
