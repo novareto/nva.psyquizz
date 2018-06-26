@@ -766,12 +766,12 @@ class CourseSession(Adapter):
         return property(fget, fset)
 
     @apply
-    def duration():
+    def enddate():
         def fget(self):
-            return self.context.duration
+            return self.context.enddate
 
         def fset(self, value):
-            self.context.duration = value
+            self.context.enddate = value
         return property(fget, fset)
 
     @apply
@@ -790,6 +790,8 @@ class EditCourse(Form):
     name('edit_course')
     require('manage.company')
     title(_(u'Edit the course'))
+    title = label = "Kurs Bearbeiten"
+    description = u"Hier können Sie den Kurs bearbeiten"
 
     ignoreContent = False
     ignoreRequest = False
@@ -799,15 +801,17 @@ class EditCourse(Form):
     @property
     def fields(self):
         now = datetime.date.today()
-        fields = Fields(ICourseSession).select('duration', 'about')
-        if self.getContentData().content.startdate > now:
-            fields += Fields(ICourseSession).select('startdate', 'criterias')
+        fields = Fields()
         if self.getContentData().content.context.enddate > now:
             fields += Fields(ICourseSession).select('enddate')
+        if self.getContentData().content.startdate > now:
+            fields += Fields(ICourseSession).select('startdate', 'criterias')
+        fields += Fields(ICourseSession).select('about')
         return fields
 
     def update(self):
         wysiwyg.need()
+        datepicker_de.need()
         Form.update(self)
 
     @property
