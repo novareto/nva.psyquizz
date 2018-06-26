@@ -183,3 +183,31 @@ div.befragung {
 div.question > .radio input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
     margin-left: -17px;
 }
+
+button[data-target='div#personalprefs-mobile']:after {
+    content: "FIXME";
+}
+
+#personalprefs-mobile li > a {
+    color: #004994;
+}
+
+@media (max-width: 768px) {
+
+    nav#personalmenu-mobile {
+	position: absolute;
+	top: 99px;
+	height: 17px;
+	z-index: 99;
+	right: 100px
+    }
+
+    nav#personalmenu-mobile > div > navbar-header {
+	height: 17px;
+    }
+
+    div#personalprefs-mobile {
+	background-color: white;
+    }
+    
+}

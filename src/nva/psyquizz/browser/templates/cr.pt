@@ -251,10 +251,20 @@
 	       <tal:no_criterias condition="not view.general_stats">
                events: {
                     legendItemClick: function () {
-                       return false; 
-                     }
+                       return false;
+                    }
                },
 	       </tal:no_criterias>
+	       <tal:criterias condition="view.general_stats">
+               events: {
+                    legendItemClick: function () {
+	                  console.log('toto');
+                          svgToCanvas(usersChart, 'userschart');
+                          $('#pSVG').val(usersChart.getSVGForExport());
+                     }
+               },
+	       </tal:criterias>
+	       
                 showInLegend: true
             }
 	},

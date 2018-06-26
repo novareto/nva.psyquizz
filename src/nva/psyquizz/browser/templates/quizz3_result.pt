@@ -358,12 +358,25 @@ var donut = Highcharts.chart('q3sums', {
             verticalAlign: 'top'
 	},
 	plotOptions: {
-           line: {
+            line: {
+	       <tal:no_criterias condition="not view.general_stats">
                events: {
                     legendItemClick: function () {
-                       return false; 
+                       return false;
+                    }
+               },
+	       </tal:no_criterias>
+	       <tal:criterias condition="view.general_stats">
+               events: {
+                   legendItemClick: function (e) {
+	               let chart = e.target.chart;
+	               let svg = chart.getSVGForExport();
+                       svgToCanvas(chart, 'userschart');
+                       $('#pSVG').val(svg);
+		       console.log($('#pSVG').val().length)
                      }
-                },
+               },
+	       </tal:criterias>
                 showInLegend: true
             }
 	},
