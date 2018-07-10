@@ -214,3 +214,7 @@ button[data-target='div#personalprefs-mobile']:after {
 div#field-form-field-exp_db > div > label {
     display: block;
 }
+
+.navbar-default .navbar-nav > li > a {
+    color: #004994;
+}

@@ -190,32 +190,17 @@ class XSLX(object):
 
         if self.statistics['extra_data']:
             offset = 0
-            worksheet = workbook.add_worksheet('extra')
+            worksheet = workbook.add_worksheet('Zusatzfragen')
             worksheet.set_column('A:A', 40)
             worksheet.set_column('B:B', 50)
+            line = 0
+            col = 1
             for key, value in self.statistics['extra_data'].items():
-                worksheet.write("A%i" % (offset + 1), key)
-                content = ["%s: %s" % (question, answer) for 
-                           question, answer in value.items()]
-                worksheet.write("B%i" % (offset + 1), "\n".join(content))
-                worksheet.set_row(offset, 15 * len(value))
-                offset += 1
-            
-        #worksheet = workbook.add_worksheet('RAW')
-        #worksheet.set_column('A:A', 25)
-        #worksheet.set_column('B:END', 30)
-        
-        #worksheet.write(0, 0, "Questions", header_format)
-        
-        #for i in range(1, self.statistics['total'] + 1, 1):
-        #    worksheet.write(0, i, "Student %s" % i, header_format)
-        
-        #for question, answers in self.statistics['raw'].items():
-        #    line = int(question)
-        #    worksheet.write(line, 0, "Question %s" % question, question_format)
-        #    for idx, answer in enumerate(answers, 1):
-        #        worksheet.write(line, idx, answer.result_title)
- 
+                worksheet.write(line, 0, key)
+                for question, answer in value.items():
+                    worksheet.write(line, col, "%s: %s" % (question, answer))
+                    offset += 1
+                line += 1
         return workbook
 
     def render(self):

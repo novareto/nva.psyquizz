@@ -22,6 +22,7 @@ from ..models import IClassSession
 from ..interfaces import ICompanyRequest
 from ..i18n import _
 from dolmen.forms.base.actions import Actions
+from ..extra_questions import generate_extra_questions
 
 
 HINWEIS = """ <b>Hinweis</b>
@@ -71,6 +72,10 @@ class DownloadCourse(uvclight.View):
             story.append(Paragraph('<b>Bitte kreuzen Sie das zutreffende an </b>', style['Normal']))
             for crit in self.context.course.criterias:
                 story.append(Paragraph('<b> %s </b> <br/> %s ' % (crit.title, self.genStuff(crit.items.split('\n'))), style['Normal']))
+        if self.context.course.extra_questions:
+            story.append(Paragraph('<br/><br/><b>Zusatzfragen: </b>', style['Normal']))
+            for field in generate_extra_questions( self.context.course.extra_questions):
+                story.append(Paragraph('<b> %s </b> <br/> %s' % (field.title, self.genStuff([x.title for x in field.source])), style['Normal']))
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)
         pdf.build(story)
@@ -82,7 +87,6 @@ class DownloadCourse(uvclight.View):
             p1 = PdfFileReader(self.generate_page_one())
             output.addPage(p1.getPage(0))
         bpdf = "%s/lib/%s" % (path.dirname(__file__), self.base_pdf)
-        print bpdf
         with open(bpdf, 'rb') as pdf:
             pf = PdfFileReader(pdf)
             if pf.isEncrypted:
