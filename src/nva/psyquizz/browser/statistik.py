@@ -48,10 +48,15 @@ class Statistik(uvclight.Page):
         future = 0
         present = 0
         past = 0
+        offen = 0
+        closed = 0
         now = datetime.now().date()
         sessions = self.session.query(models.ClassSession).all()
-
         for session in sessions:
+            if session.strategy == "fixed":
+                closed += 1
+            else:
+                offen += 1
             if session.startdate > now:
                 future += 1
             elif now > session.startdate and now < session.enddate:
@@ -63,6 +68,8 @@ class Statistik(uvclight.Page):
             alle=len(sessions),
             past=past,
             present=present,
+            offen=offen,
+            closed=closed,
             future=future)
 
     def getAnswers(self):
