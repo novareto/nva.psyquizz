@@ -24,7 +24,9 @@
         <b tal:content="b['alle']"> </b> <br>
         davon zukünftig <span tal:content="b['future']" /> <br>
         aktive <span tal:content="b['present']" /> <br>
-        abgeschlossen <span tal:content="b['past']" />
+        abgeschlossen <span tal:content="b['past']" /> <br>
+        Zugang offen <span tal:content="b['offen']" /><br>
+        Zugang geschlossen <span tal:content="b['closed']" />
       </td>
       <td tal:content="view.gCD('Session')"> </td>
     </tr>

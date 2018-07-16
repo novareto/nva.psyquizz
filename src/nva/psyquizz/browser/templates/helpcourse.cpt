@@ -29,6 +29,13 @@
         <a target="_blank" href="fanstatic/nva.psyquizz/pruefliste.pdf"> Download Prüfliste </a>
         </p>
         </p>
+
+        <h3> Zusatzfragen anlegen </h3>
+        <p> Eigene Zusatzfragen zum Fragebogen erstellen, die am Ende des Fragebogens angezeigt werden. Zusätzlich können Sie festlegen, ob sich der Nutzer für eine Antwort entscheiden muss oder auch mehrere Antworten auswählen kann („Auswahlformat“).  Anschließend können Sie die möglichen Antworten eingeben.
+        Die Auswertung erfolgt durch tabellarische Darstellung der Anzahl der Antworten pro Antwortmöglichkeit.
+        </p>
+
+
         <h3> Auswertungsgruppen festlegen </h3> 
         <p> Diese Auswahl erscheint später auf der ersten Seite des „Fragebogens“ und die Beschäftigten wählen
         aus, zu welcher Auswertungsgruppe Sie gehören. Nur für diese Auswertungsgruppen können Sie sich
