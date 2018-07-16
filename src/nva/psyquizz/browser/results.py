@@ -158,7 +158,6 @@ class Quizz3Charts(Quizz2Charts):
         self.nb_answer = len(sums.values()[0])
 
         for id, answers in sums.iteritems():
-            print id, answers
             for idx, answer in enumerate(answers):
                 if idx not in users_results:
                     users_results[idx] = 0

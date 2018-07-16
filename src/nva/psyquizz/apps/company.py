@@ -137,7 +137,6 @@ def send_forgotten_password(smtp, email, password):
 
         text = html2text.html2text(html.decode('utf-8'))
         mail = prepare(from_, email, title, html, text.encode('utf-8'))
-        print mail.as_string()
         sender(from_, email, mail.as_string())
     return True
 

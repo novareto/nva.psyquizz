@@ -59,7 +59,7 @@
 		       placeholder="Bitte geben Sie hier Ihre Frage ein" />
               </div>
               <div class="form-group">
-		<label for="exampleInputEmail2">Auswahlformat</label>
+		<label for="exampleInputEmail2">Antwortformat</label>
 		<select v-model="question.type" v-on:change="may_need_answers"
 			class="form-control" id="exampleInputEmail2">
 		  <option value="choice" selected="selected">

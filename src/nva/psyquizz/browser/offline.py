@@ -83,9 +83,15 @@ class DownloadCourse(uvclight.View):
 
     def render(self):
         output = PdfFileWriter()
+        base1 = "%s/lib/%s" % (path.dirname(__file__), "kfza_base.pdf")
+        base1 = open(base1, 'rb')
         if self.context.course.criterias:
+            b1_pdf = PdfFileReader(base1)
+            wm = b1_pdf.getPage(0)
             p1 = PdfFileReader(self.generate_page_one())
-            output.addPage(p1.getPage(0))
+            page1 = p1.getPage(0)
+            page1.mergePage(wm)
+            output.addPage(page1)
         bpdf = "%s/lib/%s" % (path.dirname(__file__), self.base_pdf)
         with open(bpdf, 'rb') as pdf:
             pf = PdfFileReader(pdf)
@@ -96,6 +102,7 @@ class DownloadCourse(uvclight.View):
             ntf = TemporaryFile()
             output.write(ntf)
         ntf.seek(0)
+        base1.close()
         return ntf
 
 
