@@ -1128,9 +1128,6 @@ class AnswerQuizz(Form):
         questions_text = self.context.course.extra_questions
         if questions_text:
             extra_fields = Fields(*generate_extra_questions(questions_text))
-
-
-            
             fields += Fields(*extra_fields)
 
         for field in fields:
@@ -1184,6 +1181,8 @@ class CompanyAnswerQuizz(Action):
             elif key.startswith('extra_'):
                 value = data.pop(key)
                 field = fields.get(key)
+                if isinstance(value, set):
+                    value = list(value)
                 extra_answers[field.title] = value
 
         data['extra_questions'] = json.dumps(extra_answers)
