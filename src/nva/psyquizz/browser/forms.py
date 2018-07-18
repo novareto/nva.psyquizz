@@ -789,8 +789,8 @@ class EditCourse(Form):
     name('edit_course')
     require('manage.company')
     title(_(u'Edit the course'))
-    title = label = "Kurs Bearbeiten"
-    description = u"Hier können Sie den Kurs bearbeiten"
+    title = label = "Befragung bearbeiten"
+    description = u"Hier können Sie die Befragung bearbeiten"
 
     ignoreContent = False
     ignoreRequest = False
