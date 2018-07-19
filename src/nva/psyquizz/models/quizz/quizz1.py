@@ -86,7 +86,7 @@ class IGroup1(Interface):
 
     question11 = schema.Choice(
         title=u"11",
-        description=u"ErhaltenSieausreichendeInformationenzurEntwicklungdesBetriebes?",
+        description=u"Erhalten Sie ausreichende Informationen zur Entwicklung des Betriebes?",
         vocabulary=TrueOrFalse,
         required=True,
         )

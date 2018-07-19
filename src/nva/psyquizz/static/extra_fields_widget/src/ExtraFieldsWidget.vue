@@ -1,8 +1,7 @@
 <template>
   <div>
     <input type="hidden" name="form.field.extra_questions" v-bind:value="vv">
-
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered" v-if="questions.length > 0">
       <tr>
           <th>Frage</th>
           <th>Typ</th>
@@ -10,12 +9,13 @@
       </tr>
       <tr v-for="q in questions" :key="q.question">
         <td>{{q.question}}</td>
-        <td>{{q.type}}</td>
+        <td v-if="q.type=='choice'">eine Antwort</td>
+        <td v-if="q.type=='multi'">mehrere Antworten</td>
 	<td> <ul v-for="a in q.answers" :key="a.value"> <li>{{a.value}}</li> </ul> </td>
       </tr>
     </table>
     
-    <button type="button" class="btn btn-primary btn-lg"
+    <button type="button" class="btn btn-default"
 	    data-toggle="modal" data-target="#extra_fields_widget">
       Zusatzfragen hinzufügen
     </button>
@@ -133,9 +133,10 @@ export default {
 		element => {
 		    if (element.need_answers) {
 			let choices = []
+			console.log(element.answers)
 			element.answers.forEach(function (answer) {
 			    let value = answer.value.trim();
-			    if (value.length) {
+			    if (value.length > 0) {
 				choices.push(value);
 			    }
 			});

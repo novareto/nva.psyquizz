@@ -14,7 +14,7 @@ from pyPdf import PdfFileWriter, PdfFileReader
 from BeautifulSoup import BeautifulSoup
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Paragraph, SimpleDocTemplate
+from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate
 from zope.component import getUtility
 from nva.psyquizz.models import IQuizz
 from nva.psyquizz.browser.forms import AnswerQuizz, CompanyAnswerQuizz
@@ -68,14 +68,19 @@ class DownloadCourse(uvclight.View):
         story.append(Paragraph(self.heading, style['Heading2']))
         story.append(Paragraph(doc, nm))
         story.append(Paragraph(HINWEIS, style['Normal']))
+        from zope.schema._field import Set
         if self.context.course.criterias:
             story.append(Paragraph('<b>Bitte kreuzen Sie das zutreffende an </b>', style['Normal']))
             for crit in self.context.course.criterias:
                 story.append(Paragraph('<b> %s </b> <br/> %s ' % (crit.title, self.genStuff(crit.items.split('\n'))), style['Normal']))
         if self.context.course.extra_questions:
+            story.append(PageBreak())
             story.append(Paragraph('<br/><br/><b>Zusatzfragen: </b>', style['Normal']))
             for field in generate_extra_questions( self.context.course.extra_questions):
-                story.append(Paragraph('<b> %s </b> <br/> %s' % (field.title, self.genStuff([x.title for x in field.source])), style['Normal']))
+                if isinstance(field, Set):
+                    story.append(Paragraph('<b> %s </b> <br/> %s' % (field.title, self.genStuff([x.title for x in field.value_type.source])), style['Normal']))
+                else:
+                    story.append(Paragraph('<b> %s </b> <br/> %s' % (field.title, self.genStuff([x.title for x in field.source])), style['Normal']))
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)
         pdf.build(story)
@@ -85,13 +90,12 @@ class DownloadCourse(uvclight.View):
         output = PdfFileWriter()
         base1 = "%s/lib/%s" % (path.dirname(__file__), "kfza_base.pdf")
         base1 = open(base1, 'rb')
-        if self.context.course.criterias:
-            b1_pdf = PdfFileReader(base1)
-            wm = b1_pdf.getPage(0)
-            p1 = PdfFileReader(self.generate_page_one())
-            page1 = p1.getPage(0)
-            page1.mergePage(wm)
-            output.addPage(page1)
+        b1_pdf = PdfFileReader(base1)
+        wm = b1_pdf.getPage(0)
+        p1 = PdfFileReader(self.generate_page_one())
+        page1 = p1.getPage(0)
+        page1.mergePage(wm)
+        output.addPage(page1)
         bpdf = "%s/lib/%s" % (path.dirname(__file__), self.base_pdf)
         with open(bpdf, 'rb') as pdf:
             pf = PdfFileReader(pdf)
@@ -99,6 +103,13 @@ class DownloadCourse(uvclight.View):
                 pf.decrypt('')
             for page in range(pf.getNumPages()):
                 output.addPage(pf.getPage(page))
+            if self.context.course.extra_questions:
+                b1_pdf = PdfFileReader(base1)
+                wm = b1_pdf.getPage(0)
+                p1 = PdfFileReader(self.generate_page_one())
+                page1 = p1.getPage(1)
+                page1.mergePage(wm)
+                output.addPage(page1)
             ntf = TemporaryFile()
             output.write(ntf)
         ntf.seek(0)
