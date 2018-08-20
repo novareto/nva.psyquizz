@@ -9,7 +9,7 @@ from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 def make_boolean_field(idx, question, *_):
     field = Choice(
         __name__='extra_question%s' % idx,
-        title=question,
+        title=unicode(idx),
         description=question,
         vocabulary=TrueOrFalse,
         required=True,
@@ -22,7 +22,7 @@ def make_choice_field(idx, question, *choices):
     field = Choice(
         __name__='extra_question%s' % idx,
         description=question,
-        title=question,
+        title=unicode(idx),
         vocabulary=vocabulary,
         required=True,
     )
@@ -34,7 +34,7 @@ def make_multi_field(idx, question, *choices):
     field = Set(
         __name__='extra_question%s' % idx,
         description=question,
-        title=question,
+        title=unicode(idx),
         value_type=Choice(vocabulary=vocabulary),
         required=True,
     )

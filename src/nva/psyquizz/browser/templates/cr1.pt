@@ -59,6 +59,23 @@
     <textarea type="text" id="chart" name="chart" style="display: none"></textarea>
     <textarea type="text" id="pSVG1" name="pSVG1" style="display: none"></textarea>
 
+  <div tal:condition="view.stats.statistics['extra_data']">
+   <h2> Ergebnis der Zusatzfrage(n)  </h2>
+  <table id="mt" class="table table-bordered table-striped">
+    <tr tal:repeat="data view.stats.statistics['extra_data'].items()">
+      <td tal:content="data[0]"></td> 
+      <td>
+	<ul>
+	  <li tal:repeat="answer data[1].items()">
+	    <span tal:content="answer[0]" /> :
+	    <span tal:content="answer[1]" />
+	  </li>
+	</ul>
+      </td>
+    </tr>
+  </table>
+  </div>
+
     <button class="btn btn-default" value="pdf export"> <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> PDF Export </button>
   </form>
 
@@ -187,4 +204,8 @@
     });
 
   </script>
+
+
+
+
 </div>

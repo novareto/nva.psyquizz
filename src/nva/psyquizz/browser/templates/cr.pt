@@ -63,8 +63,9 @@
     </tr>
   </table>
 
-  <table id="mt" class="table table-bordered table-striped"
-	 tal:condition="view.stats.statistics['extra_data']">
+  <div tal:condition="view.stats.statistics['extra_data']">
+   <h2> Ergebnis der Zusatzfrage(n)  </h2>
+  <table id="mt" class="table table-bordered table-striped">
     <tr tal:repeat="data view.stats.statistics['extra_data'].items()">
       <td tal:content="data[0]"></td> 
       <td>
@@ -77,6 +78,7 @@
       </td>
     </tr>
   </table>
+  </div>
   
   <div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
   
