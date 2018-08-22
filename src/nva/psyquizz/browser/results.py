@@ -23,6 +23,7 @@ from zope.location import LocationProxy
 
 from ..interfaces import ICompanyRequest
 from ..stats import compute, groups_scaling
+from ..extra_questions import parse_extra_question_syntax
 from zope.schema import Choice
 from dolmen.forms.base import FAILURE, SUCCESS
 from nva.psyquizz.i18n import MessageFactory as _
@@ -70,7 +71,6 @@ class CourseStatistics(object):
                         if criteria == c.uid and c.amount < 7:
                             raise NotImplementedError()
 
-
         self.users_statistics = groups_scaling(
             self.statistics['users.grouped'])
         self.xAxis = [
@@ -93,6 +93,17 @@ class CourseStatistics(object):
                 criterias.append([crit.name, crit.amount])
         self.json_criterias = json.dumps(criterias)
 
+        if self.course.extra_questions:
+            questions = self.course.extra_questions.strip().split('\n')
+            for question in questions:
+                label, qtype, values = parse_extra_question_syntax(question)
+                if not label in self.statistics['extra_data']:
+                    self.statistics['extra_data'][label] = {}
+                extra_answers = self.statistics['extra_data'][label]
+                for value in values:
+                    if not value in extra_answers:
+                        extra_answers[value] = 0
+
 
 class SessionStatistics(CourseStatistics):
 
@@ -106,7 +117,7 @@ class SessionStatistics(CourseStatistics):
 
     def update(self, filters):
         filters['session'] = self.session.id
-        return CourseStatistics.update(self, filters)
+        CourseStatistics.update(self, filters)
 
 
 class Quizz2Charts(uvclight.View):

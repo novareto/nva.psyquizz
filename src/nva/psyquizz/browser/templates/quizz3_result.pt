@@ -116,6 +116,25 @@
   </tbody>
 </table>
 
+
+
+  <div tal:condition="view.stats.statistics['extra_data']">
+   <h2> Ergebnis der Zusatzfrage(n)  </h2>
+  <table id="mt" class="table table-bordered table-striped">
+    <tr tal:repeat="data view.stats.statistics['extra_data'].items()">
+      <td tal:content="data[0]"></td> 
+      <td>
+	<ul>
+	  <li tal:repeat="answer data[1].items()">
+	    <span tal:content="answer[0]" /> :
+	    <span tal:content="answer[1]" />
+	  </li>
+	</ul>
+      </td>
+    </tr>
+  </table>
+  </div>
+
 <div id="q3sums" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
 
 

@@ -18,11 +18,14 @@ def make_boolean_field(idx, question, *_):
 
 
 def make_choice_field(idx, question, *choices):
-    vocabulary = SimpleVocabulary([SimpleTerm(title=c, token=c, value=c) for c in choices])
+    vocabulary = SimpleVocabulary([
+        SimpleTerm(title=c, token='%s-%s' % (idx, n), value=c)
+        for n, c in enumerate(choices)
+    ])
     field = Choice(
         __name__='extra_question%s' % idx,
         description=question,
-        title=unicode(idx),
+        title=question,
         vocabulary=vocabulary,
         required=True,
     )
@@ -30,11 +33,14 @@ def make_choice_field(idx, question, *choices):
 
 
 def make_multi_field(idx, question, *choices):
-    vocabulary = SimpleVocabulary([SimpleTerm(title=c, token=c, value=c) for c in choices])
+    vocabulary = SimpleVocabulary([
+        SimpleTerm(title=c, token='%s-%s' % (idx, n), value=c)
+        for n, c in enumerate(choices)
+    ])
     field = Set(
         __name__='extra_question%s' % idx,
         description=question,
-        title=unicode(idx),
+        title=question,
         value_type=Choice(vocabulary=vocabulary),
         required=True,
     )
@@ -48,13 +54,7 @@ QTYPES = {
 }
 
 
-def parse_extra_question(idx, question):
-    """examples:
-    To be or not to be ? => enum::Yes::Maybe::Never !!::Go and Die!
-    What do you like ? => multi::Movies::Sport::Music::Work::Reading
-    Is it True ?
-    Will you come ? => bool
-    """
+def parse_extra_question_syntax(question):
     sep = "=>"
     exp = [e.strip() for e in re.split(sep, question, 1)]
     label = exp[0]
@@ -67,18 +67,31 @@ def parse_extra_question(idx, question):
             if elements[0] != 'bool':
                 raise NotImplementedError(
                     u"Question %r doesn't have any possible values" % label)
+    return label, elements[0], elements[1:]
 
-    factory = QTYPES.get(elements[0])
+
+def parse_extra_question(idx, question):
+    """examples:
+    To be or not to be ? => enum::Yes::Maybe::Never !!::Go and Die!
+    What do you like ? => multi::Movies::Sport::Music::Work::Reading
+    Is it True ?
+    Will you come ? => bool
+    """
+    label, qtype, values = parse_extra_question_syntax(question)
+    factory = QTYPES.get(qtype)
     if factory is None:
-        raise NotImplementedError(u"Unknown field %s" % elements[0])
-    return factory(idx, label, *elements[1:])
+        raise NotImplementedError(u"Unknown field %s" % qtype)
+    return factory(idx, label, *values)
 
 
 def generate_extra_questions(text):
     fields = []
     questions = text.strip().split('\n')
     for idx, question in enumerate(questions, 1):
-        question = question.decode('utf-8').strip()
+        if not isinstance(question, unicode):
+            question = question.decode('utf-8').strip()
+        else:
+            question = question.strip()
         extra_field = parse_extra_question(idx, question)
         fields.append(extra_field)
     return fields

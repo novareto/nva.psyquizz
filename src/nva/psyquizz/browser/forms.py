@@ -1018,7 +1018,7 @@ class SaveQuizz(Action):
         for key, value in extra_answers.items():
             if isinstance(value, set):
                 extra_answers[key] = list(value)
-            
+
         data['extra_questions'] = json.dumps(extra_answers)
 
         form.context.complete_quizz()
