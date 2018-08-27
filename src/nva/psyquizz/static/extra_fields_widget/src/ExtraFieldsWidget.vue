@@ -127,11 +127,15 @@ export default {
       this.questions = this.questions.filter(question => question != q);
     },
     save_all() {
-      var ss = "";
+	  var ss = "";
+	  console.log(this.questions)
+	  console.log('QUESTIOLNS')
+	  console.log(this.questions.length)
       this.questions.forEach(element => {
         if (element.need_answers) {
-          let choices = [];
-          console.log(element.answers);
+		  let choices = [];
+		  console.log('ELEMENT')
+          console.log(element.question);
           element.answers.forEach(function(answer) {
             let value = answer.value.trim();
             if (value.length > 0) {
@@ -147,8 +151,10 @@ export default {
         } else {
           ss = element.question.trim() + " => " + element.type.trim();
         }
-        this.vv += ss + '\n';
-      });
+		ss = ss + '\n';
+		console.log(ss)
+	  });
+	  this.vv += ss
     },
     remove_answer(answer) {
       this.question.answers = this.question.answers.filter(a => a != answer);
