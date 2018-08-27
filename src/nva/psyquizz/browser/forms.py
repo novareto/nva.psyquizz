@@ -1010,7 +1010,7 @@ class SaveQuizz(Action):
             elif key.startswith('extra_'):
                 value = data.pop(key)
                 field = fields.get(key)
-                extra_answers[field.title] = value
+                extra_answers[field.description] = value
 
         # We can't serialize sets
         # This could be done in a specific serializer
@@ -1019,6 +1019,9 @@ class SaveQuizz(Action):
             if isinstance(value, set):
                 extra_answers[key] = list(value)
 
+        import pdb
+        pdb.set_trace()
+                
         data['extra_questions'] = json.dumps(extra_answers)
 
         form.context.complete_quizz()
@@ -1183,7 +1186,7 @@ class CompanyAnswerQuizz(Action):
                 field = fields.get(key)
                 if isinstance(value, set):
                     value = list(value)
-                extra_answers[field.title] = value
+                extra_answers[field.description] = value
 
         data['extra_questions'] = json.dumps(extra_answers)
 
