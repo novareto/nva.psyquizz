@@ -41,7 +41,8 @@
 	      </tr>
 	      <tr v-for="q in questions" :key="q.question">
 		<td>{{q.question}}</td>
-		<td>{{q.type}}</td>
+        <td v-if="q.type=='choice'">eine Antwort</td>
+        <td v-if="q.type=='multi'">mehrere Antworten</td>
 		<td>
 		  <ul v-for="a in q.answers" :key="a.value">
 		    <li>{{a.value}}</li>
