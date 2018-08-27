@@ -73,6 +73,10 @@
 
       <dt>Fragebogen:</dt>  
       <dd tal:content="view.quizz_name(course)"> </dd> 
+      <dt>Zusatzfragen:</dt>  
+      <dd tal:define="ea view.additional_questions(course)"> 
+        <span tal:content="ea['title']"/>
+      </dd> 
       <dt>
 	Befragungszeitraum:
       </dt>

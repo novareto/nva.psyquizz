@@ -21,6 +21,7 @@ from uvclight import layer, name, context, title, get_template
 from uvclight.auth import require
 from zope.component import getUtility
 from zope.schema import getFieldsInOrder
+from nva.psyquizz.extra_questions import generate_extra_questions 
 from .. import quizzjs
 
 
@@ -50,6 +51,18 @@ class AccountHomepage(Page):
         if date < now.date():
             return True
         return False
+
+    def additional_questions(self, course):
+        ret = {'title': '', 'content': ''}
+        if not course.extra_questions:
+            ret['title'] = u'Keine Frage angelegt'
+        else:
+            questions = generate_extra_questions(course.extra_questions)
+            ret['title'] = u'%s Fragen angelgt' % len(questions)
+            for q in questions:
+                ret['content'] += "%s %s" % (q.title, q.description)
+            print ret
+        return ret
 
 
 class CriteriasListing(Page):
