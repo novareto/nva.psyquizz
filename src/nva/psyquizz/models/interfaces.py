@@ -205,7 +205,7 @@ class ICompany(ILocation, IContent):
         title=_(u'Forschungsdatenbank'),
         description=u'Ich stimme einer anonymisierten Erfassung meiner Umfrageergebnisse in einer Gesamtdatenbank zu. \
                      Erfasst werden Branche, Anzahl Beschäftigte sowie Ergebnisse der Befragung \
-                     gespeichert. Dies ermöglicht die Ableitung branchenspezifischer Präventionsangebote \
+                     . Dies ermöglicht die Ableitung branchenspezifischer Präventionsangebote \
                      sowie die Erstellung von Referenzwerten.',
         required=True,
         source=exp_db 

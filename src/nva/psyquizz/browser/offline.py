@@ -78,9 +78,11 @@ class DownloadCourse(uvclight.View):
             story.append(Paragraph('<br/><br/><b>Zusatzfragen: </b>', style['Normal']))
             for field in generate_extra_questions( self.context.course.extra_questions):
                 if isinstance(field, Set):
-                    story.append(Paragraph('<b> %s </b> <br/> %s' % (field.title, self.genStuff([x.title for x in field.value_type.source])), style['Normal']))
+                    story.append(Paragraph('<b> %s </b> <br/> %s' %
+                        (field.description, self.genStuff([x.title for x in field.value_type.source])), style['Normal']))
                 else:
-                    story.append(Paragraph('<b> %s </b> <br/> %s' % (field.title, self.genStuff([x.title for x in field.source])), style['Normal']))
+                    story.append(Paragraph('<b> %s </b> <br/> %s' %
+                        (field.description, self.genStuff([x.title for x in field.source])), style['Normal']))
         tf = TemporaryFile()
         pdf = SimpleDocTemplate(tf, pagesize=A4)
         pdf.build(story)
