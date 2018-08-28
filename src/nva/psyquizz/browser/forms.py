@@ -24,7 +24,8 @@ from ..models.criterias import criterias_table
 from nva.psyquizz.browser.lib.emailer import SecureMailer, prepare, ENCODING
 
 from cromlech.sqlalchemy import get_session
-from dolmen.forms.base import Field, SuccessMarker, makeAdaptiveDataManager, NO_VALUE
+from dolmen.forms.base import (
+    Field, SuccessMarker, makeAdaptiveDataManager, NO_VALUE)
 from dolmen.forms.base.actions import Action, Actions
 from dolmen.forms.base.errors import Error
 from dolmen.forms.base.utils import apply_data_event
@@ -804,7 +805,9 @@ class EditCourse(Form):
         if self.getContentData().content.context.enddate > now:
             fields += Fields(ICourseSession).select('enddate')
         if self.getContentData().content.startdate > now:
-            fields += Fields(ICourseSession).select('startdate', 'criterias')
+            fields += Fields(ICourseSession).select(
+                'startdate', 'criterias', 'extra_questions')
+            fields['extra_questions'].mode = "SpecialInput"
         fields += Fields(ICourseSession).select('about')
         return fields
 
@@ -844,9 +847,7 @@ class EditCourseBase(Form):
 
     ignoreContent = False
     ignoreRequest = False
-
-    fields = Fields(ICourse).select(
-        'name', 'startdate')
+    fields = Fields(ICourse).select('name', 'startdate')
 
     @property
     def action_url(self):

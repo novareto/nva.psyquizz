@@ -2,18 +2,21 @@
 # Copyright (c) 2007-2011 NovaReto GmbH
 # cklinger@novareto.de
 
+import json
 import uvclight
-from zope.interface import Interface
-from grokcore.component import adapts, name
 from dolmen.forms.ztk.widgets import choice, date
-from uvc.themes.btwidgets.widgets.date import DateFieldWidget
-from uvc.themes.btwidgets.widgets.choice import RadioFieldWidget
-from dolmen.forms.ztk.widgets.collection import SetField
 from dolmen.forms.ztk.widgets.collection import MultiChoiceFieldWidget
-from nva.psyquizz.interfaces import IQuizzLayer
+from dolmen.forms.ztk.widgets.collection import SetField
 from dolmen.forms.ztk.widgets.text import TextareaWidget, TextField
-from nva.psyquizz.browser import forms
+from grokcore.component import adapts, name
 from nva.psyquizz import efw
+from nva.psyquizz.browser import forms
+from nva.psyquizz.interfaces import IQuizzLayer
+from uvc.themes.btwidgets.widgets.choice import RadioFieldWidget
+from uvc.themes.btwidgets.widgets.date import DateFieldWidget
+from zope.interface import Interface
+
+from ..extra_questions import parse_extra_question_syntax
 
 
 class DateFieldWidget(DateFieldWidget):
@@ -49,4 +52,27 @@ class SpecialInput(TextareaWidget):
 
     def update(self):
         super(SpecialInput, self).update()
+        efw.need()
+        self.questions = json.dumps([])
+
+
+class EditSpecialInput(TextareaWidget):
+    uvclight.name('SpecialInput')
+    adapts(TextField, forms.EditCourse, IQuizzLayer)
+    template = uvclight.get_template('extra_questions.cpt', __file__)
+
+    def update(self):
+        questions = []
+        session = self.form.getContentData().content
+        extra = session.context.course.extra_questions.strip()
+        for qex in extra.split('\n'):
+            label, qtype, answers = parse_extra_question_syntax(qex.strip())
+            questions.append({
+                'question': label,
+                'type': qtype,
+                'needs_anwer': False,
+                'answers': [{'value': a} for a in answers],
+            })
+        self.questions = json.dumps(questions)
+        super(EditSpecialInput, self).update()
         efw.need()

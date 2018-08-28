@@ -19,9 +19,16 @@
 			</tr>
 		</table>
 
-		<button type="button" class="btn btn-default" data-toggle="modal" data-target="#extra_fields_widget">
-			Zusatzfragen hinzufügen
-		</button>
+    <button type="button" class="btn btn-default" v-if="!questions.length"
+data-toggle="modal" data-target="#extra_fields_widget">
+    Zusatzfragen hinzufügen
+</button>
+    <button type="button" class="btn btn-default" v-if="questions.length"
+data-toggle="modal" data-target="#extra_fields_widget">
+    Zusatzfragen bearbeiten
+</button>
+
+
 
 		<div class="modal fade" tabindex="-1" role="dialog" id="extra_fields_widget" :class="{ in: modalShown }">
 			<div class="modal-dialog" role="document">
@@ -119,97 +126,107 @@ function check_answer(answer) {
 }
 
 export default {
-  methods: {
-    showModal() {
-      this.modalShown = !this.modalShown;
-    },
-    delete_question(q) {
-      this.questions = this.questions.filter(question => question != q);
-    },
-    save_all() {
-	  var ss = "";
-	  console.log(this.questions)
-	  console.log('QUESTIOLNS')
-	  console.log(this.questions.length)
-      this.questions.forEach(element => {
-        if (element.need_answers) {
-		  let choices = [];
-		  console.log('ELEMENT')
-          console.log(element.question);
-          element.answers.forEach(function(answer) {
-            let value = answer.value.trim();
-            if (value.length > 0) {
-              choices.push(value);
-            }
-          });
-          ss =
-            element.question.trim() +
-            " => " +
-            element.type.trim() +
-            "::" +
-            choices.join("::");
-        } else {
-          ss = element.question.trim() + " => " + element.type.trim();
-        }
+    methods: {
+	showModal() {
+	    this.modalShown = !this.modalShown;
+	},
+	delete_question(q) {
+	    this.questions = this.questions.filter(question => question != q);
+	},
+	save_all() {
+	    var ss = "";
+	    console.log(this.questions)
+	    console.log('QUESTIOLNS')
+	    console.log(this.questions.length)
+	    this.questions.forEach(element => {
+		if (element.need_answers) {
+		    let choices = [];
+		    console.log('ELEMENT')
+		    console.log(element.question);
+		    element.answers.forEach(function(answer) {
+			let value = answer.value.trim();
+			if (value.length > 0) {
+			    choices.push(value);
+			}
+		    });
+		    ss =
+			element.question.trim() +
+			" => " +
+			element.type.trim() +
+			"::" +
+			choices.join("::");
+		} else {
+		    ss = element.question.trim() + " => " + element.type.trim();
+		}
 		ss = ss + '\n';
 		console.log(ss)
-	  });
-	  this.vv += ss
+	    });
+	    this.vv += ss
+	},
+	remove_answer(answer) {
+	    this.question.answers = (
+		this.question.answers.filter(a => a != answer));
+	},
+	may_need_answers(e) {
+	    this.question.need_answers = ["choice", "multi"].includes(
+		this.question.type
+	    );
+	    if (!this.question.need_answers) {
+		this.question.answers = [];
+	    }
+	},
+	save_question() {
+	    var error = false;
+	    if (!this.question.question.trim()) {
+		error = true;
+		alert("Please fill the question.");
+	    }
+	    if (!this.question.type.trim()) {
+		error = true;
+		alert("Please select a type of question.");
+	    } else if (this.question.need_answers) {
+		let choices = [];
+		this.question.answers.forEach(function(answer) {
+		    let value = answer.value.trim();
+		    if (value.length) {
+			choices.push(value);
+		    }
+		});
+		if (choices.length < 2) {
+		    alert("Please add at least 2 non-empty choices.");
+		    error = true;
+		}
+	    }
+	    if (!error) {
+		this.questions.push(Object.assign({}, this.question));
+		this.question.question = "";
+		this.question.type = "";
+		this.question.needs_anwer = false;
+		this.question.answers = [];
+		this.save_all();
+	    }
+	},
+	add_answer() {
+	    this.question.answers.push(Object({ value: "" }));
+	}
     },
-    remove_answer(answer) {
-      this.question.answers = this.question.answers.filter(a => a != answer);
+    props: {
+	questions: {
+	    type: String
+	}
     },
-    may_need_answers(e) {
-      this.question.need_answers = ["choice", "multi"].includes(
-        this.question.type
-      );
-      if (!this.question.need_answers) {
-        this.question.answers = [];
-      }
+    created() {
+	this.vv = this.questions;
+	this.questions = JSON.parse(this.questions);
+	console.log(this.questions)
     },
-    save_question() {
-      var error = false;
-      if (!this.question.question.trim()) {
-        error = true;
-        alert("Please fill the question.");
-      }
-      if (!this.question.type.trim()) {
-        error = true;
-        alert("Please select a type of question.");
-      } else if (this.question.need_answers) {
-        let choices = [];
-        this.question.answers.forEach(function(answer) {
-          let value = answer.value.trim();
-          if (value.length) {
-            choices.push(value);
-          }
-        });
-        if (choices.length < 2) {
-          alert("Please add at least 2 non-empty choices.");
-          error = true;
-        }
-      }
-      if (!error) {
-        this.questions.push(Object.assign({}, this.question));
-        this.question.question = "";
-        this.question.type = "";
-        this.question.needs_anwer = false;
-        this.question.answers = [];
-        this.save_all();
-      }
-    },
-    add_answer() {
-      this.question.answers.push(Object({ value: "" }));
+    data() {
+	return {
+	    vv: "",
+	    modalShown: false,
+	    question: QUESTION,
+	};
     }
-  },
-  data() {
-    return {
-      vv: "",
-      modalShown: false,
-      questions: [],
-      question: QUESTION
-    };
-  }
 };
 </script>
     

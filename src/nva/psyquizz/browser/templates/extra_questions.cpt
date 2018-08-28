@@ -1,3 +1,5 @@
 <div class="form-group">
-  <extra-fields-widget id="app"></extra-fields-widget>
+  <extra-fields-widget
+      tal:attributes="questions widget.questions"
+      id="app"></extra-fields-widget>
 </div>
