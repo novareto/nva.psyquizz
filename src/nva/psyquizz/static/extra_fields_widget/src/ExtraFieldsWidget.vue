@@ -64,12 +64,12 @@ data-toggle="modal" data-target="#extra_fields_widget">
 
 						<form @submit.prevent="save_question">
 							<div class="form-group">
-								<label for="exampleInputName2">Frage</label>
-								<input v-model="question.question" type="text" class="form-control" placeholder="Bitte geben Sie hier Ihre Frage ein" />
+								<label for="frage">Frage</label>
+								<input v-model="question.question" type="text" class="form-control" ref="frage" placeholder="Bitte geben Sie hier Ihre Frage ein" />
 							</div>
 							<div class="form-group">
-								<label for="exampleInputEmail2">Antwortformat</label>
-								<select v-model="question.type" v-on:change="may_need_answers" class="form-control" id="exampleInputEmail2">
+								<label for="format">Antwortformat</label>
+								<select v-model="question.type" v-on:change="may_need_answers" class="form-control" id="format">
 									<option value="choice" selected="selected">
 										nur eine Antwort möglich
 									</option>
@@ -78,9 +78,9 @@ data-toggle="modal" data-target="#extra_fields_widget">
 								</select>
 							</div>
 							<div class="form-group" v-if="question.need_answers">
-								<label for="exampleInputEmail2">Antworten</label>
+								<label for="antworten">Antworten</label>
 								<div v-for="answer in question.answers" v-bind:key="answer">
-									<input v-model="answer.value" />
+									<input v-model="answer.value" v-focus />
 									<button class="btn btn-default" v-on:click.prevent="remove_answer(answer)">
 										<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 									</button>
@@ -111,6 +111,14 @@ data-toggle="modal" data-target="#extra_fields_widget">
 </template>
 
 <script>
+import Vue from 'vue'
+
+Vue.directive('focus', {
+    inserted: function (el) {
+        el.focus();
+    }
+})
+
 let QUESTION = {
   question: "",
   type: "",
