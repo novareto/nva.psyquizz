@@ -212,13 +212,18 @@ export default {
     },
     props: {
 	questions: {
-	    type: String
+	    type: String,
+	    default: ""
 	}
     },
     created() {
-	this.vv = this.questions;
-	this.questions = JSON.parse(this.questions);
-	console.log(this.questions)
+        if (this.questions) {
+	    this.vv = this.questions;
+	    this.questions = JSON.parse(this.questions);
+	} else {
+	    this.vv = "";
+            this.questions = [];
+        }
     },
     data() {
 	return {

@@ -53,7 +53,7 @@ class SpecialInput(TextareaWidget):
     def update(self):
         super(SpecialInput, self).update()
         efw.need()
-        self.questions = json.dumps([])
+        self.questions = None
 
 
 class EditSpecialInput(TextareaWidget):

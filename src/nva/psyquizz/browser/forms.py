@@ -36,6 +36,7 @@ from grokcore.component import Adapter, provides, context, baseclass
 from js.jqueryui import jqueryui
 from nva.psyquizz import quizzjs
 from siguvtheme.resources import all_dates, datepicker_de
+from sqlalchemy import func
 from string import Template
 from uvc.design.canvas import IContextualActionsMenu
 from uvc.design.canvas import IDocumentActions
@@ -442,12 +443,15 @@ class CreateAccount(Form):
             self.flash(_(u'Password and verification mismatch.'))
             return FAILURE
 
-        existing = session.query(Account).get(data['email'])
+        existing = session.query(Account).filter(
+            func.lower(Account.email) == data['email'].lower())
+
         if existing is not None:
             self.flash(_(u'User with given email already exists.'))
             self.errors.append(
-                Error(identifier='form.field.email',
-                      title='Diese E-Mail Adresse existiert bereits im System.'))
+                Error(
+                    identifier='form.field.email',
+                    title='Diese E-Mail Adresse existiert bereits im System.'))
             return FAILURE
 
         # pop the captcha and verif, it's not a needed data
