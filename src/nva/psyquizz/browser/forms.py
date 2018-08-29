@@ -1020,9 +1020,6 @@ class SaveQuizz(Action):
             if isinstance(value, set):
                 extra_answers[key] = list(value)
 
-        import pdb
-        pdb.set_trace()
-                
         data['extra_questions'] = json.dumps(extra_answers)
 
         form.context.complete_quizz()
