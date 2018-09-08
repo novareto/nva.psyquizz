@@ -55,12 +55,13 @@ class AccountHomepage(Page):
         return False
 
     def additional_questions(self, course):
-        ret = {'title': '', 'content': []}
+        ret = {'title': '', 'content': [], 'show': False}
         if not course.extra_questions:
             ret['title'] = u'Keine Frage angelegt'
         else:
+            ret['show'] = True
             exq = course.extra_questions.strip().split('\n')
-            ret['title'] = u'%s Fragen angelgt' % len(exq)
+            ret['title'] = u'%s Fragen angelegt' % len(exq)
             for l, tp, opts in (parse_extra_question_syntax(e) for e in exq):
                 ret['content'].append(l)
         return ret

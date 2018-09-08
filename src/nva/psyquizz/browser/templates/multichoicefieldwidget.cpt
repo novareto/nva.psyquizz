@@ -11,6 +11,8 @@
     <span tal:content="choice.title"/> 
     </label>
   </tal:choice>
+ <h6> <small>(mehrere Antworten möglich)</small></h6>
   <input type="hidden" name="#" value="1"
          tal:attributes="name string:${widget.identifier}.present" />
+<hr />
 </tal:widget>
