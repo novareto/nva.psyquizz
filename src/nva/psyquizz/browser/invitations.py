@@ -71,7 +71,7 @@ class QRLink(View):
         return binascii.hexlify(base64.urlsafe_b64encode(str(id) + ' complexificator'))
 
     def render(self):
-        url = '%s/generic-%s' % (
+        url = '%s/befragung/generic-%s' % (
             self.application_url(), self.generic_id(self.context.id))
         img = qrcode.make(url)
 

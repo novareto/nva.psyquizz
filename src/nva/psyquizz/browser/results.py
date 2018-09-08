@@ -268,6 +268,8 @@ class SR(uvclight.Page):
         stats = SessionStatistics(quizz, self.context, self.request)
         stats.update(filters)
 
+
+
         if 'criterias' in filters:
             general_stats = SessionStatistics(quizz, self.context, self.request)
             general_stats.update({})
@@ -315,9 +317,13 @@ class CR(uvclight.Page):
 
             for criteria in filters['criterias']:
                 for title, cc in general_stats.statistics['criterias'].items():
-                    for c in cc:
-                        if criteria == c.uid and c.amount < 7:
-                            raise NotImplementedError()
+                     for c in cc:
+                         if criteria == c.uid and c.amount < 7:
+                             raise NotImplementedError()
+#                for title, cc in general_stats.statistics['criterias'].items():
+#                    for c in cc:
+#                        if criteria == c.uid and c.amount < 7:
+#                            raise NotImplementedError()
 
         else:
             general_stats = None

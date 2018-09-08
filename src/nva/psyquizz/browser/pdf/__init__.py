@@ -67,7 +67,6 @@ class GeneratePDF(uvclight.Page):
                     rc.append(
                         "<li> %s </li>" %(k)
                         )
-
             if not rc:
                 rc.append('alle')
         else:

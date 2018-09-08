@@ -134,7 +134,7 @@ class ICriteria(IContent):
 
         tokens = set((c.lower() for c in clean))
         if len(tokens) != len(clean):
-            raise Invalid(_(u"Sie haben zwei identische Werte angegeben."))
+            raise Invalid(_(u"Sie haben zwei identische Werte angegeben.")) 
         
 
 

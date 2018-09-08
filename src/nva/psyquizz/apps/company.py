@@ -170,9 +170,15 @@ class ForgotPassword(Form):
             return FAILURE
 
         session = get_session('school')
-        #account = session.query(Account).get(data['username'])
+        username = data['username']
         account = session.query(Account).filter(
             func.lower(Account.email) == username.lower())
+
+        if account.count() == 1:
+            account = account.first()
+        else:
+            account = None
+
         if account is None:
             self.errors.append(
                 Error(u'Benutzer konnte nicht gefunden werden.',
