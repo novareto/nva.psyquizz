@@ -148,7 +148,7 @@
         </dd>
         <dt>Auswertung:</dt> 
         <dd> 
-          <a href="" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/sr')"> <span class="glyphicon glyphicon-stats"> </span> Grafische Darstellung 
+          <a href="" tal:condition="len(list(session.complete)) >= view.maxResults" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/sr')"> <span class="glyphicon glyphicon-stats"> </span> Grafische Darstellung 
           </a>
           <span tal:condition="len(list(session.complete)) < view.maxResults">
             Die Auswertung wird erst ab dem <b> <span
@@ -186,11 +186,11 @@
          </div>
 
         </dd>
-        <dt> Auswertung111: </dt> 
+        <dt> Auswertung: </dt> 
         <dd> 
-        <a href="" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/sr')"> <span class="glyphicon glyphicon-stats"> </span> Grafische Darstellung 
+        <a href="" tal:condition="len(list(session.complete)) >= view.maxResults" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/sr')"> <span class="glyphicon glyphicon-stats"> </span> Grafische Darstellung 
         </a> 
-        <span >
+        <span tal:condition="len(list(session.complete)) < view.maxResults">
           Die Auswertung wird erst ab dem <b> <span
               tal:content="view.maxResults"> </span>.</b> ausgefüllten
           Fragebogen angezeigt </span>
@@ -226,11 +226,11 @@
          </div>
         </dd>
 	
-        <dt> Auswertungiiiiii: </dt> 
+        <dt> Auswertung: </dt> 
         <dd> 
-        <a href="" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/sr')"> iiii <span class="glyphicon glyphicon-stats"> </span> Grafische Darstellung 
+        <a href="" tal:condition="len(list(session.complete)) >= view.maxResults" tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/sr')"> iiii <span class="glyphicon glyphicon-stats"> </span> Grafische Darstellung 
         </a> 
-        <span> Die Auswertung wird erst ab dem <b> <span tal:content="view.maxResults"> </span>.</b> ausgefüllten Fragebogen angzeigt </span>
+        <span tal:condition="len(list(session.complete)) <= view.maxResults"> Die Auswertung wird erst ab dem <b> <span tal:content="view.maxResults"> </span>.</b> ausgefüllten Fragebogen angzeigt </span>
         </dd>
         <dt> Ausgefüllte Fragebogen: </dt> 
         <dd>
