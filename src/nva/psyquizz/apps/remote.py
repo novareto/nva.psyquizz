@@ -1,31 +1,77 @@
 # -*- coding: utf-8 -*-
 
 import json
-from cromlech.sqlalchemy import SQLAlchemySession
-from ..models import Student
+import webob
+from routes import Mapper
 from cromlech.webob import Response
+from cromlech.sqlalchemy import SQLAlchemySession
+
+from ..models import Student, Account, Company
 
 
-class Application(object):
+routes = Mapper()
+
+
+def route(path, methods=None):
+    if methods is None:
+        methods = ['GET']
+    def wrapper(func):
+        routes.connect(
+            path, controller=func, action=func.__name__,
+            conditions=dict(method=methods))
+        return func
+    return wrapper
+
+
+@route('/company/{id:\d+}')
+def get_company(engine, environ, id=None):
+    with SQLAlchemySession(engine) as session:
+        company = session.query(Company).get(int(id))
+        if company is None:
+            result = {
+                'success': False,
+                'error': 'Unknown company'}
+        else:
+            result = {
+                'success': True,
+                'data': {'name': company.name},
+            }
+    return result
+
+
+@route('/account/{email}')
+def get_account(engine, environ, email=None):
+    with SQLAlchemySession(engine) as session:
+        account = session.query(Account).get(email)
+        if account is None:
+            result = {
+                'success': False,
+                'error': 'Unknown account',
+            }
+        else:
+            result = {
+                'success': True,
+                'data': {'name': account.name},
+            }
+    return result
+
+
+class Application:
 
     def __init__(self, configuration):
         self.engine = configuration.engine
 
-    def get(self, obj):
-        return {
-            'success': True,
-            'quizz_type': obj.course.quizz_type,
-            }
-
-    def post(self, obj):
-        return {
-            'success': True,
-        }
-
     def __call__(self, environ, start_response):
-        id = environ['PATH_INFO'][1:]
-        method = getattr(self, environ.get('REQUEST_METHOD', 'GET').lower())
 
+        routing = routes.match(environ=environ)
+        if routing is not None:
+            _ = routing.pop('action', None)
+            handler = routing.pop('controller')
+            jresult = handler(self.engine, environ, **routing)
+        else:
+            return webob.exc.HTTPNotFound()(environ, start_response)
+
+            
         def make_response(result):
             json_result = json.dumps(result)
             response = Response()
@@ -33,19 +79,4 @@ class Application(object):
             response.headers['Content-Type'] = 'application/json'
             return response
 
-        with SQLAlchemySession(self.engine) as session:
-            student = session.query(Student).get(id)
-            if student is None:
-                # do someting
-                result = {
-                    'success': False,
-                    'error': 'No such quizz'}
-            elif getattr(student, 'completion_date') is not None:
-                # do something
-                result = {
-                    'success': False,
-                    'error': 'Already completed'}
-            else:
-                result = method(student)
-
-        return make_response(result)(environ, start_response)
+        return make_response(jresult)(environ, start_response)

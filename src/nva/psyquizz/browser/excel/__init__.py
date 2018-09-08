@@ -188,21 +188,17 @@ class XSLX(object):
             worksheet.write("A%i" % offset, labels[avg.title])
             worksheet.write("B%i" % offset, avg.average, nformat)
 
-        #worksheet = workbook.add_worksheet('RAW')
-        #worksheet.set_column('A:A', 25)
-        #worksheet.set_column('B:END', 30)
-        
-        #worksheet.write(0, 0, "Questions", header_format)
-        
-        #for i in range(1, self.statistics['total'] + 1, 1):
-        #    worksheet.write(0, i, "Student %s" % i, header_format)
-        
-        #for question, answers in self.statistics['raw'].items():
-        #    line = int(question)
-        #    worksheet.write(line, 0, "Question %s" % question, question_format)
-        #    for idx, answer in enumerate(answers, 1):
-        #        worksheet.write(line, idx, answer.result_title)
- 
+        if self.statistics['extra_data']:
+            line = 0
+            worksheet = workbook.add_worksheet('Zusatzfragen')
+            for key, value in self.statistics['extra_data'].items():
+                worksheet.write(line, 0, key)
+                col = 0
+                for question, answer in value.items():
+                    worksheet.write(line + 1, col, question)
+                    worksheet.write(line + 2, col, answer)
+                    col += 1
+                line += 5
         return workbook
 
     def render(self):

@@ -2,7 +2,7 @@
   <ul class="nav navbar-nav hidden-xs pull-right">
     <tal:loop repeat="entry viewlet.getFooter()">
       <li tal:attributes="class entry.selected and 'active' or ''">
-	<a tal:attributes="href entry.action" tal:content="entry.title" />
+  <a tal:attributes="href entry.action" tal:content="entry.title" />
       </li>
       <li class="divider-vertical"
       tal:condition="not repeat['entry'].end">&nbsp;</li>

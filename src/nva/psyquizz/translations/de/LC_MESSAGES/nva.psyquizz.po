@@ -83,10 +83,10 @@ msgid "Quizz"
 msgstr "Fragebogen wählen"
 
 msgid "Complementary questions for the course"
-msgstr "Zusatzfragen für diese Befragung (optional)"
+msgstr "Zusatzfragen (optional)"
 
 msgid "Type your questions : one per line."
-msgstr "Zusatzfragen eingeben. Für jede Frage eine neue Zeile beginnen."
+msgstr "Möchten Sie dem Fragebogen eigene Fragen hinzufügen?"
 
 msgid "Populate"
 msgstr "Anlegen"

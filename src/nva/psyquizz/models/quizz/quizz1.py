@@ -86,7 +86,7 @@ class IGroup1(Interface):
 
     question11 = schema.Choice(
         title=u"11",
-        description=u"ErhaltenSieausreichendeInformationenzurEntwicklungdesBetriebes?",
+        description=u"Erhalten Sie ausreichende Informationen zur Entwicklung des Betriebes?",
         vocabulary=TrueOrFalse,
         required=True,
         )
@@ -212,8 +212,10 @@ class Quizz1(Base, Location):
     session_id = Column(Integer, ForeignKey('sessions.id'))
     company_id = Column(Integer, ForeignKey('companies.id'))
 
-    student = relationship("Student")
-
+    student = relationship(
+        "Student", cascade="all,delete",
+        backref=backref("quizz", uselist=False, cascade="save-update,delete", single_parent=True))
+    
     # Quizz
     completion_date = Column('completion_date', DateTime)
     question1 = Column('question1', Boolean)

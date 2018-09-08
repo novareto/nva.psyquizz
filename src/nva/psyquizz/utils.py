@@ -22,7 +22,8 @@ class Helper(uvclight.View):
             try:
                 ca.session_id = int(sid)
             except:
-                print ca.student
+                #print ca.student
+                pass
 
 
 class HH(Helper):

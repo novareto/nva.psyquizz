@@ -5,23 +5,25 @@ import base64
 import datetime
 import binascii
 
-from ..apps import anonymous
-from ..i18n import _
-from ..interfaces import ICompanyRequest
-from ..models import Account, Company, Student, Course, ClassSession
-from ..models import IQuizz, ICriterias
-from ..models.deferred import quizz_choice
 from collections import OrderedDict
 from cromlech.browser import exceptions
 from cromlech.sqlalchemy import get_session
 from dolmen.menu import menuentry, order
+from nva.psyquizz.extra_questions import parse_extra_question_syntax
 from uvc.design.canvas import IContextualActionsMenu
 from uvclight import Page
 from uvclight import layer, name, context, title, get_template
 from uvclight.auth import require
 from zope.component import getUtility
 from zope.schema import getFieldsInOrder
+
 from .. import quizzjs
+from ..apps import anonymous
+from ..i18n import _
+from ..interfaces import ICompanyRequest
+from ..models import Account, Company, Student, Course, ClassSession
+from ..models import IQuizz, ICriterias
+from ..models.deferred import quizz_choice
 
 
 class AccountHomepage(Page):
@@ -43,13 +45,25 @@ class AccountHomepage(Page):
         return voc.getTermByToken(course.quizz_type).title
 
     def generic_id(self, id):
-        return binascii.hexlify(base64.urlsafe_b64encode(str(id) + ' complexificator'))
+        return binascii.hexlify(
+            base64.urlsafe_b64encode(str(id) + ' complexificator'))
 
     def checkDate(self, date):
         now = datetime.datetime.now()
         if date < now.date():
             return True
         return False
+
+    def additional_questions(self, course):
+        ret = {'title': '', 'content': []}
+        if not course.extra_questions:
+            ret['title'] = u'Keine Frage angelegt'
+        else:
+            exq = course.extra_questions.strip().split('\n')
+            ret['title'] = u'%s Fragen angelgt' % len(exq)
+            for l, tp, opts in (parse_extra_question_syntax(e) for e in exq):
+                ret['content'].append(l)
+        return ret
 
 
 class CriteriasListing(Page):

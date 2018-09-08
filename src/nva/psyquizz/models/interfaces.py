@@ -2,6 +2,7 @@
 
 import datetime
 from . import deferred_vocabularies, vocabularies
+from ..extra_questions import generate_extra_questions
 from grokcore.component import provider
 from nva.psyquizz.i18n import _
 from uvc.content.interfaces import IContent
@@ -78,6 +79,16 @@ def vocab_employees(context):
     return SimpleVocabulary(rc)
 
 
+@provider(IContextSourceBinder)
+def exp_db(context):
+    rc = [SimpleTerm('true', 'true', u'ja, ich stimme zu'),
+          SimpleTerm('false', 'false', u'nein, ich stimme einer anonymisierten \
+              Erfassung meiner Umfrageergebnisse nicht zu'),
+          ]
+    return SimpleVocabulary(rc)
+
+
+
 class IQuizz(Interface):
     pass
 
@@ -117,12 +128,14 @@ class ICriteria(IContent):
             raise Invalid(msg)
 
         clean = [i.strip() for i in items.split('\n') if i.strip()]
+
         if len(clean) < 2:
             raise Invalid(msg)
 
         tokens = set((c.lower() for c in clean))
         if len(tokens) != len(clean):
             raise Invalid(_(u"Sie haben zwei identische Werte angegeben.")) 
+        
 
 
 class IAccount(ILocation, IContent):
@@ -188,10 +201,14 @@ class ICompany(ILocation, IContent):
         required=False,
     )
 
-    exp_db = schema.Bool(
+    exp_db = schema.Choice(
         title=_(u'Forschungsdatenbank'),
-        description=_(u'Dürfen wir die Ergebnisse in der ForschungsDB verwenden'),
+        description=u'Ich stimme einer anonymisierten Erfassung meiner Umfrageergebnisse in einer Gesamtdatenbank zu. \
+                     Erfasst werden Branche, Anzahl Beschäftigte sowie Ergebnisse der Befragung \
+                     . Dies ermöglicht die Ableitung branchenspezifischer Präventionsangebote \
+                     sowie die Erstellung von Referenzwerten.',
         required=True,
+        source=exp_db 
     )
 
     employees = schema.Choice(
@@ -256,6 +273,13 @@ class ICourse(ILocation, IContent):
         required=True,
         )
 
+    extra_questions = schema.Text(
+        title=_(u"Complementary questions for the course"),
+        description=_(u"Type your questions : one per line."),
+        required=False,
+        default=u"",
+        )
+
     criterias = OrderedChoices(
         title=_(u"Auswertungsgruppen festlegen"),
         description=u"Sie können die Reihenfolge der Abfrage im „Fragebogen“ \
@@ -267,13 +291,16 @@ class ICourse(ILocation, IContent):
         required=False,
         )
 
-    extra_questions = schema.Text(
-        title=_(u"Complementary questions for the course"),
-        description=_(u"Type your questions : one per line."),
-        required=False,
-        )
+    @invariant
+    def check_extra_questions(data):
+        extra_questions = getattr(data, 'extra_questions', None)
+        if extra_questions:
+            try:
+                generate_extra_questions(extra_questions)
+            except NotImplementedError:
+                raise Invalid('Invalid syntax')
 
-
+    
 class ICourseSession(IClassSession, ICourse):
     pass
 

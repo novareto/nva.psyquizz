@@ -3,13 +3,14 @@
 # cklinger@novareto.de
 
 import uvclight
-from zope import interface
-from uvclight.auth import require
 from cromlech.sqlalchemy import get_session
-from nva.psyquizz import models
 from datetime import datetime, timedelta
-from zope.component import getUtilitiesFor
+from nva.psyquizz import models
 from nva.psyquizz.models.interfaces import IQuizz
+from sqlalchemy import func
+from uvclight.auth import require
+from zope import interface
+from zope.component import getUtilitiesFor
 
 
 class Statistik(uvclight.Page):
@@ -18,35 +19,65 @@ class Statistik(uvclight.Page):
 
     template = uvclight.get_template('statistik.cpt', __file__)
 
+    def update(self):
+        self.session = get_session('school')
+
     def getAccounts(self):
-        session = get_session('school')
-        return session.query(models.Account).count()
+        return self.session.query(models.Account).count()
 
     def getCompanies(self):
-        session = get_session('school')
-        return session.query(models.Company).count()
+        return self.session.query(models.Company).count()
+
+    def gCD(self, key):
+        dd = {}
+        for d in self.getDeletions():
+            dd[d[0]] = d[1]
+        return dd.get(key, 0)
+
+    def getDeletions(self):
+        #return session.query(models.HistoryEntry).filter(
+        #    models.HistoryEntry.action=="Delete").group_by(
+        #        models.HistoryEntry.type).count()
+        return self.session.query(
+            models.HistoryEntry.type,
+            func.count(models.HistoryEntry.type)).group_by(
+                models.HistoryEntry.type).filter(
+                    models.HistoryEntry.action=="Delete").all()
 
     def getSessions(self):
         future = 0
         present = 0
         past = 0
-        session = get_session('school')
+        offen = 0
+        closed = 0
         now = datetime.now().date()
-        sessions = session.query(models.ClassSession).all()
-
+        sessions = self.session.query(models.ClassSession).all()
         for session in sessions:
+            if session.strategy == "fixed":
+                closed += 1
+            else:
+                offen += 1
             if session.startdate > now:
                 future += 1
             elif now > session.startdate and now < session.enddate:
                 present += 1
             elif now > session.enddate:
                 past += 1
-        return dict(alle=len(sessions), past=past, present=present, future=future)
+
+        return dict(
+            alle=len(sessions),
+            past=past,
+            present=present,
+            offen=offen,
+            closed=closed,
+            future=future)
 
     def getAnswers(self):
-        session = get_session('school')
         ret = [] 
         for quizz in getUtilitiesFor(IQuizz):
             name, klass = quizz
-            ret.append({'title': klass.__title__, 'count': session.query(klass).count()})
+            ret.append({
+                'title': klass.__title__,
+                'count': self.session.query(klass).count()
+            })
         return ret

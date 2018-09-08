@@ -18,7 +18,10 @@ $(document).ready(function() {
     // set end date to max one year period:
     var end = new Date();
     end.setDate(end.getDate() + 180); 
-    
+
+    $('#form-field-startdate').attr('autocomplete', 'off');
+    $('#form-field-enddate').attr('autocomplete', 'off');
+
     $('#form-field-startdate').datepicker({
 	format: 'dd/mm/yyyy',
 	orientation: 'right',

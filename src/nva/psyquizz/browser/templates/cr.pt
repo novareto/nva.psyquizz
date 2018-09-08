@@ -40,7 +40,7 @@
     </dl>
     <input id="form-action-filter" type="submit" value="filter" />
   </form>
-  
+
   <button type="button" class="btn btn-primary pull-right"
 	  data-toggle="modal" data-target="#myModal">
     Glossar 
@@ -62,6 +62,23 @@
       <td tal:content="str('%.2f' % data.average).replace('.',',')"></td> 
     </tr>
   </table>
+
+  <div tal:condition="view.stats.statistics['extra_data']">
+   <h2> Ergebnis der Zusatzfrage(n)  </h2>
+  <table id="mt" class="table table-bordered table-striped">
+    <tr tal:repeat="data view.stats.statistics['extra_data'].items()">
+      <td tal:content="data[0]"></td> 
+      <td>
+	<ul>
+	  <li tal:repeat="answer data[1].items()">
+	    <span tal:content="answer[0]" /> :
+	    <span tal:content="answer[1]" />
+	  </li>
+	</ul>
+      </td>
+    </tr>
+  </table>
+  </div>
   
   <div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
   
@@ -232,12 +249,24 @@
             verticalAlign: 'top'
 	},
 	plotOptions: {
-           line: {
+            line: {
+	       <tal:no_criterias condition="not view.general_stats">
                events: {
                     legendItemClick: function () {
-                       return false; 
+                       return false;
+                    }
+               },
+	       </tal:no_criterias>
+	       <tal:criterias condition="view.general_stats">
+               events: {
+                    legendItemClick: function () {
+	                  console.log('toto');
+                          svgToCanvas(usersChart, 'userschart');
+                          $('#pSVG').val(usersChart.getSVGForExport());
                      }
-                },
+               },
+	       </tal:criterias>
+	       
                 showInLegend: true
             }
 	},

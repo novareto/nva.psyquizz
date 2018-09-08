@@ -38,9 +38,12 @@ $( document ).ready(function() {
 	$("#form-action-filter").click();
     });
 
-    $('#field-form-field-employees, #field-form-field-type').hide();
-    $('#form-field-exp_db').change( function(event){
-       $('#field-form-field-employees, #field-form-field-type').toggle();
+    //$('#field-form-field-employees, #field-form-field-type').hide();
+    $('input#form-field-exp_db-0').click( function(event){
+       $('#field-form-field-employees, #field-form-field-type').fadeIn();
+    });
+    $('input#form-field-exp_db-1').click( function(event){
+       $('#field-form-field-employees, #field-form-field-type').fadeOut();
     });
 
     $("a[href='https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/gbpb-in-grossbetrieben']").attr('target','_blank');

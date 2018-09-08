@@ -30,6 +30,7 @@ install_requires = [
     'svglib',
     'ul.auth',
     'ul.sql',
+    'routes',
     'uvc.composedview',
     'uvc.protectionwidgets',
     'uvc.validation',

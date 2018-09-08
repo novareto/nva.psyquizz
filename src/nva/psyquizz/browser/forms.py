@@ -7,6 +7,7 @@ import uuid
 import datetime
 import html2text
 import uvclight
+import re
 
 from .. import wysiwyg, quizzjs, startendpicker
 from ..apps.anonymous import QuizzBoard
@@ -14,6 +15,7 @@ from ..i18n import _
 from ..interfaces import IAnonymousRequest, ICompanyRequest
 from ..interfaces import QuizzAlreadyCompleted, QuizzClosed
 from ..interfaces import IRegistrationRequest
+from ..models import HistoryEntry
 from ..models import Account, Company, Course, ClassSession, Student
 from ..models import ICourseSession, IAccount, ICompany, ICourse, IClassSession
 from ..models import IQuizz, TrueOrFalse
@@ -22,16 +24,19 @@ from ..models.criterias import criterias_table
 from nva.psyquizz.browser.lib.emailer import SecureMailer, prepare, ENCODING
 
 from cromlech.sqlalchemy import get_session
-from dolmen.forms.base import SuccessMarker, makeAdaptiveDataManager, NO_VALUE
+from dolmen.forms.base import (
+    Field, SuccessMarker, makeAdaptiveDataManager, NO_VALUE)
 from dolmen.forms.base.actions import Action, Actions
 from dolmen.forms.base.errors import Error
 from dolmen.forms.base.utils import apply_data_event
 from dolmen.forms.crud.actions import message
+from dolmen.forms.ztk.widgets.choice import ChoiceField
 from dolmen.menu import menuentry, order
-from grokcore.component import Adapter, provides, context
+from grokcore.component import Adapter, provides, context, baseclass
 from js.jqueryui import jqueryui
 from nva.psyquizz import quizzjs
 from siguvtheme.resources import all_dates, datepicker_de
+from sqlalchemy import func
 from string import Template
 from uvc.design.canvas import IContextualActionsMenu
 from uvc.design.canvas import IDocumentActions
@@ -39,15 +44,15 @@ from uvclight import Form, EditForm, DeleteForm, Fields, SUCCESS, FAILURE
 from uvclight import action, layer, name, title, get_template
 from uvclight.auth import require
 from zope.component import getUtility
-from zope.interface import Interface
-from zope.interface import provider
-from zope.schema import Bool, Int, Choice, Password, TextLine
+from zope.interface import Interface, provider
+from zope.schema import Bool, List, Int, Choice, Password, TextLine
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from grokcore.component import adapter, implementer, adapts
 from dolmen.forms.base.interfaces import IForm
 from cromlech.browser import ITemplate
 from ..interfaces import IQuizzLayer
+from ..extra_questions import generate_extra_questions
 
 
 @adapter(IForm, IQuizzLayer)
@@ -55,7 +60,6 @@ from ..interfaces import IQuizzLayer
 def form_template(context, request):
     """default template for the menu"""
     return uvclight.get_template('form.cpt', __file__)
-
 
 
 with open(os.path.join(os.path.dirname(__file__), 'lib', 'mail.tpl'), 'r') as fd:
@@ -79,7 +83,6 @@ def send_activation_code(smtp, company_name, email, code, base_url):
 
         text = html2text.html2text(html.decode('utf-8'))
         mail = prepare(from_, email, title, html, text.encode('utf-8'))
-        print mail.as_string()
         sender(from_, email, mail.as_string())
     return True
 
@@ -132,6 +135,87 @@ class IPopulateCourse(Interface):
         )
 
 
+class PreviewExtraQuestions(Form):
+    baseclass()
+
+    actions = Actions()
+    ignoreRequest = True
+    ignoreContent = True
+
+    def __init__(self, context, request, text):
+        Form.__init__(self, context, request)
+        extra_fields = generate_extra_questions(text)
+        self.fields = Fields(*extra_fields)
+        for field in self.fields:
+            if isinstance(field, Choice):
+                field.mode = 'radio'
+
+    @property
+    def action(self):
+        return ''
+
+    def render(self):
+        preview = u'''<div id="extra_questions_preview"> KLAUS KLAUS %s</div>'''
+        widgets = ['''<div> Vorschau - So wird die Frage nach der
+                Auswertungsgruppe im Fragebogen dargestellt: <br> <br>  %s</div>''' % widget.render()
+                   for widget in self.fieldWidgets]
+        return preview % '\n'.join(widgets)
+
+
+class ExtraQuestions(uvclight.View):
+    context(Interface)
+    uvclight.name('preview_extra_questions')
+    require('zope.Public')
+    
+    def render(self):
+        questions = self.request.form.get('extra_questions', None)
+        if questions is None:
+            return ''
+        preview = PreviewExtraQuestions(self.context, self.request, questions)
+        preview.updateForm()
+        return preview.render()
+
+
+class PreviewCriterias(Form):
+    baseclass()
+
+    actions = Actions()
+    
+    def __init__(self, context, request, title, items):
+        Form.__init__(self, context, request)
+        self.criterias = items
+        self.title = title
+        self.prefix = 'preview'
+
+    @property
+    def action(self):
+        return ''
+
+    @property
+    def fields(self):
+        values = SimpleVocabulary([
+            SimpleTerm(value=c.strip(), token=idx, title=c.strip())
+            for idx, c in enumerate(self.criterias.split('\n'), 1)
+            if c.strip()])
+
+        fields = Fields(Choice(
+            __name__='criteria_1',
+            title=self.title.decode('utf-8'),
+            description=u"Wählen Sie das Zutreffende aus.",
+            vocabulary=values,
+            required=True,
+        ))
+        fields['criteria_1'].mode = 'radio'
+        return fields
+
+    def render(self):
+        field = self.fieldWidgets['preview.field.criteria_1']
+        return u"""<div class="preview" style="border: 5px solid #efefef;
+    padding: 10px; margin: 5px"><h3>Vorschau</h3> Vorschau - So wird die Frage
+    nach der Auswertungsgruppe im Fragebogen dargestellt: <br> <br> <label> %s </label>
+    <p> Wählen Sie das zutreffende aus. </p> <br> %s</div>""" % (field.title, field.render())
+
+
 @menuentry(IContextualActionsMenu, order=10)
 class CreateCriterias(Form):
     context(ICriterias)
@@ -148,6 +232,8 @@ Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.
 von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
 """
 
+    preview = None
+    
     @property
     def action_url(self):
         quizzjs.need()
@@ -169,6 +255,23 @@ von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
         self.flash(_(u'Criteria added with success.'))
         self.redirect(self.application_url())
         return SUCCESS
+
+    @action(_(u'Vorschau'))
+    def handle_preview(self):
+        data, errors = self.extractData()
+        if errors:
+            self.flash(_(u'An error occurred.'))
+            return FAILURE
+
+        preview = PreviewCriterias(self.context, self.request, **data)
+        preview.updateForm()
+        self.preview = preview.render()
+
+    def render(self):
+        html = Form.render(self)
+        if self.preview:
+            html += self.preview
+        return html
 
 
 class EditCriteria(EditForm):
@@ -224,6 +327,13 @@ class DeletedCriteria(DeleteForm):
     @action(_(u'Delete'))
     def handle_save(self):
         session = get_session('school')
+        
+        record = HistoryEntry(
+            action=u"Delete",
+            type=u"Critera",
+            description=u"Delete Criteria %s" % self.context.id)
+
+        session.add(record)
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
@@ -333,12 +443,15 @@ class CreateAccount(Form):
             self.flash(_(u'Password and verification mismatch.'))
             return FAILURE
 
-        existing = session.query(Account).get(data['email'])
+        existing = session.query(Account).filter(
+            func.lower(Account.email) == data['email'].lower())
+
         if existing is not None:
             self.flash(_(u'User with given email already exists.'))
             self.errors.append(
-                Error(identifier='form.field.email',
-                      title='Diese E-Mail Adresse existiert bereits im System.'))
+                Error(
+                    identifier='form.field.email',
+                    title='Diese E-Mail Adresse existiert bereits im System.'))
             return FAILURE
 
         # pop the captcha and verif, it's not a needed data
@@ -377,6 +490,13 @@ class DeletedAccount(DeleteForm):
     @action(_(u'Delete'))
     def handle_save(self):
         session = get_session('school')
+
+        record = HistoryEntry(
+            action=u"Delete",
+            type=u"Account",
+            description=u"Delete Account %s" % self.context.email)
+
+        session.add(record)
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
@@ -403,14 +523,15 @@ class CreateCompany(Form):
     fields = Fields(ICompany).select(
         'name', 'mnr', 'exp_db', 'type', 'employees')
     fields['mnr'].htmlAttributes = {'maxlength': 8}
+    fields['exp_db'].mode = "blockradio"
 
     def htmlId(self):
         return u"add.course"
 
     def updateForm(self):
         super(CreateCompany, self).updateForm()
-        self.fieldWidgets.get('form.field.exp_db').template = get_template(
-            'checkbox.cpt', __file__)
+        #self.fieldWidgets.get('form.field.exp_db').template = get_template(
+        #    'checkbox.cpt', __file__)
         name = self.fieldWidgets['form.field.name']
         nv = u""
         name.value = {'form.field.name': nv}
@@ -474,6 +595,13 @@ class DeletedCompany(DeleteForm):
     @action(_(u'Delete'))
     def handle_save(self):
         session = get_session('school')
+
+        record = HistoryEntry(
+            action=u"Delete",
+            type=u"Company",
+            description=u"Delete Company %s" % self.context.id)
+
+        session.add(record)
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
@@ -509,11 +637,12 @@ class CreateCourse(Form):
     @property
     def fields(self):
         course_fields = Fields(ICourse).select(
-            'name', 'criterias', 'quizz_type')
+            'name', 'criterias', 'quizz_type', 'extra_questions')
         populate_fields = Fields(IPopulateCourse)
         populate_fields['strategy'].mode = "radio"
         session_fields = Fields(IClassSession).select(
             'startdate', 'enddate', 'about')
+        course_fields['extra_questions'].mode = "SpecialInput"
         return course_fields + populate_fields + session_fields
 
     def update(self):
@@ -641,12 +770,12 @@ class CourseSession(Adapter):
         return property(fget, fset)
 
     @apply
-    def duration():
+    def enddate():
         def fget(self):
-            return self.context.duration
+            return self.context.enddate
 
         def fset(self, value):
-            self.context.duration = value
+            self.context.enddate = value
         return property(fget, fset)
 
     @apply
@@ -665,6 +794,8 @@ class EditCourse(Form):
     name('edit_course')
     require('manage.company')
     title(_(u'Edit the course'))
+    title = label = "Befragung bearbeiten"
+    description = u"Hier können Sie die Befragung bearbeiten"
 
     ignoreContent = False
     ignoreRequest = False
@@ -674,13 +805,19 @@ class EditCourse(Form):
     @property
     def fields(self):
         now = datetime.date.today()
-        fields = Fields(ICourseSession).select('duration', 'about')
+        fields = Fields()
+        if self.getContentData().content.context.enddate > now:
+            fields += Fields(ICourseSession).select('enddate')
         if self.getContentData().content.startdate > now:
-            fields += Fields(ICourseSession).select('startdate', 'criterias')
+            fields += Fields(ICourseSession).select(
+                'startdate', 'criterias', 'extra_questions')
+            fields['extra_questions'].mode = "SpecialInput"
+        fields += Fields(ICourseSession).select('about')
         return fields
 
     def update(self):
         wysiwyg.need()
+        startendpicker.need();
         Form.update(self)
 
     @property
@@ -714,9 +851,7 @@ class EditCourseBase(Form):
 
     ignoreContent = False
     ignoreRequest = False
-
-    fields = Fields(ICourse).select(
-        'name', 'startdate')
+    fields = Fields(ICourse).select('name', 'startdate')
 
     @property
     def action_url(self):
@@ -760,6 +895,13 @@ class DeleteCourse(DeleteForm):
     @action(_(u'Delete'))
     def handle_save(self):
         session = get_session('school')
+
+        record = HistoryEntry(
+            action=u"Delete",
+            type=u"Course",
+            description=u"Delete Course %s" % self.context.id)
+
+        session.add(record)
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
@@ -819,6 +961,13 @@ class DeleteSession(DeleteForm):
     @action(_(u'Delete'))
     def handle_save(self):
         session = get_session('school')
+
+        record = HistoryEntry(
+            action=u"Delete",
+            type=u"Session",
+            description=u"Delete Session %s" % self.context.id)
+
+        session.add(record)
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
@@ -866,8 +1015,18 @@ class SaveQuizz(Action):
             elif key.startswith('extra_'):
                 value = data.pop(key)
                 field = fields.get(key)
-                extra_answers[field.title] = value
+                extra_answers[field.description] = value
 
+        # We can't serialize sets
+        # This could be done in a specific serializer
+        # For now we do it in python.
+        for key, value in extra_answers.items():
+            if isinstance(value, set):
+                extra_answers[key] = list(value)
+
+        import pdb
+        pdb.set_trace()
+                
         data['extra_questions'] = json.dumps(extra_answers)
 
         form.context.complete_quizz()
@@ -975,22 +1134,13 @@ class AnswerQuizz(Form):
         fields = Fields(*criteria_fields) + fields
 
         questions_text = self.context.course.extra_questions
-        questions_fields = []
         if questions_text:
-            questions = questions_text.strip().split('\n')
-            for idx, question in enumerate(questions, 1):
-                question = question.decode('utf-8').strip()
-                extra_field = Choice(
-                    __name__='extra_question%s' % idx,
-                    title=question,
-                    vocabulary=TrueOrFalse,
-                    required=True,
-                    )
-                questions_fields.append(extra_field)
-        fields += Fields(*questions_fields)
+            extra_fields = Fields(*generate_extra_questions(questions_text))
+            fields += Fields(*extra_fields)
 
         for field in fields:
-            field.mode = self.fmode
+            if isinstance(field, ChoiceField):
+                field.mode = self.fmode
 
         return fields
 
@@ -1039,7 +1189,9 @@ class CompanyAnswerQuizz(Action):
             elif key.startswith('extra_'):
                 value = data.pop(key)
                 field = fields.get(key)
-                extra_answers[field.title] = value
+                if isinstance(value, set):
+                    value = list(value)
+                extra_answers[field.description] = value
 
         data['extra_questions'] = json.dumps(extra_answers)
 
