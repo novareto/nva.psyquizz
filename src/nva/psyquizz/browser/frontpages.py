@@ -60,7 +60,7 @@ class AccountHomepage(Page):
             ret['title'] = u'Keine Frage angelegt'
         else:
             exq = course.extra_questions.strip().split('\n')
-            ret['title'] = u'%s Fragen angelgt' % len(exq)
+            ret['title'] = u'%s Frage(n) angelegt' % len(exq)
             for l, tp, opts in (parse_extra_question_syntax(e) for e in exq):
                 ret['content'].append(l)
         return ret
