@@ -63,6 +63,14 @@ class CourseStatistics(object):
         self.statistics = compute(
             self.quizz, self.averages, self.sums, self.filters)
 
+        if 'criterias' in filters:
+            for criteria in filters['criterias']:
+                for title, cc in self.statistics['criterias'].items():
+                    for c in cc:
+                        if criteria == c.uid and c.amount < 7:
+                            raise NotImplementedError()
+
+
         self.users_statistics = groups_scaling(
             self.statistics['users.grouped'])
         self.xAxis = [
@@ -250,9 +258,18 @@ class SR(uvclight.Page):
         stats = SessionStatistics(quizz, self.context, self.request)
         stats.update(filters)
 
+
+
         if 'criterias' in filters:
             general_stats = SessionStatistics(quizz, self.context, self.request)
             general_stats.update({})
+
+            for criteria in filters['criterias']:
+                for title, cc in general_stats.statistics['criterias'].items():
+                    for c in cc:
+                        if criteria == c.uid and c.amount < 7:
+                            raise NotImplementedError()
+
         else:
             general_stats = None
 
@@ -287,6 +304,13 @@ class CR(uvclight.Page):
         if 'criterias' in filters:
             general_stats = CourseStatistics(quizz, self.context, self.request)
             general_stats.update({})
+
+            for criteria in filters['criterias']:
+                 for title, cc in general_stats.statistics['criterias'].items():
+                     for c in cc:
+                         if criteria == c.uid and c.amount < 7:
+                             raise NotImplementedError()
+
         else:
             general_stats = None
 

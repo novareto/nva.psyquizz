@@ -1,30 +1,26 @@
 <div>
-<div class="header">
-
-  <h1>Ergebnisse</h1>
-  <p>Hier sehen Sie die Auswertung für alle Beschäftigten. 
-  </p>
-
-
-
-  <p>
-  Durch Auswahl einer oder mehrerer Auswertungsgruppen haben Sie die Möglichkeit sich eine
-  detaillierte Auswertung anzeigen zu lassen. (Bitte beachten Sie: Einzelne Auswertungsgruppen 
-  können erst ausgewählt werden, wenn für diese Auswertungsgruppe mindestens sieben 
-  ausgefüllte Fragebögen vorliegen.)
-  </p>
-  <p>
-  Der weitere Umgang mit den Ergebnissen ist in der „Übersicht 7 Schritte“ unter 4.  Lösungsworkshops beschrieben.
-  </p>
-
-</div>
-
+  <div class="header">
+    <h1>Ergebnisse</h1>
+    <p>
+      Hier sehen Sie die Auswertung für alle Beschäftigten. 
+    </p>
+    <p>
+      Durch Auswahl einer oder mehrerer Auswertungsgruppen haben Sie die
+      Möglichkeit sich eine detaillierte Auswertung anzeigen zu lassen.
+      (Bitte beachten Sie: Einzelne Auswertungsgruppen können erst ausgewählt
+      werden, wenn für diese Auswertungsgruppe mindestens sieben ausgefüllte
+      Fragebögen vorliegen.)
+    </p>
+    <p>
+      Der weitere Umgang mit den Ergebnissen ist in der
+      „Übersicht 7 Schritte“ unter 4. Lösungsworkshops beschrieben.
+    </p>
+  </div>
   <form action="." tal:attributes="action view.request.url"
 	tal:define="current view.stats.filters.get('criterias', {})">
-<div><a name="uncheckall">Alle</a>
-
-
- </div>
+    <div>
+      <a name="uncheckall">Alle</a>
+    </div>
     <dl tal:define="crits view.stats.statistics['criterias']">
       <tal:dl tal:repeat="crit crits">
 	<dt><h3 tal:content="crit" /></dt>
@@ -32,33 +28,33 @@
 	  <div tal:repeat="opt crits[crit]"
 	       style="display: inline-block; padding: 5px;">
 	    <tal:disabled define="disabled bool(opt.amount < 7)">
-	      <input name="criterias" type="checkbox"
-		     tal:attributes="value opt.uid;
-				     checked opt.uid in current;
-				     disabled disabled and 'disabled' or None" />
-	      <span tal:content="'%s (%s)' % (opt.name, opt.amount)"
-		    tal:attributes="class disabled and 'text-muted' or ''"/>
-	    </tal:disabled>
-	  </div>
-	</dd>
-      </tal:dl>
-    </dl>
-    <input id="form-action-filter" type="submit" value="filter" />
-  </form>
-  
-  <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
-      Glossar 
-  </button>
-  <div id="container1" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+	    <input name="criterias" type="checkbox"
+		   tal:attributes="value opt.uid;
+				   checked opt.uid in current;
+				   disabled disabled and 'disabled' or None" />
+	    <span tal:content="'%s (%s)' % (opt.name, opt.amount)"
+		  tal:attributes="class disabled and 'text-muted' or ''"/>
+	  </tal:disabled>
+	</div>
+      </dd>
+    </tal:dl>
+  </dl>
+  <input id="form-action-filter" type="submit" value="filter" />
+</form>
 
-  <div class="legend" style="width: 550px; margin: 0 auto 5em auto; text-align: center; border: 2px solid #666;">
-    <em><b style="color: #62B645;">> 3,5</b>:
-    in diesem Bereich scheint alles in Ordnung</em><br>
-    <em><b style="color: #FFCC00;">> 2,5 < 3,5</b>:
-    diesen Bereich sollten Sie sich noch mal genauer ansehen</em><br>
-    <em><b style="color: #D8262B;"> < 2,5  </b>:
-    in diesem Bereich scheint Handlungsbedarf zu bestehen </em>&nbsp;&nbsp;
-  </div>
+<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
+  Glossar 
+</button>
+<div id="container1" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+
+<div class="legend" style="width: 550px; margin: 0 auto 5em auto; text-align: center; border: 2px solid #666;">
+  <em><b style="color: #62B645;">> 3,5</b>:
+  in diesem Bereich scheint alles in Ordnung</em><br>
+  <em><b style="color: #FFCC00;">> 2,5 < 3,5</b>:
+  diesen Bereich sollten Sie sich noch mal genauer ansehen</em><br>
+  <em><b style="color: #D8262B;"> < 2,5  </b>:
+  in diesem Bereich scheint Handlungsbedarf zu bestehen </em>&nbsp;&nbsp;
+</div>
 
   <table id="mt" class="table table-bordered table-striped">
     <tr tal:repeat="data view.stats.statistics['global.averages']">
@@ -366,21 +362,28 @@ var donut = Highcharts.chart('q3sums', {
                 },
                 showInLegend: true
             }
-	},
-	series: [{
-            name: 'gesamt',
+	    },
+	series: [
+	<tal:no_criterias condition="not view.general_stats">
+	  {
+	    name: 'gesamt',
             data: <span tal:replace="view.stats.rd"/>,
             pointPlacement: 'on'
-	    }
-	    <tal:general condition="view.general_stats">
-	      ,
-	      {
-            name: 'Ihre Auswahl',
+	  }
+	</tal:no_criterias>
+	<tal:criterias condition="view.general_stats">
+	  {
+	    name: 'gesamt',
             data: <span tal:replace="view.general_stats.rd"/>,
             pointPlacement: 'on'
-	    }
-	    </tal:general>
-	    ]
+	  },
+	  {    
+            name: 'Ihre Auswahl',
+            data: <span tal:replace="view.stats.rd"/>,
+            pointPlacement: 'on'
+	  }
+	</tal:criterias>
+	]
      });
      svgToCanvas(usersChart, 'userschart');
 
