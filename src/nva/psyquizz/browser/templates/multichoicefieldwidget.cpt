@@ -1,15 +1,19 @@
 <tal:widget>
   <tal:choice tal:repeat="choice widget.renderableChoice()">
-    <label for="#" tal:attributes="for choice.id; disabled choice.disabled" class="checkbox-inline">
-    <input type="checkbox" id="#" name="#" value="#" checked="#" class="#"
-           tal:attributes="name widget.identifier;
-                           value choice.token;
-                           id choice.id;
-                           disabled choice.disabled;
-                           checked choice.checked and 'checked' or None;
-                           class widget.htmlClass()" />
-    <span tal:content="choice.title"/> 
-    </label>
+    <div tal:omit-tag="widget.inline">
+      <label for="#" tal:attributes="for choice.id;
+				     disabled choice.disabled;
+				     class widget.labelclass">
+	<input type="checkbox" id="#" name="#" value="#" checked="#" class="#"
+               tal:attributes="name widget.identifier;
+                               value choice.token;
+                               id choice.id;
+                               disabled choice.disabled;
+                               checked choice.checked and 'checked' or None;
+                               class widget.htmlClass()" />
+	<span tal:content="choice.title"/> 
+      </label>
+    </div>
   </tal:choice>
   <input type="hidden" name="#" value="1"
          tal:attributes="name string:${widget.identifier}.present" />

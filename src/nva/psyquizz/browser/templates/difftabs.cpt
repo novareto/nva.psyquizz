@@ -1,0 +1,9 @@
+<ul class="nav nav-tabs">
+  <tal:loop repeat="q viewlet.quizzes">
+  <li tal:attributes="class q[1] == context.quizz and 'active' or ''">
+    <a href=""
+       tal:attributes="href q[0]"		       
+       tal:content="q[1].__name__" />
+  </li>
+  </tal:loop>
+</ul>

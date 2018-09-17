@@ -34,6 +34,11 @@ class MultiChoiceFieldWidget(MultiChoiceFieldWidget):
     adapts(SetField, choice.ChoiceField, Interface, IQuizzLayer)
     template = uvclight.get_template('multichoicefieldwidget.cpt', __file__)
 
+    def __init__(self, *args, **kws):
+        super(MultiChoiceFieldWidget, self).__init__(*args, **kws)
+        self.inline = getattr(self.form, 'inline', True)
+        self.labelclass = self.inline and "" or "checkbox-inline"
+            
     def renderableChoice(self):
         current = self.inputValue()
         base_id = self.htmlId()

@@ -3,18 +3,19 @@
 import uvclight
 from uvclight.auth import require
 
-from cromlech.browser import IRequest
-from cromlech.browser import ITraverser
+from cromlech.browser import IRequest, ITraverser
 from dolmen.forms.base import FAILURE, SUCCESS
 from grokcore.component import MultiAdapter, provides, adapts, name, provider
+from nva.psyquizz import hs
 from nva.psyquizz.models import IQuizz, IClassSession, ICourse, ICompany
+from uvc.design.canvas import IAboveContent
 from zope.component import queryUtility, getUtilitiesFor
 from zope.interface import Interface
 from zope.location import Location, LocationProxy
 from zope.schema import Choice, Set
-from nva.psyquizz import hs
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
+from collections import OrderedDict
 
 from .results import CourseStatistics
 from ..interfaces import ICompanyRequest
@@ -22,10 +23,11 @@ from ..interfaces import ICompanyRequest
 
 class CompanyCoursesDifference(Location):
 
-    def __init__(self, parent, name, quizz):
+    def __init__(self, parent, name, quizz, quizzes):
         self.__parent__ = parent
         self.__name__ = name
         self.quizz = quizz
+        self.quizzes = quizzes
 
 
 @provider(IContextSourceBinder)
@@ -58,30 +60,22 @@ class DiffTraverser(MultiAdapter):
         self.request = request
 
     def traverse(self, ns, name):
-        if name:
-            quizz = queryUtility(IQuizz, name=name)
-            if quizz is not None:
-                content = CompanyCoursesDifference(
-                    self.context, '++diff++' + name, quizz)
-                return content
-            return None
-        return LocationProxy(self, self.context, '++diff++')
+        def sorter(a, b):
+            return cmp(a[0], b[0])
 
+        quizzes = list(getUtilitiesFor(IQuizz))
+        if quizzes:
+            quizzes.sort(sorter)
+            self.quizzes = OrderedDict(quizzes)
 
-class CompanyQuizzDiffs(uvclight.Page):
-    name('index')
-    require('manage.company')
-    uvclight.context(DiffTraverser)
-    uvclight.layer(ICompanyRequest)
+            if not name:
+                name, quizz = quizzes[0]
+            else:
+                quizz = self.quizzes[name]
 
-    template = uvclight.get_template('qdiff.cpt', __file__)
-
-    def update(self):
-        url = self.url(self.context)
-        self.quizzes = {
-            u.__name__: (url + n)
-            for n, u in getUtilitiesFor(IQuizz)
-            }
+            return CompanyCoursesDifference(
+                self.context, '++diff++' + name, quizz, self.quizzes)
+        return None
         
     
 class CompanyDiff(uvclight.Form):
@@ -91,10 +85,11 @@ class CompanyDiff(uvclight.Form):
     uvclight.layer(ICompanyRequest)
 
     fields = uvclight.Fields(IMultipleCoursesDiff)
-    fields['courses'].mode = 'multiselect'
+    #fields['courses'].mode = 'multiselect'
     
     template = uvclight.get_template('cdiff.cpt', __file__)
     courses = None
+    inline = False
     
     @property
     def action_url(self):
@@ -120,3 +115,16 @@ class CompanyDiff(uvclight.Form):
             self.courses.append(stat)
             
         return SUCCESS
+
+
+class DiffTabs(uvclight.Viewlet):
+    uvclight.viewletmanager(IAboveContent)
+    uvclight.order(10)
+    uvclight.name('diff-tabs')
+    uvclight.layer(ICompanyRequest)
+    uvclight.context(CompanyCoursesDifference)
+    template = uvclight.get_template('difftabs.cpt', __file__)
+
+    def update(self):
+        url = self.view.url(self.context.__parent__)
+        self.quizzes = (('%s/++diff++%s' % (url, n), u) for n, u in self.context.quizzes.items())
