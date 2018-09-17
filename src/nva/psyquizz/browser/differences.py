@@ -19,6 +19,7 @@ from collections import OrderedDict
 
 from .results import CourseStatistics
 from ..interfaces import ICompanyRequest
+from ..i18n import _
 
 
 class CompanyCoursesDifference(Location):
@@ -44,7 +45,7 @@ def courses(context):
 class IMultipleCoursesDiff(Interface):
 
     courses = Set(
-        title=u"Courses to diff",
+        title=_(u"Courses to diff"),
         value_type=Choice(source=courses),
         required=True,
         )
@@ -97,9 +98,10 @@ class CompanyDiff(uvclight.Form):
 
     @property
     def label(self):
-        return u"Courses difference (%s)" % self.context.quizz.__name__
+        return _(u"Courses difference (${quizz})",
+                 mapping={'quizz': self.context.quizz.__name__})
     
-    @uvclight.action(u'Difference')
+    @uvclight.action(_(u'Difference'))
     def handle_save(self):
         data, errors = self.extractData()
         if errors:
@@ -116,6 +118,18 @@ class CompanyDiff(uvclight.Form):
             
         return SUCCESS
 
+    @uvclight.action(u'Export')
+    def handle_export(self):
+        data, errors = self.extractData()
+        if errors:
+            self.flash(_(u'An error occurred.'))
+            return FAILURE
+
+        view = getMultiAdapter(
+            (self.context, self.request), name="excel")
+        view.update()
+        return SUCCESS
+
 
 class DiffTabs(uvclight.Viewlet):
     uvclight.viewletmanager(IAboveContent)
@@ -127,4 +141,6 @@ class DiffTabs(uvclight.Viewlet):
 
     def update(self):
         url = self.view.url(self.context.__parent__)
-        self.quizzes = (('%s/++diff++%s' % (url, n), u) for n, u in self.context.quizzes.items())
+        self.quizzes = (
+            ('%s/++diff++%s' % (url, n), u)
+            for n, u in self.context.quizzes.items())
