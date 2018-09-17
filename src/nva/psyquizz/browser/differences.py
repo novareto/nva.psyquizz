@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import os
 import uvclight
-from uvclight.auth import require
+import xlsxwriter
+import cStringIO
+import shutil
+
+from backports import tempfile
+from collections import OrderedDict
 
 from cromlech.browser import IRequest, ITraverser
 from dolmen.forms.base import FAILURE, SUCCESS
@@ -9,14 +15,15 @@ from grokcore.component import MultiAdapter, provides, adapts, name, provider
 from nva.psyquizz import hs
 from nva.psyquizz.models import IQuizz, IClassSession, ICourse, ICompany
 from uvc.design.canvas import IAboveContent
-from zope.component import queryUtility, getUtilitiesFor
+from uvclight.auth import require
+from zope.component import getMultiAdapter, queryUtility, getUtilitiesFor
 from zope.interface import Interface
 from zope.location import Location, LocationProxy
 from zope.schema import Choice, Set
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
-from collections import OrderedDict
 
+from .excel import CHUNK
 from .results import CourseStatistics
 from ..interfaces import ICompanyRequest
 from ..i18n import _
@@ -78,7 +85,70 @@ class DiffTraverser(MultiAdapter):
                 self.context, '++diff++' + name, quizz, self.quizzes)
         return None
         
+
+class Export(uvclight.View):
+    uvclight.context(CompanyCoursesDifference)
+    uvclight.layer(ICompanyRequest)
+
+    def update(self, *courses):
+        self.courses = courses
     
+    def render(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            filepath = os.path.join(temp_dir, 'export.xlsx')
+            workbook = xlsxwriter.Workbook(filepath)
+            nformat = workbook.add_format()
+            nformat.set_num_format('0.00')
+            
+            worksheet0 = workbook.add_worksheet('Averages')
+            global_avg = OrderedDict()
+            stats = []
+            for course in self.courses:
+                stat = CourseStatistics(self.context.quizz, course)
+                stat.update({'course': course.id})
+                stats.append((course, stat))
+
+            for course, stat in stats:
+                # workbook.add_worksheet(course.name) # too long !!!
+                worksheet = workbook.add_worksheet(str(course.id))
+                for i, x in enumerate(stat.statistics['global.averages']):
+                    worksheet.write(i, 0, x.title)
+                    worksheet.write(i, 1, x.average, nformat)
+                    avg = global_avg.setdefault(x.title, [])
+                    avg.append(x.average)
+
+            for i, x in enumerate(global_avg.items()):
+                key, value = x
+                worksheet0.write(i, 0, key)
+                worksheet0.write(i, 1, sum(value)/float(len(value)), nformat)
+
+            workbook.close()
+            output = cStringIO.StringIO()
+            with open(filepath, 'rb') as fd:
+                shutil.copyfileobj(fd, output)
+
+            output.seek(0)
+        return output
+        
+        return u"Export"
+
+    def make_response(self, result):
+        response = self.responseFactory()
+        response.headers['Content-Type'] = (
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response.headers['Content-Disposition'] = (
+            u'attachment; filename="Export.xlsx"')
+
+        def filebody(r):
+            data = r.read(CHUNK)
+            while data:
+                yield data
+                data = r.read(CHUNK)
+
+        response.app_iter = filebody(result)
+        return response
+
+
 class CompanyDiff(uvclight.Form):
     name('index')
     require('manage.company')
@@ -91,6 +161,7 @@ class CompanyDiff(uvclight.Form):
     template = uvclight.get_template('cdiff.cpt', __file__)
     courses = None
     inline = False
+    view = None
     
     @property
     def action_url(self):
@@ -125,11 +196,21 @@ class CompanyDiff(uvclight.Form):
             self.flash(_(u'An error occurred.'))
             return FAILURE
 
-        view = getMultiAdapter(
-            (self.context, self.request), name="excel")
-        view.update()
+        self.view = getMultiAdapter(
+            (self.context, self.request), name="export")
+        self.view.update(*data['courses'])
         return SUCCESS
 
+    def render(self):
+        if self.view is not None:
+            return self.view.render()
+        return uvclight.Form.render(self)
+
+    def make_response(self, result):
+        if self.view is not None:
+            return self.view.make_response(result)
+        return uvclight.Form.make_response(self, result)
+ 
 
 class DiffTabs(uvclight.Viewlet):
     uvclight.viewletmanager(IAboveContent)
