@@ -3,7 +3,7 @@
   <li tal:attributes="class q[1] == context.quizz and 'active' or ''">
     <a href=""
        tal:attributes="href q[0]"		       
-       tal:content="q[1].__name__" />
+       tal:content="q[1].__title__" />
   </li>
   </tal:loop>
 </ul>

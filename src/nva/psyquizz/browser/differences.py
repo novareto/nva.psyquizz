@@ -30,7 +30,6 @@ from ..i18n import _
 
 
 class CompanyCoursesDifference(Location):
-
     def __init__(self, parent, name, quizz, quizzes):
         self.__parent__ = parent
         self.__name__ = name
@@ -41,10 +40,13 @@ class CompanyCoursesDifference(Location):
 @provider(IContextSourceBinder)
 def courses(context):
     if isinstance(context, CompanyCoursesDifference):
-        voc = SimpleVocabulary([
-            SimpleTerm(value=c, token=c.id, title=c.name)
-            for c in context.__parent__.courses
-            if c.quizz_type == context.quizz.__tablename__])
+        voc = SimpleVocabulary(
+            [
+                SimpleTerm(value=c, token=c.id, title=c.name)
+                for c in context.__parent__.courses
+                if c.quizz_type == context.quizz.__tablename__
+            ]
+        )
         return voc
     raise NotImplementedError
 
@@ -52,14 +54,12 @@ def courses(context):
 class IMultipleCoursesDiff(Interface):
 
     courses = Set(
-        title=_(u"Courses to diff"),
-        value_type=Choice(source=courses),
-        required=True,
-        )
+        title=_(u"Courses to diff"), value_type=Choice(source=courses), required=True
+    )
 
 
 class DiffTraverser(MultiAdapter):
-    name('diff')
+    name("diff")
     adapts(ICompany, IRequest)
     provides(ITraverser)
 
@@ -82,9 +82,10 @@ class DiffTraverser(MultiAdapter):
                 quizz = self.quizzes[name]
 
             return CompanyCoursesDifference(
-                self.context, '++diff++' + name, quizz, self.quizzes)
+                self.context, "++diff++" + name, quizz, self.quizzes
+            )
         return None
-        
+
 
 class Export(uvclight.View):
     uvclight.context(CompanyCoursesDifference)
@@ -92,26 +93,26 @@ class Export(uvclight.View):
 
     def update(self, *courses):
         self.courses = courses
-    
+
     def render(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            filepath = os.path.join(temp_dir, 'export.xlsx')
+            filepath = os.path.join(temp_dir, "export.xlsx")
             workbook = xlsxwriter.Workbook(filepath)
             nformat = workbook.add_format()
-            nformat.set_num_format('0.00')
-            
-            worksheet0 = workbook.add_worksheet('Averages')
+            nformat.set_num_format("0.00")
+
+            worksheet0 = workbook.add_worksheet("Averages")
             global_avg = OrderedDict()
             stats = []
             for course in self.courses:
                 stat = CourseStatistics(self.context.quizz, course)
-                stat.update({'course': course.id})
+                stat.update({"course": course.id})
                 stats.append((course, stat))
 
             for course, stat in stats:
                 # workbook.add_worksheet(course.name) # too long !!!
                 worksheet = workbook.add_worksheet(str(course.id))
-                for i, x in enumerate(stat.statistics['global.averages']):
+                for i, x in enumerate(stat.statistics["global.averages"]):
                     worksheet.write(i, 0, x.title)
                     worksheet.write(i, 1, x.average, nformat)
                     avg = global_avg.setdefault(x.title, [])
@@ -120,24 +121,24 @@ class Export(uvclight.View):
             for i, x in enumerate(global_avg.items()):
                 key, value = x
                 worksheet0.write(i, 0, key)
-                worksheet0.write(i, 1, sum(value)/float(len(value)), nformat)
+                worksheet0.write(i, 1, sum(value) / float(len(value)), nformat)
 
             workbook.close()
             output = cStringIO.StringIO()
-            with open(filepath, 'rb') as fd:
+            with open(filepath, "rb") as fd:
                 shutil.copyfileobj(fd, output)
 
             output.seek(0)
         return output
-        
+
         return u"Export"
 
     def make_response(self, result):
         response = self.responseFactory()
-        response.headers['Content-Type'] = (
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response.headers['Content-Disposition'] = (
-            u'attachment; filename="Export.xlsx"')
+        response.headers[
+            "Content-Type"
+        ] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        response.headers["Content-Disposition"] = u'attachment; filename="Export.xlsx"'
 
         def filebody(r):
             data = r.read(CHUNK)
@@ -150,55 +151,56 @@ class Export(uvclight.View):
 
 
 class CompanyDiff(uvclight.Form):
-    name('index')
-    require('manage.company')
+    name("index")
+    require("manage.company")
     uvclight.context(CompanyCoursesDifference)
     uvclight.layer(ICompanyRequest)
 
     fields = uvclight.Fields(IMultipleCoursesDiff)
-    #fields['courses'].mode = 'multiselect'
-    
-    template = uvclight.get_template('cdiff.cpt', __file__)
+    # fields['courses'].mode = 'multiselect'
+
+    template = uvclight.get_template("cdiff.cpt", __file__)
     courses = None
     inline = False
     view = None
-    
+
     @property
     def action_url(self):
         return self.request.path
 
     @property
     def label(self):
-        return _(u"Courses difference (${quizz})",
-                 mapping={'quizz': self.context.quizz.__name__})
-    
-    @uvclight.action(_(u'Difference'))
+        return _(
+            u"Courses difference (${quizz})",
+            mapping={"quizz": self.context.quizz.__name__},
+        )
+
+    @uvclight.action(_(u"Difference"))
     def handle_save(self):
         data, errors = self.extractData()
         if errors:
-            self.flash(_(u'An error occurred.'))
+            self.flash(_(u"An error occurred."))
             return FAILURE
 
         hs.need()
 
         self.courses = []
-        for course in data['courses']:
+        for course in data["courses"]:
             stat = CourseStatistics(self.context.quizz, course)
-            stat.update({'course': course.id})
+            stat.update({"course": course.id})
             self.courses.append(stat)
-            
+
         return SUCCESS
 
-    @uvclight.action(u'Export')
+    @uvclight.action(u"Export")
     def handle_export(self):
         data, errors = self.extractData()
         if errors:
-            self.flash(_(u'An error occurred.'))
+            self.flash(_(u"An error occurred."))
             return FAILURE
 
-        self.view = getMultiAdapter(
-            (self.context, self.request), name="export")
-        self.view.update(*data['courses'])
+        self.view = getMultiAdapter((self.context, self.request), name="export")
+        self.view.update(*data["courses"])
         return SUCCESS
 
     def render(self):
@@ -210,18 +212,18 @@ class CompanyDiff(uvclight.Form):
         if self.view is not None:
             return self.view.make_response(result)
         return uvclight.Form.make_response(self, result)
- 
+
 
 class DiffTabs(uvclight.Viewlet):
     uvclight.viewletmanager(IAboveContent)
     uvclight.order(10)
-    uvclight.name('diff-tabs')
+    uvclight.name("diff-tabs")
     uvclight.layer(ICompanyRequest)
     uvclight.context(CompanyCoursesDifference)
-    template = uvclight.get_template('difftabs.cpt', __file__)
+    template = uvclight.get_template("difftabs.cpt", __file__)
 
     def update(self):
         url = self.view.url(self.context.__parent__)
         self.quizzes = (
-            ('%s/++diff++%s' % (url, n), u)
-            for n, u in self.context.quizzes.items())
+            ("%s/++diff++%s" % (url, n), u) for n, u in self.context.quizzes.items()
+        )
