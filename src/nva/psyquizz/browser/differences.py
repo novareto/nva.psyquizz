@@ -54,7 +54,9 @@ def courses(context):
 class IMultipleCoursesDiff(Interface):
 
     courses = Set(
-        title=_(u"Courses to diff"), value_type=Choice(source=courses), required=True
+        title=_(u"Courses to diff"),
+        value_type=Choice(source=courses),
+        required=True
     )
 
 
