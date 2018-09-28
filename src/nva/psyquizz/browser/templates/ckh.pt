@@ -53,6 +53,11 @@
 		<a href="" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/add.course')"> (Neue Befragung anlegen)  </a>
               </small>
             </h3>
+            <div tal:condition="len(list(company.courses)) > 1" style="margin: 5px;" class="pull-right">
+              <a href="" tal:attributes="href str(company.id) + '/++diff++'">
+                <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Befragungen vergleichen 
+              </a>
+            </div>
             <div class="befragung" tal:repeat="course sorted(company.courses, key=lambda x: x.id, reverse=True)">
               <span class="lead" tal:content="course.title"> </span> 
 	      <a href="" onclick="_paq.push(['trackEvent', 'Alle Befragun löschen']);"
@@ -103,18 +108,6 @@
             <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
             Papierfragebögen eingeben 
 	  </a>
-    <!--
-	  <br />
-          <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/offlinequizz')">
-            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-            Download Vorlage Erfassung Papierfragebögen
-	  </a>
-	  <br />
-          <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/uploadofflinequizz')">
-            <span class="glyphicon glyphicon-upload"
-		  aria-hidden="true"></span> Ausgefüllte Vorlage importieren
-	  </a>
-    -->
 	</dd>
       </div>
       <dt>
