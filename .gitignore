@@ -58,6 +58,9 @@ local_settings.py
 instance/
 .webassets-cache
 
+# Emacs stuff
+*~
+
 # Scrapy stuff:
 .scrapy
 
@@ -92,3 +95,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Node stuff
+node_modules
+yarn.lock
