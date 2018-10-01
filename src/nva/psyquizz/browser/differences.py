@@ -70,10 +70,12 @@ class DiffTraverser(MultiAdapter):
         self.request = request
 
     def traverse(self, ns, name):
+
         def sorter(a, b):
             return cmp(a[0], b[0])
 
-        quizzes = list(getUtilitiesFor(IQuizz))
+        quizzes = [(n, q) for n, q in getUtilitiesFor(IQuizz)
+                   if getattr(q, '__supports_diff__', True)]
         if quizzes:
             quizzes.sort(sorter)
             self.quizzes = OrderedDict(quizzes)
