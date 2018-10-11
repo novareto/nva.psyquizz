@@ -133,10 +133,13 @@
             name: '<span tal:replace="stat.course.title"/>',
             data: <span tal:replace="stat.rd"/>,
             pointPlacement: 'on'
-	    }
-	  <tal:p condition="not repeat['stat'].end">,</tal:p>
+	    },
 	  </tal:courses>
-	    ]
+	    {
+            name: 'Average',
+            data: <span tal:replace="view.avg"/>,
+            pointPlacement: 'on'
+	    }]
      });
      svgToCanvas(usersChart, 'userschart');
     </script>

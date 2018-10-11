@@ -40,14 +40,16 @@ class StatuslisteExport(uvclight.View):
             for name, quizz in component.getUtilitiesFor(IQuizz):
                 quizz_results = computer(quizz)
                 worksheet = workbook.add_worksheet(name)
-                for col, f in enumerate(getFieldsInOrder(quizz.__schema__)):
-                    field_name, field = f
-                    title = '%s [%s]' % (
-                        field_name, field.vocabulary.__name__)
-                    worksheet.write(0, col, title)
-                    for row, answer in enumerate(quizz_results):
+                worksheet.write(0, 0, 'Session id')
+                for row, answer in enumerate(quizz_results):
+                    worksheet.write(row + 1, 0, str(answer.session_id))
+                    for col, f in enumerate(getFieldsInOrder(quizz.__schema__)):
+                        field_name, field = f
                         result = getattr(answer, field_name, 'NA')
-                        worksheet.write(row + 1, col, result)
+                        title = '%s [%s]' % (
+                            field_name, field.vocabulary.__name__)
+                        worksheet.write(0, col + 1, title)
+                        worksheet.write(row + 1, col + 1, result)
 
             workbook.close()
             output = cStringIO.StringIO()

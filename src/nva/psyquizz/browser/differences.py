@@ -105,7 +105,7 @@ class Export(uvclight.View):
             nformat = workbook.add_format()
             nformat.set_num_format("0.00")
 
-            worksheet0 = workbook.add_worksheet("Averages")
+            worksheet = workbook.add_worksheet("Scores")
             global_avg = OrderedDict()
             stats = []
             for course in self.courses:
@@ -113,19 +113,20 @@ class Export(uvclight.View):
                 stat.update({"course": course.id})
                 stats.append((course, stat))
 
-            for course, stat in stats:
-                # workbook.add_worksheet(course.name) # too long !!!
-                worksheet = workbook.add_worksheet(str(course.id))
-                for i, x in enumerate(stat.statistics["global.averages"]):
-                    worksheet.write(i, 0, x.title)
-                    worksheet.write(i, 1, x.average, nformat)
-                    avg = global_avg.setdefault(x.title, [])
-                    avg.append(x.average)
+            for col, course_stat in enumerate(stats):
+                course, stat = course_stat
+                worksheet.write(0, col + 1, course.title)
+                for row, score in enumerate(stat.statistics["global.averages"]):
+                    worksheet.write(row + 1, col + 2, score.average, nformat)
+                    avg = global_avg.setdefault(score.title, [])
+                    avg.append(score.average)
 
+            worksheet.write(0, 1, 'Averages')
             for i, x in enumerate(global_avg.items()):
                 key, value = x
-                worksheet0.write(i, 0, key)
-                worksheet0.write(i, 1, sum(value) / float(len(value)), nformat)
+                worksheet.write(i + 1, 0, key)
+                worksheet.write(
+                    i + 1, 1, sum(value) / float(len(value)), nformat)
 
             workbook.close()
             output = cStringIO.StringIO()
@@ -161,8 +162,6 @@ class CompanyDiff(uvclight.Form):
     uvclight.layer(ICompanyRequest)
 
     fields = uvclight.Fields(IMultipleCoursesDiff)
-    # fields['courses'].mode = 'multiselect'
-
     template = uvclight.get_template("cdiff.cpt", __file__)
     courses = None
     inline = False
@@ -189,10 +188,19 @@ class CompanyDiff(uvclight.Form):
         hs.need()
 
         self.courses = []
+        global_avg = OrderedDict()
+        self.avg = []
+        
         for course in data["courses"]:
             stat = CourseStatistics(self.context.quizz, course)
             stat.update({"course": course.id})
             self.courses.append(stat)
+            for x in stat.statistics["global.averages"]:
+                avg = global_avg.setdefault(x.title, [])
+                avg.append(x.average)
+        
+        for question, scores in global_avg.items():
+            self.avg.append(sum(scores) / float(len(scores)))
 
         return SUCCESS
 
