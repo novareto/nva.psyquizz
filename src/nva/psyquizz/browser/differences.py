@@ -17,7 +17,7 @@ from nva.psyquizz.models import IQuizz, IClassSession, ICourse, ICompany
 from uvc.design.canvas import IAboveContent
 from uvclight.auth import require
 from zope.component import getMultiAdapter, queryUtility, getUtilitiesFor
-from zope.interface import Interface
+from zope.interface import Interface, classImplements
 from zope.location import Location, LocationProxy
 from zope.schema import Choice, Set
 from zope.schema.interfaces import IContextSourceBinder
@@ -30,24 +30,24 @@ from ..i18n import _
 
 
 class CompanyCoursesDifference(Location):
+
     def __init__(self, parent, name, quizz, quizzes):
         self.__parent__ = parent
         self.__name__ = name
         self.quizz = quizz
         self.quizzes = quizzes
+        self.all_courses = SimpleVocabulary([
+            SimpleTerm(value=c, token=c.id, title=c.name)
+            for c in self.__parent__.courses
+            if c.quizz_type == quizz.__tablename__
+        ])
+        self.courses = [c.value for c in self.all_courses]
 
 
 @provider(IContextSourceBinder)
 def courses(context):
     if isinstance(context, CompanyCoursesDifference):
-        voc = SimpleVocabulary(
-            [
-                SimpleTerm(value=c, token=c.id, title=c.name)
-                for c in context.__parent__.courses
-                if c.quizz_type == context.quizz.__tablename__
-            ]
-        )
-        return voc
+        return context.all_courses
     raise NotImplementedError
 
 
@@ -161,9 +161,9 @@ class CompanyDiff(uvclight.Form):
     uvclight.context(CompanyCoursesDifference)
     uvclight.layer(ICompanyRequest)
 
+    ignoreContent = False
     fields = uvclight.Fields(IMultipleCoursesDiff)
     template = uvclight.get_template("cdiff.cpt", __file__)
-    courses = None
     inline = False
     view = None
 
@@ -178,6 +178,32 @@ class CompanyDiff(uvclight.Form):
             mapping={"quizz": self.context.quizz.__name__},
         )
 
+    def stats_avg(self):
+        avg = []
+        stats = []
+        global_avg = OrderedDict()
+        
+        for course in self.context.courses:
+            stat = CourseStatistics(self.context.quizz, course)
+            stat.update({"course": course.id})
+            stats.append(stat)
+            for x in stat.statistics["global.averages"]:
+                avg = global_avg.setdefault(x.title, [])
+                avg.append(x.average)
+
+        for question, scores in global_avg.items():
+            avg.append(sum(scores) / float(len(scores)))
+
+        return stats, avg
+
+    def updateActions(self):
+        action, result = uvclight.Form.updateActions(self)
+        if not action:
+            # default
+            hs.need()
+            self.stats, self.avg = self.stats_avg()
+        return action, result
+
     @uvclight.action(_(u"Difference"))
     def handle_save(self):
         data, errors = self.extractData()
@@ -186,22 +212,8 @@ class CompanyDiff(uvclight.Form):
             return FAILURE
 
         hs.need()
-
-        self.courses = []
-        global_avg = OrderedDict()
-        self.avg = []
-        
-        for course in data["courses"]:
-            stat = CourseStatistics(self.context.quizz, course)
-            stat.update({"course": course.id})
-            self.courses.append(stat)
-            for x in stat.statistics["global.averages"]:
-                avg = global_avg.setdefault(x.title, [])
-                avg.append(x.average)
-        
-        for question, scores in global_avg.items():
-            self.avg.append(sum(scores) / float(len(scores)))
-
+        self.context.courses = data['courses']
+        self.stats, self.avg = self.stats_avg()
         return SUCCESS
 
     @uvclight.action(u"Export")
@@ -211,7 +223,8 @@ class CompanyDiff(uvclight.Form):
             self.flash(_(u"An error occurred."))
             return FAILURE
 
-        self.view = getMultiAdapter((self.context, self.request), name="export")
+        self.view = getMultiAdapter(
+            (self.context, self.request), name="export")
         self.view.update(*data["courses"])
         return SUCCESS
 
@@ -232,10 +245,11 @@ class DiffTabs(uvclight.Viewlet):
     uvclight.name("diff-tabs")
     uvclight.layer(ICompanyRequest)
     uvclight.context(CompanyCoursesDifference)
+
     template = uvclight.get_template("difftabs.cpt", __file__)
 
     def update(self):
         url = self.view.url(self.context.__parent__)
         self.quizzes = (
-            ("%s/++diff++%s" % (url, n), u) for n, u in self.context.quizzes.items()
-        )
+            ("%s/++diff++%s" % (url, n), u)
+            for n, u in self.context.quizzes.items())
