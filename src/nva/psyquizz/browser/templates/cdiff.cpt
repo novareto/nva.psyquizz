@@ -53,14 +53,14 @@
     </div>
   </div>
   
-  <div class="actions"
-       tal:condition="view.actionWidgets">
-    <div class="action" tal:repeat="widget view.actionWidgets">
+  <div class="actions" tal:condition="view.actionWidgets"
+       style="margin-top: 2em;">
+    <tal:action repeat="widget view.actionWidgets">
       <tal:widget tal:content="structure widget.render()" />
-    </div>
+    </tal:action>
   </div>
 
-  <div tal:condition="view.courses != None">
+  <div tal:condition="view.stats">
 
     <div id="userschart"></div>
     
@@ -94,31 +94,35 @@
             size: '80%'
 	},
 	xAxis: {
-	    categories: <span tal:replace="view.courses[0].xAxis"/>,
+	    categories: <span tal:replace="view.stats[0].xAxis"/>,
             tickmarkPlacement: 'on',
             lineWidth: 0
 	},
 	yAxis: {
             gridLineInterpolation: 'polygon',
             lineWidth: 0,
-            tickAmount: 4,
-            min: 0,
+            tickAmount: 5,
+	    startOnTick: true,
+	    showLastLabel: true,
+	    endOnTick: true,
+            min: 1,
+	    max: 5,
             plotBands: [
 		{
-		    color: '#FF0000',
-		    from: 0,
-		    to:  3 
+		    color: '#D8262B',
+		    from: 1,
+		    to:  2.5 
 		},
 		{
-		    color: '#FFFF00',
-		    from: 3,
-		    to: 4 
+		    color: '#FFCC00',
+		    from: 2.5,
+		    to: 3.5
 		},
 		{
-		    color: '#32DD32',
-            from: 4,
-		    to: 6 
-		},
+		    color: '#62B645',
+                    from: 3.5,
+		    to: 5
+		}
 	    ],
 	},
 	legend: {
@@ -127,14 +131,20 @@
             y: 70,
             layout: 'vertical'
 	},
+        exporting: {
+            enabled: false
+        },
+        credits: {
+             enabled: false
+        }, 
 	series: [
-	  <tal:courses repeat="stat view.courses">
+	  <tal:stats repeat="stat view.stats">
 	    {
             name: '<span tal:replace="stat.course.title"/>',
             data: <span tal:replace="stat.rd"/>,
             pointPlacement: 'on'
 	    },
-	  </tal:courses>
+	  </tal:stats>
 	    {
             name: 'Durchschnitt',
             data: <span tal:replace="view.avg"/>,
