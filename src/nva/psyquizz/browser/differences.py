@@ -121,7 +121,6 @@ class Export(uvclight.View):
                 ','.join([x.title for x in self.courses]),
                 datetime.datetime.now().strftime('%d.%m.%Y')
             )
-            print fp
             worksheet0 = workbook.add_worksheet('Dokumentation')
             fm = workbook.add_format()
             fm.set_text_wrap()
@@ -138,7 +137,7 @@ class Export(uvclight.View):
 
             for col, course_stat in enumerate(stats):
                 course, stat = course_stat
-                worksheet.write(0, col + 1, course.title)
+                worksheet.write(0, col + 2, course.title)
                 for row, score in enumerate(stat.statistics["global.averages"]):
                     worksheet.write(row + 1, col + 2, score.average, nformat)
                     avg = global_avg.setdefault(score.title, [])

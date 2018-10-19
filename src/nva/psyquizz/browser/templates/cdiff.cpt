@@ -87,7 +87,7 @@
             type: 'line'
 	},
 	title: {
-            text: 'Budget vs spending',
+            text: ' ',
             x: -80
 	},
 	pane: {

@@ -200,7 +200,7 @@ msgid "User with given email already exists."
 msgstr "Diese E-Mail Adresse ist bereits im System gespeichert"
 
 msgid "Courses to diff"
-msgstr "Befragungen"
+msgstr " "
 
 msgid "Courses difference (${quizz})"
 msgstr "Befragungen vergleichen"
