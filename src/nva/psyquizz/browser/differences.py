@@ -5,6 +5,7 @@ import uvclight
 import xlsxwriter
 import cStringIO
 import shutil
+import datetime
 
 from backports import tempfile
 from collections import OrderedDict
@@ -91,6 +92,16 @@ class DiffTraverser(MultiAdapter):
         return None
 
 
+FRONTPAGE = u"""
+Auswertungsbericht
+„Gemeinsam zu gesunden Arbeitsbedingungen“ – Psychische Belastung erfassen
+%s
+
+Befragungen: %s
+Auswertung erzeugt: %s
+"""
+
+
 class Export(uvclight.View):
     uvclight.context(CompanyCoursesDifference)
     uvclight.layer(ICompanyRequest)
@@ -105,7 +116,19 @@ class Export(uvclight.View):
             nformat = workbook.add_format()
             nformat.set_num_format("0.00")
 
-            worksheet = workbook.add_worksheet("Scores")
+            fp = FRONTPAGE % (
+                self.courses[0].company.name,
+                ','.join([x.title for x in self.courses]),
+                datetime.datetime.now().strftime('%d.%m.%Y')
+            )
+            print fp
+            worksheet0 = workbook.add_worksheet('Dokumentation')
+            fm = workbook.add_format()
+            fm.set_text_wrap()
+            worksheet0.set_column(0, 0, 130)
+            worksheet0.write(0, 0, fp, fm)
+
+            worksheet = workbook.add_worksheet("Werte")
             global_avg = OrderedDict()
             stats = []
             for course in self.courses:
@@ -121,7 +144,7 @@ class Export(uvclight.View):
                     avg = global_avg.setdefault(score.title, [])
                     avg.append(score.average)
 
-            worksheet.write(0, 1, 'Averages')
+            worksheet.write(0, 1, 'Durchschnitt')
             for i, x in enumerate(global_avg.items()):
                 key, value = x
                 worksheet.write(i + 1, 0, key)

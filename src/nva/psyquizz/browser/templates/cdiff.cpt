@@ -136,7 +136,7 @@
 	    },
 	  </tal:courses>
 	    {
-            name: 'Average',
+            name: 'Durchschnitt',
             data: <span tal:replace="view.avg"/>,
             pointPlacement: 'on'
 	    }]
