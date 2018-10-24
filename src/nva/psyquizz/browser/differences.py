@@ -212,10 +212,8 @@ class CompanyDiff(uvclight.Form):
             for x in stat.statistics["global.averages"]:
                 avg = global_avg.setdefault(x.title, [])
                 avg.append(x.average)
-
         for question, scores in global_avg.items():
             avg.append(sum(scores) / float(len(scores)))
-
         return stats, avg
 
     def updateActions(self):
