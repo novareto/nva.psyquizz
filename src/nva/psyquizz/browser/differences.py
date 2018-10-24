@@ -201,7 +201,6 @@ class CompanyDiff(uvclight.Form):
         )
 
     def stats_avg(self):
-        avg = []
         stats = []
         global_avg = OrderedDict()
         
@@ -212,6 +211,7 @@ class CompanyDiff(uvclight.Form):
             for x in stat.statistics["global.averages"]:
                 avg = global_avg.setdefault(x.title, [])
                 avg.append(x.average)
+        avg = []
         for question, scores in global_avg.items():
             avg.append(sum(scores) / float(len(scores)))
         return stats, avg
