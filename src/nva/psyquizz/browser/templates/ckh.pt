@@ -53,7 +53,7 @@
 		<a href="" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/add.course')"> (Neue Befragung anlegen)  </a>
               </small>
             </h3>
-            <div tal:condition="len(list(company.courses)) > 1" style="margin: 5px;" class="pull-right">
+            <div tal:condition="view.canCompare(company)" style="margin: 5px;" class="pull-right">
               <a href="" tal:attributes="href str(company.id) + '/++diff++'">
                 <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Befragungen vergleichen 
               </a>

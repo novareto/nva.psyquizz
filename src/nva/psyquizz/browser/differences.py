@@ -236,7 +236,7 @@ class CompanyDiff(uvclight.Form):
         self.stats, self.avg = self.stats_avg()
         return SUCCESS
 
-    @uvclight.action(u"Export")
+    @uvclight.action(u"Excel Export")
     def handle_export(self):
         data, errors = self.extractData()
         if errors:
