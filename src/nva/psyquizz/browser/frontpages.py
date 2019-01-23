@@ -40,6 +40,15 @@ class AccountHomepage(Page):
     def update(self):
         quizzjs.need()
 
+    def canCompare(self, company):
+        if len(list(company.courses)) <= 1:
+            return False
+        qt = set([x.quizz_type for x in company.courses])
+        if len(qt) == 1 and 'quizz1' in qt:
+            return False
+        return True
+
+
     def quizz_name(self, course):
         voc = quizz_choice(course)
         return voc.getTermByToken(course.quizz_type).title

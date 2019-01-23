@@ -40,6 +40,7 @@
         </span>
       </tal:description>
        -->
+       test
       <p tal:condition="widget.description" class="help-block"
       tal:content="structure widget.description" />
       <tal:widget metal:define-macro="field-inline" tal:content="structure widget.render()" />

@@ -107,6 +107,11 @@ def compute(quizz, averages, sums, filters):
     filtered_criterias = {}
     
     if filters:
+        if 'course' in filters:
+            answers = answers.filter(
+                quizz.course_id == filters['course']
+            )
+        
         if 'session' in filters:
             answers = answers.filter(
                 quizz.session_id == filters['session']
