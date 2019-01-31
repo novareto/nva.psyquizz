@@ -445,8 +445,7 @@ class CreateAccount(Form):
 
         existing = session.query(Account).filter(
             func.lower(Account.email) == data['email'].lower())
-
-        if existing is not None:
+        if existing.count():
             self.flash(_(u'User with given email already exists.'))
             self.errors.append(
                 Error(
