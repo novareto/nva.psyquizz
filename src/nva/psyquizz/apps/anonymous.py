@@ -13,6 +13,8 @@ from uvc.themes.btwidgets import IBootstrapRequest
 from uvclight.backends.sql import SQLPublication
 from zope.component import getGlobalSiteManager
 from zope.interface import implementer
+from cromlech.sqlalchemy import get_session
+from functools import partial
 
 
 def get_id(secret):
@@ -94,7 +96,8 @@ class Application(SQLPublication):
         pass
 
     def site_manager(self, environ):
-        return Site(QuizzBoard(None, '', self.configuration.name))
+        session = partial(get_session, 'school')
+        return Site(QuizzBoard(session, parent=None, name=self.configuration.name))
 
     @property
     def layers(self):
