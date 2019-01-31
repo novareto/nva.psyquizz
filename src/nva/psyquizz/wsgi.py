@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from zope.interface import verify
+from zope import interface
+interface.verify = verify
+
 import Cookie
 from os import path
 

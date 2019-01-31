@@ -231,7 +231,7 @@ class Excel(uvclight.Page):
 
     def update(self):
         quizz = getUtility(IQuizz, self.context.quizz_type)
-        self.stats = SessionXSLX(quizz, self.context, self.request)
+        self.stats = SessionXSLX(quizz, self.context)
         filters = get_filters(self.request)
         self.stats.update(filters)
 
