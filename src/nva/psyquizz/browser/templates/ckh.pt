@@ -2,7 +2,7 @@
   <div class="page-header">
     <h1>Startseite <small tal:content="context.name" /></h1>
     <p>
-      Herzlich Willkommen bei der Online-Hilfe der BG ETEM für Ihre
+      Herzlich Willkommen bei der Online-Hilfe der <span tal:content="title" /> für Ihre
       Gefährdungsbeurteilung psychischer Belastung. Mit diesem
       Werkzeug können Sie die psychische Belastung unkompliziert
       erheben. Auf den folgenden Seiten können Sie das Profil Ihres

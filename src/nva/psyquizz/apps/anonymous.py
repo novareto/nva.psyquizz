@@ -13,6 +13,8 @@ from uvc.themes.btwidgets import IBootstrapRequest
 from uvclight.backends.sql import SQLPublication
 from zope.component import getGlobalSiteManager
 from zope.interface import implementer
+from cromlech.sqlalchemy import get_session
+from functools import partial
 
 
 def get_id(secret):
@@ -24,6 +26,13 @@ def get_id(secret):
 class QuizzBoard(SQLContainer):
     model = Student
     assert_key = 'completion_date'
+
+    def session_getter(self):
+        return get_session('school')
+
+    def __init__(self, parent=None, name=None):
+        self.__parent__ = parent
+        self.__name__ = name
 
     def getSiteManager(self):
         return getGlobalSiteManager()
@@ -94,7 +103,7 @@ class Application(SQLPublication):
         pass
 
     def site_manager(self, environ):
-        return Site(QuizzBoard(None, '', self.configuration.name))
+        return Site(QuizzBoard(parent=None, name=self.configuration.name))
 
     @property
     def layers(self):

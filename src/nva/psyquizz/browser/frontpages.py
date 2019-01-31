@@ -11,12 +11,12 @@ from cromlech.sqlalchemy import get_session
 from dolmen.menu import menuentry, order
 from nva.psyquizz.extra_questions import parse_extra_question_syntax
 from uvc.design.canvas import IContextualActionsMenu
-from uvclight import Page
 from uvclight import layer, name, context, title, get_template
 from uvclight.auth import require
 from zope.component import getUtility
 from zope.schema import getFieldsInOrder
 
+from . import Page
 from .. import quizzjs
 from ..apps import anonymous
 from ..i18n import _
@@ -36,7 +36,7 @@ class AccountHomepage(Page):
     template = get_template('ckh.pt', __file__)
 
     maxResults = 7 
-
+    
     def update(self):
         quizzjs.need()
 
