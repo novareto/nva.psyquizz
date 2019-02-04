@@ -15,6 +15,7 @@ from zope.component import getGlobalSiteManager
 from zope.interface import implementer
 from cromlech.sqlalchemy import get_session
 from functools import partial
+from zope.location import ILocation, Location, LocationProxy, locate
 
 
 def get_id(secret):
@@ -29,6 +30,9 @@ class QuizzBoard(SQLContainer):
 
     def getSiteManager(self):
         return getGlobalSiteManager()
+
+    def key_converter(self, id):
+        return id
 
     def create_student(self, id):
         sessionid = get_id(str(id))
@@ -79,7 +83,8 @@ class QuizzBoard(SQLContainer):
             except:
                 raise KeyError(id)
         else:
-            content = SQLContainer.__getitem__(self, id)
+            #content = SQLContainer.__getitem__(self, id)
+            content = self.getStudent(id)
             if content is not None:
                 if date.today() > content.session.enddate:
                     raise QuizzClosed(content)
@@ -87,6 +92,17 @@ class QuizzBoard(SQLContainer):
                     raise QuizzAlreadyCompleted(content)
                 return content
             raise KeyError(id)
+
+    def getStudent(self, key):
+        model = self.query_filters(self.session.query(self.model)).get(key)
+        if model is None:
+            raise KeyError(key)
+
+        if not ILocation.providedBy(model):
+            model = LocationProxy(model)
+
+        locate(model, self, self.key_reverse(model))
+        return model
 
 
 class Application(SQLPublication):
