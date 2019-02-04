@@ -8,7 +8,13 @@ def tokenize(uni):
     return base64.b64encode(uni.encode('utf-8'))
 
 
-TrueOrFalse = SimpleVocabulary([
+def make_vocabulary(name, terms):
+     vocabulary = SimpleVocabulary(terms)
+     vocabulary.__name__ = name
+     return vocabulary
+
+
+TrueOrFalse = make_vocabulary('True or false', [
     SimpleTerm(value=True,
                token=tokenize(u'eher Ja'),
                title='eher Ja'),
@@ -18,7 +24,7 @@ TrueOrFalse = SimpleVocabulary([
     ])
 
 
-LessToMore = SimpleVocabulary([
+LessToMore = make_vocabulary('Less to more', [
     SimpleTerm(value=1,
                token=tokenize(u'sehr wenig'),
                title='sehr wenig'),
@@ -37,7 +43,7 @@ LessToMore = SimpleVocabulary([
     ])
 
 
-MoreToLessN = SimpleVocabulary([
+MoreToLessN = make_vocabulary('More to less N', [
     SimpleTerm(value=5,
                token=tokenize(u'trifft gar nicht zu'),
                title=u'trifft gar nicht zu'),
@@ -55,7 +61,7 @@ MoreToLessN = SimpleVocabulary([
                title=u'trifft völlig zu'),
     ])
 
-MoreToLess = SimpleVocabulary([
+MoreToLess = make_vocabulary('More to less', [
     SimpleTerm(value=1,
                token=tokenize(u'trifft gar nicht zu'),
                title=u'trifft gar nicht zu'),
@@ -74,7 +80,7 @@ MoreToLess = SimpleVocabulary([
     ])
 
 
-durations = SimpleVocabulary([
+durations = make_vocabulary('durations', [
     SimpleTerm(value=21,
                title=u'3 Wochen'),
     SimpleTerm(value=28,
@@ -84,7 +90,7 @@ durations = SimpleVocabulary([
     ])
 
 
-AF = SimpleVocabulary([
+AF = make_vocabulary('AF', [
     SimpleTerm(value=0,
                title=u'0 - völlig arbeitsunfähig'),
     SimpleTerm(value=1,
@@ -110,7 +116,7 @@ AF = SimpleVocabulary([
     ])
 
 
-GOODBAD = SimpleVocabulary([
+GOODBAD = make_vocabulary('good or bad', [
     SimpleTerm(value=5,
                title=u'sehr gut'),
     SimpleTerm(value=4,
@@ -124,7 +130,7 @@ GOODBAD = SimpleVocabulary([
     ])
 
 
-TIMESPAN = SimpleVocabulary([
+TIMESPAN = make_vocabulary('timespan', [
     SimpleTerm(value=5,
                title=u'überhaupt keinen'),
     SimpleTerm(value=4,
@@ -138,7 +144,7 @@ TIMESPAN = SimpleVocabulary([
     ])
 
 
-ASSESMENT = SimpleVocabulary([
+ASSESMENT = make_vocabulary('assesment', [
     SimpleTerm(value=1,
                title=u'unwahrscheinlich'),
     SimpleTerm(value=4,
@@ -148,7 +154,7 @@ ASSESMENT = SimpleVocabulary([
     ])
 
 
-FREQUENCY = SimpleVocabulary([
+FREQUENCY = make_vocabulary('frequency', [
     SimpleTerm(value=4,
                title=u'häufig'),
     SimpleTerm(value=3,
@@ -161,7 +167,7 @@ FREQUENCY = SimpleVocabulary([
                title=u'niemals'),
     ])
 
-FREQUENCY1 = SimpleVocabulary([
+FREQUENCY1 = make_vocabulary('frequency1', [
     SimpleTerm(value=4,
                title=u'immer'),
     SimpleTerm(value=3,
@@ -174,7 +180,7 @@ FREQUENCY1 = SimpleVocabulary([
                title=u'niemals'),
     ])
 
-FREQUENCY2 = SimpleVocabulary([
+FREQUENCY2 = make_vocabulary('frequency2', [
     SimpleTerm(value=4,
                title=u'ständig'),
     SimpleTerm(value=3,

@@ -28,6 +28,13 @@ class QuizzBoard(SQLContainer):
     model = Student
     assert_key = 'completion_date'
 
+    def session_getter(self):
+        return get_session('school')
+
+    def __init__(self, parent=None, name=None):
+        self.__parent__ = parent
+        self.__name__ = name
+
     def getSiteManager(self):
         return getGlobalSiteManager()
 

@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+# Monkey patching
+from zope.interface import verify
+from dolmen.menu import meta
+
+
 SESSION_NAME = ''
 
 
