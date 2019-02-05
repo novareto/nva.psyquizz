@@ -6,6 +6,6 @@ class Page(BasePage):
 
     def namespace(self):
         ns = BasePage.namespace(self)
-        ns['site'] = getSite()
-        ns['title'] = self.request.environment['customer.title']
+        site = getSite()
+        ns['config'] = site.configuration 
         return ns

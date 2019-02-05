@@ -292,8 +292,8 @@ class Application(SQLPublication, SecurePublication):
                 account = account.first()
             else:
                 account = None
-                
             if account is not None:
+                account.configuration = self.configuration
                 account.getSiteManager = getGlobalSiteManager
                 alsoProvides(account, IPublicationRoot)
                 return Site(account)
@@ -329,7 +329,13 @@ class Application(SQLPublication, SecurePublication):
 @implementer(IPublicationRoot)
 class Registration(Publication, Location):
 
-    layers = [IRegistrationRequest]
+    _layers = [IRegistrationRequest]
+
+    @property
+    def layers(self):
+        if self.configuration.layer is not None:
+            return [self.configuration.layer] + self._layers
+        return self._layers
 
     def __init__(self, configuration):
         self.configuration = configuration
