@@ -28,7 +28,7 @@ class QuizzBoard(SQLContainer):
     model = Student
     assert_key = 'completion_date'
 
-    def session_getter(self):
+    def get_session(self):
         return get_session('school')
 
     def __init__(self, parent=None, name=None):
@@ -119,8 +119,7 @@ class Application(SQLPublication):
         pass
 
     def site_manager(self, environ):
-        session = partial(get_session, 'school')
-        return Site(QuizzBoard(session, parent=None, name=self.configuration.name))
+        return Site(QuizzBoard(parent=None, name=self.configuration.name))
 
     @property
     def layers(self):
