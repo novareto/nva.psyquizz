@@ -37,7 +37,7 @@ from uvclight import provides, adapts, title
 from uvclight.auth import require
 from uvclight.backends.sql import SQLPublication
 
-from zope.component import getGlobalSiteManager
+from zope.component import getGlobalSiteManager, getMultiAdapter
 from zope.interface import Interface, alsoProvides, implementer
 from zope.location import Location
 from zope.schema import TextLine
@@ -234,15 +234,6 @@ class AccountLogin(Login):
         yield Access()
 
 
-class AnonIndex(Page):
-    baseclass()
-    __component_name__ = 'index'
-
-    template = get_template('anon_index_new.pt', browser.__file__)
-
-    def update(self):
-        lbg.need()
-
 
 @implementer(IPublicationRoot, IView, IResponseFactory)
 class NoAccess(Location):
@@ -259,7 +250,16 @@ class NoAccess(Location):
             return AccountLogin(self, self.request)()
         if self.request.path_info in (u'/forgotten',):
             return ForgotPassword(self, self.request)()
-        return AnonIndex(self, self.request)()
+        return getMultiAdapter((self, self.request), name="anonindex")()
+        #return AnonIndex(self, self.request)()
+
+class AnonIndex(Page):
+    context(NoAccess)
+
+    template = get_template('anon_index_new.pt', browser.__file__)
+
+    def update(self):
+        lbg.need()
 
 
 class Application(SQLPublication, SecurePublication):
