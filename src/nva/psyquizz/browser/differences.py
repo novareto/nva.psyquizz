@@ -9,8 +9,10 @@ import datetime
 
 from backports import tempfile
 from collections import OrderedDict
+from sqlalchemy import func, and_
 
 from cromlech.browser import IRequest, ITraverser
+from cromlech.sqlalchemy import get_session
 from dolmen.forms.base import FAILURE, SUCCESS
 from grokcore.component import MultiAdapter, provides, adapts, name, provider
 from nva.psyquizz import hs
@@ -25,9 +27,10 @@ from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
 from .excel import CHUNK
-from .results import CourseStatistics
+from .results import CourseStatistics, SessionStatistics
 from ..interfaces import ICompanyRequest
 from ..i18n import _
+from ..models import Course, Student
 
 
 class CompanyCoursesDifference(Location):
@@ -37,12 +40,33 @@ class CompanyCoursesDifference(Location):
         self.__name__ = name
         self.quizz = quizz
         self.quizzes = quizzes
+
+        session = get_session('school')
+        courses = session.query(Course).\
+                  filter(Course.quizz_type == quizz.__tablename__).\
+                  filter(Course.company_id == parent.id).\
+                  join(Student, and_(
+                      Student.course_id==Course.id,
+                      Student.completion_date != None
+                  )).\
+                  group_by(Course.id).\
+                  having(func.count(Student.access) >= 7)
+        
         self.all_courses = SimpleVocabulary([
             SimpleTerm(value=c, token=c.id, title=c.name)
-            for c in self.__parent__.courses
-            if c.quizz_type == quizz.__tablename__
+            for c in courses.all()
         ])
         self.courses = [c.value for c in self.all_courses]
+
+
+@provider(IContextSourceBinder)
+def sessions(context):
+    if ICourse.providedBy(context):
+        return SimpleVocabulary([
+            SimpleTerm(value=s, token=s.id, title=s.title)
+            for s in context.sessions
+        ])
+    raise NotImplementedError
 
 
 @provider(IContextSourceBinder)
@@ -57,6 +81,14 @@ class IMultipleCoursesDiff(Interface):
     courses = Set(
         title=_(u"Courses to diff"),
         value_type=Choice(source=courses),
+        required=True
+    )
+
+class IMultipleSessionsDiff(Interface):
+
+    sessions = Set(
+        title=_(u"Sessions to diff"),
+        value_type=Choice(source=sessions),
         required=True
     )
 
@@ -177,6 +209,159 @@ class Export(uvclight.View):
         return response
 
 
+
+class SessionsExport(Export):
+    uvclight.name('export')
+    uvclight.context(ICourse)
+    uvclight.layer(ICompanyRequest)
+
+    def update(self, *sessions):
+        self.sessions = sessions
+        self.quizz = queryUtility(IQuizz, name=self.context.quizz_type)
+        
+    def render(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            filepath = os.path.join(temp_dir, "export.xlsx")
+            workbook = xlsxwriter.Workbook(filepath)
+            nformat = workbook.add_format()
+            nformat.set_num_format("0.00")
+
+            fp = FRONTPAGE % (
+                self.sessions[0].course.company.name,
+                ','.join([x.title for x in self.sessions]),
+                datetime.datetime.now().strftime('%d.%m.%Y')
+            )
+            worksheet0 = workbook.add_worksheet('Dokumentation')
+            fm = workbook.add_format()
+            fm.set_text_wrap()
+            worksheet0.set_column(0, 0, 130)
+            worksheet0.write(0, 0, fp, fm)
+
+            worksheet = workbook.add_worksheet("Werte")
+            global_avg = OrderedDict()
+            stats = []
+            for session in self.sessions:
+                stat = SessionStatistics(self.quizz, session)
+                stat.update({"course": self.context.id})
+                stats.append((session, stat))
+
+            for col, session_stat in enumerate(stats):
+                course, stat = session_stat
+                worksheet.write(0, col + 2, session.title)
+                for row, score in enumerate(stat.statistics["global.averages"]):
+                    worksheet.write(row + 1, col + 2, score.average, nformat)
+                    avg = global_avg.setdefault(score.title, [])
+                    avg.append(score.average)
+
+            worksheet.write(0, 1, 'Durchschnitt')
+            for i, x in enumerate(global_avg.items()):
+                key, value = x
+                worksheet.write(i + 1, 0, key)
+                worksheet.write(
+                    i + 1, 1, sum(value) / float(len(value)), nformat)
+
+            workbook.close()
+            output = cStringIO.StringIO()
+            with open(filepath, "rb") as fd:
+                shutil.copyfileobj(fd, output)
+
+            output.seek(0)
+        return output
+
+        return u"Export"
+
+    
+class SessionsDiff(uvclight.Form):
+    name("sessions.diff")
+    require("manage.company")
+    uvclight.context(ICourse)
+    uvclight.layer(ICompanyRequest)
+
+    ignoreContent = False
+    fields = uvclight.Fields(IMultipleSessionsDiff)
+    template = uvclight.get_template("cdiff.cpt", __file__)
+    inline = False
+    view = None
+
+    @property
+    def quizz(self):
+        return queryUtility(IQuizz, name=self.context.quizz_type)
+        
+    @property
+    def action_url(self):
+        return self.request.path
+
+    @property
+    def label(self):
+        return _(
+            u"Sessions difference (${course})",
+            mapping={"course": self.context.title},
+        )
+
+    def stat_title(self, stat):
+        return stat.session.title
+
+    def stats_avg(self, sessions):
+        stats = []
+        global_avg = OrderedDict()
+        
+        for session in sessions:
+            stat = SessionStatistics(self.quizz, session)
+            stat.update({"course": self.context.id})
+            stats.append(stat)
+            for x in stat.statistics["global.averages"]:
+                avg = global_avg.setdefault(x.title, [])
+                avg.append(x.average)
+
+        avg = []
+        for question, scores in global_avg.items():
+            avg.append(sum(scores) / float(len(scores)))
+            
+        return stats, avg
+
+    def updateActions(self):
+        action, result = uvclight.Form.updateActions(self)
+        if not action:
+            # default
+            hs.need()
+            self.stats, self.avg = self.stats_avg([])
+        return action, result
+
+    @uvclight.action(_(u"Difference"))
+    def handle_save(self):
+        data, errors = self.extractData()
+        if errors:
+            self.flash(_(u"An error occurred."))
+            return FAILURE
+
+        hs.need()
+        self.stats, self.avg = self.stats_avg(data['sessions'])
+        return SUCCESS
+
+    @uvclight.action(u"Export")
+    def handle_export(self):
+        data, errors = self.extractData()
+        if errors:
+            self.flash(_(u"An error occurred."))
+            return FAILURE
+
+        self.view = getMultiAdapter(
+            (self.context, self.request), name="export")
+        self.view.update(*data["sessions"])
+        return SUCCESS
+
+    def render(self):
+        if self.view is not None:
+            return self.view.render()
+        return uvclight.Form.render(self)
+
+    def make_response(self, result):
+        if self.view is not None:
+            return self.view.make_response(result)
+        return uvclight.Form.make_response(self, result)
+
+    
+
 class CompanyDiff(uvclight.Form):
     name("index")
     require("manage.company")
@@ -188,6 +373,9 @@ class CompanyDiff(uvclight.Form):
     template = uvclight.get_template("cdiff.cpt", __file__)
     inline = False
     view = None
+
+    def stat_title(self, stat):
+        return stat.course.title
 
     @property
     def action_url(self):

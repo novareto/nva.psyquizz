@@ -207,3 +207,9 @@ msgstr "Befragungen vergleichen"
 
 msgid "Difference"
 msgstr "Vergleich erstellen"
+
+msgid "Sessions difference (${course})"
+msgstr "Befragungen vergleichen"
+
+msgid "Sessions to diff"
+msgstr "Wählen Sie die Befragungen welche Sie vergleichen möchten."

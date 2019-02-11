@@ -67,6 +67,11 @@
 			    <span class="glyphicon glyphicon-trash"> </span> </a>
 			    <hr />
 			    <fieldset tal:repeat="session sorted(course.sessions, key=lambda x: x.id)">
+            <div tal:condition="len(list(course.sessions)) > 1" style="margin: 5px;" class="pull-right">
+              <a href="" tal:attributes="href str(company.id) + '/' + str(course.id) + '/sessions.diff'">
+                <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Wiederholungs-Befragungen vergleichen 
+              </a>
+            </div>
 			      <dl class="dl-horizontal">
 				<dt>
 				  <b tal:content="session.title"/> 

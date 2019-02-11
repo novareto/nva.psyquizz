@@ -148,7 +148,7 @@
 	series: [
 	  <tal:stats repeat="stat view.stats">
 	    {
-            name: '<span tal:replace="stat.course.title"/>',
+            name: '<span tal:replace="view.stat_title(stat)"/>',
             data: <span tal:replace="stat.rd"/>,
             pointPlacement: 'on'
 	    },
