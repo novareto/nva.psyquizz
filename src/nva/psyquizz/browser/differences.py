@@ -30,7 +30,7 @@ from .excel import CHUNK
 from .results import CourseStatistics, SessionStatistics
 from ..interfaces import ICompanyRequest
 from ..i18n import _
-from ..models import Course, Student
+from ..models import Course, Student, ClassSession
 
 
 class CompanyCoursesDifference(Location):
@@ -62,10 +62,18 @@ class CompanyCoursesDifference(Location):
 @provider(IContextSourceBinder)
 def sessions(context):
     if ICourse.providedBy(context):
-        import pdb; pdb.set_trace()
+        session = get_session('school')
+        sessions = session.query(ClassSession).\
+                  filter(Course.id == context.id).\
+                  join(Student, and_(
+                      Student.course_id==context.id,
+                      Student.completion_date != None
+                  )).\
+                  group_by(ClassSession.id).\
+                  having(func.count(Student.access) >= 7)
         return SimpleVocabulary([
             SimpleTerm(value=s, token=s.id, title=s.title)
-            for s in context.sessions
+            for s in sessions
         ])
     raise NotImplementedError
 
