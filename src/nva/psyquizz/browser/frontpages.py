@@ -48,6 +48,12 @@ class AccountHomepage(Page):
             return False
         return True
 
+    def canRepeatQuestionaire(self, course):
+        ret = False
+        for session in course.sessions:
+            if self.checkDate(session.enddate):
+                ret = True
+        return ret 
 
     def quizz_name(self, course):
         voc = quizz_choice(course)

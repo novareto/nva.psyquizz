@@ -62,6 +62,7 @@ class CompanyCoursesDifference(Location):
 @provider(IContextSourceBinder)
 def sessions(context):
     if ICourse.providedBy(context):
+        import pdb; pdb.set_trace()
         return SimpleVocabulary([
             SimpleTerm(value=s, token=s.id, title=s.title)
             for s in context.sessions

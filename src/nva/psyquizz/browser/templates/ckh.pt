@@ -60,21 +60,29 @@
             </div>
             <div class="befragung" tal:repeat="course sorted(company.courses, key=lambda x: x.id, reverse=True)">
               <span class="lead" tal:content="course.title"> </span> 
+              <div>
+                <ul class="list-unstyled">
+                  <li>
 	      <a href="" onclick="_paq.push(['trackEvent', 'Alle Befragun löschen']);"
 		 data-toggle="tooltip" data-placement="left" title="" tal:attributes="href view.url(context,
 				 str(company.id) + '/' +
 				  str(course.id) + '/delete')">
-			    <span class="glyphicon glyphicon-trash"> </span> </a>
-            <div tal:condition="len(list(course.sessions)) > 1">
+			    <span class="glyphicon glyphicon-trash"> </span> Diese Befragung löschen </a>
+        </li>
+            <li tal:condition="len(list(course.sessions)) > 1">
               <a href="" tal:attributes="href str(company.id) + '/' + str(course.id) + '/sessions.diff'">
                 <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Wiederholungs-Befragungen vergleichen 
               </a>
-            </div>
+            </li>
+            <li>
 	<a href="" 
 	   tal:attributes="href view.url(context, str(company.id) + '/' +
-			   str(course.id) + '/add.session')"  >
+			   str(course.id) + '/add.session')" tal:condition="view.canRepeatQuestionaire(course)" >
 	  <span class="glyphicon glyphicon-repeat"></span><span data-toggle="tooltip" data-placement="top" title="erneute Befragung, ermöglicht Vergleiche mit den Ergebnissen der Initialbefragung" > Wiederholungsbefragung </span>
 	</a> 
+</li>
+  </ul>
+  </div>
 			    <hr />
 			    <fieldset tal:repeat="session sorted(course.sessions, key=lambda x: x.id)">
 			      <dl class="dl-horizontal">
@@ -243,12 +251,13 @@
         </dd>
       </div>
         <dt>
-
+          <!--
 	<a href="" tal:condition="view.checkDate(session.enddate)"
 	   tal:attributes="href view.url(context, str(company.id) + '/' +
 			   str(course.id) + '/add.session')"  >
 	  <span class="glyphicon glyphicon-repeat"></span><b data-toggle="tooltip" data-placement="top" title="erneute Befragung, ermöglicht Vergleiche mit den Ergebnissen der Initialbefragung" > Wiederholungsbefragung </b>
 	</a> 
+  -->
 	</dt>
 	<dd></dd>
       </dl>
