@@ -2,6 +2,7 @@
 
 import os
 import webob.exc
+import hashlib
 import urllib
 import urlparse
 import html2text
@@ -80,6 +81,10 @@ def activate_url(url, **data):
     return urlparse.urlunparse(url_parts)
 
 
+def hashed(pwd, salt):
+    return hashlib.sha512(password + salt).hexdigest()
+
+
 @implementer(ICredentials)
 class Access(GlobalUtility):
     name('access')
@@ -96,7 +101,8 @@ class Access(GlobalUtility):
             send(u"Benutzer konnte nicht gefunden werden", BASE_MESSAGE_TYPE)
             return 
 
-        if account is not None and account.password == password:
+        pwhash = hashed(password, account.salt)
+        if account is not None and account.password == pwhash:
             if account.activated is not None:
                 return account
             activation = kws.get('activation')

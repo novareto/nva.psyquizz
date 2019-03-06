@@ -19,6 +19,7 @@ class Account(Base, Location):
     email = Column('email', String, primary_key=True)
     name = Column('name', String)
     password = Column('password', String)
+    salt = Column('salt', String)
     activation = Column('activation', String)
     activated = Column('activated', DateTime)
 

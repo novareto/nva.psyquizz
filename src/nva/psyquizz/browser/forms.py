@@ -4,6 +4,7 @@ from uvc.protectionwidgets import Captcha
 import os
 import json
 import uuid
+import hashlib
 import datetime
 import html2text
 import uvclight
@@ -456,6 +457,12 @@ class CreateAccount(Form):
         # pop the captcha and verif, it's not a needed data
         data.pop('verif')
         data.pop('captcha')
+
+        # hashing the password
+        salt = uuid.uuid4().hex
+        password = data.pop('password')
+        data['password'] = hashlib.sha512(password + salt).hexdigest()
+        data['salt'] = salt
 
         account = Account(**data)
         code = account.activation = str(uuid.uuid1())
