@@ -82,7 +82,7 @@ def activate_url(url, **data):
 
 
 def hashed(pwd, salt):
-    return hashlib.sha512(password + salt).hexdigest()
+    return hashlib.sha512(pwd + salt).hexdigest()
 
 
 @implementer(ICredentials)
@@ -101,23 +101,26 @@ class Access(GlobalUtility):
             send(u"Benutzer konnte nicht gefunden werden", BASE_MESSAGE_TYPE)
             return 
 
-        pwhash = hashed(password, account.salt)
-        if account is not None and account.password == pwhash:
-            if account.activated is not None:
-                return account
-            activation = kws.get('activation')
-            if activation is not None:
-                if activation == account.activation:
-                    account.activated = datetime.now()
+        if account is not None:
+            pwhash = hashed(password, account.salt)
+            import pdb
+            pdb.set_trace()
+            if account.password == pwhash:
+                if account.activated is not None:
                     return account
+                activation = kws.get('activation')
+                if activation is not None:
+                    if activation == account.activation:
+                        account.activated = datetime.now()
+                        return account
+                    else:
+                        return SuccessMarker(
+                            'Activation failed', False,
+                            url=activate_url(request.path, **kws))
                 else:
                     return SuccessMarker(
-                        'Activation failed', False,
+                        'Aktivierungs-Key Fehlt', False,
                         url=activate_url(request.path, **kws))
-            else:
-                return SuccessMarker(
-                    'Aktivierungs-Key Fehlt', False,
-                    url=activate_url(request.path, **kws))
         send("Falsches Passwort", BASE_MESSAGE_TYPE)
         return None
 

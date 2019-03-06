@@ -460,7 +460,7 @@ class CreateAccount(Form):
 
         # hashing the password
         salt = uuid.uuid4().hex
-        password = data.pop('password')
+        password = data.pop('password').encode('utf-8')
         data['password'] = hashlib.sha512(password + salt).hexdigest()
         data['salt'] = salt
 
