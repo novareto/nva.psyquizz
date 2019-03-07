@@ -103,8 +103,6 @@ class Access(GlobalUtility):
 
         if account is not None:
             pwhash = hashed(password, account.salt)
-            import pdb
-            pdb.set_trace()
             if account.password == pwhash:
                 if account.activated is not None:
                     return account

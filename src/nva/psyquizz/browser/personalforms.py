@@ -61,7 +61,7 @@ class EditAccount(EditForm):
 
         account = self.getContentData()
         password = data.pop('password')
-        data['password'] = hashlib.sha512(password + account.salt).hexdigest()
+        data['password'] = hashlib.sha512(password + account.get('salt')).hexdigest()
 
         apply_data_event(self.fields, account, data)
         self.flash(_(u"Der Inhalt wurde aktualisiert."))

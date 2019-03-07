@@ -20,6 +20,7 @@ install_requires = [
     'js.jqueryui',
     'openpyxl',
     'psycopg2',
+    'psycopg2-binary',
     'pyPdf',
     'pysqlite',
     'qrcode',
