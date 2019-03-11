@@ -27,6 +27,7 @@ def get_id(secret):
 class QuizzBoard(SQLContainer):
     model = Student
     assert_key = 'completion_date'
+    db_key = "school"
 
     def get_session(self):
         return get_session('school')
