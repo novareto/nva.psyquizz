@@ -6,7 +6,8 @@
   <body>
     <div id="activation">
       <p>
-        Ihr Passwort lautet : $password
+        Bitten klicken Sie auf diesen Link um sich ein neues Passwort zu vergeben:
+        Ihr Passwort lautet : $challenge 
       </p>
     </div>
   </body>

@@ -24,6 +24,8 @@ from cromlech.sqlalchemy import get_session
 from dolmen.forms.base import FAILURE, SUCCESS, Fields, SuccessMarker, action
 from dolmen.forms.base.errors import Error
 from nva.psyquizz import browser
+from nva.password.manager import PasswordManagerAdapter
+from nva.password.interfaces import IPasswordManager
 from ul.auth import SecurePublication, ICredentials
 from ul.auth import _
 from ul.auth.browser import Login
@@ -40,8 +42,9 @@ from uvclight.backends.sql import SQLPublication
 
 from zope.component import getGlobalSiteManager, getMultiAdapter
 from zope.interface import Interface, alsoProvides, implementer
+from zope.interface import invariant, Invalid
 from zope.location import Location
-from zope.schema import TextLine
+from zope.schema import TextLine, Password
 from zope.security.proxy import removeSecurityProxy
 from dolmen.message import BASE_MESSAGE_TYPE
 from dolmen.message.utils import send
@@ -129,21 +132,66 @@ class IActivation(Interface):
         required=True)
 
 
-def send_forgotten_password(smtp, email, password):
+from zope.component import getUtility
+from nva.password.token import ITokenFactory
+from zope.event import notify
+from nva.password.events import PasswordRequestedEvent
+
+class AccountPasswordManager(PasswordManagerAdapter):
+    context(Account)
+
+    def get_user(self):
+        return self.context
+
+    def reset_password(self, newpass, challenge):
+        """set new password given valid challenge.
+        """
+        user = self.get_user()
+        tokenizer = getUtility(ITokenFactory, name=self.tokenizer)
+        if not tokenizer.verify(user.id, challenge):
+            return False
+        else:
+            return self.set_new_password(user, newpass)
+
+    def request_password_reset(self):
+        """sends a challenge to users which will be usable to reset password
+        """
+        try:
+            user = self.get_user()
+            tokenizer = getUtility(ITokenFactory, name=self.tokenizer)
+            challenge = tokenizer.create(user.id)
+            notify(PasswordRequestedEvent(user, challenge))
+            return challenge
+        except KeyError:
+            pass  # silently pass for security sakes
+
+    def set_new_password(self, user, newpass):
+        user.password = hashlib.sha512(newpass + user.salt).hexdigest()
+        return True
+
+
+def send_forgotten_password_token(smtp, account, app_url):
     # mailer = SecureMailer('localhost')
     #mailer = SecureMailer('smtprelay.bg10.bgfe.local')
     mailer = SecureMailer(smtp)
     from_ = 'extranet@bgetem.de'
     title = (u'Ihre Passwortanfrage').encode(ENCODING)
+
+    manager = IPasswordManager(account)
+    challenge = manager.request_password_reset()
+    email = account.email
+    
+    url = "%s/new_password?form.field.challenge=%s&form.field.username=%s" % (app_url, challenge, account.id)
+
     with mailer as sender:
         html = forgotten_template.substitute(
             title=title,
             encoding=ENCODING,
             email=email.encode(ENCODING),
-            password=password.encode(ENCODING))
+            challenge=url.encode(ENCODING))
 
         text = html2text.html2text(html.decode('utf-8'))
-        mail = prepare(from_, email, title, html, text.encode('utf-8'))
+        mail = prepare(from_, account.email, title, html, text.encode('utf-8'))
         sender(from_, email, mail.as_string())
     return True
 
@@ -155,6 +203,32 @@ class IForgotten(Interface):
         description=_(u'Bitte geben Sie Ihre  E-Mail Adresse ein:'),
         required=True,
         )
+
+
+class ISetNewPassword(IForgotten):
+
+    challenge = TextLine(
+        title=_(u"Challenge"),
+        description=_(u'Something in german'),
+        required=True,
+        )
+
+    new_pass = Password(
+        title=_(u"New password"),
+        description=_(u'New password'),
+        required=True,
+        )
+
+    verify_new_pass = Password(
+        title=_(u"New password verification"),
+        description=_(u'New password typed again'),
+        required=True,
+        )
+
+    @invariant
+    def verify_pwd(data):
+       if data.new_pass != data.verify_new_pass:
+            raise Invalid(_(u"Password mismatch, please retype")) 
 
 
 class ForgotPassword(Form):
@@ -169,6 +243,17 @@ class ForgotPassword(Form):
     def action_url(self):
         return self.request.path
 
+    def get_user(self, username):
+        session = get_session('school')
+        username = username
+        account = session.query(Account).filter(
+            func.lower(Account.email) == username.lower())
+
+        if account.count() == 1:
+            return account.first()
+
+        return None
+
     @action(_(u'Neues Passwort anfragen'))
     def handle_request(self):
         data, errors = self.extractData()
@@ -176,16 +261,7 @@ class ForgotPassword(Form):
             #self.flash(_(u'Fehlerhafte E-Mail Adresse.'))
             return FAILURE
 
-        session = get_session('school')
-        username = data['username']
-        account = session.query(Account).filter(
-            func.lower(Account.email) == username.lower())
-
-        if account.count() == 1:
-            account = account.first()
-        else:
-            account = None
-
+        account = self.get_user(data['username'])
         if account is None:
             self.errors.append(
                 Error(u'Benutzer konnte nicht gefunden werden.',
@@ -193,9 +269,34 @@ class ForgotPassword(Form):
             return FAILURE
         else:
             smtp = self.context.configuration.smtp_server
-            send_forgotten_password(smtp, account.email, account.password)
+            send_forgotten_password_token(smtp, account, self.application_url())
             self.flash(_(
                 u'Ihr Passwort wurde an Ihre E-Mail-Adresse verschickt.'))
+            self.redirect(self.application_url())
+            return SUCCESS
+
+
+class SetNewPassword(ForgotPassword):
+    name('new_password')
+    title(_(u'Set new password'))
+    require('zope.Public')
+
+    fields = Fields(ISetNewPassword)
+
+    @action(_(u'Set'))
+    def handle_request(self):
+        data, errors = self.extractData()
+        if errors:
+            #self.flash(_(u'Fehlerhafte E-Mail Adresse.'))
+            return FAILURE
+
+        account = self.get_user(data['username'])
+        if account is None:
+            return FAILURE
+        else:
+            manager = IPasswordManager(account)
+            challenge = manager.reset_password(
+                data['new_pass'], data['challenge'])
             self.redirect(self.application_url())
             return SUCCESS
 
@@ -245,6 +346,13 @@ class AccountLogin(Login):
 @implementer(IPublicationRoot, IView, IResponseFactory)
 class NoAccess(Location):
 
+    mapping = {
+        u"/login": AccountLogin,
+        u"/++activation++/login": AccountLogin,
+        u"/forgotten": ForgotPassword,
+        u"/new_password": SetNewPassword,
+    }
+    
     def __init__(self, request, configuration):
         self.request = request
         self.configuration = configuration
@@ -253,12 +361,11 @@ class NoAccess(Location):
         return getGlobalSiteManager()
 
     def __call__(self):
-        if self.request.path_info in (u'/login', u'/++activation++/login'):
-            return AccountLogin(self, self.request)()
-        if self.request.path_info in (u'/forgotten',):
-            return ForgotPassword(self, self.request)()
-        return getMultiAdapter((self, self.request), name="anonindex")()
-        #return AnonIndex(self, self.request)()
+        anonview = self.mapping.get(self.request.path_info)
+        if anonview is None:
+            return getMultiAdapter((self, self.request), name="anonindex")()
+        return anonview(self, self.request)()
+
 
 class AnonIndex(Page):
     context(NoAccess)

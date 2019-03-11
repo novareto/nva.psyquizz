@@ -21,6 +21,7 @@ install_requires = [
     'openpyxl',
     'psycopg2',
     'psycopg2-binary',
+    'nva.password',
     'pyPdf',
     'pysqlite',
     'qrcode',
