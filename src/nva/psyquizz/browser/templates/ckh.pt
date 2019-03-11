@@ -48,15 +48,20 @@
             </p>
           </div>
           <hr>
-            <h3> Befragungen 
-              <small>
-		<a href="" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/add.course')"> (Neue Befragung anlegen)  </a>
-              </small>
-            </h3>
+          <h3> Befragungen </h3> 
+              <ul class="list-unstyled">
+                <li>
+                  <a href="" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/add.course')"> 
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Neue Befragung anlegen
+                 </a>
+                </li>
+                <li tal:condition="view.canCompare(company)">
+                  <a href="" tal:attributes="href str(company.id) + '/++diff++'">
+                    <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Befragungen vergleichen 
+                  </a>
+                </li>
+              </ul>
             <div tal:condition="view.canCompare(company)" style="margin: 5px;" class="pull-right">
-              <a href="" tal:attributes="href str(company.id) + '/++diff++'">
-                <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Befragungen vergleichen 
-              </a>
             </div>
             <div class="befragung" tal:repeat="course sorted(company.courses, key=lambda x: x.id, reverse=True)">
               <span class="lead" tal:content="course.title"> </span> 
@@ -70,8 +75,8 @@
 			    <span class="glyphicon glyphicon-trash"> </span> Diese Befragung löschen </a>
         </li>
             <li tal:condition="len(list(course.sessions)) > 1">
-              <a href="" tal:attributes="href str(company.id) + '/' + str(course.id) + '/sessions.diff'">
-                <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Wiederholungs-Befragungen vergleichen 
+              <a href="" tal:attributes="href str(company.id) + '/' + str(course.id) + '/sessions.diff'" data-toggle="tooltip" data-placement="left" title="Graphische Darstellung der Entwicklung der Ergebnisse zwischen Erst- und Wiederholungsbefragungen">
+                <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Entwicklung auswerten 
               </a>
             </li>
             <li>

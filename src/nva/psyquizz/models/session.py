@@ -42,7 +42,7 @@ class ClassSession(Base, Location):
     def title(self):
         mid = min([x.id for x in self.course.sessions])
         if self.id == mid:
-            return "Initialbefragung"
+            return "Erstbefragung"
         return "Wiederholungsbefragung"
 
     @property
