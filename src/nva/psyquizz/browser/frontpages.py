@@ -48,6 +48,15 @@ class AccountHomepage(Page):
             return False
         return True
 
+    def canDiff(self, course):
+        from nva.psyquizz.browser.differences import sessions
+        courses = len(list(course))
+        if courses > 1:
+            import pdb; pdb.set_trace()
+            if len(sessions(course.__parent__)) > 1:
+                return True
+        return False 
+
     def canRepeatQuestionaire(self, course):
         ret = False
         for session in course.sessions:

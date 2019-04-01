@@ -70,7 +70,7 @@ def sessions(context):
                       Student.completion_date != None
                   )).\
                   group_by(ClassSession.id).\
-                  having(func.count(Student.access) >= 7)
+                  having(func.count(Student.access) >= 1)
         return SimpleVocabulary([
             SimpleTerm(value=s, token=s.id, title=s.title)
             for s in sessions
