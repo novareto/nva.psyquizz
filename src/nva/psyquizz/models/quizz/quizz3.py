@@ -132,7 +132,7 @@ class Quizz3(Base, Location):
     course_id = Column(Integer, ForeignKey('courses.id'))
     session_id = Column(Integer, ForeignKey('sessions.id'))
     company_id = Column(Integer, ForeignKey('companies.id'))
-    student = relationship("Student", backref="answer")
+    student = relationship("Student")
 
     # Quizz 2 base
     completion_date = Column('completion_date', DateTime)
