@@ -102,10 +102,12 @@ class ClassSession(Base, Location):
 
 # standard decorator style
 from sqlalchemy import event
-from zope.component import getUtility
+from zope.component import queryUtility
 from zope.interface import alsoProvides
+
 @event.listens_for(ClassSession, 'load')
 def receive_load(target, context):
     from nva.psyquizz.models.quizz.quizz2 import IQuizz
-    util = getUtility(IQuizz, target.quizz_type)
-    alsoProvides(target, util.__schema__)
+    util = queryUtility(IQuizz, target.quizz_type)
+    if util is not None:
+        alsoProvides(target, util.__schema__)

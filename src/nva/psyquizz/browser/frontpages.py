@@ -17,6 +17,7 @@ from zope.component import getUtility
 from zope.schema import getFieldsInOrder
 
 from . import Page
+from .differences import sessions
 from .. import quizzjs
 from ..apps import anonymous
 from ..i18n import _
@@ -49,11 +50,9 @@ class AccountHomepage(Page):
         return True
 
     def canDiff(self, course):
-        from nva.psyquizz.browser.differences import sessions
         courses = len(list(course))
         if courses > 1:
-            import pdb; pdb.set_trace()
-            if len(sessions(course.__parent__)) > 1:
+            if len(sessions(course.__parent__, threshold=1)) > 1:
                 return True
         return False 
 
@@ -66,7 +65,10 @@ class AccountHomepage(Page):
 
     def quizz_name(self, course):
         voc = quizz_choice(course)
-        return voc.getTermByToken(course.quizz_type).title
+        try:
+            return voc.getTermByToken(course.quizz_type).title
+        except LookupError:
+            return 'Unavailable quizz type'
 
     def generic_id(self, id):
         return binascii.hexlify(

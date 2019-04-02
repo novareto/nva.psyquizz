@@ -60,17 +60,18 @@ class CompanyCoursesDifference(Location):
 
 
 @provider(IContextSourceBinder)
-def sessions(context):
+def sessions(context, threshold=7):
     if ICourse.providedBy(context):
         session = get_session('school')
         sessions = session.query(ClassSession).\
                   filter(Course.id == context.id).\
+                  filter(ClassSession.course_id == context.id).\
                   join(Student, and_(
                       Student.course_id==context.id,
                       Student.completion_date != None
                   )).\
                   group_by(ClassSession.id).\
-                  having(func.count(Student.access) >= 1)
+                  having(func.count(Student.access) >= threshold)
         return SimpleVocabulary([
             SimpleTerm(value=s, token=s.id, title=s.title)
             for s in sessions

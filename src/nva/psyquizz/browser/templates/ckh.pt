@@ -74,7 +74,7 @@
 				  str(course.id) + '/delete')">
 			    <span class="glyphicon glyphicon-trash"> </span> Diese Befragung löschen </a>
         </li>
-            <li tal:condition="view.canDiff(course.sessions) > 1">
+            <li tal:condition="view.canDiff(course.sessions)">
               <a href="" tal:attributes="href str(company.id) + '/' + str(course.id) + '/sessions.diff'" data-toggle="tooltip" data-placement="left" title="Graphische Darstellung der Entwicklung der Ergebnisse zwischen Erst- und Wiederholungsbefragungen">
                 <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Entwicklung auswerten 
               </a>
