@@ -29,12 +29,10 @@ class QuizzBoard(SQLContainer):
     assert_key = 'completion_date'
     db_key = "school"
 
-    def get_session(self):
-        return get_session('school')
-
-    def __init__(self, parent=None, name=None):
+    def __init__(self, configuration, parent=None):
         self.__parent__ = parent
-        self.__name__ = name
+        self.__name__ = configuration.name
+        self.configuration = configuration
 
     def getSiteManager(self):
         return getGlobalSiteManager()
@@ -120,7 +118,7 @@ class Application(SQLPublication):
         pass
 
     def site_manager(self, environ):
-        return Site(QuizzBoard(parent=None, name=self.configuration.name))
+        return Site(QuizzBoard(self.configuration, parent=None))
 
     @property
     def layers(self):

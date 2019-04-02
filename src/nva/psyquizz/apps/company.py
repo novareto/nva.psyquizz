@@ -9,6 +9,7 @@ import html2text
 
 from datetime import datetime
 from string import Template
+from sqlalchemy import func
 
 from . import Site
 from nva.psyquizz.browser.lib.emailer import prepare, SecureMailer, ENCODING
@@ -16,16 +17,19 @@ from ..interfaces import ICompanyRequest, IRegistrationRequest
 from ..models import Account
 from .. import quizzjs, lbg
 
-from sqlalchemy import func
 from cromlech.browser import IPublicationRoot, IView, IResponseFactory
 from cromlech.browser.interfaces import ITraverser
 from cromlech.security import Interaction, unauthenticated_principal
 from cromlech.sqlalchemy import get_session
 from dolmen.forms.base import FAILURE, SUCCESS, Fields, SuccessMarker, action
 from dolmen.forms.base.errors import Error
-from nva.psyquizz import browser
-from nva.password.manager import PasswordManagerAdapter
+from dolmen.message import BASE_MESSAGE_TYPE
+from dolmen.message.utils import send
+from nva.password.events import PasswordRequestedEvent
 from nva.password.interfaces import IPasswordManager
+from nva.password.manager import PasswordManagerAdapter
+from nva.password.token import ITokenFactory
+from nva.psyquizz import browser
 from ul.auth import SecurePublication, ICredentials
 from ul.auth import _
 from ul.auth.browser import Login
@@ -41,13 +45,13 @@ from uvclight.auth import require
 from uvclight.backends.sql import SQLPublication
 
 from zope.component import getGlobalSiteManager, getMultiAdapter
+from zope.component import getUtility
+from zope.event import notify
 from zope.interface import Interface, alsoProvides, implementer
 from zope.interface import invariant, Invalid
 from zope.location import Location
 from zope.schema import TextLine, Password
 from zope.security.proxy import removeSecurityProxy
-from dolmen.message import BASE_MESSAGE_TYPE
-from dolmen.message.utils import send
 
 
 with open(os.path.join(os.path.dirname(__file__), 'forgotten.tpl'), 'r') as fd:
@@ -132,11 +136,6 @@ class IActivation(Interface):
         required=True)
 
 
-from zope.component import getUtility
-from nva.password.token import ITokenFactory
-from zope.event import notify
-from nva.password.events import PasswordRequestedEvent
-
 class AccountPasswordManager(PasswordManagerAdapter):
     context(Account)
 
@@ -181,7 +180,8 @@ def send_forgotten_password_token(smtp, account, app_url):
     challenge = manager.request_password_reset()
     email = account.email
     
-    url = "%s/new_password?form.field.challenge=%s&form.field.username=%s" % (app_url, challenge, account.id)
+    url = "%s/new_password?form.field.challenge=%s&form.field.username=%s" % (
+        app_url, challenge, account.id)
 
     with mailer as sender:
         html = forgotten_template.substitute(
@@ -189,7 +189,6 @@ def send_forgotten_password_token(smtp, account, app_url):
             encoding=ENCODING,
             email=email.encode(ENCODING),
             challenge=url.encode(ENCODING))
-
         text = html2text.html2text(html.decode('utf-8'))
         mail = prepare(from_, account.email, title, html, text.encode('utf-8'))
         sender(from_, email, mail.as_string())
@@ -269,7 +268,8 @@ class ForgotPassword(Form):
             return FAILURE
         else:
             smtp = self.context.configuration.smtp_server
-            send_forgotten_password_token(smtp, account, self.application_url())
+            send_forgotten_password_token(
+                smtp, account, self.application_url())
             self.flash(_(
                 u'Ihr Passwort wurde an Ihre E-Mail-Adresse verschickt.'))
             self.redirect(self.application_url())

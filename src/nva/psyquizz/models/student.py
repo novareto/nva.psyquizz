@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from shortid import ShortId
-
-from ..interfaces import ICompanyRequest
+from datetime import datetime
 from nva.psyquizz import Base
 from nva.psyquizz.models.interfaces import IQuizz, IStudent
-from datetime import datetime
 from sqlalchemy import *
-from zope.interface import implementer
-from zope.location import Location
+from sqlalchemy.event import listens_for
 from uvclight import getRequest
+from zope.component import getUtility
+from zope.interface import implementer, directlyProvides
+from zope.location import Location
+
+from ..interfaces import ICompanyRequest
 
 
 @implementer(IQuizz, IStudent)
@@ -61,3 +63,9 @@ class Student(Base, Location):
     def isDeletable(self):
         request = getRequest()
         return ICompanyRequest.providedBy(request)
+
+
+@listens_for(Student, 'load')
+def student_quizz(target, context):
+    iface = getUtility(IQuizz, name=target.quizz_type).__schema__
+    directlyProvides(target, iface)
