@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from .. import TrueOrFalse, IQuizz
+from nva.psyquizz import Base
+from nva.psyquizz.models import TrueOrFalse, IQuizz
+from nva.psyquizz.models.quizz import QuizzBase
 
 from collections import OrderedDict
-from nva.psyquizz import Base
 from sqlalchemy import *
 from grokcore.component import global_utility
 from zope.interface import Interface, implementer
-from zope.location import Location
 from zope import schema
 from sqlalchemy.orm import relationship, backref
 
@@ -195,7 +195,7 @@ IQuizz1.setTaggedValue(
 
 
 @implementer(IQuizz1)
-class Quizz1(Base, Location):
+class Quizz1(QuizzBase, Base):
 
     __tablename__ = 'quizz1'
     __schema__ = IQuizz1

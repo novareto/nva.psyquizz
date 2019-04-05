@@ -1,19 +1,24 @@
 # -*- coding: utf-8 -*-
 
+from copy import deepcopy
+import zope.schema
 
-from .quizz2 import Quizz2, IQuizz2
-from .. import MoreToLess, MoreToLessN, LessToMore, IQuizz
-from .. import AF, GOODBAD, TIMESPAN, FREQUENCY, FREQUENCY1, FREQUENCY2, ASSESMENT
-from ..interfaces import IQuizzSecurity
-from uvclight.utils import current_principal
-from collections import OrderedDict
 from nva.psyquizz import Base
+from nva.psyquizz.models import MoreToLess, MoreToLessN, LessToMore
+from nva.psyquizz.models import (
+    AF, GOODBAD, TIMESPAN, FREQUENCY, FREQUENCY1, FREQUENCY2, ASSESMENT)
+from nva.psyquizz.models.interfaces import IQuizz, IQuizzSecurity
+from nva.psyquizz.models.quizz import QuizzBase
+from nva.psyquizz.models.quizz.quizz2 import Quizz2, IQuizz2
+
+from collections import OrderedDict
 from grokcore.component import provides, context, global_utility, Subscription
 from sqlalchemy import *
-from zope import schema
-from zope.location import Location
-from zope.interface import implementer, Interface
 from sqlalchemy.orm import relationship, backref
+from uvclight import Fields
+from uvclight.utils import current_principal
+from zope.interface import implementer, Interface
+from zope.location import Location
 
 
 class IQuizz4(IQuizz2):
@@ -21,7 +26,7 @@ class IQuizz4(IQuizz2):
 
 
 @implementer(IQuizz4)
-class Quizz4(Base, Location):
+class Quizz4(QuizzBase, Base):
 
     __tablename__ = 'quizz4'
     __schema__ = IQuizz4
@@ -72,5 +77,15 @@ class Quizz4(Base, Location):
     # Extra questions
     extra_questions = Column('extra_questions', Text)
 
+    @classmethod
+    def base_fields(cls, course):
+        fields = zope.schema.getFieldsInOrder(cls.__schema__)
+        for name, field in fields:
+            yield field
+            should_field = deepcopy(field)
+            should_field.__name__ = 'should.' + field.__name__
+            should_field.title += u' (SHOULD)'
+            should_field.description += u' (SHOULD)'
+            yield should_field
 
 global_utility(Quizz4, provides=IQuizz, name='quizz4', direct=True)

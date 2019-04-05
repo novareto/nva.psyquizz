@@ -69,3 +69,4 @@ class Student(Base, Location):
 def student_quizz(target, context):
     iface = getUtility(IQuizz, name=target.quizz_type).__schema__
     directlyProvides(target, iface)
+

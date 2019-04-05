@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
+from nva.psyquizz import Base
+from nva.psyquizz.models import MoreToLess, MoreToLessN, LessToMore
+from nva.psyquizz.models import (
+    AF, GOODBAD, TIMESPAN, FREQUENCY, FREQUENCY1, FREQUENCY2, ASSESMENT)
+from nva.psyquizz.models.interfaces import IQuizz, IQuizzSecurity
+from nva.psyquizz.models.quizz import QuizzBase
+from nva.psyquizz.models.quizz.quizz2 import Quizz2, IQuizz2
 
-from .quizz2 import Quizz2, IQuizz2
-from .. import MoreToLess, MoreToLessN, LessToMore, IQuizz
-from .. import AF, GOODBAD, TIMESPAN, FREQUENCY, FREQUENCY1, FREQUENCY2, ASSESMENT
-from ..interfaces import IQuizzSecurity
 from uvclight.utils import current_principal
 from collections import OrderedDict
-from nva.psyquizz import Base
 from grokcore.component import provides, context, global_utility, Subscription
 from sqlalchemy import *
 from zope import schema
@@ -118,7 +120,7 @@ for tag in IQuizz2.getTaggedValueTags():
 
 
 @implementer(IQuizz3)
-class Quizz3(Base, Location):
+class Quizz3(QuizzBase, Base):
 
     __tablename__ = 'quizz3'
     __schema__ = IQuizz3

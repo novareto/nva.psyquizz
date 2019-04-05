@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from .. import MoreToLess, MoreToLessN, LessToMore, IQuizz
+from nva.psyquizz import Base
+from nva.psyquizz.models import MoreToLess, MoreToLessN, LessToMore, IQuizz
+from nva.psyquizz.models.quizz import QuizzBase
 
 from collections import OrderedDict
 from nva.psyquizz import Base
@@ -214,7 +216,7 @@ IQuizz2.setTaggedValue(
 
 
 @implementer(IQuizz2)
-class Quizz2(Base, Location):
+class Quizz2(QuizzBase, Base):
 
     __tablename__ = 'quizz2'
     __schema__ = IQuizz2

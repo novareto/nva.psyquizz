@@ -142,7 +142,7 @@ class CompanySessionHomepage(Page):
 
 class StudentHomepage(Page):
     name('index')
-    context(Student)
+    context(IQuizz)
     require('zope.Public')
 
     template = get_template('student.pt', __file__)

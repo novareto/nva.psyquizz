@@ -1006,6 +1006,7 @@ class SaveQuizz(Action):
         session = get_session('school')
 
         fields = form.fields
+        should_answers = {}
         extra_answers = {}
 
         keys = data.keys()
@@ -1025,6 +1026,10 @@ class SaveQuizz(Action):
                 value = data.pop(key)
                 field = fields.get(key)
                 extra_answers[field.description] = value
+            elif key.startswith('should_'):
+                value = data.pop(key)
+                field = fields.get(key)
+                should_answers[field.description] = value
 
         # We can't serialize sets
         # This could be done in a specific serializer
@@ -1033,7 +1038,13 @@ class SaveQuizz(Action):
             if isinstance(value, set):
                 extra_answers[key] = list(value)
 
+        for key, value in should_answers.items():
+            if isinstance(value, set):
+                extra_answers[key] = list(value)
+
         data['extra_questions'] = json.dumps(extra_answers)
+        if should_answers:
+            data['should'] = json.dumps(should_answers)
 
         form.context.complete_quizz()
         quizz = form.quizz(**data)
@@ -1106,7 +1117,6 @@ class AnswerQuizz(Form):
     fmode = 'radio'
     actions = Actions(SaveQuizz(_(u'Answer')))
 
-
     def update(self):
         course = self.context.course
         self.quizz = getUtility(IQuizz, name=course.quizz_type)
@@ -1122,32 +1132,15 @@ class AnswerQuizz(Form):
 
     @property
     def fields(self):
-        fields = Fields(self.quizz.__schema__)
-        fields.sort(key=lambda c: c.interface[c.identifier].order)
-
-        criteria_fields = []
+        fields = Fields(
+            *self.quizz.base_fields(self.context.course))
+        criteria_fields = Fields(
+            *self.quizz.criteria_fields(self.context.course))
+        extra_fields = Fields(
+            *self.quizz.extra_fields(self.context.course))
         
-        for criteria in self.context.course.criterias:
-            values = SimpleVocabulary([
-                    SimpleTerm(value=c.strip(), token=idx, title=c.strip())
-                    for idx, c in enumerate(criteria.items.split('\n'), 1)
-                    if c.strip()])
-
-            criteria_field = Choice(
-                __name__='criteria_%s' % criteria.id,
-                title=criteria.title,
-                description=u"Wählen Sie das Zutreffende aus.",
-                vocabulary=values,
-                required=True,
-            )
-            criteria_fields.append(criteria_field)
         self.nbcriterias = len(criteria_fields)
-        fields = Fields(*criteria_fields) + fields
-
-        questions_text = self.context.course.extra_questions
-        if questions_text:
-            extra_fields = Fields(*generate_extra_questions(questions_text))
-            fields += Fields(*extra_fields)
+        fields = criteria_fields + fields + extra_fields
 
         for field in fields:
             if isinstance(field, ChoiceField):
@@ -1155,56 +1148,6 @@ class AnswerQuizz(Form):
 
         return fields
 
-
-class AnswerQuizz4(AnswerQuizz):
-    context(IQuizz4)
-    name('index')
-
-    template = get_template('wizard2.pt', __file__)
-
-    def base_fields(self):
-        fields = zope.schema.getFieldsInOrder(self.quizz.__schema__)
-        for field in fields:
-            yield field
-            import pdb
-            pdb.set_trace()
-            
-    
-    @property
-    def fields(self):
-        fields = Fields(self.base_fields())
-
-        for criteria in self.context.course.criterias:
-            values = SimpleVocabulary([
-                    SimpleTerm(value=c.strip(), token=idx, title=c.strip())
-                    for idx, c in enumerate(criteria.items.split('\n'), 1)
-                    if c.strip()])
-
-            criteria_field = Choice(
-                __name__='criteria_%s' % criteria.id,
-                title=criteria.title,
-                description=u"Wählen Sie das Zutreffende aus.",
-                vocabulary=values,
-                required=True,
-            )
-            criteria_fields.append(criteria_field)
-        self.nbcriterias = len(criteria_fields)
-        fields = Fields(*criteria_fields) + fields
-
-        questions_text = self.context.course.extra_questions
-        if questions_text:
-            extra_fields = Fields(*generate_extra_questions(questions_text))
-            fields += Fields(*extra_fields)
-
-        for field in fields:
-            if isinstance(field, ChoiceField):
-                field.mode = self.fmode
-
-        return fields
-
-
-
-    
 
 class CompanyAnswerQuizz(Action):
 
