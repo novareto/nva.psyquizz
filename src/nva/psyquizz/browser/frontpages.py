@@ -17,7 +17,7 @@ from zope.component import getUtility
 from zope.schema import getFieldsInOrder
 
 from . import Page
-from .differences import sessions
+from .differences import sessions, have_courses_to_compare
 from .. import quizzjs
 from ..apps import anonymous
 from ..i18n import _
@@ -42,11 +42,7 @@ class AccountHomepage(Page):
         quizzjs.need()
 
     def canCompare(self, company):
-        if len(list(company.courses)) <= 1:
-            return False
-        qt = set([x.quizz_type for x in company.courses])
-        if len(qt) == 1 and 'quizz1' in qt:
-            return False
+        courses = have_courses_to_compare(company)
         return True
 
     def canDiff(self, course):
