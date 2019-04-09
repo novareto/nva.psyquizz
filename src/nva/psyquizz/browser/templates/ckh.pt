@@ -31,10 +31,12 @@
 	  <h3>
 	    <b data-toggle="tooltip" data-placement="top"
                title="Bereiche nach denen ausgewertet werden soll, z.B. Organisationseinheiten oder Tätigkeiten">Auswertungsgruppen</b>
-	    <small>
-              <a href="" tal:attributes="href view.url(context, str(company.id) + '/criterias/add.criteria')" data-toggle="tooltip" data-placement="left" class="pull-top">(Neue Gruppe anlegen)</a>
-	    </small>
 	  </h3>
+      <ul class="list-unstyled">
+        <li>
+          <a href="" tal:attributes="href view.url(context, str(company.id) + '/criterias/add.criteria')" data-toggle="tooltip" data-placement="left" class="pull-top">  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> (Neue Gruppe anlegen)</a>
+        </li>
+      </ul>
           <ul>
             <li tal:repeat="crit company.criterias">
               <span tal:content="crit.title"/> 
@@ -268,7 +270,9 @@
       </dl>
     </fieldset>
   </div>
+  <div>
   <a href="" class="pull-right btn btn-primary" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/delete')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Betrieb löschen </a>
+      </div>
   <div tal:condition="len(list(company.courses)) == 0">
     <p> Sie haben bis jetzt für Ihr Unternehmen <span tal:content="company.name"/> noch keine Befragung angelegt.
     Klicken Sie bitte <a href="" tal:attributes="href view.url(context, str(company.id) + '/add.course')">hier </a> um eine neue Befragung anzulegen.

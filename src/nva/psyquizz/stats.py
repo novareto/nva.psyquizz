@@ -95,7 +95,6 @@ def available_criterias(criterias, session_id):
 
 
 def compute(quizz, averages, sums, filters):
-
     extra_data = OrderedDict()
     global_data = OrderedDict()
     users_averages = OrderedDict()
@@ -123,7 +122,6 @@ def compute(quizz, averages, sums, filters):
             tuple(v.split(':', 1)) for v in filters['criterias'].keys())
     else:
         criterias = None
-
     for answer in answers.all():
         user_data = OrderedDict()  # Per user results
 

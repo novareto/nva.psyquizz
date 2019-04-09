@@ -1172,6 +1172,7 @@ class CompanyAnswerQuizz(Action):
             company_id=form.context.course.company_id,
             session_id=form.context.id,
             course=form.context.course,
+            course_id=form.context.course.id,
             quizz_type=form.context.course.quizz_type)
 
         fields = form.fields

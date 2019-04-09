@@ -88,4 +88,4 @@ class Quizz4(QuizzBase, Base):
             should_field.description += u' (SHOULD)'
             yield should_field
 
-global_utility(Quizz4, provides=IQuizz, name='quizz4', direct=True)
+#global_utility(Quizz4, provides=IQuizz, name='quizz4', direct=True)
