@@ -8,7 +8,7 @@ import shutil
 import datetime
 
 from backports import tempfile
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 from sqlalchemy import func, and_
 
 from cromlech.browser import IRequest, ITraverser
@@ -31,6 +31,48 @@ from .results import CourseStatistics, SessionStatistics
 from ..interfaces import ICompanyRequest
 from ..i18n import _
 from ..models import Course, Student, ClassSession
+
+
+def have_courses_to_compare(context, threshold=7):
+    if ICompany.providedBy(context):
+        types = Counter()
+        session = get_session('school')
+        courses = session.query(Course.quizz_type).\
+                  filter(Course.company_id == context.id).\
+                  join(Student, and_(
+                      Student.course_id==Course.id,
+                      Student.completion_date != None
+                  )).\
+                  group_by(Course.id).\
+                  having(func.count(Student.access) >= threshold)
+        for (quizz_type,) in courses.all():
+            if types[quizz_type] == 1:
+                return True
+            types[quizz_type] += 1
+
+        return False
+
+    raise NotImplementedError
+
+
+@provider(IContextSourceBinder)
+def sessions(context, threshold=7):
+    if ICourse.providedBy(context):
+        session = get_session('school')
+        sessions = session.query(ClassSession).\
+                  filter(Course.id == context.id).\
+                  filter(ClassSession.course_id == context.id).\
+                  join(Student, and_(
+                      Student.course_id==context.id,
+                      Student.completion_date != None
+                  )).\
+                  group_by(ClassSession.id).\
+                  having(func.count(Student.access) >= threshold)
+        return SimpleVocabulary([
+            SimpleTerm(value=s, token=s.id, title=s.title)
+            for s in sessions
+        ])
+    raise NotImplementedError
 
 
 class CompanyCoursesDifference(Location):
@@ -57,26 +99,6 @@ class CompanyCoursesDifference(Location):
             for c in courses.all()
         ])
         self.courses = [c.value for c in self.all_courses]
-
-
-@provider(IContextSourceBinder)
-def sessions(context, threshold=7):
-    if ICourse.providedBy(context):
-        session = get_session('school')
-        sessions = session.query(ClassSession).\
-                  filter(Course.id == context.id).\
-                  filter(ClassSession.course_id == context.id).\
-                  join(Student, and_(
-                      Student.course_id==context.id,
-                      Student.completion_date != None
-                  )).\
-                  group_by(ClassSession.id).\
-                  having(func.count(Student.access) >= threshold)
-        return SimpleVocabulary([
-            SimpleTerm(value=s, token=s.id, title=s.title)
-            for s in sessions
-        ])
-    raise NotImplementedError
 
 
 @provider(IContextSourceBinder)
