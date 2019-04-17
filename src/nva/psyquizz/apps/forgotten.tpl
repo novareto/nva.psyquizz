@@ -7,7 +7,7 @@
     <div id="activation">
       <p>
         Bitten klicken Sie auf diesen Link um sich ein neues Passwort zu vergeben:
-        Ihr Passwort lautet : $challenge 
+        $challenge 
       </p>
     </div>
   </body>

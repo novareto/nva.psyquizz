@@ -153,11 +153,13 @@
             pointPlacement: 'on'
 	    },
 	  </tal:stats>
+      /*
 	    {
             name: 'Durchschnitt',
             data: <span tal:replace="view.avg"/>,
             pointPlacement: 'on'
-	    }]
+	    }*/
+      ]
      });
      svgToCanvas(usersChart, 'userschart');
     </script>

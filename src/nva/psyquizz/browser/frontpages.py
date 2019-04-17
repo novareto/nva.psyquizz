@@ -43,7 +43,7 @@ class AccountHomepage(Page):
 
     def canCompare(self, company):
         courses = have_courses_to_compare(company)
-        return True
+        return courses
 
     def canDiff(self, course):
         courses = len(list(course))

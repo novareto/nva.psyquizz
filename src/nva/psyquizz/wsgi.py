@@ -105,7 +105,7 @@ def routing(conf, files, **kwargs):
     else:
         layer_iface = None
 
-    title = kwargs.get('title', 'VBG')
+    title = kwargs.get('title', 'BG ETEM')
 
     # We create the session wrappper
     session_key = "session"

@@ -85,7 +85,7 @@
 	<a href="" 
 	   tal:attributes="href view.url(context, str(company.id) + '/' +
 			   str(course.id) + '/add.session')" tal:condition="view.canRepeatQuestionaire(course)" >
-	  <span class="glyphicon glyphicon-repeat"></span><span data-toggle="tooltip" data-placement="top" title="erneute Befragung, ermöglicht Vergleiche mit den Ergebnissen der Initialbefragung" > Wiederholungsbefragung </span>
+	  <span class="glyphicon glyphicon-repeat"></span><span data-toggle="tooltip" data-placement="top" title="erneute Befragung, ermöglicht Vergleiche mit den Ergebnissen der Erstbefragung" > Wiederholungsbefragung </span>
 	</a> 
 </li>
   </ul>
@@ -133,7 +133,7 @@
 	  <br />
           <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/answer')">
             <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
-            Papierfragebögen eingeben 
+            Papierfragebogen eingeben 
 	  </a>
 	</dd>
       </div>
@@ -262,7 +262,7 @@
 	<a href="" tal:condition="view.checkDate(session.enddate)"
 	   tal:attributes="href view.url(context, str(company.id) + '/' +
 			   str(course.id) + '/add.session')"  >
-	  <span class="glyphicon glyphicon-repeat"></span><b data-toggle="tooltip" data-placement="top" title="erneute Befragung, ermöglicht Vergleiche mit den Ergebnissen der Initialbefragung" > Wiederholungsbefragung </b>
+	  <span class="glyphicon glyphicon-repeat"></span><b data-toggle="tooltip" data-placement="top" title="erneute Befragung, ermöglicht Vergleiche mit den Ergebnissen der albefragung" > Wiederholungsbefragung </b>
 	</a> 
   -->
 	</dt>

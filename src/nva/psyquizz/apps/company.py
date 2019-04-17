@@ -213,21 +213,21 @@ class ISetNewPassword(IForgotten):
         )
 
     new_pass = Password(
-        title=_(u"New password"),
-        description=_(u'New password'),
+        title=_(u"Neues Passwort"),
+        description=_(u'Bitte geben Sie hier Ihr neues Passwort ein.'),
         required=True,
         )
 
     verify_new_pass = Password(
-        title=_(u"New password verification"),
-        description=_(u'New password typed again'),
+        title=_(u"Passwort bestätigen"),
+        description=_(u'Bitte bestätigen Sie hier Ihr neues Passwort.'),
         required=True,
         )
 
     @invariant
     def verify_pwd(data):
        if data.new_pass != data.verify_new_pass:
-            raise Invalid(_(u"Password mismatch, please retype")) 
+            raise Invalid(_(u"Passwort und Wiederholung sind nicht gleich!")) 
 
 
 class ForgotPassword(Form):
@@ -283,7 +283,7 @@ class SetNewPassword(ForgotPassword):
 
     fields = Fields(ISetNewPassword)
 
-    @action(_(u'Set'))
+    @action(_(u'Speichern'))
     def handle_request(self):
         data, errors = self.extractData()
         if errors:

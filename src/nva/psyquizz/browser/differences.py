@@ -93,11 +93,19 @@ class CompanyCoursesDifference(Location):
                   )).\
                   group_by(Course.id).\
                   having(func.count(Student.access) >= 7)
-        
-        self.all_courses = SimpleVocabulary([
-            SimpleTerm(value=c, token=c.id, title=c.name)
-            for c in courses.all()
-        ])
+     
+        rc = []
+        for c in courses.all():
+            title = c.name
+            if len(list(c.sessions)) > 1:
+                title = "%s [Durchschnitt]" %(c.name)
+            rc.append(SimpleTerm(value=c, token=c.id, title=title))
+
+#        self.all_courses = SimpleVocabulary([
+#            SimpleTerm(value=c, token=c.id, title=c.name)
+#            for c in courses.all()
+#        ])
+        self.all_courses = SimpleVocabulary(rc)
         self.courses = [c.value for c in self.all_courses]
 
 
@@ -211,8 +219,8 @@ class Export(uvclight.View):
             for i, x in enumerate(global_avg.items()):
                 key, value = x
                 worksheet.write(i + 1, 0, key)
-                worksheet.write(
-                    i + 1, 1, sum(value) / float(len(value)), nformat)
+            #    worksheet.write(
+            #        i + 1, 1, sum(value) / float(len(value)), nformat)
 
             workbook.close()
             output = cStringIO.StringIO()
@@ -279,9 +287,9 @@ class SessionsExport(Export):
 
             for col, session_stat in enumerate(stats):
                 course, stat = session_stat
-                worksheet.write(0, col + 2, session.title)
+                worksheet.write(0, col + 1, course.title)
                 for row, score in enumerate(stat.statistics["global.averages"]):
-                    worksheet.write(row + 1, col + 2, score.average, nformat)
+                    worksheet.write(row + 1, col + 1, score.average, nformat)
                     avg = global_avg.setdefault(score.title, [])
                     avg.append(score.average)
 
@@ -289,8 +297,8 @@ class SessionsExport(Export):
             for i, x in enumerate(global_avg.items()):
                 key, value = x
                 worksheet.write(i + 1, 0, key)
-                worksheet.write(
-                    i + 1, 1, sum(value) / float(len(value)), nformat)
+            #    worksheet.write(
+            #        i + 1, 1, sum(value) / float(len(value)), nformat)
 
             workbook.close()
             output = cStringIO.StringIO()

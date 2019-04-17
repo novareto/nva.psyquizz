@@ -43,11 +43,11 @@ dt {
 }
 
 .dl-horizontal dd {
-        margin-left: 250px;
+        margin-left: 275px;
 }
 
 .dl-horizontal dt {
-    width: 225px;
+    width: 250px;
 }
 
 span.field-required {
@@ -223,3 +223,8 @@ ul#main-nav > li > a {
     color: white;
 }
 
+
+div#field-form-field-challenge {
+ visibility: hidden;
+ display: none;
+}

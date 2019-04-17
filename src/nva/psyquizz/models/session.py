@@ -43,7 +43,8 @@ class ClassSession(Base, Location):
         mid = min([x.id for x in self.course.sessions])
         if self.id == mid:
             return "Erstbefragung"
-        return "Wiederholungsbefragung"
+        return "Wiederholungsbefragung (%s.%s)" %(self.startdate.strftime('%m'),
+                self.startdate.strftime('%Y'))
 
     @property
     def students(self):
