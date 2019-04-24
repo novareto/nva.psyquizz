@@ -8,7 +8,7 @@ import shutil
 import datetime
 
 from backports import tempfile
-from collections import OrderedDict, Counter
+from collections import OrderedDict, Counter, defaultdict
 from sqlalchemy import func, and_
 
 from cromlech.browser import IRequest, ITraverser
@@ -27,7 +27,7 @@ from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
 from .excel import CHUNK
-from .results import CourseStatistics, SessionStatistics
+from .results import CourseStatistics, SessionStatistics, get_filters
 from ..interfaces import ICompanyRequest
 from ..i18n import _
 from ..models import Course, Student, ClassSession
@@ -344,10 +344,28 @@ class SessionsDiff(uvclight.Form):
     def stats_avg(self, sessions):
         stats = []
         global_avg = OrderedDict()
-        
+        criterias = defaultdict(dict)
+        filters = get_filters(self.request)
+        filters["course"] = self.context.id
+
+        seen = set()
         for session in sessions:
             stat = SessionStatistics(self.quizz, session)
-            stat.update({"course": self.context.id})
+            stat.update(filters)
+            for title, cc in stat.statistics['criterias'].items():
+                for c in cc:
+                    if c.uid not in seen:
+                        if c.amount >= 7:
+                            criterias[title][c.uid] = {
+                                'name': c.name,
+                                'selected': c.uid in filters.get(
+                                    'criterias', {})
+                            }
+                        seen.add(c.uid)
+                    elif c.amount < 7 and c.uid in criterias[title]:
+                        del criterias[title][c.uid]
+
+
             stats.append(stat)
             for x in stat.statistics["global.averages"]:
                 avg = global_avg.setdefault(x.title, [])
@@ -356,15 +374,15 @@ class SessionsDiff(uvclight.Form):
         avg = []
         for question, scores in global_avg.items():
             avg.append(sum(scores) / float(len(scores)))
-            
-        return stats, avg
+
+        return stats, avg, criterias
 
     def updateActions(self):
         action, result = uvclight.Form.updateActions(self)
         if not action:
             # default
             hs.need()
-            self.stats, self.avg = self.stats_avg([])
+            self.stats, self.avg, self.criterias = self.stats_avg([])
         return action, result
 
     @uvclight.action(_(u"Difference"))
@@ -375,7 +393,7 @@ class SessionsDiff(uvclight.Form):
             return FAILURE
 
         hs.need()
-        self.stats, self.avg = self.stats_avg(data['sessions'])
+        self.stats, self.avg, self.criterias = self.stats_avg(data['sessions'])
         return SUCCESS
 
     @uvclight.action(u"Export")
@@ -400,7 +418,6 @@ class SessionsDiff(uvclight.Form):
             return self.view.make_response(result)
         return uvclight.Form.make_response(self, result)
 
-    
 
 class CompanyDiff(uvclight.Form):
     name("index")

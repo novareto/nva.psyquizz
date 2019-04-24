@@ -20,7 +20,22 @@
       <li> <span tal:replace="error.title" /> </li>
     </ul>
   </div>
-  
+
+  <dl tal:define="crits view.criterias">
+    <tal:dl tal:repeat="crit crits">
+      <dt><h3 tal:content="crit" /></dt>
+      <dd>
+	<div tal:repeat="opt crits[crit]"
+	     style="display: inline-block; padding: 5px;">
+	  <input name="criterias" type="checkbox"
+		 tal:attributes="value opt;
+				 checked crits[crit][opt]['selected'];" />
+	  <span tal:content="crits[crit][opt]['name']" />
+	</div>
+      </dd>
+    </tal:dl>
+  </dl>
+
   <div class="fields"
        tal:condition="view.fieldWidgets">
     <div class="field" tal:repeat="widget view.fieldWidgets">

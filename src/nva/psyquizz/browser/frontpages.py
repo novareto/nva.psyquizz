@@ -46,6 +46,8 @@ class AccountHomepage(Page):
         return courses
 
     def canDiff(self, course):
+        if course.__parent__.quizz_type != 'quizz2':
+            return False
         courses = len(list(course))
         if courses > 1:
             if len(sessions(course.__parent__, threshold=1)) > 1:
