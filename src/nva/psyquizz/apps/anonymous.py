@@ -13,6 +13,9 @@ from uvc.themes.btwidgets import IBootstrapRequest
 from uvclight.backends.sql import SQLPublication
 from zope.component import getGlobalSiteManager
 from zope.interface import implementer
+from cromlech.sqlalchemy import get_session
+from functools import partial
+from zope.location import ILocation, Location, LocationProxy, locate
 
 
 def get_id(secret):
@@ -24,9 +27,18 @@ def get_id(secret):
 class QuizzBoard(SQLContainer):
     model = Student
     assert_key = 'completion_date'
+    db_key = "school"
+
+    def __init__(self, configuration, parent=None):
+        self.__parent__ = parent
+        self.__name__ = configuration.name
+        self.configuration = configuration
 
     def getSiteManager(self):
         return getGlobalSiteManager()
+
+    def key_converter(self, id):
+        return id
 
     def create_student(self, id):
         sessionid = get_id(str(id))
@@ -77,7 +89,8 @@ class QuizzBoard(SQLContainer):
             except:
                 raise KeyError(id)
         else:
-            content = SQLContainer.__getitem__(self, id)
+            #content = SQLContainer.__getitem__(self, id)
+            content = self.getStudent(id)
             if content is not None:
                 if date.today() > content.session.enddate:
                     raise QuizzClosed(content)
@@ -85,6 +98,17 @@ class QuizzBoard(SQLContainer):
                     raise QuizzAlreadyCompleted(content)
                 return content
             raise KeyError(id)
+
+    def getStudent(self, key):
+        model = self.query_filters(self.session.query(self.model)).get(key)
+        if model is None:
+            raise KeyError(key)
+
+        if not ILocation.providedBy(model):
+            model = LocationProxy(model)
+
+        locate(model, self, self.key_reverse(model))
+        return model
 
 
 class Application(SQLPublication):
@@ -94,7 +118,7 @@ class Application(SQLPublication):
         pass
 
     def site_manager(self, environ):
-        return Site(QuizzBoard(None, '', self.configuration.name))
+        return Site(QuizzBoard(self.configuration, parent=None))
 
     @property
     def layers(self):

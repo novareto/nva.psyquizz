@@ -1,0 +1,7 @@
+<div>
+  <ul>
+    <li tal:repeat="q view.quizzes.items()">
+      <a href="" tal:attributes="href q[1]" tal:content="q[0]" />
+    </li>
+  </ul>
+</div>

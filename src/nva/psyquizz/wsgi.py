@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from zope.interface import verify
+from zope import interface
+interface.verify = verify
+
 import Cookie
 from os import path
 
@@ -22,7 +26,7 @@ from .apps import company, anonymous, remote
 marker = object()
 Configuration = namedtuple(
     'Configuration',
-    ('session_key', 'engine', 'name', 'fs_store', 'layer', 'smtp_server')
+    ('title', 'session_key', 'engine', 'name', 'fs_store', 'layer', 'smtp_server')
 )
 
 
@@ -81,7 +85,7 @@ def routing(conf, files, **kwargs):
 
     setSecurityPolicy(GenericSecurityPolicy)
     name = kwargs.get('name', 'school')
-    
+
     # We register our SQLengine under a given name
     if not 'engine' in kwargs:
         dsn = kwargs['dsn']    
@@ -101,6 +105,8 @@ def routing(conf, files, **kwargs):
     else:
         layer_iface = None
 
+    title = kwargs.get('title', 'BG ETEM')
+
     # We create the session wrappper
     session_key = "session"
     key = key_from_file(path.join(kwargs['root'], 'jwt.key'))
@@ -109,7 +115,7 @@ def routing(conf, files, **kwargs):
     # Applications configuration
     smtp = kwargs.get('smtp', '10.33.115.55')
     setup = Configuration(
-        session_key, engine, name, None, layer_iface, smtp)
+        title, session_key, engine, name, None, layer_iface, smtp)
 
     # Router
     root = URLMap()

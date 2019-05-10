@@ -3,6 +3,7 @@
 # cklinger@novareto.de
 
 import uvclight
+import hashlib
 
 from zope.interface import Interface
 from uvc.design.canvas import IDocumentActions, IPersonalMenu
@@ -40,6 +41,7 @@ class EditAccount(EditForm):
     fields['name'].description = u"Vor- und Zuname ändern"
     #fields['email'].description = u"E-Mail-Adresse ändern"
     fields['password'].description = u"Passwort ändern (mindestens acht Zeichen)"
+    fields['password'].ignoreContent = True
 
     def updateForm(self):
         super(EditAccount, self).updateForm()
@@ -57,7 +59,11 @@ class EditAccount(EditForm):
             self.flash(_(u"An error occured"))
             return FAILURE
 
-        apply_data_event(self.fields, self.getContentData(), data)
+        account = self.getContentData()
+        password = data.pop('password')
+        data['password'] = hashlib.sha512(password + account.get('salt')).hexdigest()
+
+        apply_data_event(self.fields, account, data)
         self.flash(_(u"Der Inhalt wurde aktualisiert."))
         self.redirect(self.application_url())
         return SUCCESS

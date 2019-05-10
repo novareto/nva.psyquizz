@@ -15,6 +15,7 @@
   <include package="zope.i18n" file="meta.zcml" />
   <i18n:registerTranslations directory="translations" />
 
+  <grok:grok package="nva.password"/>
   <grok:grok package="." />
 
 </configure>

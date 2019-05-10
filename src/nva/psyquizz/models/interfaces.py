@@ -79,6 +79,10 @@ def vocab_employees(context):
     return SimpleVocabulary(rc)
 
 
+deferred_vocabularies['type'] = vocab_type
+deferred_vocabularies['employees'] = vocab_employees
+
+
 @provider(IContextSourceBinder)
 def exp_db(context):
     rc = [SimpleTerm('true', 'true', u'ja, ich stimme zu'),
@@ -215,14 +219,14 @@ class ICompany(ILocation, IContent):
         title=_(u'Employees'),
         description=_(u'Employees_desc'),
         required=False,
-        source=vocab_employees,
+        source=deferred('employees'),
     )
 
     type = schema.Choice(
         title=_(u'Type'),
         description=_(u'Type_desc'),
         required=False,
-        source=vocab_type,
+        source=deferred('type'),
     )
 
 

@@ -20,7 +20,22 @@
       <li> <span tal:replace="error.title" /> </li>
     </ul>
   </div>
-  
+
+  <dl tal:define="crits view.criterias" tal:condition="crits">
+    <tal:dl tal:repeat="crit crits">
+      <dt><h3 tal:content="crit" /></dt>
+      <dd>
+	<div tal:repeat="opt crits[crit]"
+	     style="display: inline-block; padding: 5px;">
+	  <input name="criterias" type="checkbox"
+		 tal:attributes="value opt;
+				 checked crits[crit][opt]['selected'];" />
+	  <span tal:content="crits[crit][opt]['name']" />
+	</div>
+      </dd>
+    </tal:dl>
+  </dl>
+
   <div class="fields"
        tal:condition="view.fieldWidgets">
     <div class="field" tal:repeat="widget view.fieldWidgets">
@@ -53,15 +68,27 @@
     </div>
   </div>
   
-  <div class="actions"
-       tal:condition="view.actionWidgets">
-    <div class="action" tal:repeat="widget view.actionWidgets">
+  <div class="actions" tal:condition="view.actionWidgets"
+       style="margin-top: 2em;">
+    <tal:action repeat="widget view.actionWidgets">
       <tal:widget tal:content="structure widget.render()" />
-    </div>
+    </tal:action>
   </div>
 
-  <div tal:condition="view.current != None">
-    <div id="container1" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+  <div tal:condition="view.stats">
+
+    <div id="userschart"></div>
+    
+    <div id="container" style="min-width: 310px; max-width: 950px; height: 400px; margin: 0 auto"></div>
+    
+  <div class="legend" style="width: 550px; margin: 0 auto 5em auto; text-align: center; border: 2px solid #666;">
+    <em><b style="color: #62B645;">> 3,5</b>:
+    in diesem Bereich scheint alles in Ordnung</em><br />
+    <em><b style="color: #FFCC00;">> 2,5 < 3,5</b>:
+    diesen Bereich sollten Sie sich noch mal genauer ansehen</em><br />
+    <em><b style="color: #D8262B;"> < 2,5  </b>:
+    in diesem Bereich scheint Handlungsbedarf zu bestehen </em>&nbsp;&nbsp;
+  </div>
     <script>
      function svgToCanvas(chart, target_id) {
         var svg = chart.getSVG();
@@ -77,74 +104,56 @@
         };
      }
 
-    
-    var myChart = Highcharts.chart('container', {
-	chart: {
-            type: 'bar'
-	},
-	title: {
-            text: 'Stacked bar chart'
-	},
-	xAxis: {
-            categories: <span tal:replace="view.stats.xAxis"/> 
-	},
-	yAxis: {
-            min: 0,
-            title: {
-		text: 'Total fruit consumption'
-            }
-	},
-	legend: {
-            reversed: true
-	},
-	plotOptions: {
-            series: {
-		stacking: 'normal'
-            }
-	},
-	series: <span tal:replace="view.stats.series"/> 
-    });
-
-    svgToCanvas(myChart, 'chart');
-
-    var usersChart = Highcharts.chart('container1', {
+    var usersChart = Highcharts.chart('container', {
 	chart: {
             polar: true,
             type: 'line'
 	},
+       colors: ['#333333', '#004994', '#00CCFF'],
 	title: {
-            text: 'Budget vs spending',
+            text: ' ',
             x: -80
 	},
 	pane: {
             size: '80%'
 	},
 	xAxis: {
-	    categories: <span tal:replace="view.stats.xAxis"/>,
+	    categories: <span tal:replace="view.stats[0].xAxis"/>,
             tickmarkPlacement: 'on',
-            lineWidth: 0
+            lineWidth: 0,
+            labels: {
+	        distance: 25,
+                style: {
+                    color: 'black',
+                    fontSize: '15px',
+                }
+	    },
 	},
 	yAxis: {
             gridLineInterpolation: 'polygon',
             lineWidth: 0,
-            tickAmount: 4,
-            min: 0,
+            tickAmount: 5,
+	    startOnTick: true,
+	    showLastLabel: true,
+	    endOnTick: true,
+            min: 1,
+	    max: 5,
             plotBands: [
 		{
-		    color: '#FF0000',
-		    from: 0,
-		    to:  3 
+		    color: '#D8262B',
+		    from: 1,
+		    to:  2.5 
 		},
 		{
-		    color: '#FFFF00',
-		    from: 3,
-		    to: 4 
+		    color: '#FFCC00',
+		    from: 2.5,
+		    to: 3.5
 		},
 		{
-		    color: '#32DD32',
-            from: 4,
-		    to: 6 
-		},
+		    color: '#62B645',
+                    from: 3.5,
+		    to: 5
+		}
 	    ],
 	},
 	legend: {
@@ -153,16 +162,27 @@
             y: 70,
             layout: 'vertical'
 	},
-	series: [{
-            name: 'Allocated Budget',
-            data: <span tal:replace="view.stats.rd"/>,
+        exporting: {
+            enabled: false
+        },
+        credits: {
+             enabled: false
+        }, 
+	series: [
+	  <tal:stats repeat="stat view.stats">
+	    {
+            name: '<span tal:replace="view.stat_title(stat)"/>',
+            data: <span tal:replace="stat.rd"/>,
             pointPlacement: 'on'
-	    },{
-            name: 'Allocated Budget',
-            data: <span tal:replace="view.diff.rd"/>,
+	    },
+	  </tal:stats>
+      /*
+	    {
+            name: 'Durchschnitt',
+            data: <span tal:replace="view.avg"/>,
             pointPlacement: 'on'
-	    }
-	    ]
+	    }*/
+      ]
      });
      svgToCanvas(usersChart, 'userschart');
     </script>

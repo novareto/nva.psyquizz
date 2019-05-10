@@ -198,3 +198,18 @@ msgstr "Abbrechen"
 
 msgid "User with given email already exists."
 msgstr "Diese E-Mail Adresse ist bereits im System gespeichert"
+
+msgid "Courses to diff"
+msgstr " "
+
+msgid "Courses difference (${quizz})"
+msgstr "Befragungen vergleichen"
+
+msgid "Difference"
+msgstr "Vergleich erstellen"
+
+msgid "Sessions difference (${course})"
+msgstr "Befragungen vergleichen"
+
+msgid "Sessions to diff"
+msgstr "Wählen Sie die Befragungen welche Sie vergleichen möchten."

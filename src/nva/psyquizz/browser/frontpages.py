@@ -11,12 +11,13 @@ from cromlech.sqlalchemy import get_session
 from dolmen.menu import menuentry, order
 from nva.psyquizz.extra_questions import parse_extra_question_syntax
 from uvc.design.canvas import IContextualActionsMenu
-from uvclight import Page
 from uvclight import layer, name, context, title, get_template
 from uvclight.auth import require
 from zope.component import getUtility
 from zope.schema import getFieldsInOrder
 
+from . import Page
+from .differences import sessions, have_courses_to_compare
 from .. import quizzjs
 from ..apps import anonymous
 from ..i18n import _
@@ -44,14 +45,37 @@ class AccountHomepage(Page):
     template = get_template('ckh.pt', __file__)
 
     maxResults = 7 
-
+    
     def update(self):
         #self.flash(TEXT)
         quizzjs.need()
 
+    def canCompare(self, company):
+        courses = have_courses_to_compare(company)
+        return courses
+
+    def canDiff(self, course):
+        if course.__parent__.quizz_type != 'quizz2':
+            return False
+        courses = len(list(course))
+        if courses > 1:
+            if len(sessions(course.__parent__, threshold=1)) > 1:
+                return True
+        return False 
+
+    def canRepeatQuestionaire(self, course):
+        ret = False
+        for session in course.sessions:
+            if self.checkDate(session.enddate):
+                ret = True
+        return ret 
+
     def quizz_name(self, course):
         voc = quizz_choice(course)
-        return voc.getTermByToken(course.quizz_type).title
+        try:
+            return voc.getTermByToken(course.quizz_type).title
+        except LookupError:
+            return 'Unavailable quizz type'
 
     def generic_id(self, id):
         return binascii.hexlify(
@@ -125,7 +149,7 @@ class CompanySessionHomepage(Page):
 
 class StudentHomepage(Page):
     name('index')
-    context(Student)
+    context(IQuizz)
     require('zope.Public')
 
     template = get_template('student.pt', __file__)

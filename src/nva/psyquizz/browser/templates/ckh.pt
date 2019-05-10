@@ -1,8 +1,8 @@
 <div>
   <div class="page-header">
-    <h1>Startseite <small tal:content="context.name" /></h1>
+    <h1>Startseite <small tal:content="context.name" /> </h1>
     <p>
-      Herzlich Willkommen bei der Online-Hilfe der BG ETEM für Ihre
+      Herzlich Willkommen bei der Online-Hilfe der <span tal:content="config.title" /> für Ihre
       Gefährdungsbeurteilung psychischer Belastung. Mit diesem
       Werkzeug können Sie die psychische Belastung unkompliziert
       erheben. Auf den folgenden Seiten können Sie das Profil Ihres
@@ -31,10 +31,12 @@
 	  <h3>
 	    <b data-toggle="tooltip" data-placement="top"
                title="Bereiche nach denen ausgewertet werden soll, z.B. Organisationseinheiten oder Tätigkeiten">Auswertungsgruppen</b>
-	    <small>
-              <a href="" tal:attributes="href view.url(context, str(company.id) + '/criterias/add.criteria')" data-toggle="tooltip" data-placement="left" class="pull-top">(Neue Gruppe anlegen)</a>
-	    </small>
 	  </h3>
+      <ul class="list-unstyled">
+        <li>
+          <a href="" tal:attributes="href view.url(context, str(company.id) + '/criterias/add.criteria')" data-toggle="tooltip" data-placement="left" class="pull-top">  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> (Neue Gruppe anlegen)</a>
+        </li>
+      </ul>
           <ul>
             <li tal:repeat="crit company.criterias">
               <span tal:content="crit.title"/> 
@@ -48,18 +50,46 @@
             </p>
           </div>
           <hr>
-            <h3> Befragungen 
-              <small>
-		<a href="" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/add.course')"> (Neue Befragung anlegen)  </a>
-              </small>
-            </h3>
+          <h3> Befragungen </h3> 
+              <ul class="list-unstyled">
+                <li>
+                  <a href="" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/add.course')"> 
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Neue Befragung anlegen
+                 </a>
+                </li>
+                <li tal:condition="view.canCompare(company)">
+                  <a href="" tal:attributes="href str(company.id) + '/++diff++'">
+                    <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Befragungen vergleichen 
+                  </a>
+                </li>
+              </ul>
+            <div tal:condition="view.canCompare(company)" style="margin: 5px;" class="pull-right">
+            </div>
             <div class="befragung" tal:repeat="course sorted(company.courses, key=lambda x: x.id, reverse=True)">
               <span class="lead" tal:content="course.title"> </span> 
+              <div>
+                <ul class="list-unstyled">
+                  <li>
 	      <a href="" onclick="_paq.push(['trackEvent', 'Alle Befragun löschen']);"
 		 data-toggle="tooltip" data-placement="left" title="" tal:attributes="href view.url(context,
 				 str(company.id) + '/' +
 				  str(course.id) + '/delete')">
-			    <span class="glyphicon glyphicon-trash"> </span> </a>
+			    <span class="glyphicon glyphicon-trash"> </span> Diese Befragung löschen </a>
+        </li>
+            <li tal:condition="view.canDiff(course.sessions)">
+              <a href="" tal:attributes="href str(company.id) + '/' + str(course.id) + '/sessions.diff'" data-toggle="tooltip" data-placement="left" title="Graphische Darstellung der Entwicklung der Ergebnisse zwischen Erst- und Wiederholungsbefragungen">
+                <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Entwicklung auswerten 
+              </a>
+            </li>
+            <li>
+	<a href="" 
+	   tal:attributes="href view.url(context, str(company.id) + '/' +
+			   str(course.id) + '/add.session')" tal:condition="view.canRepeatQuestionaire(course)" >
+	  <span class="glyphicon glyphicon-repeat"></span><span data-toggle="tooltip" data-placement="top" title="erneute Befragung, ermöglicht Vergleiche mit den Ergebnissen der Erstbefragung" > Wiederholungsbefragung </span>
+	</a> 
+</li>
+  </ul>
+  </div>
 			    <hr />
 			    <fieldset tal:repeat="session sorted(course.sessions, key=lambda x: x.id)">
 			      <dl class="dl-horizontal">
@@ -103,20 +133,8 @@
 	  <br />
           <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/answer')">
             <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
-            Papierfragebögen eingeben 
+            Papierfragebogen eingeben 
 	  </a>
-    <!--
-	  <br />
-          <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/offlinequizz')">
-            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-            Download Vorlage Erfassung Papierfragebögen
-	  </a>
-	  <br />
-          <a tal:attributes="href view.url(context, str(company.id) + '/' + str(course.id) + '/sessions/' + str(session.id) + '/uploadofflinequizz')">
-            <span class="glyphicon glyphicon-upload"
-		  aria-hidden="true"></span> Ausgefüllte Vorlage importieren
-	  </a>
-    -->
 	</dd>
       </div>
       <dt>
@@ -240,18 +258,21 @@
         </dd>
       </div>
         <dt>
-
+          <!--
 	<a href="" tal:condition="view.checkDate(session.enddate)"
 	   tal:attributes="href view.url(context, str(company.id) + '/' +
 			   str(course.id) + '/add.session')"  >
-	  <span class="glyphicon glyphicon-repeat"></span><b data-toggle="tooltip" data-placement="top" title="erneute Befragung, ermöglicht Vergleiche mit den Ergebnissen der Initialbefragung" > Wiederholungsbefragung </b>
+	  <span class="glyphicon glyphicon-repeat"></span><b data-toggle="tooltip" data-placement="top" title="erneute Befragung, ermöglicht Vergleiche mit den Ergebnissen der albefragung" > Wiederholungsbefragung </b>
 	</a> 
+  -->
 	</dt>
 	<dd></dd>
       </dl>
     </fieldset>
   </div>
+  <div>
   <a href="" class="pull-right btn btn-primary" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/delete')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Betrieb löschen </a>
+      </div>
   <div tal:condition="len(list(company.courses)) == 0">
     <p> Sie haben bis jetzt für Ihr Unternehmen <span tal:content="company.name"/> noch keine Befragung angelegt.
     Klicken Sie bitte <a href="" tal:attributes="href view.url(context, str(company.id) + '/add.course')">hier </a> um eine neue Befragung anzulegen.
