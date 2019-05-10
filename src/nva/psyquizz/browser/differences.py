@@ -76,6 +76,7 @@ def sessions(context, threshold=7):
 
 
 class CompanyCoursesDifference(Location):
+    criterias = None
 
     def __init__(self, parent, name, quizz, quizzes):
         self.__parent__ = parent
@@ -266,11 +267,20 @@ class SessionsExport(Export):
             nformat = workbook.add_format()
             nformat.set_num_format("0.00")
 
+            filters = get_filters(self.request)
+            filters["course"] = self.context.id
+
             fp = FRONTPAGE % (
                 self.sessions[0].course.company.name,
                 ','.join([x.title for x in self.sessions]),
                 datetime.datetime.now().strftime('%d.%m.%Y')
             )
+
+            if 'criterias' in filters:
+                fp += '\nDiese Auswertung basiert auf folgenden Kriterien: %s' % (
+                    ', '.join((c.name for c in filters['criterias'].values())))
+
+
             worksheet0 = workbook.add_worksheet('Dokumentation')
             fm = workbook.add_format()
             fm.set_text_wrap()
@@ -282,7 +292,8 @@ class SessionsExport(Export):
             stats = []
             for session in self.sessions:
                 stat = SessionStatistics(self.quizz, session)
-                stat.update({"course": self.context.id})
+                #stat.update({"course": self.context.id})
+                stat.update(filters)
                 stats.append((session, stat))
 
             for col, session_stat in enumerate(stats):
@@ -293,7 +304,7 @@ class SessionsExport(Export):
                     avg = global_avg.setdefault(score.title, [])
                     avg.append(score.average)
 
-            worksheet.write(0, 1, 'Durchschnitt')
+            #worksheet.write(0, 1, 'Durchschnitt')
             for i, x in enumerate(global_avg.items()):
                 key, value = x
                 worksheet.write(i + 1, 0, key)
@@ -402,7 +413,6 @@ class SessionsDiff(uvclight.Form):
         if errors:
             self.flash(_(u"An error occurred."))
             return FAILURE
-
         self.view = getMultiAdapter(
             (self.context, self.request), name="export")
         self.view.update(*data["sessions"])
@@ -424,7 +434,8 @@ class CompanyDiff(uvclight.Form):
     require("manage.company")
     uvclight.context(CompanyCoursesDifference)
     uvclight.layer(ICompanyRequest)
-
+    
+    criterias = None
     ignoreContent = False
     fields = uvclight.Fields(IMultipleCoursesDiff)
     template = uvclight.get_template("cdiff.cpt", __file__)
@@ -448,9 +459,9 @@ class CompanyDiff(uvclight.Form):
     def stats_avg(self):
         stats = []
         global_avg = OrderedDict()
-        
         for course in self.context.courses:
             stat = CourseStatistics(self.context.quizz, course)
+            print course.id
             stat.update({"course": course.id})
             stats.append(stat)
             for x in stat.statistics["global.averages"]:
