@@ -30,26 +30,13 @@
         <span tal:content="structure widget.title"> </span>
         <span class="field-required" i18n:translate="" tal:condition="widget.required"> * </span>
       </label>
-      <!--
-      <tal:description tal:condition="widget.description">
-        <span href="" class="hilfe glyphicon glyphicon-question-sign"
-              data-placement="right" 
-              data-toggle="tooltip"
-              tal:attributes="title widget.description">
+      <p tal:condition="widget.description" class="help-block" tal:content="structure widget.description" />
 
-        </span>
-      </tal:description>
-       -->
-      <p tal:condition="widget.description" class="help-block"
-      tal:content="structure widget.description" />
       <tal:widget metal:define-macro="field-inline" tal:content="structure widget.render()" />
       <p tal:condition="widget.error" class="field-error help-block" tal:content="widget.error.title" />
     </div>
   </div>
-  
-  
     <div class="form-group" tal:condition="view.actionWidgets">
                <tal:widget tal:repeat="widget view.actionWidgets" tal:content="structure widget.render()" />
     </div>
-
 </form>

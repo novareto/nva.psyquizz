@@ -58,12 +58,21 @@ class DownloadCourse(uvclight.View):
         self.base_pdf = util.__base_pdf__
 
     def generate_page_one(self):
+        def clean(tag, whitelist=[]):
+            tag.attrs = None
+            for e in tag.findAll(True):
+                for attribute in e.attrs:
+                    if attribute[0] in whitelist:
+                        del e[attribute[0]]
+                e.attrs = None
+            return tag
         style = getSampleStyleSheet()
         nm = style['Normal']
         nm.leading = 14
         story = []
         na = self.context.about.replace('\r\n', '<br/>').replace('</p>', '</p><br/>')
         bs = BeautifulSoup(na)
+        clean(bs, ['style', 'face'])
         doc = bs.prettify()
         story.append(Paragraph(self.heading, style['Heading2']))
         story.append(Paragraph(doc, nm))
@@ -78,7 +87,7 @@ class DownloadCourse(uvclight.View):
             story.append(Paragraph('<br/><br/><b>Zusatzfragen: </b>', style['Normal']))
             for field in generate_extra_questions( self.context.course.extra_questions):
                 if isinstance(field, Set):
-                    story.append(Paragraph('<b> %s </b> <br/> %s' %
+                    story.append(Paragraph(u'<br/><b> %s </b> <br/>%s (Mehrere Antworten möglich) <br/> <br/>' %
                         (field.description, self.genStuff([x.title for x in field.value_type.source])), style['Normal']))
                 else:
                     story.append(Paragraph('<b> %s </b> <br/> %s' %

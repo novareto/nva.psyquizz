@@ -26,6 +26,14 @@ from ..models import IQuizz, ICriterias
 from ..models.deferred import quizz_choice
 
 
+
+TEXT = u"""
+Auf Grund massiver technischer Störungen waren wir gezwungen, eine Datensicherung mit Stand Sonntag 24.03. einzuspielen. Das bedeutet, dass „Fragebögen“ die zwischen Montag 25.03. und Mittwoch 27.03. eingegeben wurden leider verloren gegangen sind. Wir möchten Sie bitten dies zu entschuldigen.
+
+Bei Rückfragen wenden Sie sich bitte an gbpb@bgetem.de oder 0221-3778-6207
+"""
+
+
 class AccountHomepage(Page):
     name('index')
     title(_(u'Frontpage'))
@@ -38,6 +46,7 @@ class AccountHomepage(Page):
     maxResults = 7 
 
     def update(self):
+        #self.flash(TEXT)
         quizzjs.need()
 
     def quizz_name(self, course):
@@ -55,10 +64,11 @@ class AccountHomepage(Page):
         return False
 
     def additional_questions(self, course):
-        ret = {'title': '', 'content': []}
+        ret = {'title': '', 'content': [], 'show': False}
         if not course.extra_questions:
             ret['title'] = u'Keine Frage angelegt'
         else:
+            ret['show'] = True
             exq = course.extra_questions.strip().split('\n')
             ret['title'] = u'%s Frage(n) angelegt' % len(exq)
             for l, tp, opts in (parse_extra_question_syntax(e) for e in exq):

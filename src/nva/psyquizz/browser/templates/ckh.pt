@@ -73,15 +73,17 @@
 
       <dt>Fragebogen:</dt>  
       <dd tal:content="view.quizz_name(course)"> </dd> 
-      <dt>Zusatzfragen:</dt>  
-      <dd tal:define="ea view.additional_questions(course)"> 
-        <div tal:content="ea['title']"/>
-	<ul>
-	  <li tal:repeat="label ea['content']">
-	    <span tal:content="label" />
-	  </li>
-	</ul>
-      </dd>
+      <div tal:define="ea view.additional_questions(course)" tal:condition="ea.get('show')">
+        <dt>Zusatzfragen:</dt>  
+        <dd> 
+         <div tal:content="ea['title']"> </div>
+	        <ul>
+	          <li tal:repeat="label ea['content']">
+	             <span tal:content="label" />
+	          </li>
+	       </ul>
+        </dd>
+      </div>
       <dt>
 	Befragungszeitraum:
       </dt>

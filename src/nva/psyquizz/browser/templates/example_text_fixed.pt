@@ -12,7 +12,7 @@ Hier müssen Sie die Kennwörter über die Kennwortliste einfügen.  </p>
 <br/> <br/>
 <div class="panel panel-default">
 <div class="panel-body">
-<button class="pull-right clipbtn btn" data-clipboard-target="#copyable">
+<button class="pull-right clipbtn btn btn-default" data-clipboard-target="#copyable">
     In Zwischenablage kopieren 
 </button>
 <script language="Javascript">
@@ -38,7 +38,7 @@ Hier müssen Sie die Kennwörter über die Kennwortliste einfügen.  </p>
 <p>Nehmen Sie sich diese Zeit, Ihre Meinung zu äußern, wir freuen uns auf Ihre Rückmeldung und bedanken uns bei Ihnen für Ihre Mitarbeit!</p> 
 <p>Sollten Sie Fragen oder Anmerkungen haben, wenden Sie sich bitte an: <br> Ansprechpartner und Kontaktdaten</p>
 </div>
-<button class="btn" name="QR-Code anzeigen" data-toggle="collapse" data-target="#qr"> QR-Code Anzeigen </button>
+<button class="btn btn-default" name="QR-Code anzeigen" data-toggle="collapse" data-target="#qr"> QR-Code Anzeigen </button>
 <div class="collapse" id="qr" class="well">
  <img href="" tal:attributes="src '%s/qrlink' % view.url(context)" />
 </div>

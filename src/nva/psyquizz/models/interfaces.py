@@ -204,8 +204,8 @@ class ICompany(ILocation, IContent):
     exp_db = schema.Choice(
         title=_(u'Forschungsdatenbank'),
         description=u'Ich stimme einer anonymisierten Erfassung meiner Umfrageergebnisse in einer Gesamtdatenbank zu. \
-                     Erfasst werden Branche, Anzahl Beschäftigte sowie Ergebnisse der Befragung \
-                     . Dies ermöglicht die Ableitung branchenspezifischer Präventionsangebote \
+                     Erfasst werden Branche, Anzahl Beschäftigte sowie Ergebnisse der Befragung. \
+                     Dies ermöglicht die Ableitung branchenspezifischer Präventionsangebote \
                      sowie die Erstellung von Referenzwerten.',
         required=True,
         source=exp_db 

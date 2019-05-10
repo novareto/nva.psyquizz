@@ -445,8 +445,7 @@ class CreateAccount(Form):
 
         existing = session.query(Account).filter(
             func.lower(Account.email) == data['email'].lower())
-
-        if existing is not None:
+        if existing.count():
             self.flash(_(u'User with given email already exists.'))
             self.errors.append(
                 Error(
@@ -1024,9 +1023,6 @@ class SaveQuizz(Action):
             if isinstance(value, set):
                 extra_answers[key] = list(value)
 
-        import pdb
-        pdb.set_trace()
-                
         data['extra_questions'] = json.dumps(extra_answers)
 
         form.context.complete_quizz()
