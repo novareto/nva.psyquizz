@@ -59,7 +59,7 @@ class AccountHomepage(Page):
             return False
         courses = len(list(course))
         if courses > 1:
-            if len(sessions(course.__parent__, threshold=1)) > 1:
+            if len(sessions(course.__parent__, threshold=7)) > 1:
                 return True
         return False 
 
