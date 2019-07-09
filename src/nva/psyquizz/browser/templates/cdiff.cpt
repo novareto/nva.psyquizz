@@ -21,7 +21,7 @@
     </ul>
   </div>
 
-  <dl tal:define="crits view.criterias">
+  <dl tal:define="crits view.criterias" tal:condition="crits">
     <tal:dl tal:repeat="crit crits">
       <dt><h3 tal:content="crit" /></dt>
       <dd>
@@ -79,7 +79,7 @@
 
     <div id="userschart"></div>
     
-    <div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+    <div id="container" style="min-width: 310px; max-width: 950px; height: 400px; margin: 0 auto"></div>
     
   <div class="legend" style="width: 550px; margin: 0 auto 5em auto; text-align: center; border: 2px solid #666;">
     <em><b style="color: #62B645;">> 3,5</b>:
@@ -109,6 +109,7 @@
             polar: true,
             type: 'line'
 	},
+       colors: ['#333333', '#004994', '#00CCFF'],
 	title: {
             text: ' ',
             x: -80
@@ -119,7 +120,14 @@
 	xAxis: {
 	    categories: <span tal:replace="view.stats[0].xAxis"/>,
             tickmarkPlacement: 'on',
-            lineWidth: 0
+            lineWidth: 0,
+            labels: {
+	        distance: 25,
+                style: {
+                    color: 'black',
+                    fontSize: '15px',
+                }
+	    },
 	},
 	yAxis: {
             gridLineInterpolation: 'polygon',

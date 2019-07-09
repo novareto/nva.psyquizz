@@ -256,11 +256,11 @@ class IClassSession(ILocation, IContent):
         constraint=v_about,
         )
 
-    @invariant
-    def check_date(data):
-        date = data.startdate
-        if date is not None and date < datetime.date.today():
-            raise Invalid(_(u"You can't set a date in the past."))
+    #@invariant
+    #def check_date(data):
+    #    date = data.startdate
+    #    if date is not None and date < datetime.date.today():
+    #        raise Invalid(_(u"You can't set a date in the past."))
 
 
 class ICourse(ILocation, IContent):

@@ -115,7 +115,9 @@ def compute(quizz, averages, sums, filters):
             answers = answers.filter(
                 quizz.session_id == filters['session']
             )
-
+    print answers
+    print filters
+    print answers.count()
     total = 0
     if 'criterias' in filters:
         criterias = set(

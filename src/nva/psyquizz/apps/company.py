@@ -109,7 +109,6 @@ class Access(GlobalUtility):
             return 
 
         if account is not None:
-            return account
             pwhash = hashed(password, account.salt)
             if account.password == pwhash:
                 if account.activated is not None:
