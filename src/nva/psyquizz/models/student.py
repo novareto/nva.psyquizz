@@ -35,6 +35,10 @@ class Student(Base, Location):
     completion_date = Column('completion_date', DateTime)
 
     @property
+    def quizz(self):
+        return getattr(self, self.quizz_type)
+
+    @property
     def id(self):
         return self.access
 
@@ -67,6 +71,9 @@ class Student(Base, Location):
 
 @listens_for(Student, 'load')
 def student_quizz(target, context):
-    iface = getUtility(IQuizz, name=target.quizz_type).__schema__
-    directlyProvides(target, iface)
+    try:
+        iface = getUtility(IQuizz, name=target.quizz_type).__schema__
+        directlyProvides(target, iface)
+    except:
+        pass
 

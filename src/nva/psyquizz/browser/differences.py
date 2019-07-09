@@ -266,11 +266,18 @@ class SessionsExport(Export):
             nformat = workbook.add_format()
             nformat.set_num_format("0.00")
 
+            filters = get_filters(self.request)
+            filters["course"] = self.context.id
+            
             fp = FRONTPAGE % (
                 self.sessions[0].course.company.name,
                 ','.join([x.title for x in self.sessions]),
                 datetime.datetime.now().strftime('%d.%m.%Y')
             )
+            if 'criterias' in filters:
+                fp += '\nCriterias: %s' % (
+                    ', '.join((c.name for c in filters['criterias'].values())))
+
             worksheet0 = workbook.add_worksheet('Dokumentation')
             fm = workbook.add_format()
             fm.set_text_wrap()
@@ -280,9 +287,10 @@ class SessionsExport(Export):
             worksheet = workbook.add_worksheet("Werte")
             global_avg = OrderedDict()
             stats = []
+            
             for session in self.sessions:
                 stat = SessionStatistics(self.quizz, session)
-                stat.update({"course": self.context.id})
+                stat.update(filters)
                 stats.append((session, stat))
 
             for col, session_stat in enumerate(stats):

@@ -215,7 +215,8 @@ class Quizz1(QuizzBase, Base):
 
     student = relationship(
         "Student", cascade="all,delete",
-        backref=backref("quizz", uselist=False, cascade="save-update,delete", single_parent=True))
+        backref=backref("quizz1", uselist=False,
+                        cascade="save-update,delete", single_parent=True))
     
     # Quizz
     completion_date = Column('completion_date', DateTime)

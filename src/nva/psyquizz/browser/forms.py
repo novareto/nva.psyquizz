@@ -761,6 +761,15 @@ class CourseSession(Adapter):
         return property(fget, fset)
 
     @apply
+    def extra_questions():
+        def fget(self):
+            return self.context.course.extra_questions
+
+        def fset(self, value):
+            self.context.course.extra_questions = value
+        return property(fget, fset)
+    
+    @apply
     def quizz_type():
         def fget(self):
             return self.context.course.quizz_type
@@ -872,7 +881,9 @@ class EditCourseBase(Form):
         if errors:
             self.flash(_(u"An error occured"))
             return FAILURE
-
+        if 'extra_questions' not in data:
+            data['extra_questions'] = None
+        
         apply_data_event(self.fields, self.getContentData(), data)
         self.flash(_(u"Content updated"))
         self.redirect(self.application_url())

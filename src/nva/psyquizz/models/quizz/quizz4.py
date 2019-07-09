@@ -40,7 +40,11 @@ class Quizz4(QuizzBase, Base):
     course_id = Column(Integer, ForeignKey('courses.id'))
     session_id = Column(Integer, ForeignKey('sessions.id'))
     company_id = Column(Integer, ForeignKey('companies.id'))
-    student = relationship("Student", backref="answer")
+
+    student = relationship(
+        "Student", cascade="all,delete",
+        backref=backref("quizz4", uselist=False,
+                        cascade="save-update,delete", single_parent=True))
 
     # Quizz 2 base
     completion_date = Column('completion_date', DateTime)
