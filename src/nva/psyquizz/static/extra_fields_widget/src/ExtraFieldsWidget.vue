@@ -72,7 +72,6 @@
 	    <div class="form-group">
 	      <label for="format">Antwortformat</label>
 	      <select v-model="question.type"
-                      v-on:change="may_need_answers"
                       class="form-control" id="format">
 		<option value="choice" selected="selected">
 		  nur eine Antwort möglich
@@ -81,7 +80,7 @@
 		<!-- <option value="bool">Wahr oder Falsch</option> -->
 	      </select>
 	    </div>
-	    <div class="form-group" v-if="question.need_answers">
+	    <div class="form-group">
 	      <label for="antworten">Antworten</label>
 	      <div v-for="answer in question.answers" v-bind:key="answer">
 		<input v-model="answer.value" v-focus />
@@ -130,7 +129,6 @@ Vue.directive('focus', {
 let QUESTION = {
   question: "",
   type: "",
-  need_answers: false,
   answers: []
 };
 
@@ -153,38 +151,25 @@ export default {
 	save_all() {
 	    var ss = "";
 	    this.questions.forEach(element => {
-		if (element.need_answers) {
-		    let choices = [];
-		    element.answers.forEach(function(answer) {
-			let value = answer.value.trim();
-			if (value.length > 0) {
-			    choices.push(value);
-			}
-		    });
-		    ss =
-			element.question.trim() +
-			" => " +
-			element.type.trim() +
-			"::" +
-			choices.join("::");
-		} else {
-		    ss = element.question.trim() + " => " + element.type.trim();
-		}
-		ss = ss + '\n';
+		let choices = [];
+		element.answers.forEach(function(answer) {
+		    let value = answer.value.trim();
+		    if (value.length > 0) {
+			choices.push(value);
+		    }
+		});
+		ss += (element.question.trim() +
+		       " => " +
+		       element.type.trim() +
+		       "::" +
+		       choices.join("::") + '\n');
 	    });
-	    this.vv += ss
+            console.log(ss);
+	    this.vv = ss
 	},
 	remove_answer(answer) {
 	    this.question.answers = (
 		this.question.answers.filter(a => a != answer));
-	},
-	may_need_answers(e) {
-	    this.question.need_answers = ["choice", "multi"].includes(
-		this.question.type
-	    );
-	    if (!this.question.need_answers) {
-		this.question.answers = [];
-	    }
 	},
 	save_question() {
 	    var error = false;
@@ -195,7 +180,7 @@ export default {
 	    if (!this.question.type.trim()) {
 		error = true;
 		alert("Please select a type of question.");
-	    } else if (this.question.need_answers) {
+	    } else {
 		let choices = [];
 		this.question.answers.forEach(function(answer) {
 		    let value = answer.value.trim();
@@ -212,7 +197,6 @@ export default {
 		this.questions.push(Object.assign({}, this.question));
 		this.question.question = "";
 		this.question.type = "";
-		this.question.needs_anwer = false;
 		this.question.answers = [];
 		this.save_all();
 	    }

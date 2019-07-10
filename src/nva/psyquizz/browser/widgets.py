@@ -76,7 +76,7 @@ class EditSpecialInput(TextareaWidget):
                 questions.append({
                     'question': label,
                     'type': qtype,
-                    'needs_anwer': False,
+                    'needs_anwer': False, 
                     'answers': [{'value': a} for a in answers],
                 })
         self.questions = json.dumps(questions)
