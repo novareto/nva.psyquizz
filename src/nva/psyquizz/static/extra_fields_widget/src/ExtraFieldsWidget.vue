@@ -172,7 +172,7 @@ export default {
 		}
 		ss = ss + '\n';
 	    });
-	    this.vv = ss
+	    this.vv += ss
 	},
 	remove_answer(answer) {
 	    this.question.answers = (
