@@ -108,6 +108,7 @@ class Quizz3Excel(SessionXSLX):
             ws.write(index, 0, score)
             ws.write(index, 1, count)
             index += 1
+
         return workbook
 
 
@@ -116,6 +117,6 @@ class Excel(Excel):
 
     def update(self):
         quizz = getUtility(IQuizz, self.context.quizz_type)
-        self.stats = Quizz3Excel(quizz, self.context, self.request)
+        self.stats = Quizz3Excel(quizz, self.context)
         filters = get_filters(self.request)
         self.stats.update(filters)

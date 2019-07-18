@@ -263,8 +263,6 @@ class SR(uvclight.Page):
         stats = SessionStatistics(quizz, self.context)
         stats.update(filters)
 
-
-
         if 'criterias' in filters:
             general_stats = SessionStatistics(quizz, self.context)
             general_stats.update({})
