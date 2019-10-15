@@ -849,6 +849,10 @@ class EditCourse(Form):
             self.flash(_(u"An error occured"))
             return FAILURE
 
+        extra = json.loads(data['extra_questions'])
+        if not extra:  # empty list, empty string...
+            data['extra_questions'] = None
+
         apply_data_event(self.fields, self.getContentData(), data)
         self.flash(_(u"Der Inhalt wurde aktualisiert."))
         self.redirect(self.application_url())
