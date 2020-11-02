@@ -170,7 +170,7 @@ class ExtraQuestions(uvclight.View):
     context(Interface)
     uvclight.name('preview_extra_questions')
     require('zope.Public')
-    
+
     def render(self):
         questions = self.request.form.get('extra_questions', None)
         if questions is None:
@@ -184,7 +184,7 @@ class PreviewCriterias(Form):
     baseclass()
 
     actions = Actions()
-    
+
     def __init__(self, context, request, title, items):
         Form.__init__(self, context, request)
         self.criterias = items
@@ -237,7 +237,7 @@ von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
 """
 
     preview = None
-    
+
     @property
     def action_url(self):
         quizzjs.need()
@@ -331,7 +331,7 @@ class DeletedCriteria(DeleteForm):
     @action(_(u'Delete'))
     def handle_save(self):
         session = get_session('school')
-        
+
         record = HistoryEntry(
             action=u"Delete",
             type=u"Critera",
@@ -678,7 +678,7 @@ class CreateCourse(Form):
             'form.field.criterias': [
                 v.token for v in
                 criterias.source.vocabularyFactory(self.context)]}
-        
+
     @property
     def action_url(self):
         return self.request.path
@@ -703,7 +703,7 @@ class CreateCourse(Form):
         )
         #data['quizz_type'] = "quizz2"
         course = Course(**data)
-        
+
         course.company_id = self.context.id
         session.add(course)
         session.flush()
@@ -768,7 +768,7 @@ class CourseSession(Adapter):
         def fset(self, value):
             self.context.course.extra_questions = value
         return property(fget, fset)
-    
+
     @apply
     def quizz_type():
         def fget(self):
@@ -835,7 +835,7 @@ class EditCourse(Form):
 
     def update(self):
         wysiwyg.need()
-        startendpicker.need();
+        startendpicker.need()
         Form.update(self)
 
     @property
@@ -891,7 +891,7 @@ class EditCourseBase(Form):
             return FAILURE
         if 'extra_questions' not in data:
             data['extra_questions'] = None
-        
+
         apply_data_event(self.fields, self.getContentData(), data)
         self.flash(_(u"Content updated"))
         self.redirect(self.application_url())
