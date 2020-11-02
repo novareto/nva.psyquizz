@@ -217,6 +217,7 @@ export default {
         if (this.questions) {
 	    this.vv = this.questions;
 	    this.questions = JSON.parse(this.questions);
+        this.save_all();
 	} else {
 	    this.vv = "";
             this.questions = [];

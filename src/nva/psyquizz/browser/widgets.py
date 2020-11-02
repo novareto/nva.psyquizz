@@ -69,16 +69,19 @@ class EditSpecialInput(TextareaWidget):
     def update(self):
         questions = []
         session = self.form.getContentData().content
-        extra = session.context.course.extra_questions.strip()
-        for qex in extra.split('\n'):
-            if qex:
-                label, qtype, answers = parse_extra_question_syntax(qex.strip())
-                questions.append({
-                    'question': label,
-                    'type': qtype,
-                    'needs_anwer': False, 
-                    'answers': [{'value': a} for a in answers],
-                })
-        self.questions = json.dumps(questions)
+        if session.context.course.extra_questions:
+            extra = session.context.course.extra_questions.strip()
+            for qex in extra.split('\n'):
+                if qex:
+                    label, qtype, answers = parse_extra_question_syntax(qex.strip())
+                    questions.append({
+                        'question': label,
+                        'type': qtype,
+                        'needs_anwer': False, 
+                        'answers': [{'value': a} for a in answers],
+                    })
+            self.questions = json.dumps(questions)
+        else:
+            self.questions = None 
         super(EditSpecialInput, self).update()
         efw.need()
