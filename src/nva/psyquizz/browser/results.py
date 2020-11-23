@@ -212,7 +212,7 @@ class Quizz1Charts(uvclight.View):
     name('charts')
     uvclight.context(Quizz1)
 
-    template = uvclight.get_template('cr1.pt', __file__)
+    template = uvclight.get_template('quizz_results.pt', __file__)
 
     def extra_title(self):
         title = u"Zusatzfragen "

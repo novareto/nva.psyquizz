@@ -424,6 +424,8 @@ class CreateAccount(Form):
     dataValidators = []
     fields = (Fields(IAccount).select('name', 'email', 'password') +
               Fields(IVerifyPassword, ICaptched))
+    fields = (Fields(IAccount).select('name', 'email', 'password') +
+              Fields(IVerifyPassword) )
 
     @property
     def action_url(self):
@@ -459,7 +461,7 @@ class CreateAccount(Form):
 
         # pop the captcha and verif, it's not a needed data
         data.pop('verif')
-        data.pop('captcha')
+        #data.pop('captcha')
 
         # hashing the password
         salt = uuid.uuid4().hex

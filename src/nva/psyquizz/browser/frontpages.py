@@ -42,7 +42,7 @@ class AccountHomepage(Page):
     layer(ICompanyRequest)
     require('manage.company')
 
-    template = get_template('ckh.pt', __file__)
+    template = get_template('frontpage.pt', __file__)
 
     maxResults = 1 
     

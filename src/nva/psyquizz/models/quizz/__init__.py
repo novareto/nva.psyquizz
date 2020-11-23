@@ -42,5 +42,6 @@ class QuizzBase(Location):
         from nva.psyquizz.models.interfaces import source_fixed_extra_questions 
         feq = source_fixed_extra_questions(None)
         for eqs in course.fixed_extra_questions:
-            term = feq.getTerm(eqs)
-            yield term.iface
+            if eqs:
+                term = feq.getTerm(eqs)
+                yield term.iface
