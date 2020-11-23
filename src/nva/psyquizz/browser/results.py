@@ -214,6 +214,14 @@ class Quizz1Charts(uvclight.View):
 
     template = uvclight.get_template('cr1.pt', __file__)
 
+    def extra_title(self):
+        title = u"Zusatzfragen "
+        if self.context.__parent__.course.extra_questions:
+            title += " - eigene Zusatzfragen"
+        if self.context.__parent__.course.fixed_extra_questions:
+            title += " - vordefinierte Zusatzfragen"
+        return title
+
     def jsonify(self, da):
         return json.dumps(da)
 

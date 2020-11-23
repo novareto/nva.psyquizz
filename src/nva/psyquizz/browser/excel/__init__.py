@@ -230,6 +230,7 @@ class Excel(uvclight.Page):
     uvclight.layer(ICompanyRequest)
 
     def update(self):
+        import pdb; pdb.set_trace()
         quizz = getUtility(IQuizz, self.context.quizz_type)
         self.stats = SessionXSLX(quizz, self.context)
         filters = get_filters(self.request)

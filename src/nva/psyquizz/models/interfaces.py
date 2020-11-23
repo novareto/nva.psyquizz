@@ -14,6 +14,7 @@ from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from uvc.validation.validation import validateZahl
 from uvclight.form_components.fields import OrderedChoices
 from zope.schema import ValidationError
+from nva.psyquizz.models.quizz.corona_set import ICoronaQuestions, IHomeOfficeQuestions
 
 
 class VKontaktdaten(ValidationError):
@@ -45,6 +46,21 @@ def deferred(name):
     def vocabulary(context):
         return deferred_vocabularies[name](context)
     return vocabulary
+
+
+class MySimpleTerm(SimpleTerm):
+
+    def __init__(self, value, token=None, title=None, iface=None):
+        super(MySimpleTerm, self).__init__(value, token, title)
+        self.iface = iface
+
+
+
+@provider(IContextSourceBinder)
+def source_fixed_extra_questions(context):
+    rc = [MySimpleTerm('1', '1', u'Corona', ICoronaQuestions), MySimpleTerm('2', '2', u'Homeoffice', IHomeOfficeQuestions)]
+    return SimpleVocabulary(rc)
+
 
 
 @provider(IContextSourceBinder)
@@ -138,8 +154,8 @@ class ICriteria(IContent):
 
         tokens = set((c.lower() for c in clean))
         if len(tokens) != len(clean):
-            raise Invalid(_(u"Sie haben zwei identische Werte angegeben.")) 
-        
+            raise Invalid(_(u"Sie haben zwei identische Werte angegeben."))
+
 
 
 class IAccount(ILocation, IContent):
@@ -212,7 +228,7 @@ class ICompany(ILocation, IContent):
                      Dies ermöglicht die Ableitung branchenspezifischer Präventionsangebote \
                      sowie die Erstellung von Referenzwerten.',
         required=True,
-        source=exp_db 
+        source=exp_db
     )
 
     employees = schema.Choice(
@@ -267,33 +283,44 @@ class ICourse(ILocation, IContent):
 
     name = schema.TextLine(
         title=_(u"Course name"),
-        description=u"Bitte geben Sie Ihrer Befragung eine eindeutige Bezeichnung wie z.B. Beurteilung Psychischer Belastung – Gesamtbetrieb",
+        description=(
+            u"Bitte geben Sie Ihrer Befragung eine eindeutige "
+            u"Bezeichnung wie z.B. Beurteilung Psychischer "
+            u"Belastung – Gesamtbetrieb"),
         required=True,
-        )
+    )
 
     quizz_type = schema.Choice(
         title=_(u"Quizz"),
         source=deferred('quizz_choice'),
         required=True,
-        )
+    )
+
+    fixed_extra_questions = schema.Set(
+        title=_(u"Zusatzfragen auswählen"),
+        description=_(u"Hier können Sie vordefinierte Zusatzfragen zu Ihrer Befragung auswählen."),
+        required=False,
+        value_type=schema.Choice(title=u'Please select one', source=source_fixed_extra_questions)
+    )
 
     extra_questions = schema.Text(
-        title=_(u"Complementary questions for the course"),
+        title=_(u"Eigene Zusatzfragen erstellen"),
         description=_(u"Type your questions : one per line."),
         required=False,
         default=u"",
-        )
+    )
 
     criterias = OrderedChoices(
         title=_(u"Auswertungsgruppen festlegen"),
-        description=u"Sie können die Reihenfolge der Abfrage im „Fragebogen“ \
-                      verändern, indem Sie die Auswertungsgruppen im rechten \
-                      Kasten nach oben oder unten verschieben. \
-                      Nicht benötigte Auswertungsgruppen verschieben \
-                      Sie in den linken Kasten.",
+        description=(
+            u"Sie können die Reihenfolge der Abfrage im „Fragebogen“"
+            u"verändern, indem Sie die Auswertungsgruppen im rechten "
+            u"Kasten nach oben oder unten verschieben. "
+            u"Nicht benötigte Auswertungsgruppen verschieben "
+            u"Sie in den linken Kasten."),
         value_type=schema.Choice(source=deferred('criterias_choice')),
         required=False,
-        )
+    )
 
     @invariant
     def check_extra_questions(data):
@@ -304,7 +331,7 @@ class ICourse(ILocation, IContent):
             except NotImplementedError:
                 raise Invalid('Invalid syntax')
 
-    
+
 class ICourseSession(IClassSession, ICourse):
     pass
 

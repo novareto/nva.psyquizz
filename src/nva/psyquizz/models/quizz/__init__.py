@@ -36,3 +36,11 @@ class QuizzBase(Location):
         if questions_text:
             for field in generate_extra_questions(questions_text):
                 yield field
+
+    @classmethod
+    def additional_extra_fields(cls, course):
+        from nva.psyquizz.models.interfaces import source_fixed_extra_questions 
+        feq = source_fixed_extra_questions(None)
+        for eqs in course.fixed_extra_questions:
+            term = feq.getTerm(eqs)
+            yield term.iface

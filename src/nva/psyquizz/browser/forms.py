@@ -642,11 +642,12 @@ class CreateCourse(Form):
     title(_(u'Add a course'))
 
     label = u'Befragung anlegen <a href="" data-toggle="modal" data-target="#myModal"> <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>'
+    inline = False
 
     @property
     def fields(self):
         course_fields = Fields(ICourse).select(
-            'name', 'criterias', 'quizz_type', 'extra_questions')
+            'name', 'criterias', 'quizz_type', 'extra_questions', 'fixed_extra_questions')
         populate_fields = Fields(IPopulateCourse)
         populate_fields['strategy'].mode = "radio"
         session_fields = Fields(IClassSession).select(
@@ -1060,7 +1061,6 @@ class SaveQuizz(Action):
         for key, value in should_answers.items():
             if isinstance(value, set):
                 extra_answers[key] = list(value)
-
         data['extra_questions'] = json.dumps(extra_answers)
         if should_answers:
             data['should'] = json.dumps(should_answers)
@@ -1157,9 +1157,11 @@ class AnswerQuizz(Form):
             *self.quizz.criteria_fields(self.context.course))
         extra_fields = Fields(
             *self.quizz.extra_fields(self.context.course))
-        
+        additional_extra_fields = Fields(
+            *self.quizz.additional_extra_fields(self.context.course)
+        )
         self.nbcriterias = len(criteria_fields)
-        fields = criteria_fields + fields + extra_fields
+        fields = criteria_fields + fields + extra_fields + additional_extra_fields
 
         for field in fields:
             if isinstance(field, ChoiceField):

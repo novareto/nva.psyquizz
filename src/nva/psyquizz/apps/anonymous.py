@@ -29,7 +29,7 @@ class QuizzBoard(SQLContainer):
     assert_key = 'completion_date'
     db_key = "school"
 
-    def __init__(self, configuration, parent=None):
+    def __init__i(self, configuration, parent=None):
         self.__parent__ = parent
         self.__name__ = configuration.name
         self.configuration = configuration
@@ -111,6 +111,10 @@ class QuizzBoard(SQLContainer):
         return model
 
 
+def get_my_session():
+    return get_session('school') 
+
+
 class Application(SQLPublication):
     _layers = [IBootstrapRequest, IAnonymousRequest]
 
@@ -118,7 +122,7 @@ class Application(SQLPublication):
         pass
 
     def site_manager(self, environ):
-        return Site(QuizzBoard(self.configuration, parent=None))
+        return Site(QuizzBoard(get_my_session, name=self.configuration.name, parent=None))
 
     @property
     def layers(self):
