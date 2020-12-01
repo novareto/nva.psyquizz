@@ -45,7 +45,7 @@ class IntIds(Location):
 
 from .vocabularies import TrueOrFalse, MoreToLess, MoreToLessN, LessToMore
 from .vocabularies import FREQUENCY, ASSESMENT, TIMESPAN, GOODBAD, AF 
-from .vocabularies import FREQUENCY1, FREQUENCY2
+from .vocabularies import FREQUENCY1, FREQUENCY2, FBGU
 
 # important to have here as we need TrueOrFalse
 # but IQuizz needs generate_extra_questions

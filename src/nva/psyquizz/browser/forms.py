@@ -23,6 +23,7 @@ from ..models import IQuizz, TrueOrFalse
 from ..models import Criteria, CriteriaAnswer, ICriteria, ICriterias
 from ..models.criterias import criterias_table
 from ..models.quizz.quizz4 import IQuizz4
+from ..models.quizz.quizz5 import IQuizz5
 from nva.psyquizz.browser.lib.emailer import SecureMailer, prepare, ENCODING
 
 import grokcore.component as grok
@@ -1170,6 +1171,22 @@ class AnswerQuizz(Form):
                 field.mode = self.fmode
 
         return fields
+
+
+class Quizz5Wizard(AnswerQuizz):
+    context(IQuizz5)
+    name('index')
+    template = get_template('quizz5_wizard.pt', __file__)
+
+    def get_scales(self):
+        return IQuizz5.getTaggedValue('scales')
+
+    def getFieldWidgets(self, scale):
+        widgets = []
+        for field in scale['iface'].names():
+            name = "form.field.%s" % field
+            widgets.append(self.fieldWidgets.get(name))
+        return widgets
 
 
 class CompanyAnswerQuizz(Action):
