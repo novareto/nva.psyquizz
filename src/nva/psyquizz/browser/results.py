@@ -13,6 +13,7 @@ from nva.psyquizz.models import IQuizz, IClassSession, ICourse, ICompany
 from nva.psyquizz.models.quizz.quizz2 import IQuizz2
 from nva.psyquizz.models.quizz.quizz1 import Quizz1
 from nva.psyquizz.models.quizz.quizz3 import IQuizz3
+from nva.psyquizz.models.quizz.quizz5 import IQuizz5
 from uvclight.auth import require
 from zope.component import getUtility, getMultiAdapter
 from zope.interface import Interface
@@ -51,6 +52,7 @@ class CourseStatistics(object):
 
     def __init__(self, quizz, course):
         self.quizz = quizz
+        import pdb; pdb.set_trace()
         self.averages = quizz.__schema__.queryTaggedValue('averages') or {}
         self.sums = quizz.__schema__.queryTaggedValue('sums') or {}        
         self.course = course
@@ -130,6 +132,14 @@ class Quizz2Charts(uvclight.View):
         hs.need()
         self.stats = stats
         self.general_stats = general_stats
+
+
+class Quizz5Charts(Quizz2Charts):
+    uvclight.context(IQuizz5)
+    template = uvclight.get_template('quizz5_result.pt', __file__)
+
+    def update(self, stats, general_stats=None):
+        super(Quizz5Charts, self).update(stats, general_stats)
 
 
 class Quizz3Charts(Quizz2Charts):
