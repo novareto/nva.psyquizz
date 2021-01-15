@@ -24,16 +24,16 @@ CHUNK = 4096
 
 
 FRONTPAGE = u"""
-Auswertungsbericht 
-„Gemeinsam zu gesunden Arbeitsbedingungen“ – Psychische Belastung erfassen 
+Auswertungsbericht
+„Gemeinsam zu gesunden Arbeitsbedingungen“ – Psychische Belastung erfassen
 %s
 %s
 
-Befragungszeitraum: %s – %s 
+Befragungszeitraum: %s – %s
 Grundlage der Ergebnisse
-Auswertungsgruppe: %s 
-Anzahl Fragebögen: %s 
-Auswertung erzeugt: %s 
+Auswertungsgruppe: %s
+Anzahl Fragebögen: %s
+Auswertung erzeugt: %s
 """
 
 
@@ -50,9 +50,9 @@ class XSLX(object):
         for k,v in self.filters.get('criterias', {}).items():
             db +=  "%s %s" % (v.name, amounts.get(v.name))
         fp = FRONTPAGE % (
-            self.course.company.name, 
-            self.course.title, 
-            self.session.startdate.strftime('%d.%m.%Y'), 
+            self.course.company.name,
+            self.course.title,
+            self.session.startdate.strftime('%d.%m.%Y'),
             self.session.enddate.strftime('%d.%m.%Y'),
             db,
             self.statistics.get('total'),
@@ -61,7 +61,7 @@ class XSLX(object):
         fm = workbook.add_format()
         fm.set_font_size(16)
         fm.set_text_wrap()
-        worksheet0.set_column(0, 0, 130) 
+        worksheet0.set_column(0, 0, 130)
 
         worksheet0.write(0, 0, fp, fm)
 
@@ -97,7 +97,7 @@ class XSLX(object):
             'indent': 0,
             'locked': 1,
         })
-        
+
         for i, x in enumerate(self.statistics['global.averages']):
             worksheet.write(i, 0, x.title)
             worksheet.write(i, 1, x.average, nformat)
@@ -123,7 +123,7 @@ class XSLX(object):
         data = json.loads(self.series)
         for y, x in enumerate(data):
             name = x['name']
-            r = 1 
+            r = 1
             worksheet.write(0, y, name)
             for i, z in enumerate(x['data']):
                 worksheet.write((r+1+i), y, z, nformat)
@@ -164,8 +164,8 @@ class XSLX(object):
         worksheet.insert_chart("A20", chart3, {'x_offset': 15, 'y_offset': 10})
 
         worksheet = workbook.add_worksheet('Mittelwerte pro Frage')
-        offset = 1 
-        
+        offset = 1
+
         if 'criterias' in self.filters:
             for cname, cvalues in self.statistics['criterias'].items():
                 for v in cvalues:
@@ -179,7 +179,7 @@ class XSLX(object):
         offset += 2
         worksheet.write("A%i" % offset, "Frage")
         worksheet.write("B%i" % offset, "Mittelwert")
-        
+
         labels = {k.title: k.description for id, k in
                   getFieldsInOrder(self.quizz.__schema__)}
         for avg in self.statistics['per_question_averages']:
@@ -191,14 +191,15 @@ class XSLX(object):
         if self.statistics['extra_data']:
             line = 0
             worksheet = workbook.add_worksheet('Zusatzfragen')
-            for key, value in self.statistics['extra_data'].items():
-                worksheet.write(line, 0, key)
-                col = 0
-                for question, answer in value.items():
-                    worksheet.write(line + 1, col, question)
-                    worksheet.write(line + 2, col, answer)
+            for label, answers in self.extra_questions_order.items():
+                value = self.statistics['extra_data'][label]
+                worksheet.write(line, 0, label)
+                col = 1
+                for answer in answers:
+                    worksheet.write(line + 0, col, answer)
+                    worksheet.write(line + 1, col, value.get(answer, 0))
                     col += 1
-                line += 5
+                line += 4
         return workbook
 
     def render(self):
@@ -218,7 +219,7 @@ class XSLX(object):
 
 class CourseXSLX(CourseStatistics, XSLX):
     name('xslx')
-    
+
 
 class SessionXSLX(SessionStatistics, XSLX):
     name('xslx')
@@ -230,7 +231,6 @@ class Excel(uvclight.Page):
     uvclight.layer(ICompanyRequest)
 
     def update(self):
-        import pdb; pdb.set_trace()
         quizz = getUtility(IQuizz, self.context.quizz_type)
         self.stats = SessionXSLX(quizz, self.context)
         filters = get_filters(self.request)

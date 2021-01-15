@@ -298,7 +298,7 @@ class ICourse(ILocation, IContent):
 
     fixed_extra_questions = schema.Set(
         title=_(u"Zusatzfragen auswählen"),
-        description=_(u"Hier können Sie vordefinierte Zusatzfragen zu Ihrer Befragung auswählen."),
+        description=_(u"Hier können Sie vordefinierte Zusatzfragen zu Ihrer Befragung auswählen.  <a href='' class='' data-toggle='modal' data-target='#myHelpModal'> <span class='glyphicon glyphicon-question-sign' aria-hidden='true'></span> </a>"),
         required=False,
         value_type=schema.Choice(title=u'Please select one', source=source_fixed_extra_questions)
     )
@@ -313,7 +313,7 @@ class ICourse(ILocation, IContent):
     criterias = OrderedChoices(
         title=_(u"Auswertungsgruppen festlegen"),
         description=(
-            u"Sie können die Reihenfolge der Abfrage im „Fragebogen“"
+            u"Sie können die Reihenfolge der Abfrage im „Fragebogen“ "
             u"verändern, indem Sie die Auswertungsgruppen im rechten "
             u"Kasten nach oben oder unten verschieben. "
             u"Nicht benötigte Auswertungsgruppen verschieben "

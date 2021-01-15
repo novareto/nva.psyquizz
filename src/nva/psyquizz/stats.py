@@ -104,20 +104,18 @@ def compute(quizz, averages, sums, filters):
     answers = session.query(quizz)
     criterias_title = {}
     filtered_criterias = {}
-    
+
     if filters:
         if 'course' in filters:
             answers = answers.filter(
                 quizz.course_id == filters['course']
             )
-        
+
         if 'session' in filters:
             answers = answers.filter(
                 quizz.session_id == filters['session']
             )
-    print answers
-    print filters
-    print answers.count()
+
     total = 0
     if 'criterias' in filters:
         criterias = set(
@@ -132,7 +130,7 @@ def compute(quizz, averages, sums, filters):
             for c in answer.student.criterias:
                 criterias_title[str(c.criteria.id)] = c.criteria.title
                 student_criterias.add((str(c.criteria.id), c.answer))
-                
+
             if criterias is not None and not student_criterias >= criterias:
                 # WE DO NOT MATCH THE CRITERIAS
                 continue
@@ -210,7 +208,7 @@ def compute(quizz, averages, sums, filters):
     # We do the computation for the global data as well
     per_question_averages, per_question_sums = question_computation(
         averages, sums, global_data)
-    
+
     sorted_global_answers = sort_data(
         averages, sums, global_data)
 

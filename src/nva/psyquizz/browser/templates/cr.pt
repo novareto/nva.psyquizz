@@ -43,7 +43,7 @@
 
   <button type="button" class="btn btn-primary pull-right"
 	  data-toggle="modal" data-target="#myModal">
-    Glossar 
+    Glossar
   </button>
   <div id="container1" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
 
@@ -55,63 +55,65 @@
     <em><b style="color: #D8262B;"> < 2,5  </b>:
     in diesem Bereich scheint Handlungsbedarf zu bestehen </em>&nbsp;&nbsp;
   </div>
-  
+
   <table id="mt" class="table table-bordered table-striped">
     <tr tal:repeat="data view.stats.statistics['global.averages']">
-      <td tal:content="data.title"></td> 
-      <td tal:content="str('%.2f' % data.average).replace('.',',')"></td> 
+      <td tal:content="data.title"></td>
+      <td tal:content="str('%.2f' % data.average).replace('.',',')"></td>
     </tr>
   </table>
 
-  <div tal:condition="view.stats.statistics['extra_data']">
-   <h2> Ergebnis der Zusatzfrage(n)  </h2>
-  <table id="mt" class="table table-bordered table-striped">
-    <tr tal:repeat="data view.stats.statistics['extra_data'].items()">
-      <td tal:content="data[0]"></td> 
-      <td>
-	<ul>
-	  <li tal:repeat="answer data[1].items()">
-	    <span tal:content="answer[0]" /> :
-	    <span tal:content="answer[1]" />
-	  </li>
-	</ul>
-      </td>
-    </tr>
-  </table>
-  </div>
-  
   <div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
-  
+
+  <div tal:condition="view.stats.statistics['extra_data']">
+    <h2>Ergebnis der Zusatzfrage(n)</h2>
+    <table id="mt" class="table table-bordered table-striped">
+      <tr tal:repeat="label view.stats.extra_questions_order.keys()">
+          <tal:extra define="data view.stats.statistics['extra_data'][label]">
+            <td tal:content="label"></td>
+            <td>
+	      <ul>
+	        <li tal:repeat="answer view.stats.extra_questions_order[label]">
+                  <span tal:content="answer" /> :
+	          <span tal:content="data.get(answer, 0)" />
+	        </li>
+	      </ul>
+            </td>
+          </tal:extra>
+      </tr>
+    </table>
+  </div>
+
   <form id="result" method="POST"
 	tal:attributes="action view.url(context) + '/export'">
-    
+
     <input type="hidden" value="" name="has_criterias" tal:attributes="value len(view.stats.filters.get('criterias', {}))" />
     <input type="hidden" value="" tal:attributes="value view.jsonify(view.stats.filters.get('criterias', {}))" name="criterias" />
-    
+
     <input type="hidden"
 	   tal:attributes="value view.stats.statistics['total']" name="total"/>
-    
+
     <textarea type="text" id="averages" name="averages" style="display:none">
       <tal:data
           content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
     </textarea>
-    
+
     <textarea type="text" id="chart" name="chart" style="display: none"></textarea>
     <textarea type="text" id="userschart" name="userschart" style="display: none"></textarea>
     <textarea type="text" id="pSVG" name="pSVG" style="display:none"></textarea>
     <textarea type="text" id="pSVG1" name="pSVG1" style="display:none"></textarea>
-    
+
     <button class="btn btn-default" name="action" value="PDF">
       <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
 	</span>&nbsp; PDF export
     </button>
-    
+
     <a class="btn btn-default"
        tal:attributes="href 'excel?' + request.environment['QUERY_STRING']"
        ><span class="glyphicon glyphicon-download-alt" aria-hidden="true">
     </span>&nbsp; Excel export</a>
   </form>
-  
+
   <script>
      function svgToCanvas(chart, target_id) {
         var svg = chart.getSVG();
@@ -127,7 +129,7 @@
         };
      }
 
-    
+
     var myChart = Highcharts.chart('container', {
 	chart: {
             type: 'bar'
@@ -142,7 +144,7 @@
             text: 'Verteilung'
 	},
 	xAxis: {
-            categories: <span tal:replace="view.stats.xAxis"/>, 
+            categories: <span tal:replace="view.stats.xAxis"/>,
               tickAmount: 10
 	},
 	yAxis: {
@@ -168,7 +170,7 @@
 		stacking: 'normal'
             }
 	},
-	series: <span tal:replace="view.stats.series"/> 
+	series: <span tal:replace="view.stats.series"/>
     });
 
     svgToCanvas(myChart, 'chart');
@@ -227,7 +229,7 @@
 		{
 		    color: '#D8262B',
 		    from: 1,
-		    to:  2.5 
+		    to:  2.5
 		},
 		{
 		    color: '#FFCC00',
@@ -266,7 +268,7 @@
                      }
                },
 	       </tal:criterias>
-	       
+
                 showInLegend: true
             }
 	},
@@ -284,7 +286,7 @@
             data: <span tal:replace="view.general_stats.rd"/>,
             pointPlacement: 'on'
 	  },
-	  {    
+	  {
             name: 'Ihre Auswahl',
             data: <span tal:replace="view.stats.rd"/>,
             pointPlacement: 'on'
@@ -296,7 +298,7 @@
 
      $('#pSVG').val(usersChart.getSVGForExport());
 
-    
+
     $("a[name='checkall']").click(function () {
     $("input:checkbox").prop('checked', true);
     $("#form-action-filter").click();
@@ -323,32 +325,32 @@
             <dt>Passende Arbeitsumgebung: </dt>
             <dd>Die physische Arbeitsumgebung: Lärm, Klima, Beleuchtung </dd>
             <dt>Ganzheitliches Arbeiten: </dt>
-            <dd>Möglichkeit den Anteil der eigenen Arbeit am Gesamtprodukt zu erkennen 
+            <dd>Möglichkeit den Anteil der eigenen Arbeit am Gesamtprodukt zu erkennen
             sowie am Arbeitsergebnis die Qualität der eigenen Leistungen beurteilen zu können </dd>
             <dt>Passende Arbeitsabläufe: </dt>
-            <dd>Hindernisse bei der Ausführungen der Arbeitsaufgabe: unpassende 
+            <dd>Hindernisse bei der Ausführungen der Arbeitsaufgabe: unpassende
             Arbeitsmittel sowie Störungen und Unterbrechungen bei der Arbeit </dd>
             <dt>Zusammenarbeit: </dt>
-            <dd>Qualität der Zusammenarbeit, Kommunikationsmöglichkeiten sowie die 
+            <dd>Qualität der Zusammenarbeit, Kommunikationsmöglichkeiten sowie die
             Rückmeldung (Feedback) über die eigene Arbeit durch Vorgesetzte und Kollegen </dd>
             <dt>Passende inhaltliche Arbeitsanforderungen: </dt>
-            <dd>Das Zueinanderpassen der Anforderungen aus den 
+            <dd>Das Zueinanderpassen der Anforderungen aus den
             Arbeitsaufgaben zu den Leistungsvoraussetzungen der Beschäftigten </dd>
             <dt>Information und Mitsprache: </dt>
             <dd>Betriebliche Informationspolitik und Beteiligung der Beschäftigten </dd>
             <dt>Vielseitiges Arbeiten: </dt>
-            <dd>Möglichkeiten die eigenen Fähigkeiten und Fertigkeiten zur Bewältigung der 
+            <dd>Möglichkeiten die eigenen Fähigkeiten und Fertigkeiten zur Bewältigung der
             Arbeitsaufgaben einzusetzen und Neues dazu zu lernen </dd>
             <dt>Passende mengenmäßige Arbeit: </dt>
-            <dd>Ausmaß der Arbeitsmenge sowie der Zeitdruck unter dem 
+            <dd>Ausmaß der Arbeitsmenge sowie der Zeitdruck unter dem
             gearbeitet wird </dd>
             <dt>Handlungsspielraum: </dt>
-            <dd>Einfluss auf Arbeitsweise, verwendete Arbeitsmittel und die zeitliche 
+            <dd>Einfluss auf Arbeitsweise, verwendete Arbeitsmittel und die zeitliche
             Organisation der Arbeit </dd>
             <dt>Entwicklungsmöglichkeiten: </dt>
             <dd>Weiterbildungsmöglichkeiten und Aufstiegschancen im Unternehmen </dd>
             <dt>Soziale Rückendeckung: </dt>
-            <dd>Die Qualität des Umgangs unter den Kolleginnen und Kollegen innerhalb des 
+            <dd>Die Qualität des Umgangs unter den Kolleginnen und Kollegen innerhalb des
             eigenen Arbeitsbereiches sowie mit dem direkten Vorgesetzten </dd>
             <dt> </dt>
             <dd> </dd>

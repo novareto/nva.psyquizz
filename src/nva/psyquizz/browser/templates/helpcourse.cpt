@@ -36,33 +36,6 @@
         Die Auswertung erfolgt durch tabellarische Darstellung der Anzahl der Antworten pro Antwortmöglichkeit.
         </p>
 
-        <h3> Zusatzfragen (optiononal) </h3>
-          <p>
-            <b>Corona </b>
-Die SARS-CoV-2-Arbeitsschutzregel sieht eine Aktualisierung der Gefährdungsbeurteilung in Bezug auf die psychische Belastung durch Corona vor. Diese Zusatzfragen helfen Ihnen dabei, diese Belastung ergänzend zu erfassen.
-          </p>
-<ul>
-  <li> Durch Corona habe ich zu wenig Arbeit.</li>
-  <li> Durch Corona habe ich zu wenig Kontakt mit Kolleginnen und Kollegen. </li>
-  <li> Ich werde über die Corona Maßnahmen im Betrieb ausreichend informiert. </li>
-  <li> Ich fühle mich durch die Maßnahmen in meinem Betrieb ausreichend geschützt. </li>
-  <li> Ich habe Angst durch die Pandemie meinen Arbeitsplatz zu verlieren. </li>
-</ul>
-          <p> <b> Homeoffice </b>
-            Bei der Gefährdungsbeurteilung soll die psychische Belastung durch die spezifischen Anforderungen und Bedingungen bei einer Tätigkeit erfasst werden. Diese Zusatzfragen helfen Ihnen dabei, die Belastung im Homeoffice ergänzend zu erfassen.
-            </p>
-            <ul>
-              <li> Ich kann im Homeoffice ungestört arbeiten.  </li>
-              <li> Mein Arbeitsplatz ist für mich passend gestaltet (Stuhl, Tisch, Bildschirm etc.). </li>
-              <li> Meine technische Ausstattung ist gut (Software, Hardware, Internetverbindung etc.).  </li>
-              <li> Der digitale Austausch mit meinen Kolleginnen und Kollegen funktioniert gut. </li>
-              <li> Meine Erreichbarkeitszeiten sind mit meiner Führungskraft und meinem Team abgestimmt. </li>
-              <li> Ziele und Erwartungen an meine Arbeit sind mit meiner Führungskraft und Kolleginnen und Kollegen eindeutig geklärt.  </li>
-              <li> Meine Arbeit lässt sich gut selbst organisieren.  </li>
-              <li> Meine Arbeit ermöglicht es mir, Beruf und Privatleben miteinander zu vereinbaren. </li>
-              </ul>
-
-
         <h3> Auswertungsgruppen festlegen </h3> 
         <p> Diese Auswahl erscheint später auf der ersten Seite des „Fragebogens“ und die Beschäftigten wählen
         aus, zu welcher Auswertungsgruppe Sie gehören. Nur für diese Auswertungsgruppen können Sie sich
@@ -100,4 +73,51 @@ gleichzeitig an alle Beschäftigten verschickt werden.
     </div>
   </div>
 </div>
+</div>
+
+<div>
+
+<div class="modal fade" id="myHelpModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Hilfe</h4>
+      </div>
+      <div class="modal-body">
+
+        <h3> Zusatzfragen (optional) </h3>
+          <p>
+            <b>Corona </b>
+Die SARS-CoV-2-Arbeitsschutzregel sieht eine Aktualisierung der Gefährdungsbeurteilung in Bezug auf die psychische Belastung durch Corona vor. Diese Zusatzfragen helfen Ihnen dabei, diese Belastung ergänzend zu erfassen.
+          </p>
+<ul>
+  <li> Durch Corona habe ich zu wenig Arbeit.</li>
+  <li> Durch Corona habe ich zu wenig Kontakt mit Kolleginnen und Kollegen. </li>
+  <li> Ich werde über die Corona Maßnahmen im Betrieb ausreichend informiert. </li>
+  <li> Ich fühle mich durch die Maßnahmen in meinem Betrieb ausreichend geschützt. </li>
+  <li> Ich habe Angst durch die Pandemie meinen Arbeitsplatz zu verlieren. </li>
+</ul>
+          <p> <b> Homeoffice </b>
+            Bei der Gefährdungsbeurteilung soll die psychische Belastung durch die spezifischen Anforderungen und Bedingungen bei einer Tätigkeit erfasst werden. Diese Zusatzfragen helfen Ihnen dabei, die Belastung im Homeoffice ergänzend zu erfassen.
+            </p>
+            <ul>
+              <li> Ich kann im Homeoffice ungestört arbeiten.  </li>
+              <li> Mein Arbeitsplatz ist für mich passend gestaltet (Stuhl, Tisch, Bildschirm etc.). </li>
+              <li> Meine technische Ausstattung ist gut (Software, Hardware, Internetverbindung etc.).  </li>
+              <li> Der digitale Austausch mit meinen Kolleginnen und Kollegen funktioniert gut. </li>
+              <li> Meine Erreichbarkeitszeiten sind mit meiner Führungskraft und meinem Team abgestimmt. </li>
+              <li> Ziele und Erwartungen an meine Arbeit sind mit meiner Führungskraft und Kolleginnen und Kollegen eindeutig geklärt.  </li>
+              <li> Meine Arbeit lässt sich gut selbst organisieren.  </li>
+              <li> Meine Arbeit ermöglicht es mir, Beruf und Privatleben miteinander zu vereinbaren. </li>
+              </ul>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+      </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
 </div>

@@ -52,7 +52,7 @@ class CourseStatistics(object):
     def __init__(self, quizz, course):
         self.quizz = quizz
         self.averages = quizz.__schema__.queryTaggedValue('averages') or {}
-        self.sums = quizz.__schema__.queryTaggedValue('sums') or {}        
+        self.sums = quizz.__schema__.queryTaggedValue('sums') or {}
         self.course = course
 
     def update(self, filters):
@@ -89,10 +89,20 @@ class CourseStatistics(object):
                 criterias.append([crit.name, crit.amount])
         self.json_criterias = json.dumps(criterias)
 
+        self.extra_questions_order = OrderedDict()
+        for iface in self.quizz.additional_extra_fields(self.course):
+            for name, field in getFieldsInOrder(iface):
+                 self.extra_questions_order[field.description] = [
+                     t.title for t in field.vocabulary
+                 ]
+
         if self.course.extra_questions:
             questions = self.course.extra_questions.strip().split('\n')
             for question in questions:
                 label, qtype, values = parse_extra_question_syntax(question)
+                if not label in self.extra_questions_order:
+                    self.extra_questions_order[label] = values
+
                 if not label in self.statistics['extra_data']:
                     self.statistics['extra_data'][label] = {}
                 extra_answers = self.statistics['extra_data'][label]
@@ -108,7 +118,7 @@ class SessionStatistics(CourseStatistics):
         self.course = session.course
         self.session = session
         self.averages = quizz.__schema__.queryTaggedValue('averages') or {}
-        self.sums = quizz.__schema__.queryTaggedValue('sums') or {}        
+        self.sums = quizz.__schema__.queryTaggedValue('sums') or {}
 
     def update(self, filters):
         filters['session'] = self.session.id
@@ -151,7 +161,7 @@ class Quizz3Charts(Quizz2Charts):
             (u"sehr gut", 0),
         ))
 
-        self.ausp = { 
+        self.ausp = {
                 u"schlecht":"5 bis 20",
                 u"mittelmäßig":"21 bis 27",
                 u"gut":"28 bis 32",
@@ -251,7 +261,7 @@ class Quizz1Charts(uvclight.View):
                 if answer.result is True:
                     yesses += 1
                 else:
-                    noes +=1 
+                    noes +=1
 
             good['data'].append(float(yesses)/total * 100)
             bad['data'].append(float(noes)/total * 100)
