@@ -131,7 +131,7 @@ class DownloadCourse(uvclight.View):
                 pf.decrypt('')
             for page in range(pf.getNumPages()):
                 output.addPage(pf.getPage(page))
-            if self.context.course.extra_questions:
+            if self.context.course.extra_questions or self.context.course.fixed_extra_questions:
                 b1_pdf = PdfFileReader(base1)
                 wm = b1_pdf.getPage(0)
                 p1 = PdfFileReader(self.generate_page_one())
