@@ -1,0 +1,49 @@
+<div>
+    <div class="header">
+        <h1>Ergebnisse</h1>
+        <p>
+        Hier sehen Sie die Auswertung für alle Beschäftigten. 
+        </p>
+        <p>
+        Durch Auswahl einer oder mehrerer Auswertungsgruppen haben Sie die
+        Möglichkeit sich eine detaillierte Auswertung anzeigen zu lassen.
+        (Bitte beachten Sie: Einzelne Auswertungsgruppen können erst ausgewählt
+        werden, wenn für diese Auswertungsgruppe mindestens sieben ausgefüllte
+        Fragebögen vorliegen.)
+        </p>
+        <p>
+        Der weitere Umgang mit den Ergebnissen ist in der
+        „Übersicht 7 Schritte“ unter 4. Lösungsworkshops beschrieben.
+        </p>
+    </div>
+    <form action="." tal:attributes="action view.request.url"
+          tal:define="current view.stats.filters.get('criterias', {})">
+        <div>
+            <a name="uncheckall">Alle</a>
+        </div>
+        <dl tal:define="crits view.stats.statistics['criterias']">
+            <tal:dl tal:repeat="crit crits">
+            <dt><h3 tal:content="crit" /></dt>
+            <dd>
+            <div tal:repeat="opt crits[crit]"
+                 style="display: inline-block; padding: 5px;">
+                <tal:disabled define="disabled bool(opt.amount < 7)">
+                <input name="criterias" type="checkbox"
+                                        tal:attributes="value opt.uid;
+                                                        checked opt.uid in current;
+                                                        disabled disabled and 'disabled' or None" />
+                <span tal:content="'%s (%s)' % (opt.name, opt.amount)"
+                      tal:attributes="class disabled and 'text-muted' or ''"/>
+                </tal:disabled>
+            </div>
+            </dd>
+            </tal:dl>
+        </dl>
+        <input id="form-action-filter" type="submit" value="filter" />
+    </form>
+
+    <div tal:repeat="scale view.stats.statistics['global.averages']">
+        <span tal:content="string: ${scale.title} - ${scale.average}"> </span>
+    </div>
+
+</div>
