@@ -28,7 +28,7 @@ from nva.psyquizz.browser.lib.emailer import SecureMailer, prepare, ENCODING
 
 import grokcore.component as grok
 from grokcore.component import Adapter, provides, context, baseclass
-from grokcore.component import adapter, adapts
+from grokcore.component import adapter, adapts, implementer
 
 from cromlech.sqlalchemy import get_session
 from dolmen.forms.base import (
@@ -50,7 +50,7 @@ from uvclight import Form, EditForm, DeleteForm, Fields, SUCCESS, FAILURE
 from uvclight import action, layer, name, title, get_template
 from uvclight.auth import require
 from zope.component import getUtility
-from zope.interface import Interface, provider, implementer
+from zope.interface import Interface, provider
 from zope.schema import Bool, List, Int, Choice, Password, TextLine
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
@@ -58,11 +58,12 @@ from dolmen.forms.base.interfaces import IForm
 from cromlech.browser import ITemplate
 from ..interfaces import IQuizzLayer
 from ..extra_questions import generate_extra_questions
+from siguvtheme.uvclight import IDGUVRequest
 
 
 @adapter(IForm, IQuizzLayer)
 @implementer(ITemplate)
-def form_template(context, request):
+def form_quizz_template(context, request):
     """default template for the menu"""
     return uvclight.get_template('form.cpt', __file__)
 
@@ -1021,6 +1022,7 @@ class SaveQuizz(Action):
                 today <= form.context.session.enddate)
 
     def __call__(self, form):
+        from collections import OrderedDict
         data, errors = form.extractData()
         if errors:
             form.flash(_(u'An error occurred.'))
@@ -1030,7 +1032,7 @@ class SaveQuizz(Action):
 
         fields = form.fields
         should_answers = {}
-        extra_answers = {}
+        extra_answers = OrderedDict()
 
         keys = data.keys()
         for key in keys:
@@ -1164,7 +1166,7 @@ class AnswerQuizz(Form):
             *self.quizz.additional_extra_fields(self.context.course)
         )
         self.nbcriterias = len(criteria_fields)
-        fields = criteria_fields + fields + extra_fields + additional_extra_fields
+        fields = criteria_fields + fields + additional_extra_fields + extra_fields
 
         for field in fields:
             if isinstance(field, ChoiceField):
@@ -1204,6 +1206,7 @@ class CompanyAnswerQuizz(Action):
 
         # HERE WE CREATE THE STUDENT.
         from datetime import date
+        from collections import OrderedDict
         uuid = Student.generate_access()
         student = Student(
             anonymous=True,
@@ -1216,8 +1219,7 @@ class CompanyAnswerQuizz(Action):
             quizz_type=form.context.course.quizz_type)
 
         fields = form.fields
-        extra_answers = {}
-
+        extra_answers = OrderedDict()
         keys = data.keys()
         for key in keys:
             if key.startswith('criteria_'):

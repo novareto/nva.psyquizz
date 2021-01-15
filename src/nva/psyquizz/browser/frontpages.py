@@ -44,7 +44,7 @@ class AccountHomepage(Page):
 
     template = get_template('frontpage.pt', __file__)
 
-    maxResults = 1 
+    maxResults = 7 
     
     def update(self):
         #self.flash(TEXT)

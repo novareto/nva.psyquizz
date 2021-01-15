@@ -5,7 +5,6 @@
                       id view.__class__.__name__;
                       method view.formMethod;
                       enctype view.enctype">
-  <h1> Yes </h1>
   <h1 tal:condition="view.label" tal:content="structure view.label">Label</h1>
   <p tal:condition="view.description"
      tal:content="structure view.description">Description</p>

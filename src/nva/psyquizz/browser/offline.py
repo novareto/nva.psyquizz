@@ -52,6 +52,13 @@ class DownloadCourse(uvclight.View):
                 rc.append('[ ] %s &nbsp; &nbsp;' % item)
         return ''.join(rc)
 
+    def genStuffFQ(self, source):
+        rc = []
+        for item in source:
+            if item:
+                rc.append('[ ] %s &nbsp; &nbsp;' % item.title)
+        return ''.join(rc)
+
     def update(self):
         util = getUtility(IQuizz, name=self.context.quizz_type)
         self.heading = util.__title__
@@ -82,6 +89,16 @@ class DownloadCourse(uvclight.View):
             story.append(Paragraph('<b>Bitte kreuzen Sie das zutreffende an </b>', style['Normal']))
             for crit in self.context.course.criterias:
                 story.append(Paragraph('<b> %s </b> <br/> %s ' % (crit.title, self.genStuff(crit.items.split('\n'))), style['Normal']))
+
+        if self.context.course.fixed_extra_questions:
+            from zope.schema import getFieldsInOrder
+            story.append(PageBreak())
+            quizz = getUtility(IQuizz, name=self.context.quizz_type)
+            for iface in quizz.additional_extra_fields(self.context.course):
+                story.append(Paragraph('<br/><br/><b>%s </b>' % iface.__doc__, style['Normal']))
+                for name, field in getFieldsInOrder(iface):
+                    story.append(Paragraph('<b> %s </b> <br/> %s ' % (field.description, self.genStuffFQ(field.source)), style['Normal']))
+
         if self.context.course.extra_questions:
             story.append(PageBreak())
             story.append(Paragraph('<br/><br/><b>Zusatzfragen: </b>', style['Normal']))
@@ -114,13 +131,14 @@ class DownloadCourse(uvclight.View):
                 pf.decrypt('')
             for page in range(pf.getNumPages()):
                 output.addPage(pf.getPage(page))
-            if self.context.course.extra_questions:
+            if self.context.course.extra_questions or self.context.course.fixed_extra_questions:
                 b1_pdf = PdfFileReader(base1)
                 wm = b1_pdf.getPage(0)
                 p1 = PdfFileReader(self.generate_page_one())
-                page1 = p1.getPage(1)
-                page1.mergePage(wm)
-                output.addPage(page1)
+                for num in range(p1.numPages-1):
+                    page1 = p1.getPage(num + 1)
+                    page1.mergePage(wm)
+                    output.addPage(page1)
             ntf = TemporaryFile()
             output.write(ntf)
         ntf.seek(0)
