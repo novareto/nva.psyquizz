@@ -77,8 +77,11 @@ class Course(Base, Location):
 
     @property
     def fixed_extra_questions(self):
-        return [q.strip() for q in
+        ret = []
+        if self._fixed_extra_questions:
+            ret = [q.strip() for q in
                 self._fixed_extra_questions.split(',')]
+        return ret
 
     @fixed_extra_questions.setter
     def fixed_extra_questions(self, value):
