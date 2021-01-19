@@ -122,7 +122,9 @@ IQuizz5.setTaggedValue("scales", [
 
 IQuizz5.setTaggedValue("averages", OrderedDict((
     (u'Vollständigkeit der Aufgabe', [x[1].title for x in schema.getFieldsInOrder(IScale1)]),
-    (u'Handlungsspielraum', [x[1].title for x in schema.getFieldsInOrder(IScale2)])
+    (u'Handlungsspielraum', [x[1].title for x in schema.getFieldsInOrder(IScale2)]),
+    (u'Some random name', [x[1].title for x in schema.getFieldsInOrder(IScale3)]),
+    (u'Other randomish name', [x[1].title for x in schema.getFieldsInOrder(IScale4)])
     )))
 
 
