@@ -107,8 +107,406 @@ class IScale4(Interface):
         required=True,
     )
 
+class IScale5(Interface):
 
-class IQuizz5(IQuizz, IScale1, IScale2, IScale3, IScale4):
+    question13 = schema.Choice(
+        title=u"13",
+        description=u"Die tägliche Informationsmenge ist zu hoch (z.B. Mails, Unternehmenskommunikation).",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question14 = schema.Choice(
+        title=u"14",
+        description=u"Daten sind häufig zu umfangreich oder zu unstrukturiert, um die wichtigen Informationen zu erkennen.", vocabulary=FBGU,
+        required=True,
+    )
+
+    question15 = schema.Choice(
+        title=u"15",
+        description=u"Die vielen unterschiedlichen Informationskanäle (z.B. Akten, Datenbanken, Intranet) sind schwer zu handhaben.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+class IScale6(Interface):
+
+    question16 = schema.Choice(
+        title=u"16",
+        description=u"Man weiß genau, wie weit die eigenen Entscheidungsbefugnisse bei der Arbeit reichen.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question17 = schema.Choice(
+        title=u"17",
+        description=u"Ich erhalte häufig widersprüchliche Anweisungen von unterschiedlichen Stellen (Vorgesetzte/Abteilungen).",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question18 = schema.Choice(
+        title=u"18",
+        description=u"Bei meiner Arbeit sind die Prioritäten unklar.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+class IScale7(Interface):
+
+    question19 = schema.Choice(
+        title=u"19",
+        description=u"Man muss Aufgaben übernehmen, für die man eigentlich zu wenig eingearbeitet ist.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question20 = schema.Choice(
+        title=u"20",
+        description=u"Bei meiner Arbeit muss ich Tätigkeiten durchführen, für die ich eigentlich nicht vollständig ausgebildet bin.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question21 = schema.Choice(
+        title=u"21",
+        description=u"Ich fühle mich häufig von den Aufgaben überfordert.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+class IScale8(Interface):
+
+    question22 = schema.Choice(
+        title=u"22",
+        description=u"Ich habe keine anspruchsvolle Aufgabe.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question23 = schema.Choice(
+        title=u"23",
+        description=u"Bei meiner Arbeit denke ich häufig, dass ich mehr leisten könnte, als von mir gefordert wird.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question24 = schema.Choice(
+        title=u"24",
+        description=u"Ich fühle mich häufig unterfordert.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+class IScale9(Interface):
+
+    question25 = schema.Choice(
+        title=u"25",
+        description=u"Die Arbeit bringt einen in stark emotional belastende Situationen (z.B. Trauer, Wut).",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question26 = schema.Choice(
+        title=u"26",
+        description=u"Bei der Arbeit ist man häufig mit aggressivem Verhalten oder Übergriffen (z.B. von Kunden/Klienten) konfrontiert.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question27 = schema.Choice(
+        title=u"27",
+        description=u"Bei der Arbeit passiert es häufig, dass man mit unverschämten Personen oder unangemessenen Verhalten zu tun hat.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+class IScale10(Interface):
+
+    question28 = schema.Choice(
+        title=u"28",
+        description=u"Bei der Arbeit muss man häufig nach außen hin Gefühle zeigen, die nicht mit meinen eigentlichen Gefühlen übereinstimmen.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question29 = schema.Choice(
+        title=u"29",
+        description=u"Bei der Arbeit muss man häufig seine aktuellen Gefühle verbergen.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question30 = schema.Choice(
+        title=u"30",
+        description=u"Man muss bei der Arbeit häufig die eigenen Gefühle den momentanen Gefühlen von Anderen anpassen.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+class IScale11(Interface):
+
+    question31 = schema.Choice(
+        title=u"31",
+        description=u"Man hat sehr stark variierende Arbeitszeiten.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question32 = schema.Choice(
+        title=u"32",
+        description=u"Man muss zu ungünstigen Arbeitszeiten arbeiten.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question33 = schema.Choice(
+        title=u"33",
+        description=u"Man ist mit schlecht gestalteter Schichtarbeit konfrontiert.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+class IScale12(Interface):
+
+    question34 = schema.Choice(
+        title=u"34",
+        description=u"Man macht häufig Überstunden.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question35 = schema.Choice(
+        title=u"35",
+        description=u"Man bekommt häufig kurzfristig zusätzliche Aufgaben, so dass man den Feierabend nicht einhalten kann.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question36 = schema.Choice(
+        title=u"36",
+        description=u"Auch außerhalb der regulären Arbeitszeiten ist es häufig erforderlich, verfügbar zu sein.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+
+class IScale13(Interface):
+
+    question37 = schema.Choice(
+        title=u"37",
+        description=u"Um die Arbeitsmenge zu schaffen, muss man länger arbeiten oder Pausen wegfallen lassen.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question38 = schema.Choice(
+        title=u"38",
+        description=u"Aufgrund der hohen Arbeitsmenge kommt es häufig zu hohem Zeitdruck.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question39 = schema.Choice(
+        title=u"39",
+        description=u"Es kommt häufig vor, dass man nicht genügend Zeit hat, alle Aufgaben zu erledigen.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+
+
+class IScale14(Interface):
+
+    question40 = schema.Choice(
+        title=u"40",
+        description=u"Man wird bei seiner täglichen Arbeit immer wieder durch andere Personen unterbrochen.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question41 = schema.Choice(
+        title=u"41",
+        description=u"Man hat häufig mehrere Aufgaben gleichzeitig, zwischen denen man hin und her springen muss.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question42 = schema.Choice(
+        title=u"42",
+        description=u"Man muss häufig aktuelle Arbeiten unterbrechen, weil etwas Wichtiges dazwischenkommt.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+class IScale15(Interface):
+
+    question43 = schema.Choice(
+        title=u"43",
+        description=u"Man steht in direktem persönlichen Kontakt mit Kollegen.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question44 = schema.Choice(
+        title=u"44",
+        description=u"An meinem Arbeitsplatz mangelt es an Möglichkeiten zum persönlichen Austausch.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question45 = schema.Choice(
+        title=u"45",
+        description=u"Man kann sich bei meiner Arbeit nicht mit seinen Kollegen unterhalten.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+class IScale16(Interface):
+
+    question46 = schema.Choice(
+        title=u"46",
+        description=u"Wenn es Probleme bei der Arbeit gibt, kann man sich auf die Unterstützung der Kollegen verlassen.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question47 = schema.Choice(
+        title=u"47",
+        description=u"Man kann mit seinen Kollegen offen über alles reden.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question48 = schema.Choice(
+        title=u"48",
+        description=u"Meine Kollegen sind immer bereit, sich meine Arbeitsprobleme anzuhören.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+class IScale17(Interface):
+
+    question49 = schema.Choice(
+        title=u"49",
+        description=u"Es gibt häufig Spannungen unter Kollegen.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question50 = schema.Choice(
+        title=u"50",
+        description=u"Man wird von anderen über die Maße kritisiert oder bloßgestellt.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question51 = schema.Choice(
+        title=u"51",
+        description=u"Es gibt häufig Streitereien an meinem Arbeitsplatz.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+class IScale18(Interface):
+
+    question52 = schema.Choice(
+        title=u"52",
+        description=u"Mein Vorgesetzter ist bereit, sich meine Probleme anzuhören.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question53 = schema.Choice(
+        title=u"53",
+        description=u"Man kann sich auf die Unterstützung der Vorgesetzten verlassen, wenn es Probleme bei der Arbeit gibt.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question54 = schema.Choice(
+        title=u"54",
+        description=u"Mein Vorgesetzter unterstützt mich, so dass ich meine Aufgaben leichter erfüllen kann.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+class IScale19(Interface):
+
+    question55 = schema.Choice(
+        title=u"55",
+        description=u"Man bekommt von Vorgesetzten und Kollegen Rückmeldungen über die Qualität der Arbeit.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question56 = schema.Choice(
+        title=u"56",
+        description=u"Man erhält Wertschätzung für seine Arbeit.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question57 = schema.Choice(
+        title=u"57",
+        description=u"Mein Vorgesetzter gibt mir nützliches Feedback über meine Arbeitsleistung.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+class IScale20(Interface):
+
+    question58 = schema.Choice(
+        title=u"58",
+        description=u"Mein Vorgesetzter kritisiert, schikaniert oder stellt seine Mitarbeiter häufig bloß.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question59 = schema.Choice(
+        title=u"59",
+        description=u"Mein Vorgesetzter missbraucht die ihm durch die Führungsposition übertragene Macht.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question60 = schema.Choice(
+        title=u"60",
+        description=u"Das Führungsverhalten meines Vorgesetzten ist geprägt von Demütigung und Bestrafung gegenüber seinen Mitarbeitern.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question61 = schema.Choice(
+        title=u"61",
+        description=u"Der Erfolg meines Vorgesetzten ist mit unmoralischen und negativem Verhalten gegenüber anderen Personen verbunden.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+
+    question62 = schema.Choice(
+        title=u"62",
+        description=u"Mein Vorgesetzter beleidigt, bedroht oder greift seine Mitarbeiter tätlich an.",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+class IQuizz5(IQuizz, IScale1, IScale2, IScale3, IScale4, IScale5, IScale6, IScale7,
+        IScale8, IScale9, IScale10, IScale11, IScale12, IScale13, IScale14, IScale15, 
+        IScale16, IScale17, IScale18, IScale19, IScale20):
     pass
 
 
@@ -117,6 +515,22 @@ IQuizz5.setTaggedValue("scales", [
     {'iface': IScale2, 'label': u"Handlungsspielraum"},
     {'iface': IScale3, 'label': u"Variabilität"},
     {'iface': IScale4, 'label': u"Informationsmängel"},
+    {'iface': IScale5, 'label': u"Informationsüberflutung"},
+    {'iface': IScale6, 'label': u"Klarheit der Kompetenzen und Rollenanforderungen"},
+    {'iface': IScale7, 'label': u"Qualifikationsmängel"},
+    {'iface': IScale8, 'label': u"Qualifikationsunterforderung"},
+    {'iface': IScale9, 'label': u"Soziale und Emotionale Belastungen"},
+    {'iface': IScale10, 'label': u"Emotionsarbeit"},
+    {'iface': IScale11, 'label': u"Belastende Arbeitszeit"},
+    {'iface': IScale12, 'label': u"Entgrenzte Arbeitszeit"},
+    {'iface': IScale13, 'label': u"Arbeitsablauf - Zeitdruck/Intensität"},
+    {'iface': IScale14, 'label': u"Arbeitsablauf - Unterbrechungen/Multitasking"},
+    {'iface': IScale15, 'label': u"Kommunikation - Kooperation"},
+    {'iface': IScale16, 'label': u"Soziale Unterstützung"},
+    {'iface': IScale17, 'label': u"Soziale Stressoren"},
+    {'iface': IScale18, 'label': u"Soziale Unterstützung durch Vorgesetzte"},
+    {'iface': IScale19, 'label': u"Feedback und Anerkennung"},
+    {'iface': IScale20, 'label': u"Belastende Führung"},
 ])
 
 
