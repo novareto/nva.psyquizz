@@ -106,7 +106,7 @@ class Access(GlobalUtility):
         else:
             account = None
             send(u"Benutzer konnte nicht gefunden werden", BASE_MESSAGE_TYPE)
-            return
+            return 
 
         if account is not None:
             pwhash = hashed(password, account.salt)
@@ -169,16 +169,17 @@ class AccountPasswordManager(PasswordManagerAdapter):
         return True
 
 
-def send_forgotten_password_token(smtp, from_, account, app_url):
+def send_forgotten_password_token(smtp, account, app_url):
     # mailer = SecureMailer('localhost')
     #mailer = SecureMailer('smtprelay.bg10.bgfe.local')
     mailer = SecureMailer(smtp)
+    from_ = 'extranet@bgetem.de'
     title = (u'Ihre Passwortanfrage').encode(ENCODING)
 
     manager = IPasswordManager(account)
     challenge = manager.request_password_reset()
     email = account.email
-
+    
     url = "%s/new_password?form.field.challenge=%s&form.field.username=%s" % (
         app_url, challenge, account.id)
 
@@ -226,7 +227,7 @@ class ISetNewPassword(IForgotten):
     @invariant
     def verify_pwd(data):
        if data.new_pass != data.verify_new_pass:
-            raise Invalid(_(u"Passwort und Wiederholung sind nicht gleich!"))
+            raise Invalid(_(u"Passwort und Wiederholung sind nicht gleich!")) 
 
 
 class ForgotPassword(Form):
@@ -267,7 +268,6 @@ class ForgotPassword(Form):
             return FAILURE
         else:
             smtp = self.context.configuration.smtp_server
-            from_ = self.context.configuration.emitter
             send_forgotten_password_token(
                 smtp, account, self.application_url())
             self.flash(_(
@@ -352,7 +352,7 @@ class NoAccess(Location):
         u"/forgotten": ForgotPassword,
         u"/new_password": SetNewPassword,
     }
-
+    
     def __init__(self, request, configuration):
         self.request = request
         self.configuration = configuration
@@ -397,7 +397,7 @@ class Application(SQLPublication, SecurePublication):
         principal.roles = set()
         return principal
 
-    def site_manager(self, request):
+    def site_manager(self, request):        
         username = request.principal.id.lower()
         if username != unauthenticated_principal.id:
             session = get_session(self.configuration.name)

@@ -14,8 +14,7 @@ from pyPdf import PdfFileWriter, PdfFileReader
 from BeautifulSoup import BeautifulSoup
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Spacer, PageBreak, Paragraph, SimpleDocTemplate
-from reportlab.lib.units import cm
+from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate
 from zope.component import getUtility
 from nva.psyquizz.models import IQuizz
 from nva.psyquizz.browser.forms import AnswerQuizz, CompanyAnswerQuizz
@@ -77,7 +76,7 @@ class DownloadCourse(uvclight.View):
         style = getSampleStyleSheet()
         nm = style['Normal']
         nm.leading = 14
-        story = [Spacer(0, 2*cm), ]
+        story = []
         na = self.context.about.replace('\r\n', '<br/>').replace('</p>', '</p><br/>')
         bs = BeautifulSoup(na)
         clean(bs, ['style', 'face'])

@@ -25,16 +25,8 @@ from .apps import company, anonymous, remote
 
 marker = object()
 Configuration = namedtuple(
-    'Configuration', (
-        'title',
-        'session_key',
-        'engine',
-        'name',
-        'fs_store',
-        'layer',
-        'smtp_server',
-        'emitter'
-    )
+    'Configuration',
+    ('title', 'session_key', 'engine', 'name', 'fs_store', 'layer', 'smtp_server')
 )
 
 
@@ -96,7 +88,7 @@ def routing(conf, files, **kwargs):
 
     # We register our SQLengine under a given name
     if not 'engine' in kwargs:
-        dsn = kwargs['dsn']
+        dsn = kwargs['dsn']    
         engine = create_engine(dsn, name)
     else:
         engine = EngineServer(kwargs['engine'], name)
@@ -122,10 +114,8 @@ def routing(conf, files, **kwargs):
 
     # Applications configuration
     smtp = kwargs.get('smtp', '10.33.115.55')
-    emitter = kwargs.get('emitter', 'my@email.com')
     setup = Configuration(
-        title, session_key, engine, name, None, layer_iface, smtp, emitter
-    )
+        title, session_key, engine, name, None, layer_iface, smtp)
 
     # Router
     root = URLMap()

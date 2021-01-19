@@ -73,8 +73,9 @@ with open(os.path.join(os.path.dirname(__file__), 'lib', 'mail.tpl'), 'r') as fd
     mail_template = Template(data.encode(ENCODING))
 
 
-def send_activation_code(smtp, from_, company_name, email, code, base_url):
+def send_activation_code(smtp, company_name, email, code, base_url):
     mailer = SecureMailer(smtp)  # BBB
+    from_ = 'extranet@bgetem.de'
     title = (u'Gemeinsam zu gesunden Arbeitsbedingungen – Aktivierung').encode(
         ENCODING)
     with mailer as sender:
@@ -231,9 +232,9 @@ class CreateCriterias(Form):
     fields = Fields(ICriteria).select('title', 'items')
     label = u"Auswertungsgruppen anlegen <a href='' data-toggle='modal' data-target='#myModal'> <span class='glyphicon glyphicon-question-sign' aria-hidden='true'></span> </a>"
     description = u"""
-Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.
-„Abteilung“). Zu jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen (z.B.
-„Personalabteilung“ und „Produktion“). <b>Aus Datenschutzgründen werden nur Ergebnisse von Auswertungsgruppen angezeigt,
+Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.  
+„Abteilung“). Zu jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen (z.B.  
+„Personalabteilung“ und „Produktion“). <b>Aus Datenschutzgründen werden nur Ergebnisse von Auswertungsgruppen angezeigt, 
 von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
 """
 
@@ -481,7 +482,6 @@ class CreateAccount(Form):
         # We send the email.
         send_activation_code(
             self.context.configuration.smtp_server,
-            self.context.configuration.emitter,
             data['name'], data['email'], code, base_url)
 
         self.flash(_(u'Account added with success.'))
@@ -1092,7 +1092,7 @@ class IAnonymousLogin(Interface):
         required=True,
         )
 
-
+    
 from nva.psyquizz.interfaces import QuizzAlreadyCompleted
 class AnonymousLogin(Action):
 
