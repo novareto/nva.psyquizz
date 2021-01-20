@@ -11,8 +11,7 @@ from collections import namedtuple
 from cromlech.configuration.utils import load_zcml
 from cromlech.i18n import register_allowed_languages, setLanguage
 from cromlech.jwt.components import ExpiredToken
-from cromlech.sessions.jwt import JWTCookieSession
-from cromlech.sessions.jwt import key_from_file
+from cromlech.sessions.jwt import JWTCookieSession, key_from_file
 from cromlech.sqlalchemy import create_engine
 from cromlech.sqlalchemy.components import EngineServer
 from paste.urlmap import URLMap
@@ -21,6 +20,7 @@ from zope.security.management import setSecurityPolicy
 
 from . import Base
 from .apps import company, anonymous, remote
+from .resources import Resources
 
 
 marker = object()
@@ -33,7 +33,8 @@ Configuration = namedtuple(
         'fs_store',
         'layer',
         'smtp_server',
-        'emitter'
+        'emitter',
+        'resources',
     )
 )
 
@@ -123,8 +124,17 @@ def routing(conf, files, **kwargs):
     # Applications configuration
     smtp = kwargs.get('smtp', '10.33.115.55')
     emitter = kwargs.get('emitter', 'my@email.com')
+    resources = Resources(kwargs['resources'])
     setup = Configuration(
-        title, session_key, engine, name, None, layer_iface, smtp, emitter
+        title,
+        session_key,
+        engine,
+        name,
+        None,
+        layer_iface,
+        smtp,
+        emitter,
+        resources
     )
 
     # Router
