@@ -5,7 +5,6 @@ import uvclight
 from zope.interface import Interface
 from ..i18n import _
 from ..interfaces import ICompanyRequest, IQuizzLayer
-from .results import Quizz2Charts
 
 from cromlech.browser import IPublicationRoot
 from dolmen.breadcrumbs.renderer import BreadcrumbsRenderer
@@ -13,7 +12,6 @@ from dolmen.message import receive
 from dolmen.template import ITemplate
 from grokcore.component import adapter, implementer
 from nva.psyquizz import quizzcss
-from nva.psyquizz.models.quizz.quizz3 import IQuizz3
 from siguvtheme.uvclight.viewlets import PersonalMenuViewlet
 from uvc.content import IDescriptiveSchema
 from uvc.design.canvas import IAboveContent
@@ -168,5 +166,3 @@ class Kontakt(uvclight.MenuItem):
     @property
     def action(self):
         return "mailto://gzga@bgetem.de"
-
-

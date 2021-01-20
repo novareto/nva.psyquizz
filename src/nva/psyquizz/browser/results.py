@@ -7,27 +7,21 @@ import uvclight
 
 from collections import OrderedDict, namedtuple
 from cromlech.browser import IView
-from grokcore.component import name, provider
+from grokcore.component import name
 from nva.psyquizz import hs
-from nva.psyquizz.models import IQuizz, IClassSession, ICourse, ICompany
+from nva.psyquizz.models import IQuizz, IClassSession, ICourse
 from nva.psyquizz.models.quizz.quizz2 import IQuizz2
 from nva.psyquizz.models.quizz.quizz1 import Quizz1
 from nva.psyquizz.models.quizz.quizz3 import IQuizz3
 from nva.psyquizz.models.quizz.quizz5 import IQuizz5
 from uvclight.auth import require
 from zope.component import getUtility, getMultiAdapter
-from zope.interface import Interface
 from zope.schema import getFieldsInOrder
-from zope.schema.interfaces import IContextSourceBinder
-from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from zope.location import LocationProxy
 
 from ..interfaces import ICompanyRequest
 from ..stats import compute, groups_scaling
 from ..extra_questions import parse_extra_question_syntax
-from zope.schema import Choice, Set
-from dolmen.forms.base import FAILURE, SUCCESS
-from nva.psyquizz.i18n import MessageFactory as _
 
 
 def get_filters(request):
@@ -93,7 +87,7 @@ class CourseStatistics(object):
 
         self.extra_questions_order = OrderedDict()
         for iface in self.quizz.additional_extra_fields(self.course):
-            for name, field in getFieldsInOrder(iface):
+            for _, field in getFieldsInOrder(iface):
                  self.extra_questions_order[field.description] = [
                      t.title for t in field.vocabulary
                  ]

@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from nva.psyquizz import Base
-from nva.psyquizz.models import MoreToLess, MoreToLessN, LessToMore
 from nva.psyquizz.models import (
     AF, GOODBAD, TIMESPAN, FREQUENCY, FREQUENCY1, FREQUENCY2, ASSESMENT)
 from nva.psyquizz.models.interfaces import IQuizz, IQuizzSecurity
 from nva.psyquizz.models.quizz import QuizzBase
-from nva.psyquizz.models.quizz.quizz2 import Quizz2, IQuizz2
+from nva.psyquizz.models.quizz.quizz2 import IQuizz2
 
 from uvclight.utils import current_principal
 from collections import OrderedDict
-from grokcore.component import provides, context, global_utility, Subscription
+from grokcore.component import context, global_utility, Subscription
 from sqlalchemy import *
 from zope import schema
-from zope.location import Location
 from zope.interface import implementer, Interface
 from sqlalchemy.orm import relationship, backref
 
@@ -78,7 +76,7 @@ class IQuizz3(IQuizz2):
         required=True,
         )
 
-    
+
 IQuizz3.setTaggedValue(
     'sums', OrderedDict((
         ('27', ('27',)),
@@ -190,11 +188,11 @@ global_utility(Quizz3, provides=IQuizz, name='quizz3', direct=True)
 @implementer(IQuizzSecurity)
 class SecurityCheck(Subscription):
     context(Interface)
-  
+
     def check(self, name, quizz, context):
         if name == 'quizz3':
             principal = current_principal()
-            if (principal.id.endswith('bgetem.de') or 
+            if (principal.id.endswith('bgetem.de') or
                 principal.id.endswith("novareto.de") or
                 principal.id.endswith("sw-i.de") or
                 principal.id.endswith("bayernwerk.de") or

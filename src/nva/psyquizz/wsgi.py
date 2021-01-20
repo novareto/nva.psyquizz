@@ -21,6 +21,7 @@ from zope.security.management import setSecurityPolicy
 from . import Base
 from .apps import company, anonymous, remote
 from .resources import Resources
+from .emailer import SecureMailer
 
 
 marker = object()
@@ -32,8 +33,7 @@ Configuration = namedtuple(
         'name',
         'fs_store',
         'layer',
-        'smtp_server',
-        'emitter',
+        'emailer',
         'resources',
     )
 )
@@ -121,9 +121,12 @@ def routing(conf, files, **kwargs):
     key = key_from_file(path.join(kwargs['root'], 'jwt.key'))
     session_wrapper = Session(key, 60, environ_key=session_key)
 
-    # Applications configuration
+    # We create the emailer utility
     smtp = kwargs.get('smtp', '10.33.115.55')
     emitter = kwargs.get('emitter', 'my@email.com')
+    emailer = SecureMailer(smtp, emitter)
+
+    # Applications configuration
     resources = Resources(kwargs['resources'])
     setup = Configuration(
         title,
@@ -132,8 +135,7 @@ def routing(conf, files, **kwargs):
         name,
         None,
         layer_iface,
-        smtp,
-        emitter,
+        emailer,
         resources
     )
 

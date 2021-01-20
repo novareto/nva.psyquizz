@@ -1,21 +1,18 @@
 # -*- coding: utf-8 -*-
 
-import os
 import webob.exc
 import hashlib
 import urllib
 import urlparse
-import html2text
 
 from datetime import datetime
-from string import Template
 from sqlalchemy import func
 
 from . import Site
-from nva.psyquizz.browser.lib.emailer import prepare, SecureMailer, ENCODING
+from .. import quizzjs, lbg
+from ..emailer import ENCODING
 from ..interfaces import ICompanyRequest, IRegistrationRequest
 from ..models import Account
-from .. import quizzjs, lbg
 
 from cromlech.browser import IPublicationRoot, IView, IResponseFactory
 from cromlech.browser.interfaces import ITraverser
@@ -39,7 +36,7 @@ from ul.browser.publication import Publication
 from ul.sql.decorators import transaction_sql
 from uvclight import Form
 from uvclight import GlobalUtility, Page, MultiAdapter
-from uvclight import name, layer, context, baseclass, get_template
+from uvclight import name, layer, context, get_template
 from uvclight import provides, adapts, title
 from uvclight.auth import require
 from uvclight.backends.sql import SQLPublication
@@ -52,11 +49,6 @@ from zope.interface import invariant, Invalid
 from zope.location import Location
 from zope.schema import TextLine, Password
 from zope.security.proxy import removeSecurityProxy
-
-
-with open(os.path.join(os.path.dirname(__file__), 'forgotten.tpl'), 'r') as fd:
-    data = unicode(fd.read(), 'utf-8')
-    forgotten_template = Template(data.encode(ENCODING))
 
 
 class IActivationRequest(ICompanyRequest):
@@ -169,28 +161,26 @@ class AccountPasswordManager(PasswordManagerAdapter):
         return True
 
 
-def send_forgotten_password_token(smtp, from_, account, app_url):
-    # mailer = SecureMailer('localhost')
-    #mailer = SecureMailer('smtprelay.bg10.bgfe.local')
-    mailer = SecureMailer(smtp)
-    title = (u'Ihre Passwortanfrage').encode(ENCODING)
+def send_forgotten_password_token(config, account, app_url):
 
     manager = IPasswordManager(account)
     challenge = manager.request_password_reset()
-    email = account.email
+    namespace = dict(
+        title=(u'Ihre Passwortanfrage').encode(ENCODING),
+        email=account.email.encode(ENCODING),
+        encoding=ENCODING,
+        challenge= (
+            ("%s/new_password"
+             "?form.field.challenge=%s&form.field.username=%s") % (
+                 app_url, challenge, account.id)
+        ).encode(ENCODING)
+    )
 
-    url = "%s/new_password?form.field.challenge=%s&form.field.username=%s" % (
-        app_url, challenge, account.id)
-
-    with mailer as sender:
-        html = forgotten_template.substitute(
-            title=title,
-            encoding=ENCODING,
-            email=email.encode(ENCODING),
-            challenge=url.encode(ENCODING))
-        text = html2text.html2text(html.decode('utf-8'))
-        mail = prepare(from_, account.email, title, html, text.encode('utf-8'))
-        sender(from_, email, mail.as_string())
+    tpl = config.resources.get_template('forgotten.tpl')
+    with config.emailer as sender:
+        mail = config.emailer.prepare_from_template(
+            tpl, account.email, namespace['title'], namespace)
+        sender(account.email, mail.as_string())
     return True
 
 
@@ -265,15 +255,16 @@ class ForgotPassword(Form):
                 Error(u'Benutzer konnte nicht gefunden werden.',
                       identifier='form.field.username'))
             return FAILURE
-        else:
-            smtp = self.context.configuration.smtp_server
-            from_ = self.context.configuration.emitter
-            send_forgotten_password_token(
-                smtp, account, self.application_url())
-            self.flash(_(
-                u'Ihr Passwort wurde an Ihre E-Mail-Adresse verschickt.'))
-            self.redirect(self.application_url())
-            return SUCCESS
+
+        send_forgotten_password_token(
+            self.context.configuration,
+            account,
+            self.application_url()
+        )
+        self.flash(_(
+            u'Ihr Passwort wurde an Ihre E-Mail-Adresse verschickt.'))
+        self.redirect(self.application_url())
+        return SUCCESS
 
 
 class SetNewPassword(ForgotPassword):
@@ -295,8 +286,7 @@ class SetNewPassword(ForgotPassword):
             return FAILURE
         else:
             manager = IPasswordManager(account)
-            challenge = manager.reset_password(
-                data['new_pass'], data['challenge'])
+            manager.reset_password(data['new_pass'], data['challenge'])
             self.redirect(self.application_url())
             return SUCCESS
 
