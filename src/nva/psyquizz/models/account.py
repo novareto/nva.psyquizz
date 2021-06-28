@@ -4,16 +4,14 @@ from nva.psyquizz import Base
 from . import IntIds
 from sqlalchemy import *
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.orm.collections import attribute_mapped_collection
-from uvclight.directives import traversable
-from zope.interface import Interface, implementer
+from zope.interface import implementer
 from zope.location import Location
 from .interfaces import IAccount
 
 
 @implementer(IAccount)
 class Account(Base, Location):
-    
+
     __tablename__ = 'accounts'
 
     email = Column('email', String, primary_key=True)
@@ -38,7 +36,7 @@ class Account(Base, Location):
     @__name__.setter
     def __name__(self, value):
         pass
-    
+
     def __getitem__(self, key):
         try:
             company = self._companies[int(key)]
@@ -52,4 +50,3 @@ class Account(Base, Location):
 
     def __iter__(self):
         return (self.locate(i) for i in self._companies)
-    

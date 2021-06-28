@@ -5,8 +5,7 @@ import webob
 from routes import Mapper
 from cromlech.webob import Response
 from cromlech.sqlalchemy import SQLAlchemySession
-
-from ..models import Student, Account, Company
+from ..models import Account, Company
 
 
 routes = Mapper()
@@ -65,13 +64,13 @@ class Application:
 
         routing = routes.match(environ=environ)
         if routing is not None:
-            _ = routing.pop('action', None)
+            routing.pop('action', None)
             handler = routing.pop('controller')
             jresult = handler(self.engine, environ, **routing)
         else:
             return webob.exc.HTTPNotFound()(environ, start_response)
 
-            
+
         def make_response(result):
             json_result = json.dumps(result)
             response = Response()

@@ -5,7 +5,7 @@ from nva.psyquizz.models import FBGU, IQuizz
 from nva.psyquizz.models.quizz import QuizzBase
 
 from collections import OrderedDict
-from sqlalchemy import Column, Integer, ForeignKey, String, Boolean, DateTime, Text
+from sqlalchemy import Column, Integer, ForeignKey, String, DateTime, Text
 from grokcore.component import global_utility
 from zope.interface import Interface, implementer
 from zope import schema
@@ -505,7 +505,7 @@ class IScale20(Interface):
     )
 
 class IQuizz5(IQuizz, IScale1, IScale2, IScale3, IScale4, IScale5, IScale6, IScale7,
-        IScale8, IScale9, IScale10, IScale11, IScale12, IScale13, IScale14, IScale15, 
+        IScale8, IScale9, IScale10, IScale11, IScale12, IScale13, IScale14, IScale15,
         IScale16, IScale17, IScale18, IScale19, IScale20):
     pass
 

@@ -2,7 +2,7 @@
 
 import re
 from .models import TrueOrFalse
-from zope.schema import Bool, Set, Int, Choice, Password, TextLine
+from zope.schema import Set, Choice
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 
 

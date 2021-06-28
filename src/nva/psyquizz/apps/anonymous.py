@@ -14,8 +14,7 @@ from uvclight.backends.sql import SQLPublication
 from zope.component import getGlobalSiteManager
 from zope.interface import implementer
 from cromlech.sqlalchemy import get_session
-from functools import partial
-from zope.location import ILocation, Location, LocationProxy, locate
+from zope.location import ILocation, LocationProxy, locate
 from nva.psyquizz.models.student import student_quizz
 
 

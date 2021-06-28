@@ -1,38 +1,32 @@
 # -*- coding: utf-8 -*-
 
 from uvc.protectionwidgets import Captcha
-import os
 import json
 import uuid
 import hashlib
 import datetime
-import html2text
 import uvclight
-import re
 
 from .. import wysiwyg, quizzjs, startendpicker
 from ..apps.anonymous import QuizzBoard
 from ..i18n import _
 from ..interfaces import IAnonymousRequest, ICompanyRequest
-from ..interfaces import QuizzAlreadyCompleted, QuizzClosed
 from ..interfaces import IRegistrationRequest
 from ..models import HistoryEntry
 from ..models import Account, Company, Course, ClassSession, Student
 from ..models import ICourseSession, IAccount, ICompany, ICourse, IClassSession
-from ..models import IQuizz, TrueOrFalse
+from ..models import IQuizz
 from ..models import Criteria, CriteriaAnswer, ICriteria, ICriterias
 from ..models.criterias import criterias_table
-from ..models.quizz.quizz4 import IQuizz4
 from ..models.quizz.quizz5 import IQuizz5
-from nva.psyquizz.browser.lib.emailer import SecureMailer, prepare, ENCODING
+from ..emailer import ENCODING
 
-import grokcore.component as grok
 from grokcore.component import Adapter, provides, context, baseclass
-from grokcore.component import adapter, adapts, implementer
+from grokcore.component import adapter, implementer
 
 from cromlech.sqlalchemy import get_session
 from dolmen.forms.base import (
-    Field, SuccessMarker, makeAdaptiveDataManager, NO_VALUE)
+    SuccessMarker, makeAdaptiveDataManager, NO_VALUE)
 from dolmen.forms.base.actions import Action, Actions
 from dolmen.forms.base.errors import Error
 from dolmen.forms.base.utils import apply_data_event
@@ -40,10 +34,7 @@ from dolmen.forms.crud.actions import message
 from dolmen.forms.ztk.widgets.choice import ChoiceField
 from dolmen.menu import menuentry, order
 from js.jqueryui import jqueryui
-from nva.psyquizz import quizzjs
-from siguvtheme.resources import all_dates, datepicker_de
 from sqlalchemy import func
-from string import Template
 from uvc.design.canvas import IContextualActionsMenu
 from uvc.design.canvas import IDocumentActions
 from uvclight import Form, EditForm, DeleteForm, Fields, SUCCESS, FAILURE
@@ -51,14 +42,13 @@ from uvclight import action, layer, name, title, get_template
 from uvclight.auth import require
 from zope.component import getUtility
 from zope.interface import Interface, provider
-from zope.schema import Bool, List, Int, Choice, Password, TextLine
+from zope.schema import Bool, Int, Choice, Password, TextLine
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from dolmen.forms.base.interfaces import IForm
 from cromlech.browser import ITemplate
 from ..interfaces import IQuizzLayer
 from ..extra_questions import generate_extra_questions
-from siguvtheme.uvclight import IDGUVRequest
 
 
 @adapter(IForm, IQuizzLayer)
@@ -68,28 +58,25 @@ def form_quizz_template(context, request):
     return uvclight.get_template('form.cpt', __file__)
 
 
-with open(os.path.join(os.path.dirname(__file__), 'lib', 'mail.tpl'), 'r') as fd:
-    data = unicode(fd.read(), 'utf-8')
-    mail_template = Template(data.encode(ENCODING))
+def send_activation_code(config, company_name, email, code, base_url):
+    title = (
+        u'Gemeinsam zu gesunden Arbeitsbedingungen – Aktivierung'
+    ).encode(ENCODING)
 
+    namespace = dict(
+        title=title,
+        base_url=base_url,
+        encoding=ENCODING,
+        email=email.encode(ENCODING),
+        company=company_name.encode(ENCODING),
+        activation_code=code
+    )
 
-def send_activation_code(smtp, company_name, email, code, base_url):
-    mailer = SecureMailer(smtp)  # BBB
-    from_ = 'extranet@bgetem.de'
-    title = (u'Gemeinsam zu gesunden Arbeitsbedingungen – Aktivierung').encode(
-        ENCODING)
-    with mailer as sender:
-        html = mail_template.substitute(
-            title=title,
-            encoding=ENCODING,
-            base_url=base_url,
-            email=email.encode(ENCODING),
-            company=company_name.encode(ENCODING),
-            activation_code=code)
-
-        text = html2text.html2text(html.decode('utf-8'))
-        mail = prepare(from_, email, title, html, text.encode('utf-8'))
-        sender(from_, email, mail.as_string())
+    tpl = config.resources.get_template('mail.tpl')
+    with config.emailer as sender:
+        mail = config.emailer.prepare_from_template(
+            tpl, email, title, namespace)
+        sender(email, mail.as_string())
     return True
 
 
@@ -232,9 +219,9 @@ class CreateCriterias(Form):
     fields = Fields(ICriteria).select('title', 'items')
     label = u"Auswertungsgruppen anlegen <a href='' data-toggle='modal' data-target='#myModal'> <span class='glyphicon glyphicon-question-sign' aria-hidden='true'></span> </a>"
     description = u"""
-Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.  
-„Abteilung“). Zu jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen (z.B.  
-„Personalabteilung“ und „Produktion“). <b>Aus Datenschutzgründen werden nur Ergebnisse von Auswertungsgruppen angezeigt, 
+Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.
+„Abteilung“). Zu jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen (z.B.
+„Personalabteilung“ und „Produktion“). <b>Aus Datenschutzgründen werden nur Ergebnisse von Auswertungsgruppen angezeigt,
 von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
 """
 
@@ -481,7 +468,7 @@ class CreateAccount(Form):
 
         # We send the email.
         send_activation_code(
-            self.context.configuration.smtp_server,
+            self.context.configuration,
             data['name'], data['email'], code, base_url)
 
         self.flash(_(u'Account added with success.'))
@@ -1092,8 +1079,7 @@ class IAnonymousLogin(Interface):
         required=True,
         )
 
-    
-from nva.psyquizz.interfaces import QuizzAlreadyCompleted
+
 class AnonymousLogin(Action):
 
     def available(self, form):
