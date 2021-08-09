@@ -11,7 +11,7 @@
   <p class="form-status"
      tal:condition="view.status"
      tal:content="view.status">Status</p>
-  
+
   <div class="form-error"
        tal:condition="view.errors">
     <ul tal:condition="view.formErrors"
@@ -25,57 +25,70 @@
        var max = <tal:max replace="len(view.get_scales()) + 1" />;
        var previous = $('#previous');
        var next = $('#next');
-    
+       var progressbar = $('.progress .progress-bar');
+
        next.click(function(e) {
-	     var hash = window.location.hash.substring(1) || '0';
-	     var current = parseInt(hash);
-         $('#scale-' + current.toString() + ' .question').each(function() {jQuery(this).removeClass('error has-error')})
+	   var hash = window.location.hash.substring(1) || '0';
+	   var current = parseInt(hash);
+           $('#scale-' + current.toString() + ' .question').each(function() {jQuery(this).removeClass('error has-error')})
            if (current != 0) {
-              $('#scale-' + current.toString() + ' .question').each(function() {
-                jQuery(this).each(function() {
-                if( !jQuery(this).find('input').is(':checked') ){
-                   e.preventDefault();
-                   jQuery(this).addClass('error has-error'); 
-                }
-                })
-            })
+               $('#scale-' + current.toString() + ' .question').each(function() {
+                   jQuery(this).each(function() {
+                       if( !jQuery(this).find('input').is(':checked') ){
+                           e.preventDefault();
+                           jQuery(this).addClass('error has-error');
+                       }
+                   })
+               })
+           }
+       });
 
-        }
-	 });
-    
-     function switch_question() {
+       function switch_question() {
 
-        var hash = window.location.hash.substring(1) || '0';
-	    var current = parseInt(hash);
-         console.log(hash)
-          $('.scale').hide();
-          $('#scale-' + hash).show();
-          if (current <= 0) {
-	          previous.hide();
-	      }
-	      else {
-	          previous.show();
-	          previous.attr('href', '#' + (current - 1).toString());
-	      }
-	      if (current < max) {
-	          next.show();
-	          next.attr('href', '#' + (current + 1).toString());
-	      }
-	      else {
-	          next.hide()
-	      }
-      }
-      window.onhashchange = switch_question
-      switch_question();
-    });
+           var hash = window.location.hash.substring(1) || '0';
+	   var current = parseInt(hash);
+
+           progressbar.css(
+               'width', Math.round((current / max) * 100).toString() + '%'
+           ).attr('aria-valuenow', current);
+
+           $('.scale').hide();
+           $('#scale-' + hash).show();
+           if (current <= 0) {
+	       previous.hide();
+	   }
+	   else {
+	       previous.show();
+	       previous.attr('href', '#' + (current - 1).toString());
+	   }
+	   if (current < max) {
+	       next.show();
+	       next.attr('href', '#' + (current + 1).toString());
+	   }
+	   else {
+	       next.hide()
+	   }
+       }
+       window.onhashchange = switch_question
+       switch_question();
+   });
   </script>
-  
+
   <div id="wizard">
     <div class="scale" id="scale-0">
       <p tal:content="structure context.session.about or 'Press next to start'" />
     </div>
-    <div tal:repeat="scale view.get_scales()" class="scale" tal:attributes="id 'scale-%s' % repeat['scale'].number">
-    <h1> Gruppe: <span tal:content="scale['label']"></span></h1>
+    <div tal:repeat="scale view.get_scales()" class="scale"
+         tal:attributes="id 'scale-%s' % repeat['scale'].number">
+    <h1>Gruppe: <span tal:content="scale['label']"></span></h1>
+
+    <div class="progress">
+      <div class="progress-bar progress-bar-success" role="progressbar"
+           aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+           style="width: 0%;">
+      </div>
+    </div>
+
     <div tal:repeat="widget view.getFieldWidgets(scale)" class="question" tal:attributes="id 'question-%s' % repeat['widget'].number">
 
       <tal:frage condition="repeat['widget'].number > view.nbcriterias">
@@ -94,7 +107,7 @@
 	     <span class="field-description lead" tal:content="structure widget.description"> </span><br />
       </tal:description>
 
-      <tal:error tal:define="error widget.error" tal:condition="error"> 
+      <tal:error tal:define="error widget.error" tal:condition="error">
           <span class="field-error" tal:content="error.title"> Error </span> <br />
       </tal:error>
       <tal:widget tal:content="structure widget.render()" />
@@ -102,8 +115,8 @@
     </div>
 
     </div>
-       <div class="btn-group" role="group"> 
-           <a id="previous" class="control btn btn-default" href="">← Zurück</a> 
+       <div class="btn-group" role="group">
+           <a id="previous" class="control btn btn-default" href="">← Zurück</a>
            <a id="next" class="control btn btn-primary" href="">Weiter →</a>
        </div>
        <div class="scale" tal:attributes="id 'scale-%d' % (len(view.get_scales()) + 1)">

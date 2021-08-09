@@ -126,7 +126,7 @@ class Quizz2Charts(uvclight.View):
     name('charts')
     uvclight.context(IQuizz2)
 
-    template = uvclight.get_template('cr.pt', __file__)
+    template = uvclight.get_template('chart_results.pt', __file__)
     general_stats = None
 
     def jsonify(self, da):
@@ -274,7 +274,7 @@ class Quizz1Charts(uvclight.View):
         self.series = json.dumps([good, bad])
 
 
-class SR(uvclight.Page):
+class SessionResults(uvclight.Page):
     require('manage.company')
     uvclight.context(IClassSession)
     uvclight.layer(ICompanyRequest)
@@ -308,12 +308,12 @@ class SR(uvclight.Page):
         return result
 
 
-class CR(uvclight.Page):
+class CourseResults(uvclight.Page):
     require('manage.company')
     uvclight.context(ICourse)
     uvclight.layer(ICompanyRequest)
 
-    template = uvclight.get_template('cr.pt', __file__)
+    template = uvclight.get_template('chart_results.pt', __file__)
     general_stats = None
 
     def jsonify(self, da):

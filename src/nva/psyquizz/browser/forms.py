@@ -1167,13 +1167,32 @@ class Quizz5Wizard(AnswerQuizz):
     template = get_template('quizz5_wizard.pt', __file__)
 
     def get_scales(self):
-        return IQuizz5.getTaggedValue('scales')
+        scales = IQuizz5.getTaggedValue('scales')
+        additional_questions = list(self.quizz.additional_extra_fields(
+            self.context.course))
+        extra_fields = list(self.quizz.extra_fields(self.context.course))
+        if additional_questions:
+            scales = scales + [
+                {'iface': iface, 'label': 'Additional questions'}
+                for iface in additional_questions
+            ]
+        if extra_fields:
+            scales = scales + [
+                {'fields': extra_fields, 'label': 'Additional questions'}
+            ]
+        return scales
 
     def getFieldWidgets(self, scale):
+        from zope.schema import getFieldsInOrder
         widgets = []
-        for field in scale['iface'].names():
-            name = "form.field.%s" % field
-            widgets.append(self.fieldWidgets.get(name))
+        if 'fields' in scale:
+            for field in scale['fields']:
+                name = "form.field.%s" % field.__name__
+                widgets.append(self.fieldWidgets.get(name))
+        else:
+            for field, o in getFieldsInOrder(scale['iface']):
+                name = "form.field.%s" % field
+                widgets.append(self.fieldWidgets.get(name))
         return widgets
 
 
