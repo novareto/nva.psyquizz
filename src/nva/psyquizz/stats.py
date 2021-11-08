@@ -2,12 +2,10 @@
 # cklinger@novareto.de
 
 import json
-from copy import deepcopy
 from itertools import chain
 from collections import OrderedDict, namedtuple
 from cromlech.sqlalchemy import get_session
 from nva.psyquizz.models.criterias import CriteriaAnswer
-from sqlalchemy import and_, or_
 from sqlalchemy import func
 from zope.schema import getFieldsInOrder
 
@@ -115,7 +113,6 @@ def compute(quizz, averages, sums, filters):
             answers = answers.filter(
                 quizz.session_id == filters['session']
             )
-
     total = 0
     if 'criterias' in filters:
         criterias = set(

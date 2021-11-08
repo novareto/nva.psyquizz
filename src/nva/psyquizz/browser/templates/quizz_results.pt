@@ -1,13 +1,13 @@
 <div>
 <div class="header">
   <h1>Ergebnisse</h1>
-  <p>Hier sehen Sie die Auswertung für alle Beschäftigten.
+  <p>Hier sehen Sie die Auswertung für alle Beschäftigten. 
   </p>
 
   <p>
   Durch Auswahl einer oder mehrerer Auswertungsgruppen haben Sie die Möglichkeit sich eine
-  detaillierte Auswertung anzeigen zu lassen. (Bitte beachten Sie: Einzelne Auswertungsgruppen
-  können erst ausgewählt werden, wenn für diese Auswertungsgruppe mindestens sieben
+  detaillierte Auswertung anzeigen zu lassen. (Bitte beachten Sie: Einzelne Auswertungsgruppen 
+  können erst ausgewählt werden, wenn für diese Auswertungsgruppe mindestens sieben 
   ausgefüllte Fragebögen vorliegen.)
   </p>
   <p>
@@ -47,39 +47,42 @@
 
     <input type="hidden" value=""
 	   tal:attributes="value view.stats.json_criterias" name="criterias" />
-
+    
     <input type="hidden"
 	   tal:attributes="value view.stats.statistics['total']" name="total"/>
-
+    
     <textarea type="text" id="averages" name="averages" style="display:none">
       <tal:data
            content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
     </textarea>
-
+    
     <textarea type="text" id="chart" name="chart" style="display: none"></textarea>
     <textarea type="text" id="pSVG1" name="pSVG1" style="display: none"></textarea>
 
-    <div tal:condition="view.stats.statistics['extra_data']">
-      <h2 tal:content="view.extra_title()" />
-      <table id="mt" class="table table-bordered table-striped">
-        <tr tal:repeat="label view.stats.extra_questions_order.keys()">
-          <tal:extra define="data view.stats.statistics['extra_data'][label]">
-            <td tal:content="label"></td>
-            <td>
-	      <ul>
-	        <li tal:repeat="answer view.stats.extra_questions_order[label]">
-                  <span tal:content="answer" /> :
-	          <span tal:content="data.get(answer, 0)" />
-	        </li>
-	      </ul>
-            </td>
-          </tal:extra>
-        </tr>
-      </table>
-    </div>
+  <div tal:condition="view.stats.statistics['extra_data']">
+   <h2 tal:content="view.extra_title()"> Ergebnis der Zusatzfrage(n)  </h2>
+  <table id="mt" class="table table-bordered table-striped">
+    <tr tal:repeat="data view.stats.statistics['extra_data'].items()">
+      <td tal:content="data[0]"></td> 
+      <td>
+	<ul>
+	  <li tal:repeat="answer data[1].items()">
+	    <span tal:content="answer[0]" /> :
+	    <span tal:content="answer[1]" />
+	  </li>
+	</ul>
+      </td>
+    </tr>
+  </table>
+  </div>
 
     <button class="btn btn-default" value="pdf export"> <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> PDF Export </button>
-    <a href="" tal:attributes="href view.url(context, 'excel') + '?' + request.environment['QUERY_STRING']" class="btn btn-default" value="pdf export"> <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> XLS Export </a>
+
+      <a class="btn btn-default"
+         tal:attributes="href 'excel?' + request.environment['QUERY_STRING']"
+         ><span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+      </span>&nbsp; Excel export</a>
+
   </form>
 
   <script>
@@ -138,7 +141,7 @@
 		stacking: 'normal'
             }
 	},
-	series: <span tal:replace="view.series"/>
+	series: <span tal:replace="view.series"/> 
     });
 
     var myChart = Highcharts.chart('container', {
@@ -181,13 +184,13 @@
 		stacking: 'normal'
             }
 	},
-	series: <span tal:replace="view.series"/>
+	series: <span tal:replace="view.series"/> 
     });
-
+    
     svgToCanvas(myChart_export, 'chart');
     $('#pSVG1').val(myChart_export.getSVGForExport());
 
-
+    
     $("a[name='checkall']").click(function () {
     $("input:checkbox").prop('checked', true);
     $("#form-action-filter").click();

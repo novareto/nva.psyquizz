@@ -39,6 +39,8 @@ Auswertung erzeugt: %s
 
 class XSLX(object):
 
+    enable_chart1 = True
+
     def generateXLSX(self, workbook):
         #filepath = os.path.join(folder, filename)
         #workbook = xlsxwriter.Workbook(filepath)
@@ -102,21 +104,23 @@ class XSLX(object):
             worksheet.write(i, 0, x.title)
             worksheet.write(i, 1, x.average, nformat)
 
-        chart1 = workbook.add_chart({'type': 'radar'})
-        chart1.add_series({
-            'name':       'Mittelwerte',
-            'categories': '=Mittelwerte!$A$1:$A$11',
-            'values':     '=Mittelwerte!$B$1:$B$11',
-            'min': 1,
+        if self.enable_chart1:
+            chart1 = workbook.add_chart({'type': 'radar'})
+            chart1.add_series({
+                'name':       'Mittelwerte',
+                'categories': '=Mittelwerte!$A$1:$A$11',
+                'values':     '=Mittelwerte!$B$1:$B$11',
+                'min': 1,
             })
 
-        chart1.set_title({'name': 'Durchschnitt'})
-        chart1.set_x_axis({'name': 'Test number', "min": 1})
-        chart1.set_y_axis({'name': 'Sample length (mm)', "min": 1})
-        chart1.set_style(11)
+            chart1.set_title({'name': 'Durchschnitt'})
+            chart1.set_x_axis({'name': 'Test number', "min": 1})
+            chart1.set_y_axis({'name': 'Sample length (mm)', "min": 1})
+            chart1.set_style(11)
 
-        # Insert the chart into the worksheet (with an offset).
-        worksheet.insert_chart('A13', chart1, {'x_offset': 25, 'y_offset': 10})
+            # Insert the chart into the worksheet (with an offset).
+            worksheet.insert_chart(
+                'A13', chart1, {'x_offset': 25, 'y_offset': 10})
 
         worksheet = workbook.add_worksheet('Verteilung')
 

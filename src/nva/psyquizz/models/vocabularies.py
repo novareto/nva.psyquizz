@@ -192,3 +192,11 @@ FREQUENCY2 = make_vocabulary('frequency2', [
     SimpleTerm(value=0,
                title=u'niemals'),
     ])
+
+
+FBGU = make_vocabulary('fbgu', [
+    SimpleTerm(value=1, title=u"Trifft nicht zu"),
+    SimpleTerm(value=2, title=u"Trifft eher nicht zu"),
+    SimpleTerm(value=3, title=u"Trifft eher zu"),
+    SimpleTerm(value=4, title=u"Trifft zu"),
+    ])

@@ -4,21 +4,12 @@ from copy import deepcopy
 import zope.schema
 
 from nva.psyquizz import Base
-from nva.psyquizz.models import MoreToLess, MoreToLessN, LessToMore
-from nva.psyquizz.models import (
-    AF, GOODBAD, TIMESPAN, FREQUENCY, FREQUENCY1, FREQUENCY2, ASSESMENT)
-from nva.psyquizz.models.interfaces import IQuizz, IQuizzSecurity
 from nva.psyquizz.models.quizz import QuizzBase
-from nva.psyquizz.models.quizz.quizz2 import Quizz2, IQuizz2
+from nva.psyquizz.models.quizz.quizz2 import IQuizz2
 
-from collections import OrderedDict
-from grokcore.component import provides, context, global_utility, Subscription
 from sqlalchemy import *
 from sqlalchemy.orm import relationship, backref
-from uvclight import Fields
-from uvclight.utils import current_principal
-from zope.interface import implementer, Interface
-from zope.location import Location
+from zope.interface import implementer
 
 
 class IQuizz4(IQuizz2):
