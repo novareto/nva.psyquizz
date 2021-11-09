@@ -196,7 +196,7 @@ entsprechende Verbesserungsmaßnahmen einleiten zu können. Bitte beantworten Si
 alle Fragen offen und ehrlich. Wir sichern Ihnen vollständige Vertraulichkeit
 zu. Die Ergebnisse der einzelnen Fragebögen bleiben absolut anonym. Die
 Auswertung der Ergebnisse erfolgt automatisiert über unsere
-Berufsgenossenschaft Elektro, Textil, Energie und Medienerzeugnisse.</p>
+Berufsgenossenschaft VBG.</p>
 <p> Keine Mitarbeiterin und kein Mitarbeiter unserer Firma wird Einblick in die originalen Datensätze erhalten, eine Rückverfolgung wird nicht möglich sein.</p>
 <p>Die Aussagekraft der Ergebnisse hängt von einer möglichst hohen Beteiligung ab. Geben Sie Ihrer Meinung Gewicht!</p>
 <p>Die Befragung läuft vom %s - %s. Während dieses Zeitraums haben Sie die

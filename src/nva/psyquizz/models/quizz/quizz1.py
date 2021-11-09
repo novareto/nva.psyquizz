@@ -215,7 +215,7 @@ class Quizz1(Base, Location):
 
     student = relationship(
         "Student", cascade="all,delete",
-        backref=backref("quizz", uselist=False, cascade="save-update,delete", single_parent=True))
+        backref=backref("quizz1", uselist=False, cascade="save-update,delete", single_parent=True))
     
     # Quizz
     completion_date = Column('completion_date', DateTime)
@@ -239,6 +239,15 @@ class Quizz1(Base, Location):
     question18 = Column('question18', Boolean)
     question19 = Column('question19', Boolean)
     extra_questions = Column('extra_questions', Text)
+
+    @classmethod
+    def additional_extra_fields(cls, course):
+        from nva.psyquizz.models.interfaces import source_fixed_extra_questions
+        feq = source_fixed_extra_questions(None)
+        for eqs in course.fixed_extra_questions:
+            if eqs:
+                term = feq.getTerm(eqs)
+                yield term.iface
 
 
 global_utility(Quizz1, provides=IQuizz, name='quizz1', direct=True)

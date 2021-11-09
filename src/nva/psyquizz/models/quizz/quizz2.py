@@ -219,7 +219,7 @@ class Quizz2(Base, Location):
     __tablename__ = 'quizz2'
     __schema__ = IQuizz2
     __title__ = u"KFZA Kurzfragebogen zur Arbeitsanalyse"
-    __base_pdf__ = "kfza.pdf"
+    __base_pdf__ = "kfza_vbg.pdf"
 
     id = Column('id', Integer, primary_key=True)
 
@@ -228,7 +228,9 @@ class Quizz2(Base, Location):
     course_id = Column(Integer, ForeignKey('courses.id'))
     session_id = Column(Integer, ForeignKey('sessions.id'))
     company_id = Column(Integer, ForeignKey('companies.id'))
-    student = relationship("Student")
+    student = relationship(
+        "Student", cascade="all,delete",
+        backref=backref("quizz2", uselist=False, cascade="save-update,delete", single_parent=True))
 
     # Quizz
     completion_date = Column('completion_date', DateTime)

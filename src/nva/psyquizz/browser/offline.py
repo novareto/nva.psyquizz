@@ -14,7 +14,8 @@ from pyPdf import PdfFileWriter, PdfFileReader
 from BeautifulSoup import BeautifulSoup
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate
+from reportlab.platypus import Spacer, PageBreak, Paragraph, SimpleDocTemplate
+from reportlab.lib.units import cm
 from zope.component import getUtility
 from nva.psyquizz.models import IQuizz
 from nva.psyquizz.browser.forms import AnswerQuizz, CompanyAnswerQuizz
@@ -36,7 +37,7 @@ class DownloadCourse(uvclight.View):
     uvclight.context(interface.Interface)
 
     heading = u"Gemeinsam zu gesunden Arbeitsbedingungen"
-    base_pdf = "kfza.pdf"
+    base_pdf = "kfza_vbg.pdf"
 
     def make_response(self, result):
         response = self.responseFactory(app_iter=result)
@@ -44,6 +45,13 @@ class DownloadCourse(uvclight.View):
         response.headers['Content-Disposition'] = 'attachment; \
                 filename="Papierfragebogen.pdf"'
         return response
+
+    def genStuffFQ(self, source):
+        rc = []
+        for item in source:
+            if item:
+                rc.append('[ ] %s &nbsp; &nbsp;' % item.title)
+        return ''.join(rc)
 
     def genStuff(self, items):
         rc = []
@@ -61,7 +69,7 @@ class DownloadCourse(uvclight.View):
         style = getSampleStyleSheet()
         nm = style['Normal']
         nm.leading = 14
-        story = []
+        story = [Spacer(0, 2*cm)]
         na = self.context.about.replace('\r\n', '<br/>').replace('</p>', '</p><br/>')
         bs = BeautifulSoup(na)
         doc = bs.prettify()
@@ -73,6 +81,18 @@ class DownloadCourse(uvclight.View):
             story.append(Paragraph('<b>Bitte kreuzen Sie das zutreffende an </b>', style['Normal']))
             for crit in self.context.course.criterias:
                 story.append(Paragraph('<b> %s </b> <br/> %s ' % (crit.title, self.genStuff(crit.items.split('\n'))), style['Normal']))
+
+
+        if self.context.course.fixed_extra_questions:
+            from zope.schema import getFieldsInOrder
+            story.append(PageBreak())
+            quizz = getUtility(IQuizz, name=self.context.quizz_type)
+            for iface in quizz.additional_extra_fields(self.context.course):
+                story.append(Paragraph('<br/><br/><b>%s </b>' % iface.__doc__, style['Normal']))
+                for name, field in getFieldsInOrder(iface):
+                    story.append(Paragraph('<b> %s </b> <br/> %s ' % (field.description, self.genStuffFQ(field.source)), style['Normal']))
+
+
         if self.context.course.extra_questions:
             story.append(PageBreak())
             story.append(Paragraph('<br/><br/><b>Zusatzfragen: </b>', style['Normal']))
@@ -109,6 +129,11 @@ class DownloadCourse(uvclight.View):
                 b1_pdf = PdfFileReader(base1)
                 wm = b1_pdf.getPage(0)
                 p1 = PdfFileReader(self.generate_page_one())
+                for num in range(p1.numPages-1):
+                    page1 = p1.getPage(num + 1)
+                    page1.mergePage(wm)
+                    output.addPage(page1)
+
                 page1 = p1.getPage(1)
                 page1.mergePage(wm)
                 output.addPage(page1)

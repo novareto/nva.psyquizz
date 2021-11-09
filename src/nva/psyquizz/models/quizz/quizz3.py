@@ -123,7 +123,7 @@ class Quizz3(Base, Location):
     __tablename__ = 'quizz3'
     __schema__ = IQuizz3
     __title__ = u"KFZA Kurzfragebogen zur Arbeitsanalyse + WAI Fragebogen"
-    __base_pdf__ = "kfza.pdf"
+    __base_pdf__ = "kfza_vbg.pdf"
 
     id = Column('id', Integer, primary_key=True)
 
@@ -133,6 +133,9 @@ class Quizz3(Base, Location):
     session_id = Column(Integer, ForeignKey('sessions.id'))
     company_id = Column(Integer, ForeignKey('companies.id'))
     student = relationship("Student", backref="answer")
+    student = relationship(
+        "Student", cascade="all,delete",
+        backref=backref("quizz3", uselist=False, cascade="save-update,delete", single_parent=True))
 
     # Quizz 2 base
     completion_date = Column('completion_date', DateTime)
@@ -185,13 +188,6 @@ class SecurityCheck(Subscription):
     context(Interface)
   
     def check(self, name, quizz, context):
-        return True
-        if name == 'quizz3':
-            principal = current_principal()
-            if (principal.id.endswith('bgetem.de') or 
-                principal.id.endswith("novareto.de") or
-                principal.id.endswith("bayernwerk.de") or
-                principal.id.endswith("neymanns.thomas@bgetem.de")):
-                return True
+        if name == 'quizz3' or name == 'quizz2':
             return False
         return True

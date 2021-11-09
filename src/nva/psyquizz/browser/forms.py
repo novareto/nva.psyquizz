@@ -69,8 +69,8 @@ with open(os.path.join(os.path.dirname(__file__), 'lib', 'mail.tpl'), 'r') as fd
 
 def send_activation_code(smtp, company_name, email, code, base_url):
     mailer = SecureMailer(smtp)  # BBB
-    from_ = 'extranet@bgetem.de'
-    title = (u'Gemeinsam zu gesunden Arbeitsbedingungen – Aktivierung').encode(
+    from_ = 'psylastung@bg-kooperation.de'
+    title = (u'Gemeinsam zu gesunden Arbeitsbedingungen Aktivierung').encode(
         ENCODING)
     with mailer as sender:
         html = mail_template.substitute(
@@ -425,7 +425,7 @@ class CreateAccount(Form):
     def action_url(self):
         return self.request.path
 
-    @action(_(u'Add'))
+    @action(_(u'Registrieren'))
     def handle_save(self):
         data, errors = self.extractData()
         session = get_session('school')
@@ -456,7 +456,7 @@ class CreateAccount(Form):
         # pop the captcha and verif, it's not a needed data
         data.pop('verif')
         data.pop('captcha')
-
+        data.pop('ack_form')
         account = Account(**data)
         code = account.activation = str(uuid.uuid1())
         session.add(account)
@@ -636,7 +636,7 @@ class CreateCourse(Form):
     @property
     def fields(self):
         course_fields = Fields(ICourse).select(
-            'name', 'criterias', 'quizz_type', 'extra_questions')
+            'name', 'criterias', 'quizz_type', 'extra_questions', 'fixed_extra_questions')
         populate_fields = Fields(IPopulateCourse)
         populate_fields['strategy'].mode = "radio"
         session_fields = Fields(IClassSession).select(
@@ -679,7 +679,6 @@ class CreateCourse(Form):
         if errors:
             #self.flash(_(u'An error occurred.'))
             return FAILURE
-        session = get_session('school')
         csdata = dict(
             startdate=data.pop('startdate'),
             enddate=data.pop('enddate'),
@@ -691,6 +690,11 @@ class CreateCourse(Form):
            nb_students=data.pop('nb_students'),
            strategy=csdata.get('strategy')
         )
+        if strategy.get('strategy') in ('mixed','fixed'):
+            if strategy['nb_students'] <= 7 or strategy['nb_students'] is NO_VALUE:
+                self.flash(u'Auswertungen sind erst ab 7 Teilnehmer zulässig. Bitte erhöhen Sie die Anzahl der Teilnehmer auf mindestens 7')
+                return FAILURE
+        session = get_session('school')
         #data['quizz_type'] = "quizz2"
         course = Course(**data)
         
@@ -1127,8 +1131,12 @@ class AnswerQuizz(Form):
             )
             criteria_fields.append(criteria_field)
         self.nbcriterias = len(criteria_fields)
-        fields = Fields(*criteria_fields) + fields
 
+        additional_extra_fields = Fields(
+                            *self.quizz.additional_extra_fields(self.context.course)
+                                    )
+
+        fields = Fields(*criteria_fields) + fields + additional_extra_fields
         questions_text = self.context.course.extra_questions
         if questions_text:
             extra_fields = Fields(*generate_extra_questions(questions_text))

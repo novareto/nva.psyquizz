@@ -33,6 +33,10 @@ class Student(Base, Location):
     completion_date = Column('completion_date', DateTime)
 
     @property
+    def quizz(self):
+        return getattr(self, self.quizz_type)
+
+    @property
     def id(self):
         return self.access
 

@@ -126,7 +126,7 @@ def send_forgotten_password(smtp, email, password):
     # mailer = SecureMailer('localhost')
     #mailer = SecureMailer('smtprelay.bg10.bgfe.local')
     mailer = SecureMailer(smtp)
-    from_ = 'extranet@bgetem.de'
+    from_ = 'psylastung@bg-kooperation.de'
     title = (u'Ihre Passwortanfrage').encode(ENCODING)
     with mailer as sender:
         html = forgotten_template.substitute(
@@ -250,6 +250,8 @@ class NoAccess(Location):
             return AccountLogin(self, self.request)()
         if self.request.path_info in (u'/forgotten',):
             return ForgotPassword(self, self.request)()
+        if self.request.path_info in (u'/datenschutz',):
+            return getMultiAdapter((self, self.request), name="datenschutz")()
         return getMultiAdapter((self, self.request), name="anonindex")()
         #return AnonIndex(self, self.request)()
 

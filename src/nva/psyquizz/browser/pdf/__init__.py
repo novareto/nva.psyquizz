@@ -105,7 +105,7 @@ class GeneratePDF(uvclight.Page):
         canvas.setFont("Helvetica", 9)
         canvas.drawString(1 * cm, 2 * cm, u"Gemeinsam zu gesunden Arbeitsbedingungen")
         canvas.drawString(1 * cm, 1.6 * cm, u"Psychische Belastungen online erfassen")
-        canvas.drawString(1 * cm, 1.2 * cm, u"Ein Programm der BG ETEM")
+        canvas.drawString(1 * cm, 1.2 * cm, u"Ein Programm der VBG")
         canvas.drawString(18 * cm, 2 * cm, u"Grundlage der Befragung: KFZA - Kurzfragebogen")
         canvas.drawString(18 * cm, 1.6 *cm, u"zur Arbeitsanalyse")
         canvas.drawString(18 * cm, 1.2 * cm, u"Prümper, J., Hartmannsgruber, K. & Frese, M")

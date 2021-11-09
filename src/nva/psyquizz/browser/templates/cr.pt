@@ -9,10 +9,14 @@
       erst ausgewählt werden, wenn für diese Auswertungsgruppe
       mindestens sieben ausgefüllte Fragebögen vorliegen.)
     </p>
-    <p>
-      Der weitere Umgang mit den Ergebnissen ist in der „Übersicht 7
-      Schritte“ unter 4. Lösungsworkshops beschrieben.
-    </p>
+  <p>
+    Für den weiteren Umgang mit den Ergebnissen empfehlen wir Lösungsworkshops. Die VBG bietet hier das K.I.T. Verfahren, alternativ können Sie auch den Ideentreff der DGUV nutzen.
+   <br>
+   Link zum:  <a href="http://www.vbg.de/SharedDocs/Medien-Center/DE/Broschuere/Themen/Gesundheit_im_Betrieb/Faltblatt_Psychische_Belastungen_im_Fokus.pdf?__blob=publicationFile&v=3"> K.I.T </a> .
+    <br>
+    Link: <a href="https://publikationen.dguv.de/dguv/pdf/10002/206-007.pdf"> Ideentreff </a>
+
+  </p>
   </div>
   <form action="." tal:attributes="action view.request.url"
 	tal:define="current view.stats.filters.get('criterias', {})">

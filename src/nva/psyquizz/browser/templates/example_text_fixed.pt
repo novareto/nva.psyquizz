@@ -22,7 +22,7 @@ Hier müssen Sie die Kennwörter über die Kennwortliste einfügen.  </p>
 <div id="copyable"
 <p class="lead">Liebe Kolleginnen und Kollegen, </p>
 <p>wie bereits angekündigt, erhalten Sie heute Ihre Einladung zur Teilnahme an unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“.</p> 
-<p>Ziel der Befragung ist es, Ihre Arbeitsbedingungen zu beurteilen und ggf. entsprechende Verbesserungsmaßnahmen einleiten zu können. Bitte beantworten Sie alle Fragen offen und ehrlich. Wir sichern Ihnen vollständige Vertraulichkeit zu. Die Ergebnisse der einzelnen Fragebögen bleiben absolut anonym. Die Auswertung der Ergebnisse erfolgt automatisiert über unsere Berufsgenossenschaft Elektro, Textil, Energie und Medienerzeugnisse.</p>
+<p>Ziel der Befragung ist es, Ihre Arbeitsbedingungen zu beurteilen und ggf. entsprechende Verbesserungsmaßnahmen einleiten zu können. Bitte beantworten Sie alle Fragen offen und ehrlich. Wir sichern Ihnen vollständige Vertraulichkeit zu. Die Ergebnisse der einzelnen Fragebögen bleiben absolut anonym. Die Auswertung der Ergebnisse erfolgt automatisiert über unsere Verwaltungs-Berufsgenossenschaft.</p>
 <p> Keine Mitarbeiterin und kein Mitarbeiter unserer Firma wird Einblick in die originalen Datensätze erhalten, eine Rückverfolgung wird nicht möglich sein.</p>
 <p>Die Aussagekraft der Ergebnisse hängt von einer möglichst hohen Beteiligung ab. Geben Sie Ihrer Meinung Gewicht!</p>
 <p>Die Befragung läuft vom <span tal:content="string: ${context.startdate.strftime('%d.%m.%Y')} - ${context.enddate.strftime('%d.%m.%Y')}"></span>. Während dieses Zeitraums haben Sie die Möglichkeit, über folgende Internetadresse an unserer Befragung teilzunehmen: 

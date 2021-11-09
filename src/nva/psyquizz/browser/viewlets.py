@@ -169,4 +169,8 @@ class Kontakt(uvclight.MenuItem):
     def action(self):
         return "mailto://gzga@bgetem.de"
 
-
+class RGPDCK(uvclight.Viewlet):
+    uvclight.viewletmanager(IAboveContent)
+    uvclight.order(00)
+    uvclight.name('rgpdck')
+    template = uvclight.get_template('rgpdck.cpt', __file__)

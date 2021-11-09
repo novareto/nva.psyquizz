@@ -116,6 +116,6 @@ class Excel(Excel):
 
     def update(self):
         quizz = getUtility(IQuizz, self.context.quizz_type)
-        self.stats = Quizz3Excel(quizz, self.context, self.request)
+        self.stats = Quizz3Excel(quizz, self.context)
         filters = get_filters(self.request)
         self.stats.update(filters)

@@ -89,10 +89,21 @@ class CourseStatistics(object):
                 criterias.append([crit.name, crit.amount])
         self.json_criterias = json.dumps(criterias)
 
+
+        self.extra_questions_order = OrderedDict()
+        for iface in self.quizz.additional_extra_fields(self.course):
+            for name, field in getFieldsInOrder(iface):
+                 self.extra_questions_order[field.description] = [
+                     t.title for t in field.vocabulary
+                 ]
+
+
         if self.course.extra_questions:
             questions = self.course.extra_questions.strip().split('\n')
             for question in questions:
                 label, qtype, values = parse_extra_question_syntax(question)
+                if not label in self.extra_questions_order:
+                    self.extra_questions_order[label] = values
                 if not label in self.statistics['extra_data']:
                     self.statistics['extra_data'][label] = {}
                 extra_answers = self.statistics['extra_data'][label]
@@ -213,6 +224,15 @@ class Quizz1Charts(uvclight.View):
     uvclight.context(Quizz1)
 
     template = uvclight.get_template('cr1.pt', __file__)
+
+    def extra_title(self):
+        title = u"Zusatzfragen "
+        if self.context.__parent__.course.extra_questions:
+            title += " - eigene Zusatzfragen"
+        if self.context.__parent__.course.fixed_extra_questions:
+            title += " - vordefinierte Zusatzfragen"
+        return title
+
 
     def jsonify(self, da):
         return json.dumps(da)

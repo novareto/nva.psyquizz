@@ -7,7 +7,7 @@
     <div id="activation">
       <h1>Guten Tag</h1>
       <p>
-vielen Dank für Ihre Registrierung bei unserer Online-Hilfe Gemeinsam zu gesunden Arbeitsbedingungen zur Beurteilung der psychischen Belastung in Ihrem Betrieb.
+vielen Dank für Ihre Registrierung bei unserer Online-Hilfe Gut gestaltete Arbeitsbedingungen zur Beurteilung der psychischen Belastung in Ihrem Betrieb.
       </p> <br>
       <p>
  Um Ihre Registrierung vollständig abzuschließen, melden Sie sich bitte unter folgendem Link mit Ihren Benutzerdaten an:
@@ -21,7 +21,7 @@ vielen Dank für Ihre Registrierung bei unserer Online-Hilfe Gemeinsam zu gesund
       <br>
        <p>
        <p>Freundliche Grüße</p> </br>
-       <p>Ihre Berufsgenossenschaft Energie, Textil, Elektro, Medienerzeugnisse</p> 
+       <p>Ihre VBG</p> 
       </p>
     </div>
   </body>

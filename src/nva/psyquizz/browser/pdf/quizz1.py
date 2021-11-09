@@ -26,7 +26,7 @@ class PDFPL(GeneratePDF):
         canvas.drawString(
             1 * cm, 1.6 * cm, u"Psychische Belastungen online erfassen")
         canvas.drawString(
-            1 * cm, 1.2 * cm, u"Ein Programm der BG ETEM")
+            1 * cm, 1.2 * cm, u"Ein Programm der VBG")
         canvas.drawString(
             18 * cm, 2 * cm, u"Grundlage der Befragung:  Prüfliste Psychische")
         canvas.drawString(

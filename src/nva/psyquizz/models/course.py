@@ -28,6 +28,7 @@ class Course(Base, Location):
     company_id = Column(Integer, ForeignKey('companies.id'))
     quizz_type = Column('quizz_type', String)
     extra_questions = Column('extra_questions', Text)
+    _fixed_extra_questions = Column('fixed_extra_questions', Text)
 
     students = relationship(
         "Student", backref="course", cascade="save-update, delete",
@@ -73,3 +74,16 @@ class Course(Base, Location):
             student.__parent__ = self
             if student.completion_date is not None:
                 yield student
+
+    @property
+    def fixed_extra_questions(self):
+        ret = []
+        if self._fixed_extra_questions:
+            ret = [q.strip() for q in
+                self._fixed_extra_questions.split(',')]
+        return ret
+
+
+    @fixed_extra_questions.setter
+    def fixed_extra_questions(self, value):
+        self._fixed_extra_questions = ','.join(value)

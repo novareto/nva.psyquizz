@@ -67,6 +67,16 @@ class EditAccount(EditForm):
         self.redirect(self.url(self.context))
         return SUCCESS
 
+@menuentry(IDocumentActions, order=1)
+class DeleteAccountP(uvclight.Page):
+    uvclight.provides(ITab)
+    context(MyPrefs)
+    name('deleteaccountp')
+    require('manage.company')
+    template = uvclight.get_template('delete_account_p.pt', __file__)
+    title = u"Benutzer Account löschen"
+
+
 
 @menuentry(IDocumentActions, order=10)
 class TransferCompany(Form):

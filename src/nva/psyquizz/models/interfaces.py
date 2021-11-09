@@ -14,6 +14,7 @@ from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from uvc.validation.validation import validateZahl
 from uvclight.form_components.fields import OrderedChoices
 from zope.schema import ValidationError
+from nva.psyquizz.models.quizz.corona_set import ICoronaQuestions, IHomeOfficeQuestions
 
 
 class VKontaktdaten(ValidationError):
@@ -45,6 +46,21 @@ def deferred(name):
     def vocabulary(context):
         return deferred_vocabularies[name](context)
     return vocabulary
+
+
+
+class MySimpleTerm(SimpleTerm):
+
+    def __init__(self, value, token=None, title=None, iface=None):
+        super(MySimpleTerm, self).__init__(value, token, title)
+        self.iface = iface
+
+
+
+@provider(IContextSourceBinder)
+def source_fixed_extra_questions(context):
+    rc = [MySimpleTerm('1', '1', u'Corona', ICoronaQuestions), MySimpleTerm('2', '2', u'Homeoffice', IHomeOfficeQuestions)]
+    return SimpleVocabulary(rc)
 
 
 @provider(IContextSourceBinder)
@@ -256,11 +272,11 @@ class IClassSession(ILocation, IContent):
         constraint=v_about,
         )
 
-    @invariant
-    def check_date(data):
-        date = data.startdate
-        if date is not None and date < datetime.date.today():
-            raise Invalid(_(u"You can't set a date in the past."))
+#    @invariant
+#    def check_date(data):
+#        date = data.startdate
+#        if date is not None and date < datetime.date.today():
+#            raise Invalid(_(u"You can't set a date in the past."))
 
 
 class ICourse(ILocation, IContent):
@@ -277,8 +293,15 @@ class ICourse(ILocation, IContent):
         required=True,
         )
 
+    fixed_extra_questions = schema.Set(
+        title=_(u"Zusatzfragen auswählen"),
+        description=_(u"Hier können Sie vordefinierte Zusatzfragen zu Ihrer Befragung auswählen. <a href='' class='' data-toggle='modal' data-target='#myHelpModal'> <span class='glyphicon glyphicon-question-sign' aria-hidden='true'></span> </a>"),
+        required=False,
+        value_type=schema.Choice(title=u'Please select one', source=source_fixed_extra_questions)
+    )
+
     extra_questions = schema.Text(
-        title=_(u"Complementary questions for the course"),
+        title=_(u"Eigene Zusatzfragen erstellen"),
         description=_(u"Type your questions : one per line."),
         required=False,
         default=u"",

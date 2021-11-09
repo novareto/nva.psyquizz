@@ -188,17 +188,33 @@ class XSLX(object):
             worksheet.write("A%i" % offset, labels[avg.title])
             worksheet.write("B%i" % offset, avg.average, nformat)
 
+
         if self.statistics['extra_data']:
             line = 0
             worksheet = workbook.add_worksheet('Zusatzfragen')
-            for key, value in self.statistics['extra_data'].items():
-                worksheet.write(line, 0, key)
-                col = 0
-                for question, answer in value.items():
-                    worksheet.write(line + 1, col, question)
-                    worksheet.write(line + 2, col, answer)
+            for label, answers in self.extra_questions_order.items():
+                value = self.statistics['extra_data'][label]
+                worksheet.write(line, 0, label)
+                col = 1
+                for answer in answers:
+                    worksheet.write(line + 0, col, answer)
+                    worksheet.write(line + 1, col, value.get(answer, 0))
                     col += 1
-                line += 5
+                line += 4
+
+
+
+#        if self.statistics['extra_data']:
+#            line = 0
+#            worksheet = workbook.add_worksheet('Zusatzfragen')
+#            for key, value in self.statistics['extra_data'].items():
+#                worksheet.write(line, 0, key)
+#                col = 0
+#                for question, answer in value.items():
+#                    worksheet.write(line + 1, col, question)
+#                    worksheet.write(line + 2, col, answer)
+#                    col += 1
+#                line += 5
         return workbook
 
     def render(self):

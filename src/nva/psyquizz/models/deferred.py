@@ -41,6 +41,14 @@ def quizz_choice(context):
 
 
 @provider(IContextSourceBinder)
+def quizz_choice_full(context):
+    terms = []
+    utils = getUtilitiesFor(IQuizz)
+    for name, quizz in utils:
+        terms.append(SimpleTerm(value=name, title=quizz.__title__))
+    return SimpleVocabulary(terms)
+
+@provider(IContextSourceBinder)
 def criterias_choice(context):
     session = get_session('school')
     company = get_company_id(context)
