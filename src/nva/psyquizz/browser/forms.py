@@ -694,6 +694,8 @@ class CreateCourse(Form):
            strategy=csdata.get('strategy')
         )
         #data['quizz_type'] = "quizz2"
+        if data['extra_questions'] is NO_VALUE:
+            data.pop('extra_questions')
         course = Course(**data)
 
         course.company_id = self.context.id
