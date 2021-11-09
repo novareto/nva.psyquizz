@@ -22,7 +22,7 @@ from .. import quizzjs
 from ..apps import anonymous
 from ..i18n import _
 from ..interfaces import ICompanyRequest
-from ..models import Account, Company, Student, Course, ClassSession
+from ..models import Account, Company, Course, ClassSession
 from ..models import IQuizz, ICriterias
 from ..models.deferred import quizz_choice
 
@@ -42,10 +42,10 @@ class AccountHomepage(Page):
     layer(ICompanyRequest)
     require('manage.company')
 
-    template = get_template('ckh.pt', __file__)
+    template = get_template('frontpage.pt', __file__)
 
-    maxResults = 7 
-    
+    maxResults = 1
+
     def update(self):
         #self.flash(TEXT)
         quizzjs.need()
@@ -61,14 +61,14 @@ class AccountHomepage(Page):
         if courses > 1:
             if len(sessions(course.__parent__, threshold=7)) > 1:
                 return True
-        return False 
+        return False
 
     def canRepeatQuestionaire(self, course):
         ret = False
         for session in course.sessions:
             if self.checkDate(session.enddate):
                 ret = True
-        return ret 
+        return ret
 
     def quizz_name(self, course):
         voc = quizz_choice(course)
@@ -119,7 +119,7 @@ class CompanyHomepage(Page):
 
     def render(self):
         self.redirect(self.application_url())
-        return "" 
+        return ""
 
 
 @menuentry(IContextualActionsMenu, order=0)
@@ -132,7 +132,7 @@ class CompanyCourseHomepage(Page):
 
     def render(self):
         self.redirect(self.application_url())
-        return "" 
+        return ""
 
 
 @menuentry(IContextualActionsMenu, order=0)
@@ -144,7 +144,7 @@ class CompanySessionHomepage(Page):
 
     def render(self):
         self.redirect(self.application_url())
-        return "" 
+        return ""
 
 
 class StudentHomepage(Page):

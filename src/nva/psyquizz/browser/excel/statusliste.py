@@ -31,7 +31,6 @@ class StatuslisteExport(uvclight.View):
 
     def render(self):
         computer = calculator()
-        r = {}
 
         with tempfile.TemporaryDirectory() as temp_dir:
             filepath = os.path.join(temp_dir, "export.xlsx")
@@ -57,7 +56,7 @@ class StatuslisteExport(uvclight.View):
                 shutil.copyfileobj(fd, output)
 
             output.seek(0)
- 
+
         return output
 
     def make_response(self, result):

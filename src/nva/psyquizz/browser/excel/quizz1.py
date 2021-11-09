@@ -5,8 +5,6 @@ import json
 import uvclight
 import datetime
 
-
-from collections import OrderedDict
 from zope.component import getUtility
 from nva.psyquizz.models import IQuizz
 from nva.psyquizz.models.quizz.quizz1 import IQuizz1

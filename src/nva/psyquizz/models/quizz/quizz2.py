@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
 
+from collections import OrderedDict
+from sqlalchemy import *
+from sqlalchemy.orm import relationship, backref
+from zope import schema
+from zope.interface import Interface, implementer
+from grokcore.component import global_utility
 from nva.psyquizz import Base
 from nva.psyquizz.models import MoreToLess, MoreToLessN, LessToMore, IQuizz
 from nva.psyquizz.models.quizz import QuizzBase
-
-from collections import OrderedDict
-from nva.psyquizz import Base
-from grokcore.component import global_utility
-from sqlalchemy import *
-from zope import schema
-from zope.interface import Interface, implementer
-from zope.location import Location
-from sqlalchemy.orm import relationship, backref
 
 
 class IQuizz2(Interface):
@@ -106,7 +103,7 @@ class IQuizz2(Interface):
         vocabulary=MoreToLessN,
         required=True,
         )
-    
+
     question14 = schema.Choice(
         title=u"14",
         description=u"Wenn Sie Ihre Tätigkeit insgesamt betrachten, inwieweit können Sie die Reihenfolge der Arbeitsschritte selbst bestimmen?",
@@ -198,7 +195,7 @@ class IQuizz2(Interface):
         required=True,
         )
 
-    
+
 IQuizz2.setTaggedValue(
     'averages', OrderedDict((
         (u'Vielseitiges Arbeiten', ('1', '2', '3')),

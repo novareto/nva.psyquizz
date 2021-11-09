@@ -2,15 +2,16 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
-import uvclight
-from cromlech.sqlalchemy import get_session
-from datetime import datetime, timedelta
-from nva.psyquizz import models
-from nva.psyquizz.models.interfaces import IQuizz
+from datetime import datetime
 from sqlalchemy import func
-from uvclight.auth import require
 from zope import interface
 from zope.component import getUtilitiesFor
+
+import uvclight
+from cromlech.sqlalchemy import get_session
+from uvclight.auth import require
+from nva.psyquizz import models
+from nva.psyquizz.models.interfaces import IQuizz
 
 
 class Statistik(uvclight.Page):
@@ -73,7 +74,7 @@ class Statistik(uvclight.Page):
             future=future)
 
     def getAnswers(self):
-        ret = [] 
+        ret = []
         for quizz in getUtilitiesFor(IQuizz):
             name, klass = quizz
             ret.append({

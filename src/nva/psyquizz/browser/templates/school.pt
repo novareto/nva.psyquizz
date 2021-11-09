@@ -1,9 +1,0 @@
-<h1> Hilfe zur Gefährdungsbeurteilung psychischer Belastung in Betrieben</h1>
-<h2>Unternehmen</h2>
-<p> Folgende Unternehmen haben sich am Portal angemeldet </p>
-<ul>
-  <li tal:repeat="company list(context)">
-    <a tal:attributes="href '%s/%s/' % (request.script_name, company.name)"
-       tal:content="company.name" />
-  </li>
-</ul>

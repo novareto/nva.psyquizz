@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
-import datetime
-from . import deferred_vocabularies, vocabularies
-from ..extra_questions import generate_extra_questions
-from grokcore.component import provider
-from nva.psyquizz.i18n import _
-from uvc.content.interfaces import IContent
 from zope import schema
 from zope.interface import invariant, Invalid, Interface
 from zope.location import ILocation
+from zope.schema import ValidationError
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
+from grokcore.component import provider
+from uvc.content.interfaces import IContent
 from uvc.validation.validation import validateZahl
 from uvclight.form_components.fields import OrderedChoices
-from zope.schema import ValidationError
-from nva.psyquizz.models.quizz.corona_set import ICoronaQuestions, IHomeOfficeQuestions
+from nva.psyquizz.i18n import _
+from nva.psyquizz.models.quizz.corona_set import (
+    ICoronaQuestions, IHomeOfficeQuestions)
+from . import deferred_vocabularies
+from ..extra_questions import generate_extra_questions
 
 
 class VKontaktdaten(ValidationError):
@@ -25,7 +25,6 @@ def v_about(value):
         if '<span> A n s p r e c h p a r t n e r   &nbsp;    und   &nbsp;     K o n t a k t d a t e n </span>' in value:
             raise VKontaktdaten(value)
     return True
-
 
 
 ABOUT_TEXT = u"""
