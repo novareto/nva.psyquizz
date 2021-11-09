@@ -31,7 +31,7 @@ def v_about(value):
 ABOUT_TEXT = u"""
 <p>Liebe Kolleginnen und Kollegen,</p>
 <p> herzlich Willkommen zu unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“! </p>
-<p>Bitte beantworteten Sie alle Fragen des Fragebogens.
+<p>Bitte beantworten Sie alle Fragen des Fragebogens.
 Beim Beantworten der Fragen kann es hilfreich sein, nicht zu lange über die einzelnen Fragen
 nachzudenken. Meist ist der erste Eindruck auch der treffendste.</p>
 <p>Wir möchten nochmal darauf hinweisen, dass Ihre Angaben absolut vertraulich behandelt werden. Ein Rückschluss auf einzelne Personen wird nicht möglich sein.</p>
