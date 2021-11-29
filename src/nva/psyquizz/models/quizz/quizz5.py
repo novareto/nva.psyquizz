@@ -134,7 +134,7 @@ class IScale6(Interface):
 
     question16 = schema.Choice(
         title=u"16",
-        description=u"Man weiß genau, wie weit die eigenen Entscheidungsbefugnisse bei der Arbeit reichen.",
+        description=u"Man weiß nicht genau, wie weit die eigenen Entscheidungsbefugnisse bei der Arbeit reichen.",
         vocabulary=FBGU,
         required=True,
     )
@@ -350,7 +350,7 @@ class IScale15(Interface):
 
     question43 = schema.Choice(
         title=u"43",
-        description=u"Man steht in direktem persönlichen Kontakt mit Kollegen.",
+        description=u"Man steht nicht im direktem persönlichen Kontakt mit Kollegen und Kolleginnen.",
         vocabulary=FBGU,
         required=True,
     )
@@ -364,7 +364,7 @@ class IScale15(Interface):
 
     question45 = schema.Choice(
         title=u"45",
-        description=u"Man kann sich bei meiner Arbeit nicht mit seinen Kollegen unterhalten.",
+        description=u"Man kann sich bei meiner Arbeit nicht mit seinen Kollegen und Kolleginnen unterhalten.",
         vocabulary=FBGU,
         required=True,
     )
@@ -374,21 +374,21 @@ class IScale16(Interface):
 
     question46 = schema.Choice(
         title=u"46",
-        description=u"Wenn es Probleme bei der Arbeit gibt, kann man sich auf die Unterstützung der Kollegen verlassen.",
+        description=u"Wenn es Probleme bei der Arbeit gibt, kann man sich auf die Unterstützung der Kollegen und Kolleginnen verlassen.",
         vocabulary=FBGU,
         required=True,
     )
 
     question47 = schema.Choice(
         title=u"47",
-        description=u"Man kann mit seinen Kollegen offen über alles reden.",
+        description=u"Man kann mit seinen Kollegen und Kolleginnen offen über alles reden.",
         vocabulary=FBGU,
         required=True,
     )
 
     question48 = schema.Choice(
         title=u"48",
-        description=u"Meine Kollegen sind immer bereit, sich meine Arbeitsprobleme anzuhören.",
+        description=u"Meine Kollegen und Kolleginnen sind immer bereit, sich meine Arbeitsprobleme anzuhören.",
         vocabulary=FBGU,
         required=True,
     )
@@ -398,7 +398,7 @@ class IScale17(Interface):
 
     question49 = schema.Choice(
         title=u"49",
-        description=u"Es gibt häufig Spannungen unter Kollegen.",
+        description=u"Es gibt häufig Spannungen unter Kollegen/Kolleginnen.",
         vocabulary=FBGU,
         required=True,
     )
@@ -422,21 +422,21 @@ class IScale18(Interface):
 
     question52 = schema.Choice(
         title=u"52",
-        description=u"Mein Vorgesetzter ist bereit, sich meine Probleme anzuhören.",
+        description=u"Mein Führungskraft ist bereit, sich meine Probleme anzuhören.",
         vocabulary=FBGU,
         required=True,
     )
 
     question53 = schema.Choice(
         title=u"53",
-        description=u"Man kann sich auf die Unterstützung der Vorgesetzten verlassen, wenn es Probleme bei der Arbeit gibt.",
+        description=u"Man kann sich auf die Unterstützung der Führungskräfte verlassen, wenn es Probleme bei der Arbeit gibt.",
         vocabulary=FBGU,
         required=True,
     )
 
     question54 = schema.Choice(
         title=u"54",
-        description=u"Mein Vorgesetzter unterstützt mich, so dass ich meine Aufgaben leichter erfüllen kann.",
+        description=u"Meine Führungskraft unterstützt mich, so dass ich meine Aufgaben leichter erfüllen kann.",
         vocabulary=FBGU,
         required=True,
     )
@@ -446,7 +446,7 @@ class IScale19(Interface):
 
     question55 = schema.Choice(
         title=u"55",
-        description=u"Man bekommt von Vorgesetzten und Kollegen Rückmeldungen über die Qualität der Arbeit.",
+        description=u"Man bekommt von Führungskräften, Kollegen und Kolleginnen Rückmeldungen über die Qualität der Arbeit.",
         vocabulary=FBGU,
         required=True,
     )
@@ -460,48 +460,48 @@ class IScale19(Interface):
 
     question57 = schema.Choice(
         title=u"57",
-        description=u"Mein Vorgesetzter gibt mir nützliches Feedback über meine Arbeitsleistung.",
+        description=u"Meine Führungskraft gibt mir nützliches Feedback über meine Arbeitsleistung.",
         vocabulary=FBGU,
         required=True,
     )
 
 
-class IScale20(Interface):
-
-    question58 = schema.Choice(
-        title=u"58",
-        description=u"Mein Vorgesetzter kritisiert, schikaniert oder stellt seine Mitarbeiter häufig bloß.",
-        vocabulary=FBGU,
-        required=True,
-    )
-
-    question59 = schema.Choice(
-        title=u"59",
-        description=u"Mein Vorgesetzter missbraucht die ihm durch die Führungsposition übertragene Macht.",
-        vocabulary=FBGU,
-        required=True,
-    )
-
-    question60 = schema.Choice(
-        title=u"60",
-        description=u"Das Führungsverhalten meines Vorgesetzten ist geprägt von Demütigung und Bestrafung gegenüber seinen Mitarbeitern.",
-        vocabulary=FBGU,
-        required=True,
-    )
-
-    question61 = schema.Choice(
-        title=u"61",
-        description=u"Der Erfolg meines Vorgesetzten ist mit unmoralischen und negativem Verhalten gegenüber anderen Personen verbunden.",
-        vocabulary=FBGU,
-        required=True,
-    )
-
-
-    question62 = schema.Choice(
-        title=u"62",
-        description=u"Mein Vorgesetzter beleidigt, bedroht oder greift seine Mitarbeiter tätlich an.",
-        vocabulary=FBGU,
-        required=True,
+#class IScale20(Interface):
+#
+#    question58 = schema.Choice(
+#        title=u"58",
+#        description=u"Mein Vorgesetzter kritisiert, schikaniert oder stellt seine Mitarbeiter häufig bloß.",
+#        vocabulary=FBGU,
+#        required=True,
+#    )
+#
+#    question59 = schema.Choice(
+#        title=u"59",
+#        description=u"Mein Vorgesetzter missbraucht die ihm durch die Führungsposition übertragene Macht.",
+#        vocabulary=FBGU,
+#        required=True,
+#    )
+#
+#    question60 = schema.Choice(
+#        title=u"60",
+#        description=u"Das Führungsverhalten meines Vorgesetzten ist geprägt von Demütigung und Bestrafung gegenüber seinen Mitarbeitern.",
+#        vocabulary=FBGU,
+#        required=True,
+#    )
+#
+#    question61 = schema.Choice(
+#       title=u"61",
+#        description=u"Der Erfolg meines Vorgesetzten ist mit unmoralischen und negativem Verhalten gegenüber anderen Personen verbunden.",
+#        vocabulary=FBGU,
+#        required=True,
+#   )
+#
+#
+#   question62 = schema.Choice(
+#      title=u"62",
+#        description=u"Mein Vorgesetzter beleidigt, bedroht oder greift seine Mitarbeiter tätlich an.",
+#        vocabulary=FBGU,
+#        required=True,
     )
 
 class IQuizz5(IQuizz, IScale1, IScale2, IScale3, IScale4, IScale5, IScale6, IScale7,
