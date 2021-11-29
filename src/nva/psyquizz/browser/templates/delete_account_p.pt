@@ -1,0 +1,7 @@
+<h1> Account Löschen </h1>
+
+<p class="lead"> Hier haben Sie die Möglichkeit Ihren Account vollumfänglich zu löschen.
+  Bitten denken Sie daran, dass sämtliche von Ihnen generierten Umfragen und deren Resultate damit unwiederbringlich gelöscht werden.
+   </p>
+
+<a href="" tal:attributes="href view.application_url() + '/delete'"> Account löschen </a>

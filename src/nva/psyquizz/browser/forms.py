@@ -450,10 +450,14 @@ class CreateAccount(Form):
 
         # pop the captcha and verif, it's not a needed data
         data.pop('verif')
+        if 'captcha' in data:
+            data.pop('captcha')
         #data.pop('captcha')
 
         # hashing the password
         salt = uuid.uuid4().hex
+        if 'ack_form' in data:
+            data.pop('ack_form')
         password = data.pop('password').encode('utf-8')
         data['password'] = hashlib.sha512(password + salt).hexdigest()
         data['salt'] = salt

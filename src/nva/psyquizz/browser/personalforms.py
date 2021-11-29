@@ -23,6 +23,16 @@ class MyPrefs(ComposedPage):
     uvclight.auth.require('manage.company')
 
 
+@menuentry(IDocumentActions, order=1)
+class DeleteAccountP(uvclight.Page):
+    uvclight.provides(ITab)
+    context(MyPrefs)
+    name('deleteaccountp')
+    require('manage.company')
+    template = uvclight.get_template('delete_account_p.pt', __file__)
+    title = u"Benutzer Account löschen"
+
+
 @menuentry(IDocumentActions, order=20)
 class EditAccount(EditForm):
     uvclight.provides(ITab)

@@ -12,7 +12,7 @@ ENCODING = 'utf-8'
 
 class SecureMailer:
 
-    def __init__(self, host, from_, user=None, pwd=None, port="25"):
+    def __init__(self, host, from_, user=None, pwd=None, port="2525"):
         self.mailer = None
         self.host = host
         self.port = port
@@ -50,8 +50,7 @@ class SecureMailer:
         msg['reply-to'] = reply or self.emitter
         msg.add_header('return-path', callback or reply or self.emitter)
         msg.set_charset(ENCODING)
-
-        part1 = MIMEText(text, 'plain')
+        part1 = MIMEText(text.encode('utf-8'), 'plain')
         part1.set_charset(ENCODING)
         part2 = MIMEText(html, 'html')
         part2.set_charset(ENCODING)

@@ -9,7 +9,8 @@ from BeautifulSoup import BeautifulSoup
 from pyPdf import PdfFileWriter, PdfFileReader
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate
+from reportlab.platypus import Spacer, PageBreak, Paragraph, SimpleDocTemplate
+from reportlab.lib.units import cm
 
 from zope import interface
 from zope.component import getUtility
@@ -75,7 +76,7 @@ class DownloadCourse(uvclight.View):
         style = getSampleStyleSheet()
         nm = style['Normal']
         nm.leading = 14
-        story = []
+        story = [Spacer(0, 2*cm)]
         na = self.context.about.replace('\r\n', '<br/>').replace('</p>', '</p><br/>')
         bs = BeautifulSoup(na)
         clean(bs, ['style', 'face'])
@@ -121,6 +122,12 @@ class DownloadCourse(uvclight.View):
         b1_pdf = PdfFileReader(base1)
         wm = b1_pdf.getPage(0)
         p1 = PdfFileReader(self.generate_page_one())
+
+        for num in range(p1.numPages-1):
+            page1 = p1.getPage(num + 1)
+            page1.mergePage(wm)
+            output.addPage(page1)
+
         page1 = p1.getPage(0)
         page1.mergePage(wm)
         output.addPage(page1)

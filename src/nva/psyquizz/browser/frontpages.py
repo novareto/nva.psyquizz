@@ -24,7 +24,7 @@ from ..i18n import _
 from ..interfaces import ICompanyRequest
 from ..models import Account, Company, Course, ClassSession
 from ..models import IQuizz, ICriterias
-from ..models.deferred import quizz_choice
+from ..models.deferred import quizz_choice_full
 
 
 
@@ -71,7 +71,7 @@ class AccountHomepage(Page):
         return ret
 
     def quizz_name(self, course):
-        voc = quizz_choice(course)
+        voc = quizz_choice_full(course)
         try:
             return voc.getTermByToken(course.quizz_type).title
         except LookupError:
