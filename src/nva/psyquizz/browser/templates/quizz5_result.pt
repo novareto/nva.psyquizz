@@ -23,6 +23,17 @@
 .bar .mask {
   background-color: black;
   opacity: 0.2;
+  }
+
+.chart {
+  height: 100px;
+}
+
+.highcharts-figure,
+.highcharts-data-table table {
+    min-width: 320px;
+    max-width: 800px;
+    margin: 1em auto;
 }
 </style>
 
@@ -71,16 +82,101 @@
     <input id="form-action-filter" type="submit" value="filter" />
   </form>
 
-  <div id="percentage-averages">
-    <div tal:repeat="scale view.stats.statistics['global.averages']">
-      <h4>${scale.title} (${scale.average})</h4>
-      <div class="bar"
-           style="background: linear-gradient(90deg, rgba(255,0,0,1) 0%, rgba(255,228,0,1) 50%, rgba(0,255,22,1) 100%);">
-        <div style="border-right: 2px solid white;
-                    width: ${scale.average * 20}%">
-        </div>
-        <div class="mask" style="width: ${100 - (scale.average * 20)}%" />
-      </div>
+  <h1> TEST </h1>
+  <span tal:content="view.stats.statistics['global.averages']"/>
+
+
+  <script>
+    Highcharts.setOptions({
+        chart: {
+            inverted: true,
+            marginLeft: 135,
+            type: 'bullet'
+        },
+        title: {
+            text: null
+        },
+        legend: {
+            enabled: false
+        },
+        yAxis: {
+            gridLineWidth: 0
+        },
+        plotOptions: {
+            series: {
+                borderWidth: 0,
+                color: '#000',
+                targetOptions: {
+                    width: 20,
+                    height: 20,
+                    borderRadius: 20,
+                }
+            }
+        },
+        credits: {
+            enabled: false
+        },
+        exporting: {
+            enabled: false
+        },
+        tooltip: {
+            pointFormat: '<b>{point.y}</b> (with target at {point.target})'
+        }
+        });
+  </script>
+
+  <div tal:repeat="scale view.stats.statistics['global.averages']">
+    <span tal:define="color view.colors[scale.title]"> 
+       ${color} ${color[0][0]} - ${color[1][0]} - ${color[1][1]}
+    </span>
     </div>
-  </div>
+  <tal:containers
+      repeat="idx range(0, len(view.stats.statistics['global.averages']))">
+    <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
+  </tal:containers>
+
+  <script>
+    <tal:charts repeat="scale view.stats.statistics['global.averages']">
+      <tal:chart define="color view.colors[scale.title]">
+    var myChart = Highcharts.chart('container${repeat["scale"].index}', {
+        title: null,
+        xAxis: {
+            categories: [
+                '<span class="hc-cat-title">${scale.title}</span>'
+            ]
+        },
+        yAxis: {
+            max: 5,
+            gridLineWidth: 0,
+            tickInterval: 1,
+            labels: {
+                enabled: true,
+                step: 1,
+            },
+            plotBands: [
+            {
+                from: 0,
+                to: ${color[0][0]},
+                color: '${color[0][1]}'
+            }, {
+                from: ${color[0][0]},
+                to: ${color[1][0]},
+                color: '${color[1][1]}'
+            }, {
+                from: ${color[1][0]},
+                to: 5,
+                color: '${color[2][1]}'
+            }],
+            title: null
+        },
+        series: [{
+            data: [{
+                target: ${scale.average}
+            }]
+        }]
+    });
+      </tal:chart>
+    </tal:charts>
+  </script>
+
 </div>
