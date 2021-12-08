@@ -6,7 +6,7 @@ from sqlalchemy import *
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from uvclight.directives import traversable
-from zope.interface import Interface, implementer, directlyProvides
+from zope.interface import implementer, directlyProvides
 from zope.location import Location
 from .interfaces import ICompany, ICriterias
 from uvc.content.interfaces import IDescriptiveSchema
@@ -27,7 +27,7 @@ class Company(Base, Location):
     exp_db = Column('exp_db', String)
     type = Column('type', String)
     account_id = Column(String, ForeignKey('accounts.email'))
-    
+
     students = relationship(
         "Student", backref="company", cascade="save-update, delete")
 

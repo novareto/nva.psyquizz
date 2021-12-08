@@ -7,26 +7,21 @@ import uvclight
 
 from collections import OrderedDict, namedtuple
 from cromlech.browser import IView
-from grokcore.component import name, provider
+from grokcore.component import name
 from nva.psyquizz import hs
-from nva.psyquizz.models import IQuizz, IClassSession, ICourse, ICompany
+from nva.psyquizz.models import IQuizz, IClassSession, ICourse
 from nva.psyquizz.models.quizz.quizz2 import IQuizz2
 from nva.psyquizz.models.quizz.quizz1 import Quizz1
 from nva.psyquizz.models.quizz.quizz3 import IQuizz3
+from nva.psyquizz.models.quizz.quizz5 import IQuizz5
 from uvclight.auth import require
 from zope.component import getUtility, getMultiAdapter
-from zope.interface import Interface
 from zope.schema import getFieldsInOrder
-from zope.schema.interfaces import IContextSourceBinder
-from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from zope.location import LocationProxy
 
 from ..interfaces import ICompanyRequest
 from ..stats import compute, groups_scaling
 from ..extra_questions import parse_extra_question_syntax
-from zope.schema import Choice, Set
-from dolmen.forms.base import FAILURE, SUCCESS
-from nva.psyquizz.i18n import MessageFactory as _
 
 
 def get_filters(request):
@@ -51,6 +46,7 @@ class CourseStatistics(object):
 
     def __init__(self, quizz, course):
         self.quizz = quizz
+        import pdb; pdb.set_trace()
         self.averages = quizz.__schema__.queryTaggedValue('averages') or {}
         self.sums = quizz.__schema__.queryTaggedValue('sums') or {}
         self.course = course
@@ -91,7 +87,7 @@ class CourseStatistics(object):
 
         self.extra_questions_order = OrderedDict()
         for iface in self.quizz.additional_extra_fields(self.course):
-            for name, field in getFieldsInOrder(iface):
+            for _, field in getFieldsInOrder(iface):
                  self.extra_questions_order[field.description] = [
                      t.title for t in field.vocabulary
                  ]
@@ -130,7 +126,7 @@ class Quizz2Charts(uvclight.View):
     name('charts')
     uvclight.context(IQuizz2)
 
-    template = uvclight.get_template('cr.pt', __file__)
+    template = uvclight.get_template('chart_results.pt', __file__)
     general_stats = None
 
     def jsonify(self, da):
@@ -140,6 +136,14 @@ class Quizz2Charts(uvclight.View):
         hs.need()
         self.stats = stats
         self.general_stats = general_stats
+
+
+class Quizz5Charts(Quizz2Charts):
+    uvclight.context(IQuizz5)
+    template = uvclight.get_template('quizz5_result.pt', __file__)
+
+    def update(self, stats, general_stats=None):
+        super(Quizz5Charts, self).update(stats, general_stats)
 
 
 class Quizz3Charts(Quizz2Charts):
@@ -222,7 +226,7 @@ class Quizz1Charts(uvclight.View):
     name('charts')
     uvclight.context(Quizz1)
 
-    template = uvclight.get_template('cr1.pt', __file__)
+    template = uvclight.get_template('quizz_results.pt', __file__)
 
     def extra_title(self):
         title = u"Zusatzfragen "
@@ -270,7 +274,7 @@ class Quizz1Charts(uvclight.View):
         self.series = json.dumps([good, bad])
 
 
-class SR(uvclight.Page):
+class SessionResults(uvclight.Page):
     require('manage.company')
     uvclight.context(IClassSession)
     uvclight.layer(ICompanyRequest)
@@ -304,12 +308,12 @@ class SR(uvclight.Page):
         return result
 
 
-class CR(uvclight.Page):
+class CourseResults(uvclight.Page):
     require('manage.company')
     uvclight.context(ICourse)
     uvclight.layer(ICompanyRequest)
 
-    template = uvclight.get_template('cr.pt', __file__)
+    template = uvclight.get_template('chart_results.pt', __file__)
     general_stats = None
 
     def jsonify(self, da):

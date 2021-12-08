@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from nva.psyquizz import Base
-from datetime import timedelta
 from sqlalchemy import *
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection

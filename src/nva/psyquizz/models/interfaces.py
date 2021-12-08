@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
-import datetime
-from . import deferred_vocabularies, vocabularies
-from ..extra_questions import generate_extra_questions
-from grokcore.component import provider
-from nva.psyquizz.i18n import _
-from uvc.content.interfaces import IContent
 from zope import schema
 from zope.interface import invariant, Invalid, Interface
 from zope.location import ILocation
+from zope.schema import ValidationError
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
+from grokcore.component import provider
+from uvc.content.interfaces import IContent
 from uvc.validation.validation import validateZahl
 from uvclight.form_components.fields import OrderedChoices
-from zope.schema import ValidationError
-from nva.psyquizz.models.quizz.corona_set import ICoronaQuestions, IHomeOfficeQuestions
+from nva.psyquizz.i18n import _
+from nva.psyquizz.models.quizz.corona_set import (
+    ICoronaQuestions, IHomeOfficeQuestions)
+from . import deferred_vocabularies
+from ..extra_questions import generate_extra_questions
 
 
 class VKontaktdaten(ValidationError):
@@ -27,11 +27,10 @@ def v_about(value):
     return True
 
 
-
 ABOUT_TEXT = u"""
 <p>Liebe Kolleginnen und Kollegen,</p>
 <p> herzlich Willkommen zu unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“! </p>
-<p>Bitte beantworteten Sie alle Fragen des Fragebogens.
+<p>Bitte beantworten Sie alle Fragen des Fragebogens.
 Beim Beantworten der Fragen kann es hilfreich sein, nicht zu lange über die einzelnen Fragen
 nachzudenken. Meist ist der erste Eindruck auch der treffendste.</p>
 <p>Wir möchten nochmal darauf hinweisen, dass Ihre Angaben absolut vertraulich behandelt werden. Ein Rückschluss auf einzelne Personen wird nicht möglich sein.</p>

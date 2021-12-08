@@ -1,3 +1,0 @@
-<div class="alert alert-info" tal:condition="viewlet.expiration">
-  <p>Session expiration : <span tal:content="viewlet.expiration" /> sec.</p>
-</div>

@@ -39,6 +39,9 @@ Auswertung erzeugt: %s
 
 class XSLX(object):
 
+    enable_chart1 = True
+    enable_verteilung = True
+
     def generateXLSX(self, workbook):
         #filepath = os.path.join(folder, filename)
         #workbook = xlsxwriter.Workbook(filepath)
@@ -102,66 +105,69 @@ class XSLX(object):
             worksheet.write(i, 0, x.title)
             worksheet.write(i, 1, x.average, nformat)
 
-        chart1 = workbook.add_chart({'type': 'radar'})
-        chart1.add_series({
-            'name':       'Mittelwerte',
-            'categories': '=Mittelwerte!$A$1:$A$11',
-            'values':     '=Mittelwerte!$B$1:$B$11',
-            'min': 1,
+        if self.enable_chart1:
+            chart1 = workbook.add_chart({'type': 'radar'})
+            chart1.add_series({
+                'name':       'Mittelwerte',
+                'categories': '=Mittelwerte!$A$1:$A$11',
+                'values':     '=Mittelwerte!$B$1:$B$11',
+                'min': 1,
             })
 
-        chart1.set_title({'name': 'Durchschnitt'})
-        chart1.set_x_axis({'name': 'Test number', "min": 1})
-        chart1.set_y_axis({'name': 'Sample length (mm)', "min": 1})
-        chart1.set_style(11)
+            chart1.set_title({'name': 'Durchschnitt'})
+            chart1.set_x_axis({'name': 'Test number', "min": 1})
+            chart1.set_y_axis({'name': 'Sample length (mm)', "min": 1})
+            chart1.set_style(11)
 
-        # Insert the chart into the worksheet (with an offset).
-        worksheet.insert_chart('A13', chart1, {'x_offset': 25, 'y_offset': 10})
+            # Insert the chart into the worksheet (with an offset).
+            worksheet.insert_chart(
+                'A13', chart1, {'x_offset': 25, 'y_offset': 10})
 
-        worksheet = workbook.add_worksheet('Verteilung')
+        if self.enable_verteilung:
+            worksheet = workbook.add_worksheet('Verteilung')
 
-        data = json.loads(self.series)
-        for y, x in enumerate(data):
-            name = x['name']
-            r = 1
-            worksheet.write(0, y, name)
-            for i, z in enumerate(x['data']):
-                worksheet.write((r+1+i), y, z, nformat)
+            data = json.loads(self.series)
+            for y, x in enumerate(data):
+                name = x['name']
+                r = 1
+                worksheet.write(0, y, name)
+                for i, z in enumerate(x['data']):
+                    worksheet.write((r+1+i), y, z, nformat)
 
-        for idx, titel in enumerate(self.xAxis):
-            worksheet.write((idx + 2), 3, unicode(titel, 'latin1'))
+            for idx, titel in enumerate(self.xAxis):
+                worksheet.write((idx + 2), 3, unicode(titel, 'latin1'))
 
-        #worksheet = workbook.add_worksheet('Verteilung')
+            #worksheet = workbook.add_worksheet('Verteilung')
 
-        chart3 = workbook.add_chart(
-            {'type': 'bar', 'subtype': 'percent_stacked'})
+            chart3 = workbook.add_chart(
+                {'type': 'bar', 'subtype': 'percent_stacked'})
 
-        chart3.set_title({'name': 'Verteilung'})
+            chart3.set_title({'name': 'Verteilung'})
 
-        # Configure the first series.
-        chart3.add_series({
-            'name':       '=Verteilung!$A$1',
-            'categories': '=Verteilung!$D$3:$D$13',
-            'values':     '=Verteilung!$A$3:$A$13',
-            'fill':   {'color': data[0]['color']},
-        })
+            # Configure the first series.
+            chart3.add_series({
+                'name':       '=Verteilung!$A$1',
+                'categories': '=Verteilung!$D$3:$D$13',
+                'values':     '=Verteilung!$A$3:$A$13',
+                'fill':   {'color': data[0]['color']},
+            })
 
-        chart3.add_series({
-            'name':       '=Verteilung!$B$1',
-            'categories': '=Verteilung!$D$3:$D$13',
-            'values':     '=Verteilung!$B$3:$B$13',
-            'fill':   {'color': data[1]['color']},
-        })
+            chart3.add_series({
+                'name':       '=Verteilung!$B$1',
+                'categories': '=Verteilung!$D$3:$D$13',
+                'values':     '=Verteilung!$B$3:$B$13',
+                'fill':   {'color': data[1]['color']},
+            })
 
-        chart3.add_series({
-            'name':       '=Verteilung!$C$1',
-            'categories': '=Verteilung!$D$3:$D$13',
-            'values':     '=Verteilung!$C$3:$C$13',
-            'fill':   {'color': data[2]['color']},
-        })
+            chart3.add_series({
+                'name':       '=Verteilung!$C$1',
+                'categories': '=Verteilung!$D$3:$D$13',
+                'values':     '=Verteilung!$C$3:$C$13',
+                'fill':   {'color': data[2]['color']},
+            })
 
-        chart3.set_y_axis({'reverse': True})
-        worksheet.insert_chart("A20", chart3, {'x_offset': 15, 'y_offset': 10})
+            chart3.set_y_axis({'reverse': True})
+            worksheet.insert_chart("A20", chart3, {'x_offset': 15, 'y_offset': 10})
 
         worksheet = workbook.add_worksheet('Mittelwerte pro Frage')
         offset = 1
