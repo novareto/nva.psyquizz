@@ -469,43 +469,78 @@ class IScale19(Interface):
     )
 
 
-#class IScale20(Interface):
-#
-#    question58 = schema.Choice(
-#        title=u"58",
-#        description=u"Mein Vorgesetzter kritisiert, schikaniert oder stellt seine Mitarbeiter häufig bloß.",
-#        vocabulary=FBGU,
-#        required=True,
-#    )
-#
-#    question59 = schema.Choice(
-#        title=u"59",
-#        description=u"Mein Vorgesetzter missbraucht die ihm durch die Führungsposition übertragene Macht.",
-#        vocabulary=FBGU,
-#        required=True,
-#    )
-#
-#    question60 = schema.Choice(
-#        title=u"60",
-#        description=u"Das Führungsverhalten meines Vorgesetzten ist geprägt von Demütigung und Bestrafung gegenüber seinen Mitarbeitern.",
-#        vocabulary=FBGU,
-#        required=True,
-#    )
-#
-#    question61 = schema.Choice(
-#       title=u"61",
-#        description=u"Der Erfolg meines Vorgesetzten ist mit unmoralischen und negativem Verhalten gegenüber anderen Personen verbunden.",
-#        vocabulary=FBGU,
-#        required=True,
-#   )
-#
-#
-#   question62 = schema.Choice(
-#      title=u"62",
-#        description=u"Mein Vorgesetzter beleidigt, bedroht oder greift seine Mitarbeiter tätlich an.",
-#        vocabulary=FBGU,
-#        required=True,
+class IScale20(Interface):
+
+    question58 = schema.Choice(
+        title=u"58",
+        description=u"Lärm",
+        vocabulary=FBGU,
+        required=True,
     )
+
+    question59 = schema.Choice(
+        title=u"59",
+        description=u"Hitze",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question60 = schema.Choice(
+        title=u"60",
+        description=u"Ungünstige Beleuchtung/Blendung",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question61 = schema.Choice(
+        title=u"61",
+        description=u"Gefahrenstoffe",
+        vocabulary=FBGU,
+        required=True,
+   )
+
+    question62 = schema.Choice(
+        title=u"62",
+        description=u"Räumliche Enge",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question63 = schema.Choice(
+        title=u"63",
+        description=u"Ungünstige ergonomische Gestaltung",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question64 = schema.Choice(
+        title=u"64",
+        description=u"Ununterbrochene gleiche Bewegung",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question65 = schema.Choice(
+        title=u"65",
+        description=u"Unzureichende Gestaltung von Signalen und Hinweisen",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question66 = schema.Choice(
+        title=u"66",
+        description=u"Schwere körperliche Arbeit",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question67 = schema.Choice(
+        title=u"67",
+        description=u"Fehlende oder ungünstig zu bedienende Arbeitsmitte",
+        vocabulary=FBGU,
+        required=True,
+    )
+
 
 class IQuizz5(IQuizz, IScale1, IScale2, IScale3, IScale4, IScale5, IScale6, IScale7,
         IScale8, IScale9, IScale10, IScale11, IScale12, IScale13, IScale14, IScale15,

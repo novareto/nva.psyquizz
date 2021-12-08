@@ -82,8 +82,6 @@
     <input id="form-action-filter" type="submit" value="filter" />
   </form>
 
-  <h1> TEST </h1>
-  <span tal:content="view.stats.statistics['global.averages']"/>
 
 
   <script>
@@ -125,11 +123,6 @@
         });
   </script>
 
-  <div tal:repeat="scale view.stats.statistics['global.averages']">
-    <span tal:define="color view.colors[scale.title]"> 
-       ${color} ${color[0][0]} - ${color[1][0]} - ${color[1][1]}
-    </span>
-    </div>
   <tal:containers
       repeat="idx range(0, len(view.stats.statistics['global.averages']))">
     <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
@@ -142,10 +135,11 @@
         title: null,
         xAxis: {
             categories: [
-                '<span class="hc-cat-title">${scale.title}</span>'
+                '<span style="font-size: large" class="hc-cat-title">${scale.title}</span>'
             ]
         },
         yAxis: {
+            min: 1,
             max: 5,
             gridLineWidth: 0,
             tickInterval: 1,
