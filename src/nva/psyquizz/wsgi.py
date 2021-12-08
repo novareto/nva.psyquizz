@@ -26,7 +26,7 @@ from .apps import company, anonymous, remote
 marker = object()
 Configuration = namedtuple(
     'Configuration',
-    ('title', 'session_key', 'engine', 'name', 'fs_store', 'layer', 'smtp_server')
+    ('title', 'session_key', 'engine', 'name', 'fs_store', 'layer', 'reg_layer', 'smtp_server')
 )
 
 
@@ -104,6 +104,12 @@ def routing(conf, files, **kwargs):
         layer_iface = eval_loader(layer)
     else:
         layer_iface = None
+    # Extract possible reg_layer
+    reg_layer = kwargs.get('reg_layer')
+    if layer is not None:
+        reg_layer_iface = eval_loader(reg_layer)
+    else:
+        reg_layer_iface = None
 
     title = kwargs.get('title', 'BG ETEM')
 
@@ -115,7 +121,7 @@ def routing(conf, files, **kwargs):
     # Applications configuration
     smtp = kwargs.get('smtp', '10.33.115.55')
     setup = Configuration(
-        title, session_key, engine, name, None, layer_iface, smtp)
+        title, session_key, engine, name, None, layer_iface, reg_layer_iface, smtp)
 
     # Router
     root = URLMap()
