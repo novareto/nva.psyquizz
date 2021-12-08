@@ -1173,18 +1173,23 @@ class Quizz5Wizard(AnswerQuizz):
     template = get_template('quizz5_wizard.pt', __file__)
 
     def get_scales(self):
-        scales = IQuizz5.getTaggedValue('scales')
+        scales = [] 
+        criteria_fields = Fields(
+            *self.quizz.criteria_fields(self.context.course))
+        if criteria_fields:
+            scales = scales + [{'fields': crieria_fields, 'label': 'Unternehmenskriterien'}]
+        scales += IQuizz5.getTaggedValue('scales')
         additional_questions = list(self.quizz.additional_extra_fields(
             self.context.course))
         extra_fields = list(self.quizz.extra_fields(self.context.course))
         if additional_questions:
             scales = scales + [
-                {'iface': iface, 'label': 'Additional questions'}
+                {'iface': iface, 'label': 'Zusatzfragen'}
                 for iface in additional_questions
             ]
         if extra_fields:
             scales = scales + [
-                {'fields': extra_fields, 'label': 'Additional questions'}
+                {'fields': extra_fields, 'label': 'Eigene Zusatzfragen'}
             ]
         return scales
 
@@ -1193,7 +1198,7 @@ class Quizz5Wizard(AnswerQuizz):
         widgets = []
         if 'fields' in scale:
             for field in scale['fields']:
-                name = "form.field.%s" % field.__name__
+                name = "form.field.%s" % getattr(field, '__name__', field.identifier)
                 widgets.append(self.fieldWidgets.get(name))
         else:
             for field, o in getFieldsInOrder(scale['iface']):

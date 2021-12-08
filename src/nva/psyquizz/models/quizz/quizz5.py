@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import os
+import csv
 from nva.psyquizz import Base
 from nva.psyquizz.models import FBGU, IQuizz
 from nva.psyquizz.models.quizz import QuizzBase
@@ -9,6 +11,7 @@ from sqlalchemy import Column, Integer, ForeignKey, String, DateTime, Text
 from grokcore.component import global_utility
 from zope.interface import Interface, implementer
 from zope import schema
+from zope.component.hooks import getSite
 from sqlalchemy.orm import relationship, backref
 
 
@@ -466,79 +469,141 @@ class IScale19(Interface):
     )
 
 
-#class IScale20(Interface):
-#
-#    question58 = schema.Choice(
-#        title=u"58",
-#        description=u"Mein Vorgesetzter kritisiert, schikaniert oder stellt seine Mitarbeiter häufig bloß.",
-#        vocabulary=FBGU,
-#        required=True,
-#    )
-#
-#    question59 = schema.Choice(
-#        title=u"59",
-#        description=u"Mein Vorgesetzter missbraucht die ihm durch die Führungsposition übertragene Macht.",
-#        vocabulary=FBGU,
-#        required=True,
-#    )
-#
-#    question60 = schema.Choice(
-#        title=u"60",
-#        description=u"Das Führungsverhalten meines Vorgesetzten ist geprägt von Demütigung und Bestrafung gegenüber seinen Mitarbeitern.",
-#        vocabulary=FBGU,
-#        required=True,
-#    )
-#
-#    question61 = schema.Choice(
-#       title=u"61",
-#        description=u"Der Erfolg meines Vorgesetzten ist mit unmoralischen und negativem Verhalten gegenüber anderen Personen verbunden.",
-#        vocabulary=FBGU,
-#        required=True,
-#   )
-#
-#
-#   question62 = schema.Choice(
-#      title=u"62",
-#        description=u"Mein Vorgesetzter beleidigt, bedroht oder greift seine Mitarbeiter tätlich an.",
-#        vocabulary=FBGU,
-#        required=True,
+class IScale20(Interface):
+
+    question58 = schema.Choice(
+        title=u"58",
+        description=u"Lärm",
+        vocabulary=FBGU,
+        required=True,
     )
+
+    question59 = schema.Choice(
+        title=u"59",
+        description=u"Hitze",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question60 = schema.Choice(
+        title=u"60",
+        description=u"Ungünstige Beleuchtung/Blendung",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question61 = schema.Choice(
+        title=u"61",
+        description=u"Gefahrenstoffe",
+        vocabulary=FBGU,
+        required=True,
+   )
+
+    question62 = schema.Choice(
+        title=u"62",
+        description=u"Räumliche Enge",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question63 = schema.Choice(
+        title=u"63",
+        description=u"Ungünstige ergonomische Gestaltung",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question64 = schema.Choice(
+        title=u"64",
+        description=u"Ununterbrochene gleiche Bewegung",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question65 = schema.Choice(
+        title=u"65",
+        description=u"Unzureichende Gestaltung von Signalen und Hinweisen",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question66 = schema.Choice(
+        title=u"66",
+        description=u"Schwere körperliche Arbeit",
+        vocabulary=FBGU,
+        required=True,
+    )
+
+    question67 = schema.Choice(
+        title=u"67",
+        description=u"Fehlende oder ungünstig zu bedienende Arbeitsmitte",
+        vocabulary=FBGU,
+        required=True,
+    )
+
 
 class IQuizz5(IQuizz, IScale1, IScale2, IScale3, IScale4, IScale5, IScale6, IScale7,
         IScale8, IScale9, IScale10, IScale11, IScale12, IScale13, IScale14, IScale15,
-        IScale16, IScale17, IScale18, IScale19, IScale20):
+        IScale16, IScale17, IScale18, IScale19):
     pass
 
 
 IQuizz5.setTaggedValue("scales", [
-    {'iface': IScale1, 'label': u"Vollständigkeit der Aufgabe"},
-    {'iface': IScale2, 'label': u"Handlungsspielraum"},
-    {'iface': IScale3, 'label': u"Variabilität"},
-    {'iface': IScale4, 'label': u"Informationsmängel"},
+    {
+        'iface': IScale1,
+        'label': u"Vollständigkeit der Aufgabe"
+    },
+    {
+        'iface': IScale2,
+        'label': u"Handlungsspielraum"
+    },
+    {
+        'iface': IScale3,
+        'label': u"Variabilität"
+    },
+    {
+        'iface': IScale4,
+        'label': u"Informationsmängel"
+    },
     {'iface': IScale5, 'label': u"Informationsüberflutung"},
-    {'iface': IScale6, 'label': u"Klarheit der Kompetenzen und Rollenanforderungen"},
+    {'iface': IScale6, 'label': u"Fehlende Rollenklarheit"},
     {'iface': IScale7, 'label': u"Qualifikationsmängel"},
     {'iface': IScale8, 'label': u"Qualifikationsunterforderung"},
-    {'iface': IScale9, 'label': u"Soziale und Emotionale Belastungen"},
-    {'iface': IScale10, 'label': u"Emotionsarbeit"},
-    {'iface': IScale11, 'label': u"Belastende Arbeitszeit"},
-    {'iface': IScale12, 'label': u"Entgrenzte Arbeitszeit"},
-    {'iface': IScale13, 'label': u"Arbeitsablauf - Zeitdruck/Intensität"},
-    {'iface': IScale14, 'label': u"Arbeitsablauf - Unterbrechungen/Multitasking"},
-    {'iface': IScale15, 'label': u"Kommunikation - Kooperation"},
-    {'iface': IScale16, 'label': u"Soziale Unterstützung"},
-    {'iface': IScale17, 'label': u"Soziale Stressoren"},
-    {'iface': IScale18, 'label': u"Soziale Unterstützung durch Vorgesetzte"},
+    {'iface': IScale9, 'label': u"Soziale Belastungen durch Kunden"},
+    {'iface': IScale10, 'label': u"Emotionale Dissonanz"},
+    {'iface': IScale11, 'label': u"belastende Arbeitszeit"},
+    {'iface': IScale12, 'label': u"entgrenzte Arbeitszeit"},
+    {'iface': IScale13, 'label': u"Arbeitsintensität"},
+    {'iface': IScale14, 'label': u"Unterbrechungen"},
+    {'iface': IScale15, 'label': u"fehlende Kommunikationsmöglichkeiten"},
+    {'iface': IScale16, 'label': u"Soziale Unterstützung durch Kollegen und Kolleginnen"},
+    {'iface': IScale17, 'label': u"Soziale Stressoren durch Kollegen und Kolleginnen"},
+    {'iface': IScale18, 'label': u"Soziale Unterstützung durch Führungskräfte"},
     {'iface': IScale19, 'label': u"Feedback und Anerkennung"},
-    {'iface': IScale20, 'label': u"Belastende Führung"},
+#    {'iface': IScale20, 'label': u"Belastende Führung"},
 ])
 
 
 IQuizz5.setTaggedValue("averages", OrderedDict((
     (u'Vollständigkeit der Aufgabe', [x[1].title for x in schema.getFieldsInOrder(IScale1)]),
     (u'Handlungsspielraum', [x[1].title for x in schema.getFieldsInOrder(IScale2)]),
-    (u'Some random name', [x[1].title for x in schema.getFieldsInOrder(IScale3)]),
-    (u'Other randomish name', [x[1].title for x in schema.getFieldsInOrder(IScale4)])
+    (u'Variabilität', [x[1].title for x in schema.getFieldsInOrder(IScale3)]),
+    (u'Informationsmängel', [x[1].title for x in schema.getFieldsInOrder(IScale4)]),
+    (u'Informationsüberflutung', [x[1].title for x in schema.getFieldsInOrder(IScale5)]),
+    (u'Fehlende Rollenklarheit', [x[1].title for x in schema.getFieldsInOrder(IScale6)]),
+    (u'Qualifikationsmängel', [x[1].title for x in schema.getFieldsInOrder(IScale7)]),
+    (u'Qualifikationsunterforderung', [x[1].title for x in schema.getFieldsInOrder(IScale8)]),
+    (u'Soziale Belastungen durch Kunden', [x[1].title for x in schema.getFieldsInOrder(IScale9)]),
+    (u'Emotionale Dissonanz', [x[1].title for x in schema.getFieldsInOrder(IScale10)]),
+    (u'belastende Arbeitszeit', [x[1].title for x in schema.getFieldsInOrder(IScale11)]),
+    (u'entgrenzte Arbeitszeiten', [x[1].title for x in schema.getFieldsInOrder(IScale12)]),
+    (u'Arbeitsintensität', [x[1].title for x in schema.getFieldsInOrder(IScale13)]),
+    (u'Unterbrechungen', [x[1].title for x in schema.getFieldsInOrder(IScale14)]),
+    (u'fehlende Kommunikationsmöglichkeiten', [x[1].title for x in schema.getFieldsInOrder(IScale15)]),
+    (u'Soziale Unterstützung durch Kollegen und Kolleginnen', [x[1].title for x in schema.getFieldsInOrder(IScale16)]),
+    (u'Soziale Stressoren durch Kollegen und Kolleginnen', [x[1].title for x in schema.getFieldsInOrder(IScale17)]),
+    (u'Soziale Unterstützung durch Führungskräfte', [x[1].title for x in schema.getFieldsInOrder(IScale18)]),
+    (u'Feedback und Anerkennung', [x[1].title for x in schema.getFieldsInOrder(IScale19)]),
     )))
 
 
@@ -646,6 +711,40 @@ class Quizz5(QuizzBase, Base):
     question72 = Column("question72", Integer)
 
     extra_questions = Column("extra_questions", Text)
+
+    def get_boundaries(self):
+        chart_boundaries = IQuizz5.queryTaggedValue("chart_boundaries")
+        if chart_boundaries is not None:
+            return chart_boundaries
+        resources = getSite().configuration.resources
+        test = resources.get('test.csv')
+        with open(test, 'r') as fd:
+            def as_float(v):
+                return float(v.replace(',', '.'))
+            data = csv.reader(fd)
+            next(data)
+            boundaries = OrderedDict()
+            for entry in data:
+                idx, title, red, yellow, green, inverted = entry
+                if red.startswith("</="):
+                    red = red[3:]
+                elif red.startswith(">") or red.startswith("<"):
+                    red = red[1:]
+                if int(inverted) == 0:
+                    boundary = (
+                        (as_float(green), '#62B645'),
+                        (as_float(red), '#FFCC00'),
+                        (5, '#D8262B')
+                    )
+                else:
+                    boundary = (
+                        (as_float(red), '#D8262B'),
+                        (as_float(yellow), '#FFCC00'),
+                        (as_float(green), '#62B645')
+                    )
+                boundaries[unicode(title, 'utf-8')] = boundary
+        IQuizz5.setTaggedValue("chart_boundaries", boundaries)
+        return boundaries
 
 
 global_utility(Quizz5, provides=IQuizz, name="quizz5", direct=True)
