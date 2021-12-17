@@ -26,7 +26,7 @@
   }
 
 .chart {
-  height: 100px;
+  height: 150px;
 }
 
 .highcharts-figure,
@@ -36,7 +36,6 @@
     margin: 1em auto;
 }
 </style>
-
 
 <div>
   <div class="header">
@@ -82,9 +81,21 @@
     <input id="form-action-filter" type="submit" value="filter" />
   </form>
 
-
-
   <script>
+     function svgToCanvas(chart, target_id) {
+        var svg = chart.getSVG();
+        var canvas = document.createElement('canvas');
+        canvas.width = "600";
+        canvas.height = "400";
+        var ctx = canvas.getContext('2d');
+        var img = document.createElement("img");
+        img.setAttribute("src", "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg))));
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, 400, 400);
+          document.getElementById(target_id).value = canvas.toDataURL("image/png");
+        };
+     }
+
     Highcharts.setOptions({
         chart: {
             inverted: true,
@@ -123,23 +134,59 @@
         });
   </script>
 
-  <tal:containers
-      repeat="idx range(0, len(view.stats.statistics['global.averages']))">
-    <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
-  </tal:containers>
+  <form  id="result" method="POST"
+	 tal:attributes="action view.url(context) + '/export'">
+    <tal:containers
+        repeat="idx range(0, len(view.stats.statistics['global.averages']))">
+      <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
+      <textarea type="text" id="pSVG${idx}"
+                name="pSVG" style="display:none"></textarea>
+      <textarea type="text" id="chart-${idx}"
+                name="chart" style="display: none"></textarea>
+    </tal:containers>
+
+    <textarea type="text" id="averages" name="averages" style="display:none">
+      <tal:data
+           content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
+    </textarea>
+
+    <button class="btn btn-default" name="action" value="PDF">
+      <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+      </span>&nbsp; PDF export
+    </button>
+
+    <button class="btn btn-default" name="action" value="kfza">
+      <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+      </span>&nbsp; KFZA export
+    </button>
+
+    <button class="btn btn-default" name="action" value="wai">
+      <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+      </span>&nbsp; WAI export
+    </button>
+    <a class="btn btn-default"
+       tal:attributes="href 'excel?' + request.environment['QUERY_STRING']"
+       ><span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+       </span>&nbsp; Excel export</a>
+
+  </form>
 
   <script>
     <tal:charts repeat="scale view.stats.statistics['global.averages']">
       <tal:chart define="color view.colors[scale.title]">
-    var myChart = Highcharts.chart('container${repeat["scale"].index}', {
-        title: null,
+
+    var myChart${repeat["scale"].index} = Highcharts.chart('container${repeat["scale"].index}', {
+        title: {
+                enabled: true,
+                text: '<span style="font-size: large" class="hc-cat-title">${scale.title}</span>'
+        },
         xAxis: {
             categories: [
-                '<span style="font-size: large" class="hc-cat-title">${scale.title}</span>'
+               '<span></span>'
             ]
         },
         yAxis: {
-            min: 1,
+            min: 0,
             max: 5,
             gridLineWidth: 0,
             tickInterval: 1,
@@ -168,7 +215,11 @@
                 target: ${scale.average}
             }]
         }]
-    });
+      });
+
+      svgToCanvas(myChart${repeat["scale"].index}, 'chart-${repeat["scale"].index}');
+      $('#pSVG${repeat["scale"].index}').val(myChart${repeat["scale"].index}.getSVGForExport());
+
       </tal:chart>
     </tal:charts>
   </script>

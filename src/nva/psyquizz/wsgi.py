@@ -116,7 +116,7 @@ def routing(conf, files, **kwargs):
         layer_iface = None
     # Extract possible reg_layer
     reg_layer = kwargs.get('reg_layer')
-    if layer is not None:
+    if reg_layer is not None:
         reg_layer_iface = eval_loader(reg_layer)
     else:
         reg_layer_iface = None

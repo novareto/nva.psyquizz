@@ -473,7 +473,7 @@ class IScale20(Interface):
 
     question58 = schema.Choice(
         title=u"58",
-        description=u"Lärm",
+        description=u"(Folgenden Umgebungsbelastungen sind an meinem Arbeitsplatz vorhanden:) <br/> Lärm",
         vocabulary=FBGU,
         required=True,
     )

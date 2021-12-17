@@ -96,7 +96,7 @@
       </tal:frage>
 
       <tal:criteria condition="repeat['widget'].number <= view.nbcriterias">
-      <h1><span tal:content="widget.title"/></h1>
+      <h3>Frage: <span tal:content="widget.title"/> / <span tal:replace="len(view.fieldWidgets) - view.nbcriterias" /></h3>
       </tal:criteria>
 
       <blockquote tal:condition="widget.title in view.titles">
