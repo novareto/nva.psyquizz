@@ -698,7 +698,7 @@ class CreateCourse(Form):
            strategy=csdata.get('strategy')
         )
         #data['quizz_type'] = "quizz2"
-        if data['extra_questions'] is NO_VALUE:
+        if 'extra_questions' in data and data['extra_questions'] is NO_VALUE:
             data.pop('extra_questions')
         course = Course(**data)
 
@@ -1177,7 +1177,7 @@ class Quizz5Wizard(AnswerQuizz):
         criteria_fields = Fields(
             *self.quizz.criteria_fields(self.context.course))
         if criteria_fields:
-            scales = scales + [{'fields': crieria_fields, 'label': 'Unternehmenskriterien'}]
+            scales = scales + [{'fields': criteria_fields, 'label': 'Unternehmenskriterien'}]
         scales += IQuizz5.getTaggedValue('scales')
         additional_questions = list(self.quizz.additional_extra_fields(
             self.context.course))

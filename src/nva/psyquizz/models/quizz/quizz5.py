@@ -544,7 +544,7 @@ class IScale20(Interface):
 
 class IQuizz5(IQuizz, IScale1, IScale2, IScale3, IScale4, IScale5, IScale6, IScale7,
         IScale8, IScale9, IScale10, IScale11, IScale12, IScale13, IScale14, IScale15,
-        IScale16, IScale17, IScale18, IScale19):
+        IScale16, IScale17, IScale18, IScale19, IScale20):
     pass
 
 
@@ -580,7 +580,7 @@ IQuizz5.setTaggedValue("scales", [
     {'iface': IScale17, 'label': u"Soziale Stressoren durch Kollegen und Kolleginnen"},
     {'iface': IScale18, 'label': u"Soziale Unterstützung durch Führungskräfte"},
     {'iface': IScale19, 'label': u"Feedback und Anerkennung"},
-#    {'iface': IScale20, 'label': u"Belastende Führung"},
+    {'iface': IScale20, 'label': u"Arbeitsumgebung und Arbeitsplatzgestaltung"},
 ])
 
 
@@ -604,6 +604,7 @@ IQuizz5.setTaggedValue("averages", OrderedDict((
     (u'Soziale Stressoren durch Kollegen und Kolleginnen', [x[1].title for x in schema.getFieldsInOrder(IScale17)]),
     (u'Soziale Unterstützung durch Führungskräfte', [x[1].title for x in schema.getFieldsInOrder(IScale18)]),
     (u'Feedback und Anerkennung', [x[1].title for x in schema.getFieldsInOrder(IScale19)]),
+    (u'Arbeitsumgebung und Arbeitsplatzgestaltung', [x[1].title for x in schema.getFieldsInOrder(IScale20)]),
     )))
 
 
