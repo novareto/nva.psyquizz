@@ -80,7 +80,7 @@
     </div>
     <div tal:repeat="scale view.get_scales()" class="scale"
          tal:attributes="id 'scale-%s' % repeat['scale'].number">
-    <h1>Gruppe: <span tal:content="scale['label']"></span></h1>
+    <h1> <span tal:content="scale['label']"></span></h1>
 
     <div class="progress">
       <div class="progress-bar progress-bar-success" role="progressbar"
@@ -89,8 +89,11 @@
       </div>
     </div>
 
+    <br> <br>
+
     <div tal:repeat="widget view.getFieldWidgets(scale)" class="question" tal:attributes="id 'question-%s' % repeat['widget'].number">
 
+      <!--
       <tal:frage condition="repeat['widget'].number > view.nbcriterias">
 	     <h3>Frage: <span tal:replace="widget.title" /> / <span tal:replace="len(view.fieldWidgets) - view.nbcriterias" /></h3>
       </tal:frage>
@@ -98,6 +101,7 @@
       <tal:criteria condition="repeat['widget'].number <= view.nbcriterias">
       <h3>Frage: <span tal:content="widget.title"/> / <span tal:replace="len(view.fieldWidgets) - view.nbcriterias" /></h3>
       </tal:criteria>
+      -->
 
       <blockquote tal:condition="widget.title in view.titles">
 	      <span tal:replace="view.titles[widget.title]" />

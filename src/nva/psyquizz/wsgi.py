@@ -126,7 +126,7 @@ def routing(conf, files, **kwargs):
     # We create the session wrappper
     session_key = "session"
     key = key_from_file(path.join(kwargs['root'], 'jwt.key'))
-    session_wrapper = Session(key, 60, environ_key=session_key)
+    session_wrapper = Session(key, 3600, environ_key=session_key)
 
     # We create the emailer utility
     smtp = kwargs.get('smtp', '10.33.115.55')

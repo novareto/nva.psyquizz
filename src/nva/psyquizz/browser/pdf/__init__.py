@@ -85,7 +85,7 @@ class GeneratePDF(uvclight.Page):
             self.context.startdate.strftime('%d.%m.%Y'),
             self.context.enddate.strftime('%d.%m.%Y'),
             crit_style,
-            self.request.form['total'],
+            self.request.form.get('total', ''),
             datetime.datetime.now().strftime('%d.%m.%Y'))
         parts.append(Paragraph(fp.strip(), styles['Normal']))
         parts.append(PageBreak())

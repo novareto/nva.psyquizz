@@ -425,7 +425,7 @@ class IScale18(Interface):
 
     question52 = schema.Choice(
         title=u"52",
-        description=u"Mein Führungskraft ist bereit, sich meine Probleme anzuhören.",
+        description=u"Meine Führungskraft ist bereit, sich meine Probleme anzuhören.",
         vocabulary=FBGU,
         required=True,
     )
@@ -473,7 +473,7 @@ class IScale20(Interface):
 
     question58 = schema.Choice(
         title=u"58",
-        description=u"(Folgenden Umgebungsbelastungen sind an meinem Arbeitsplatz vorhanden:) <br/> Lärm",
+        description=u"<h3>Folgenden Umgebungsbelastungen sind an meinem Arbeitsplatz vorhanden:</h3> <br/> Lärm",
         vocabulary=FBGU,
         required=True,
     )
@@ -536,7 +536,7 @@ class IScale20(Interface):
 
     question67 = schema.Choice(
         title=u"67",
-        description=u"Fehlende oder ungünstig zu bedienende Arbeitsmitte",
+        description=u"Fehlende oder ungünstig zu bedienende Arbeitsmittel",
         vocabulary=FBGU,
         required=True,
     )
@@ -595,11 +595,11 @@ IQuizz5.setTaggedValue("averages", OrderedDict((
     (u'Qualifikationsunterforderung', [x[1].title for x in schema.getFieldsInOrder(IScale8)]),
     (u'Soziale Belastungen durch Kunden', [x[1].title for x in schema.getFieldsInOrder(IScale9)]),
     (u'Emotionale Dissonanz', [x[1].title for x in schema.getFieldsInOrder(IScale10)]),
-    (u'belastende Arbeitszeit', [x[1].title for x in schema.getFieldsInOrder(IScale11)]),
-    (u'entgrenzte Arbeitszeiten', [x[1].title for x in schema.getFieldsInOrder(IScale12)]),
+    (u'Belastende Arbeitszeit', [x[1].title for x in schema.getFieldsInOrder(IScale11)]),
+    (u'Entgrenzte Arbeitszeiten', [x[1].title for x in schema.getFieldsInOrder(IScale12)]),
     (u'Arbeitsintensität', [x[1].title for x in schema.getFieldsInOrder(IScale13)]),
     (u'Unterbrechungen', [x[1].title for x in schema.getFieldsInOrder(IScale14)]),
-    (u'fehlende Kommunikationsmöglichkeiten', [x[1].title for x in schema.getFieldsInOrder(IScale15)]),
+    (u'Fehlende Kommunikationsmöglichkeiten', [x[1].title for x in schema.getFieldsInOrder(IScale15)]),
     (u'Soziale Unterstützung durch Kollegen und Kolleginnen', [x[1].title for x in schema.getFieldsInOrder(IScale16)]),
     (u'Soziale Stressoren durch Kollegen und Kolleginnen', [x[1].title for x in schema.getFieldsInOrder(IScale17)]),
     (u'Soziale Unterstützung durch Führungskräfte', [x[1].title for x in schema.getFieldsInOrder(IScale18)]),

@@ -222,7 +222,7 @@ class CreateCriterias(Form):
 Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.
 „Abteilung“). Zu jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen (z.B.
 „Personalabteilung“ und „Produktion“). <b>Aus Datenschutzgründen werden nur Ergebnisse von Auswertungsgruppen angezeigt,
-von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
+von denen mindestens sieben ausgefüllte Fragebogen vorliegen.</b>
 """
 
     preview = None
@@ -231,6 +231,11 @@ von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
     def action_url(self):
         quizzjs.need()
         return self.request.path
+
+    @action(_(u'Cancel'))
+    def handle_cancel(self):
+        self.redirect(self.application_url())
+        return SUCCESS
 
     @action(_(u'Add'))
     def handle_save(self):
@@ -272,8 +277,9 @@ class EditCriteria(EditForm):
     name('index')
     title(_(u'Edit criteria'))
     require('zope.Public')
-    label = ""
 
+    label = ""
+    preview = None
     fields = Fields(ICriteria).select('title', 'items')
     actions = Actions()
 
@@ -287,6 +293,17 @@ class EditCriteria(EditForm):
         url = self.application_url()
         return SuccessMarker('Aborted', True, url=url)
 
+    @action(_(u'Vorschau'))
+    def handle_preview(self):
+        data, errors = self.extractData()
+        if errors:
+            self.flash(_(u'An error occurred.'))
+            return FAILURE
+
+        preview = PreviewCriterias(self.context, self.request, **data)
+        preview.updateForm()
+        self.preview = preview.render()
+
     @action(_(u"Update"))
     def save(self):
         data, errors = self.extractData()
@@ -298,6 +315,12 @@ class EditCriteria(EditForm):
         message(_(u"Ihre Auswertungsgruppe wurde aktualisiert."))
         url = self.application_url()
         return SuccessMarker('Updated', True, url=url)
+
+    def render(self):
+        html = super(EditCriteria, self).render()
+        if self.preview:
+            html += self.preview
+        return html
 
 
 class DeletedCriteria(DeleteForm):
@@ -596,6 +619,11 @@ class DeletedCompany(DeleteForm):
     def action_url(self):
         return self.request.path
 
+    @action(_(u'Cancel'))
+    def handle_cancel(self):
+        self.redirect(self.application_url())
+        return SUCCESS
+
     @action(_(u'Delete'))
     def handle_save(self):
         session = get_session('school')
@@ -609,11 +637,6 @@ class DeletedCompany(DeleteForm):
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
-        self.redirect(self.application_url())
-        return SUCCESS
-
-    @action(_(u'Cancel'))
-    def handle_cancel(self):
         self.redirect(self.application_url())
         return SUCCESS
 
@@ -714,7 +737,7 @@ class CreateCourse(Form):
         session.flush()
         session.refresh(clssession)
         if strategy.get('strategy') in ('mixed','fixed'):
-            if strategy['nb_students'] <= 7 or strategy['nb_students'] is NO_VALUE:
+            if strategy['nb_students'] < 7 or strategy['nb_students'] is NO_VALUE:
                 self.flash(u'Auswertungen sind erst ab 7 Teilnehmer zulässig. Bitte erhöhen Sie die Anzahl der Teilnehmer auf mindestens 7')
                 return FAILURE
             for student in clssession.generate_students(strategy['nb_students']):
@@ -1173,7 +1196,7 @@ class Quizz5Wizard(AnswerQuizz):
     template = get_template('quizz5_wizard.pt', __file__)
 
     def get_scales(self):
-        scales = [] 
+        scales = []
         criteria_fields = Fields(
             *self.quizz.criteria_fields(self.context.course))
         if criteria_fields:
