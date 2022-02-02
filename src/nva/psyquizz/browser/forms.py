@@ -304,7 +304,7 @@ class EditCriteria(EditForm):
         preview.updateForm()
         self.preview = preview.render()
 
-    @action(_(u"Update"))
+    @action(_(u"Speichern"))
     def save(self):
         data, errors = self.extractData()
         if errors:

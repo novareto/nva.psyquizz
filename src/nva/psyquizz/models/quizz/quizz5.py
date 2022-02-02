@@ -473,7 +473,7 @@ class IScale20(Interface):
 
     question58 = schema.Choice(
         title=u"58",
-        description=u"<h3>Folgenden Umgebungsbelastungen sind an meinem Arbeitsplatz vorhanden:</h3> <br/> Lärm",
+        description=u"Folgenden Umgebungsbelastungen sind an meinem Arbeitsplatz vorhanden: <br> Lärm",
         vocabulary=FBGU,
         required=True,
     )
@@ -571,11 +571,11 @@ IQuizz5.setTaggedValue("scales", [
     {'iface': IScale8, 'label': u"Qualifikationsunterforderung"},
     {'iface': IScale9, 'label': u"Soziale Belastungen durch Kunden"},
     {'iface': IScale10, 'label': u"Emotionale Dissonanz"},
-    {'iface': IScale11, 'label': u"belastende Arbeitszeit"},
-    {'iface': IScale12, 'label': u"entgrenzte Arbeitszeit"},
+    {'iface': IScale11, 'label': u"Belastende Arbeitszeit"},
+    {'iface': IScale12, 'label': u"Entgrenzte Arbeitszeit"},
     {'iface': IScale13, 'label': u"Arbeitsintensität"},
     {'iface': IScale14, 'label': u"Unterbrechungen"},
-    {'iface': IScale15, 'label': u"fehlende Kommunikationsmöglichkeiten"},
+    {'iface': IScale15, 'label': u"Fehlende Kommunikationsmöglichkeiten"},
     {'iface': IScale16, 'label': u"Soziale Unterstützung durch Kollegen und Kolleginnen"},
     {'iface': IScale17, 'label': u"Soziale Stressoren durch Kollegen und Kolleginnen"},
     {'iface': IScale18, 'label': u"Soziale Unterstützung durch Führungskräfte"},
