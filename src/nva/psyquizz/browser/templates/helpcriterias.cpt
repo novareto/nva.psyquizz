@@ -28,19 +28,19 @@
            </tr>
            <tr>
              <td>Abteilung </td>
-             <td> Produktion, Vertrieb, Personal</td>
+             <td> Produktion <br> Vertrieb <br> Personal</td>
            </tr>
            <tr>
              <td>Arbeitsgruppe </td>
-             <td> Team1, Team2 Team3</td>
+             <td> Team1 <br> Team2 <br> Team3</td>
            </tr>
            <tr>
              <td>Standort </td>
-             <td>Köln, Bonn, Düsseldorf </td>
+             <td>Köln <br> Bonn <br> Düsseldorf </td>
            </tr>
            <tr>
              <td>Führungskraft </td>
-             <td> Führungskraft, keine Führungskraft</td>
+             <td> Führungskraft <br> keine Führungskraft</td>
            </tr>
          </table>
 

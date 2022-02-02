@@ -50,7 +50,7 @@
             </p>
           </div>
           <hr>
-          <h3> Befragungen </h3> 
+          <h3> <b>Befragungen </b> </h3> 
               <ul class="list-unstyled">
                 <li>
                   <a href="" data-toggle="tooltip" data-placement="left" tal:attributes="href view.url(context, str(company.id) + '/add.course')"> 

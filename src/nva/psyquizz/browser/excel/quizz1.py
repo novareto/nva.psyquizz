@@ -42,9 +42,17 @@ class Quizz1Excel(SessionXSLX):
         xAxis = []
         good = dict(name="Eher Ja", data=[], abv=[], color="#62B645")
         bad = dict(name="Eher Nein", data=[], abv=[],color="#D8262B")
+
+        averages = self.quizz.__schema__.queryTaggedValue('averages')
+        if averages:
+            avg_labels = {}
+            for label, ids in averages.items():
+                avg_labels.update({id: label for id in ids})
+
         for key, answers in self.statistics['raw'].items():
             xAxis.append(key)
             yesses = 0
+
             noes = 0
             total = 0
             for answer in answers:
@@ -62,18 +70,21 @@ class Quizz1Excel(SessionXSLX):
             k.title: k.description for id, k in
             getFieldsInOrder(self.quizz.__schema__)}
         line = 0
-        ws.write(line, 0, 'Frage')
-        ws.write(line, 1, 'eher ja - %')
-        ws.write(line, 2, 'eher ja - total')
-        ws.write(line, 3, 'eher nein - %')
-        ws.write(line, 4, 'eher nein - total')
+        ws.write(line, 0, 'Scale')
+        ws.write(line, 1, 'Frage')
+        ws.write(line, 2, 'eher ja - %')
+        ws.write(line, 3, 'eher ja - total')
+        ws.write(line, 4, 'eher nein - %')
+        ws.write(line, 5, 'eher nein - total')
         line = 1
         for idx in xAxis:
-            ws.write(line, 0, xAxis_labels[idx])
-            ws.write(line, 1, "%s" %(good['data'][int(idx)-1]))
-            ws.write(line, 2, "%s" %(good['abv'][int(idx)-1]))
-            ws.write(line, 3, "%s" %(bad['data'][int(idx)-1]))
-            ws.write(line, 4, "%s" %(bad['abv'][int(idx)-1]))
+            if averages:
+                ws.write(line, 0, avg_labels[idx])
+            ws.write(line, 1, xAxis_labels[idx])
+            ws.write(line, 2, "%s" %(good['data'][int(idx)-1]))
+            ws.write(line, 3, "%s" %(good['abv'][int(idx)-1]))
+            ws.write(line, 4, "%s" %(bad['data'][int(idx)-1]))
+            ws.write(line, 5, "%s" %(bad['abv'][int(idx)-1]))
             line += 1
         if self.statistics['extra_data']:
             line = 0

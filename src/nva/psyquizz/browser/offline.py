@@ -131,6 +131,7 @@ class DownloadCourse(uvclight.View):
         page1 = p1.getPage(0)
         page1.mergePage(wm)
         output.addPage(page1)
+        import pdb; pdb.set_trace()
         bpdf = resources.get(self.base_pdf)
         with open(bpdf, 'rb') as pdf:
             pf = PdfFileReader(pdf)
