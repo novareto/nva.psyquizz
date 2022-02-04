@@ -131,7 +131,6 @@ class DownloadCourse(uvclight.View):
         page1 = p1.getPage(0)
         page1.mergePage(wm)
         output.addPage(page1)
-        import pdb; pdb.set_trace()
         bpdf = resources.get(self.base_pdf)
         with open(bpdf, 'rb') as pdf:
             pf = PdfFileReader(pdf)
@@ -217,14 +216,16 @@ class GenericAnswerQuizz(AnswerQuizz):
             var isFormValid = true;
             $("select").each(function() {
                if ($.trim($(this).val()).length == 0) {
-                  $(this).parent().addClass("highlight");
+                  $(this).parent().addClass("alert alert-danger");
                   isFormValid = false;
                } else {
-                  $(this).parent().removeClass("highlight");
+                  $(this).parent().removeClass("alert alert-danger");
                }
             });
             if (!isFormValid) {
-                alert("Bitte füllen Sie zunächst alle Felder. Im Anschluss können Sie das Formular absenden.");
+                 $('form#GenericAnswerQuizz').before('<div id="global-error" class="alert alert-danger"> <p>Bitte füllen Sie alle Felder.</p> </div>')
+                //alert("Bitte füllen Sie zunächst alle Felder. Im Anschluss können Sie das Formular absenden.");
+                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
             return isFormValid;
         });

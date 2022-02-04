@@ -278,7 +278,8 @@ class EditCriteria(EditForm):
     title(_(u'Edit criteria'))
     require('zope.Public')
 
-    label = ""
+    label = "Auswertungsgruppe bearbeiten"
+    description = u"Bitte beachten Sie: Einzelne Auswertungsgruppen können bei der Auswertung einer Mitarbeiterbefragung nur dann betrachtet werden, wenn für die jeweilige Auswertungsgruppe mindestens sieben ausgefüllte Fragebögen vorliegen. Andernfalls bleiben die jeweiligen Auswertungsgruppen inaktiv."
     preview = None
     fields = Fields(ICriteria).select('title', 'items')
     actions = Actions()
@@ -333,7 +334,7 @@ class DeletedCriteria(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie die Auswertungsgruppe '%s' wirklich löschen" % (
+        return u"Wollen Sie die Auswertungsgruppe '%s' wirklich löschen" % (
             self.context.title)
 
     @property
@@ -613,7 +614,7 @@ class DeletedCompany(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie den Betrieb %s wirklich löschen" % self.context.name
+        return u"Wollen Sie den Betrieb %s wirklich löschen" % self.context.name
 
     @property
     def action_url(self):
@@ -935,7 +936,7 @@ class DeleteCourse(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie die Befragung %s wirklich löschen" % self.context.name
+        return u"Wollen Sie die Befragung %s wirklich löschen" % self.context.name
 
     @property
     def action_url(self):
