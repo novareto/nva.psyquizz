@@ -142,7 +142,7 @@ class ICriteria(IContent):
     @invariant
     def check_items(data):
         items = data.items
-        msg = _(u'Bitte geben Sie mindestens 2 Kriterien in der Auswertungsgruppe an. Bitte geben Sie jede Auswertungsgruppe in eine neue Zeile ein, indem Sie die Eingeabetaste ("Return") betätigen.')
+        msg = _(u'Bitte geben Sie mindestens 2 Auswertungsgruppen an. Bitte geben Sie jede Auswertungsgruppe in eine neue Zeile ein, indem Sie die Eingeabetaste ("Return") betätigen.')
         if not items:
             raise Invalid(msg)
 

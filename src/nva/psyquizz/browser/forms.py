@@ -278,7 +278,8 @@ class EditCriteria(EditForm):
     title(_(u'Edit criteria'))
     require('zope.Public')
 
-    label = ""
+    label = "Auswertungsgruppe bearbeiten"
+    description = u"Bitte beachten Sie: Einzelne Auswertungsgruppen können bei der Auswertung einer Mitarbeiterbefragung nur dann betrachtet werden, wenn für die jeweilige Auswertungsgruppe mindestens sieben ausgefüllte Fragebögen vorliegen. Andernfalls bleiben die jeweiligen Auswertungsgruppen inaktiv."
     preview = None
     fields = Fields(ICriteria).select('title', 'items')
     actions = Actions()

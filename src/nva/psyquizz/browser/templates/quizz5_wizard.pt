@@ -20,6 +20,10 @@
     </ul>
   </div>
 
+  <div id="global-error" class="alert alert-danger">
+    <p>Bitte füllen Sie alle Felder.</p>
+  </div>
+
   <script type="text/javascript">
    $(document).ready(function() {
        var max = <tal:max replace="len(view.get_scales()) + 1" />;
@@ -27,16 +31,22 @@
        var next = $('#next');
        var progressbar = $('.progress .progress-bar');
 
+       jQuery('div#global-error').hide()
        next.click(function(e) {
 	   var hash = window.location.hash.substring(1) || '0';
 	   var current = parseInt(hash);
-           $('#scale-' + current.toString() + ' .question').each(function() {jQuery(this).removeClass('error has-error')})
+           $('#scale-' + current.toString() + ' .question').each(function() {
+             jQuery(this).removeClass('error alert alert-danger has-error')
+           }
+           )
            if (current != 0) {
                $('#scale-' + current.toString() + ' .question').each(function() {
                    jQuery(this).each(function() {
                        if( !jQuery(this).find('input').is(':checked') ){
                            e.preventDefault();
-                           jQuery(this).addClass('error has-error');
+                           jQuery(this).addClass('error alert alert-danger has-error');
+                           console.log(this);
+                           jQuery('div#global-error').show()
                        }
                    })
                })
