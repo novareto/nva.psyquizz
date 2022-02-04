@@ -334,7 +334,7 @@ class DeletedCriteria(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie die Auswertungsgruppe '%s' wirklich löschen" % (
+        return u"Wollen Sie die Auswertungsgruppe '%s' wirklich löschen" % (
             self.context.title)
 
     @property
@@ -614,7 +614,7 @@ class DeletedCompany(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie den Betrieb %s wirklich löschen" % self.context.name
+        return u"Wollen Sie den Betrieb %s wirklich löschen" % self.context.name
 
     @property
     def action_url(self):
@@ -936,7 +936,7 @@ class DeleteCourse(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie die Befragung %s wirklich löschen" % self.context.name
+        return u"Wollen Sie die Befragung %s wirklich löschen" % self.context.name
 
     @property
     def action_url(self):
