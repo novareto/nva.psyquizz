@@ -713,6 +713,18 @@ class Quizz5(QuizzBase, Base):
 
     extra_questions = Column("extra_questions", Text)
 
+    def inverted(self):
+        resources = getSite().configuration.resources
+        test = resources.get('test.csv')
+        with open(test, 'r') as fd:
+            def as_float(v):
+                return float(v.replace(',', '.'))
+            data = csv.reader(fd)
+            next(data)
+            for entry in data:
+                idx, title, red, yellow, green, inverted = entry
+                yield unicode(title, 'utf-8'), bool(int(inverted))
+
     def get_boundaries(self):
         chart_boundaries = IQuizz5.queryTaggedValue("chart_boundaries")
         if chart_boundaries is not None:

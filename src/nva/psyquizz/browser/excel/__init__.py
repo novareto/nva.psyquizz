@@ -56,6 +56,11 @@ class XSLX(object):
             for label, ids in averages.items():
                 avg_labels.update({id: label for id in ids})
 
+        if hasattr(self.quizz, 'inverted'):
+            inverted = dict(list(self.quizz.inverted()))
+        else:
+            inverted = {}
+
         for key, answers in self.statistics['raw'].items():
             xAxis.append(key)
             yesses = 0
@@ -79,19 +84,22 @@ class XSLX(object):
         line = 0
         ws.write(line, 0, 'Scale')
         ws.write(line, 1, 'Frage')
-        ws.write(line, 2, 'eher ja - %')
-        ws.write(line, 3, 'eher ja - total')
-        ws.write(line, 4, 'eher nein - %')
-        ws.write(line, 5, 'eher nein - total')
+        ws.write(line, 2, 'Inverted')
+        ws.write(line, 3, 'eher ja - %')
+        ws.write(line, 4, 'eher ja - total')
+        ws.write(line, 5, 'eher nein - %')
+        ws.write(line, 6, 'eher nein - total')
         line = 1
         for idx in xAxis:
             if averages:
                 ws.write(line, 0, avg_labels[idx])
             ws.write(line, 1, xAxis_labels[idx])
-            ws.write(line, 2, "%s" %(good['data'][int(idx)-1]))
-            ws.write(line, 3, "%s" %(good['abv'][int(idx)-1]))
-            ws.write(line, 4, "%s" %(bad['data'][int(idx)-1]))
-            ws.write(line, 5, "%s" %(bad['abv'][int(idx)-1]))
+            ws.write(line, 2, inverted.get(xAxis_labels[idx]))
+            ws.write(line, 3, "%s" %(good['data'][int(idx)-1]))
+            ws.write(line, 4, "%s" %(good['abv'][int(idx)-1]))
+            ws.write(line, 5, "%s" %(bad['data'][int(idx)-1]))
+            ws.write(line, 6, "%s" %(bad['abv'][int(idx)-1]))
+
             line += 1
 
     def generateXLSX(self, workbook):
