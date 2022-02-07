@@ -80,16 +80,16 @@ class GeneratePDF(uvclight.Page):
         parts.append(Paragraph(u'Auswertungsbericht', styles['Heading1']))
         parts.append(Paragraph(u'„Gemeinsam zu gesunden Arbeitsbedingungen“ – Psychische Belastung erfassen', styles['Heading2']))
         fp = FRONTPAGE % (
-            self.context.course.company.name, 
-            self.context.course.title, 
-            self.context.startdate.strftime('%d.%m.%Y'), 
+            self.context.course.company.name,
+            self.context.course.title,
+            self.context.startdate.strftime('%d.%m.%Y'),
             self.context.enddate.strftime('%d.%m.%Y'),
             crit_style,
-            self.request.form['total'],
+            self.request.form.get('total', ''),
             datetime.datetime.now().strftime('%d.%m.%Y'))
         parts.append(Paragraph(fp.strip(), styles['Normal']))
         parts.append(PageBreak())
-        return 
+        return
 
     def make_response(self, result):
         if result is None:  # We don't have anything to return, we redirect

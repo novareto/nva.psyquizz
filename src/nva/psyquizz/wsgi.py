@@ -33,6 +33,7 @@ Configuration = namedtuple(
         'name',
         'fs_store',
         'layer',
+        'reg_layer',
         'emailer',
         'resources',
     )
@@ -113,13 +114,19 @@ def routing(conf, files, **kwargs):
         layer_iface = eval_loader(layer)
     else:
         layer_iface = None
+    # Extract possible reg_layer
+    reg_layer = kwargs.get('reg_layer')
+    if reg_layer is not None:
+        reg_layer_iface = eval_loader(reg_layer)
+    else:
+        reg_layer_iface = None
 
     title = kwargs.get('title', 'BG ETEM')
 
     # We create the session wrappper
     session_key = "session"
     key = key_from_file(path.join(kwargs['root'], 'jwt.key'))
-    session_wrapper = Session(key, 60, environ_key=session_key)
+    session_wrapper = Session(key, 3600, environ_key=session_key)
 
     # We create the emailer utility
     smtp = kwargs.get('smtp', '10.33.115.55')
@@ -129,15 +136,7 @@ def routing(conf, files, **kwargs):
     # Applications configuration
     resources = Resources(kwargs['resources'])
     setup = Configuration(
-        title,
-        session_key,
-        engine,
-        name,
-        None,
-        layer_iface,
-        emailer,
-        resources
-    )
+        title, session_key, engine, name, None, layer_iface, reg_layer_iface, smtp, resources)
 
     # Router
     root = URLMap()

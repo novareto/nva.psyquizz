@@ -209,7 +209,7 @@ IQuizz2.setTaggedValue(
         (u'Zusammenarbeit', ('20', '21', '22')),
         (u'Information und Mitsprache', ('23', '24')),
         (u'Entwicklungsmöglichkeiten', ('25', '26')),
-        )))
+    )))
 
 
 @implementer(IQuizz2)

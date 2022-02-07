@@ -8,7 +8,7 @@ import uvclight
 from collections import OrderedDict, namedtuple
 from cromlech.browser import IView
 from grokcore.component import name
-from nva.psyquizz import hs
+from nva.psyquizz import hs, hsb_bullet
 from nva.psyquizz.models import IQuizz, IClassSession, ICourse
 from nva.psyquizz.models.quizz.quizz2 import IQuizz2
 from nva.psyquizz.models.quizz.quizz1 import Quizz1
@@ -142,6 +142,8 @@ class Quizz5Charts(Quizz2Charts):
     template = uvclight.get_template('quizz5_result.pt', __file__)
 
     def update(self, stats, general_stats=None):
+        hsb_bullet.need()
+        self.colors = self.context.get_boundaries()
         super(Quizz5Charts, self).update(stats, general_stats)
 
 

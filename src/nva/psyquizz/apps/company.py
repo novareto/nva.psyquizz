@@ -351,6 +351,8 @@ class NoAccess(Location):
         return getGlobalSiteManager()
 
     def __call__(self):
+        if self.request.path_info == 'impressum':
+            return getMultiAdapter((self, self.request), name="impressum")()
         if self.request.path_info == 'datenschutz':
             return getMultiAdapter(
                 (self, self.request), name="datenschutz")()
@@ -444,8 +446,8 @@ class Registration(Publication, Location):
 
     @property
     def layers(self):
-        if self.configuration.layer is not None:
-            return [self.configuration.layer] + self._layers
+        if self.configuration.reg_layer is not None:
+            return [self.configuration.reg_layer] + self._layers
         return self._layers
 
     def __init__(self, configuration):

@@ -20,6 +20,10 @@
     </ul>
   </div>
 
+  <div id="global-error" class="alert alert-danger">
+    <p>Bitte füllen Sie alle Felder.</p>
+  </div>
+
   <script type="text/javascript">
    $(document).ready(function() {
        var max = <tal:max replace="len(view.get_scales()) + 1" />;
@@ -27,16 +31,22 @@
        var next = $('#next');
        var progressbar = $('.progress .progress-bar');
 
+       jQuery('div#global-error').hide()
        next.click(function(e) {
 	   var hash = window.location.hash.substring(1) || '0';
 	   var current = parseInt(hash);
-           $('#scale-' + current.toString() + ' .question').each(function() {jQuery(this).removeClass('error has-error')})
+           $('#scale-' + current.toString() + ' .question').each(function() {
+             jQuery(this).removeClass('error alert alert-danger has-error')
+           }
+           )
            if (current != 0) {
                $('#scale-' + current.toString() + ' .question').each(function() {
                    jQuery(this).each(function() {
                        if( !jQuery(this).find('input').is(':checked') ){
                            e.preventDefault();
-                           jQuery(this).addClass('error has-error');
+                           jQuery(this).addClass('error alert alert-danger has-error');
+                           console.log(this);
+                           jQuery('div#global-error').show()
                        }
                    })
                })
@@ -80,7 +90,7 @@
     </div>
     <div tal:repeat="scale view.get_scales()" class="scale"
          tal:attributes="id 'scale-%s' % repeat['scale'].number">
-    <h1>Gruppe: <span tal:content="scale['label']"></span></h1>
+    <h1> <span tal:content="scale['label']"></span></h1>
 
     <div class="progress">
       <div class="progress-bar progress-bar-success" role="progressbar"
@@ -89,15 +99,19 @@
       </div>
     </div>
 
+    <br> <br>
+
     <div tal:repeat="widget view.getFieldWidgets(scale)" class="question" tal:attributes="id 'question-%s' % repeat['widget'].number">
 
+      <!--
       <tal:frage condition="repeat['widget'].number > view.nbcriterias">
 	     <h3>Frage: <span tal:replace="widget.title" /> / <span tal:replace="len(view.fieldWidgets) - view.nbcriterias" /></h3>
       </tal:frage>
 
       <tal:criteria condition="repeat['widget'].number <= view.nbcriterias">
-      <h1><span tal:content="widget.title"/></h1>
+      <h3>Frage: <span tal:content="widget.title"/> / <span tal:replace="len(view.fieldWidgets) - view.nbcriterias" /></h3>
       </tal:criteria>
+      -->
 
       <blockquote tal:condition="widget.title in view.titles">
 	      <span tal:replace="view.titles[widget.title]" />

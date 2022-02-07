@@ -17,13 +17,13 @@ $(document).ready(function() {
 
     // set end date to max one year period:
     var end = new Date();
-    end.setDate(end.getDate() + 180); 
+    end.setDate(end.getDate() + 180);
 
     $('#form-field-startdate').attr('autocomplete', 'off');
     $('#form-field-enddate').attr('autocomplete', 'off');
 
     $('#form-field-startdate').datepicker({
-	format: 'dd/mm/yyyy',
+	format: 'dd.mm.yyyy',
 	orientation: 'right',
 	language: 'de',
 	startDate: start,
@@ -34,10 +34,10 @@ $(document).ready(function() {
 	var defaultdate = addDays($(this).datepicker('getDate'), 21);
 	$('#form-field-enddate').datepicker('setStartDate', startdate);
 	$('#form-field-enddate').datepicker('setDate', defaultdate);
-    }); 
+    });
 
     $('#form-field-enddate').datepicker({
-	format: 'dd/mm/yyyy',
+	format: 'dd.mm.yyyy',
 	orientation: 'right',
 	language: 'de',
 	startDate : start,

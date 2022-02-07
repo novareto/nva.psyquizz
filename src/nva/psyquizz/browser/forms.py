@@ -222,7 +222,7 @@ class CreateCriterias(Form):
 Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.
 „Abteilung“). Zu jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen (z.B.
 „Personalabteilung“ und „Produktion“). <b>Aus Datenschutzgründen werden nur Ergebnisse von Auswertungsgruppen angezeigt,
-von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
+von denen mindestens sieben ausgefüllte Fragebogen vorliegen.</b>
 """
 
     preview = None
@@ -231,6 +231,11 @@ von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
     def action_url(self):
         quizzjs.need()
         return self.request.path
+
+    @action(_(u'Cancel'))
+    def handle_cancel(self):
+        self.redirect(self.application_url())
+        return SUCCESS
 
     @action(_(u'Add'))
     def handle_save(self):
@@ -273,7 +278,9 @@ class EditCriteria(EditForm):
     title(_(u'Edit criteria'))
     require('zope.Public')
 
-    label = ""
+    label = "Auswertungsgruppe bearbeiten"
+    description = u"Bitte beachten Sie: Einzelne Auswertungsgruppen können bei der Auswertung einer Mitarbeiterbefragung nur dann betrachtet werden, wenn für die jeweilige Auswertungsgruppe mindestens sieben ausgefüllte Fragebögen vorliegen. Andernfalls bleiben die jeweiligen Auswertungsgruppen inaktiv."
+
     preview = None
     fields = Fields(ICriteria).select('title', 'items')
     #actions = Actions()
@@ -299,7 +306,7 @@ class EditCriteria(EditForm):
         preview.updateForm()
         self.preview = preview.render()
 
-    @action(_(u"Update"))
+    @action(_(u"Speichern"))
     def save(self):
         data, errors = self.extractData()
         if errors:
@@ -312,7 +319,7 @@ class EditCriteria(EditForm):
         return SuccessMarker('Updated', True, url=url)
 
     def render(self):
-        html = super(self).render()
+        html = super(EditCriteria, self).render()
         if self.preview:
             html += self.preview
         return html
@@ -328,7 +335,7 @@ class DeletedCriteria(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie die Auswertungsgruppe '%s' wirklich löschen" % (
+        return u"Wollen Sie die Auswertungsgruppe '%s' wirklich löschen" % (
             self.context.title)
 
     @property
@@ -468,14 +475,18 @@ class CreateAccount(Form):
 
         # pop the captcha and verif, it's not a needed data
         data.pop('verif')
-        #data.pop('captcha')
+        if 'captcha' in data:
+            data.pop('captcha')
 
         # hashing the password
         salt = uuid.uuid4().hex
+        if 'ack_form' in data:
+            data.pop('ack_form')
         password = data.pop('password').encode('utf-8')
         data['password'] = hashlib.sha512(password + salt).hexdigest()
         data['salt'] = salt
-
+        if 'ack_form' in data:
+            data.pop('ack_form')
         account = Account(**data)
         code = account.activation = str(uuid.uuid1())
         session.add(account)
@@ -604,11 +615,16 @@ class DeletedCompany(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie den Betrieb %s wirklich löschen" % self.context.name
+        return u"Wollen Sie den Betrieb %s wirklich löschen" % self.context.name
 
     @property
     def action_url(self):
         return self.request.path
+
+    @action(_(u'Cancel'))
+    def handle_cancel(self):
+        self.redirect(self.application_url())
+        return SUCCESS
 
     @action(_(u'Delete'))
     def handle_save(self):
@@ -623,11 +639,6 @@ class DeletedCompany(DeleteForm):
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
-        self.redirect(self.application_url())
-        return SUCCESS
-
-    @action(_(u'Cancel'))
-    def handle_cancel(self):
         self.redirect(self.application_url())
         return SUCCESS
 
@@ -712,7 +723,7 @@ class CreateCourse(Form):
            strategy=csdata.get('strategy')
         )
         #data['quizz_type'] = "quizz2"
-        if data['extra_questions'] is NO_VALUE:
+        if 'extra_questions' in data and data['extra_questions'] is NO_VALUE:
             data.pop('extra_questions')
         course = Course(**data)
 
@@ -728,7 +739,7 @@ class CreateCourse(Form):
         session.flush()
         session.refresh(clssession)
         if strategy.get('strategy') in ('mixed','fixed'):
-            if strategy['nb_students'] <= 7 or strategy['nb_students'] is NO_VALUE:
+            if strategy['nb_students'] < 7 or strategy['nb_students'] is NO_VALUE:
                 self.flash(u'Auswertungen sind erst ab 7 Teilnehmer zulässig. Bitte erhöhen Sie die Anzahl der Teilnehmer auf mindestens 7')
                 return FAILURE
             for student in clssession.generate_students(strategy['nb_students']):
@@ -926,7 +937,7 @@ class DeleteCourse(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie die Befragung %s wirklich löschen" % self.context.name
+        return u"Wollen Sie die Befragung %s wirklich löschen" % self.context.name
 
     @property
     def action_url(self):
@@ -1187,18 +1198,23 @@ class Quizz5Wizard(AnswerQuizz):
     template = get_template('quizz5_wizard.pt', __file__)
 
     def get_scales(self):
-        scales = IQuizz5.getTaggedValue('scales')
+        scales = []
+        criteria_fields = Fields(
+            *self.quizz.criteria_fields(self.context.course))
+        if criteria_fields:
+            scales = scales + [{'fields': criteria_fields, 'label': 'Unternehmenskriterien'}]
+        scales += IQuizz5.getTaggedValue('scales')
         additional_questions = list(self.quizz.additional_extra_fields(
             self.context.course))
         extra_fields = list(self.quizz.extra_fields(self.context.course))
         if additional_questions:
             scales = scales + [
-                {'iface': iface, 'label': 'Additional questions'}
+                {'iface': iface, 'label': 'Zusatzfragen'}
                 for iface in additional_questions
             ]
         if extra_fields:
             scales = scales + [
-                {'fields': extra_fields, 'label': 'Additional questions'}
+                {'fields': extra_fields, 'label': 'Eigene Zusatzfragen'}
             ]
         return scales
 
@@ -1207,7 +1223,7 @@ class Quizz5Wizard(AnswerQuizz):
         widgets = []
         if 'fields' in scale:
             for field in scale['fields']:
-                name = "form.field.%s" % field.__name__
+                name = "form.field.%s" % getattr(field, '__name__', field.identifier)
                 widgets.append(self.fieldWidgets.get(name))
         else:
             for field, o in getFieldsInOrder(scale['iface']):

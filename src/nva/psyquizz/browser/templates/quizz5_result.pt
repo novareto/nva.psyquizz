@@ -1,31 +1,3 @@
-<style>
-#percentage-averages {
-   margin-left: 25px;
-}
-
-.bar {
-    border: 1px solid black;
-    display: flex;
-    flex-direction: row;
-    width: 700px;
-}
-
-.bar > div {
-   height: 30px;
-   font-weight: bold;
-   font-size: 1.3em;
-   padding-left: 0.5em;
-   color: white;
-   vertical-align: middle;
-   line-height: 30px;
-}
-
-.bar .mask {
-  background-color: black;
-  opacity: 0.2;
-}
-</style>
-
 
 <div>
   <div class="header">
@@ -87,6 +59,7 @@
             $("#form-action-filter").click();
         });
     });
+<<<<<<< HEAD
   <script>
 
   <div id="percentage-averages">
@@ -149,4 +122,161 @@
 
 
 
+=======
+  </script>
+
+  <script>
+     function svgToCanvas(chart, target_id) {
+        var svg = chart.getSVG();
+        var canvas = document.createElement('canvas');
+        //canvas.width = "600";
+        //canvas.height = "400";
+        var ctx = canvas.getContext('2d');
+        var img = document.createElement("img");
+        img.setAttribute("src", "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg))));
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, 400, 400);
+          document.getElementById(target_id).value = canvas.toDataURL("image/png");
+        };
+     }
+
+    Highcharts.setOptions({
+        chart: {
+            inverted: true,
+            //marginLeft: 135,
+            type: 'bullet',
+            height: 110 
+        },
+        title: {
+            text: null
+        },
+        legend: {
+            enabled: false
+        },
+        yAxis: {
+            gridLineWidth: 0
+        },
+        plotOptions: {
+            series: {
+                borderWidth: 0,
+                color: '#000',
+                targetOptions: {
+                    width: 30,
+                    height: 3,
+                    borderRadius: 0,
+                }
+            }
+        },
+        credits: {
+            enabled: false
+        },
+        exporting: {
+            enabled: false
+        },
+        tooltip: {
+            pointFormat: '<b>{point.y}</b> (with target at {point.target})'
+        }
+        });
+  </script>
+
+  <form  id="result" method="POST"
+	 tal:attributes="action view.url(context) + '/export'">
+    <tal:containers
+        repeat="idx range(0, len(view.stats.statistics['global.averages']))">
+      <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
+      <textarea type="text" id="pSVG${idx}"
+                name="pSVG" style="display:none"></textarea>
+      <textarea type="text" id="chart-${idx}"
+                name="chart" style="display: none"></textarea>
+    </tal:containers>
+
+    <textarea type="text" id="averages" name="averages" style="display:none">
+      <tal:data
+           content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
+    </textarea>
+
+    <button class="btn btn-default" name="action" value="PDF">
+      <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+      </span>&nbsp; PDF export
+    </button>
+
+    <a class="btn btn-default"
+       tal:attributes="href 'excel?' + request.environment['QUERY_STRING']"
+       ><span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+       </span>&nbsp; Excel export</a>
+
+  </form>
+
+  <script>
+    <tal:charts repeat="scale view.stats.statistics['global.averages']">
+      <tal:chart define="color view.colors[scale.title]">
+
+    var myChart${repeat["scale"].index} = Highcharts.chart('container${repeat["scale"].index}', {
+        title: {
+                enabled: true,
+                align: 'left',
+                text: '<span style="font-size: large" class="hc-cat-title">${scale.title}</span>'
+        },
+        xAxis: {
+            categories: [
+               '<span></span>'
+            ]
+        },
+        yAxis: {
+            min: 1,
+            max: 4,
+            gridLineWidth: 0,
+            tickInterval: 1,
+            labels: {
+                enabled: true,
+                step: 1,
+            },
+            plotBands: [
+            {
+                from: 0,
+                to: ${color[0][0]},
+                color: '${color[0][1]}'
+            }, {
+                from: ${color[0][0]},
+                to: ${color[1][0]},
+                color: '${color[1][1]}'
+            }, {
+                from: ${color[1][0]},
+                to: 4,
+                color: '${color[2][1]}'
+            }],
+            title: null
+        },
+        series: [{
+            data: [{
+                target: ${scale.average}
+            }]
+        }]
+      });
+
+      svgToCanvas(myChart${repeat["scale"].index}, 'chart-${repeat["scale"].index}');
+      $('#pSVG${repeat["scale"].index}').val(myChart${repeat["scale"].index}.getSVGForExport());
+
+      </tal:chart>
+    </tal:charts>
+  </script>
+
+  <div tal:condition="view.stats.statistics['extra_data']">
+   <h2> Ergebnis der Zusatzfrage(n)  </h2>
+  <table id="mt" class="table table-bordered table-striped">
+    <tr tal:repeat="data view.stats.statistics['extra_data'].items()">
+      <td tal:content="data[0]"></td>
+      <td>
+        <ul>
+          <li tal:repeat="answer data[1].items()">
+            <span tal:content="answer[0]" /> :
+            <span tal:content="answer[1]" />
+          </li>
+        </ul>
+      </td>
+    </tr>
+  </table>
+  </div>
+
+>>>>>>> b70131c5e500ad23fadef5af1ea7ce3329d29e07
 </div>
