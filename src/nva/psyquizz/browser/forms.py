@@ -272,10 +272,11 @@ class EditCriteria(EditForm):
     name('index')
     title(_(u'Edit criteria'))
     require('zope.Public')
-    label = ""
 
+    label = ""
+    preview = None
     fields = Fields(ICriteria).select('title', 'items')
-    actions = Actions()
+    #actions = Actions()
 
     @property
     def action_url(self):
@@ -286,6 +287,17 @@ class EditCriteria(EditForm):
         message(_(u"Update aborted"))
         url = self.application_url()
         return SuccessMarker('Aborted', True, url=url)
+
+    @action(_(u'Vorschau'))
+    def handle_preview(self):
+        data, errors = self.extractData()
+        if errors:
+            self.flash(_(u'An error occurred.'))
+            return FAILURE
+
+        preview = PreviewCriterias(self.context, self.request, **data)
+        preview.updateForm()
+        self.preview = preview.render()
 
     @action(_(u"Update"))
     def save(self):
@@ -298,6 +310,12 @@ class EditCriteria(EditForm):
         message(_(u"Ihre Auswertungsgruppe wurde aktualisiert."))
         url = self.application_url()
         return SuccessMarker('Updated', True, url=url)
+
+    def render(self):
+        html = super(self).render()
+        if self.preview:
+            html += self.preview
+        return html
 
 
 class DeletedCriteria(DeleteForm):

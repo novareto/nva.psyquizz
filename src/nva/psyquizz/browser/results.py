@@ -46,7 +46,6 @@ class CourseStatistics(object):
 
     def __init__(self, quizz, course):
         self.quizz = quizz
-        import pdb; pdb.set_trace()
         self.averages = quizz.__schema__.queryTaggedValue('averages') or {}
         self.sums = quizz.__schema__.queryTaggedValue('sums') or {}
         self.course = course
