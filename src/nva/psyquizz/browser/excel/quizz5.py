@@ -13,6 +13,7 @@ from nva.psyquizz.browser.results import get_filters
 class Quizz5Excel(SessionXSLX):
     enable_chart1 = False
     enable_verteilung = False
+    enable_ergebnisse = True
 
 
 class Excel(Excel):
