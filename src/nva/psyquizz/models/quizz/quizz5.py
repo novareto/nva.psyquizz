@@ -713,7 +713,8 @@ class Quizz5(QuizzBase, Base):
 
     extra_questions = Column("extra_questions", Text)
 
-    def inverted(self):
+    @staticmethod
+    def inverted():
         resources = getSite().configuration.resources
         test = resources.get('test.csv')
         with open(test, 'r') as fd:

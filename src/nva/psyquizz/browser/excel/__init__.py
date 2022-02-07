@@ -83,8 +83,8 @@ class XSLX(object):
             getFieldsInOrder(self.quizz.__schema__)}
         line = 0
         ws.write(line, 0, 'Scale')
-        ws.write(line, 1, 'Frage')
-        ws.write(line, 2, 'Inverted')
+        ws.write(line, 1, 'Inverted')
+        ws.write(line, 2, 'Frage')
         ws.write(line, 3, 'eher ja - %')
         ws.write(line, 4, 'eher ja - total')
         ws.write(line, 5, 'eher nein - %')
@@ -93,8 +93,8 @@ class XSLX(object):
         for idx in xAxis:
             if averages:
                 ws.write(line, 0, avg_labels[idx])
-            ws.write(line, 1, xAxis_labels[idx])
-            ws.write(line, 2, inverted.get(xAxis_labels[idx]))
+                ws.write(line, 1, inverted.get(avg_labels[idx]))
+            ws.write(line, 2, xAxis_labels[idx])
             ws.write(line, 3, "%s" %(good['data'][int(idx)-1]))
             ws.write(line, 4, "%s" %(good['abv'][int(idx)-1]))
             ws.write(line, 5, "%s" %(bad['data'][int(idx)-1]))
