@@ -723,7 +723,7 @@ class Quizz5(QuizzBase, Base):
             data = csv.reader(fd)
             next(data)
             for entry in data:
-                idx, title, red, yellow, green, inverted = entry
+                idx, title, label, tooltip, red, yellow, green, inverted = entry
                 yield unicode(title, 'utf-8'), bool(int(inverted))
 
     def get_boundaries(self):
@@ -739,7 +739,7 @@ class Quizz5(QuizzBase, Base):
             next(data)
             boundaries = OrderedDict()
             for entry in data:
-                idx, title, red, yellow, green, inverted = entry
+                idx, title, label, tooltip, red, yellow, green, inverted = entry
                 if red.startswith("</="):
                     red = red[3:]
                 elif red.startswith(">") or red.startswith("<"):
@@ -748,13 +748,15 @@ class Quizz5(QuizzBase, Base):
                     boundary = (
                         (as_float(green), '#62B645'),
                         (as_float(red), '#FFCC00'),
-                        (5, '#D8262B')
+                        (5, '#D8262B'),
+                        label, tooltip
                     )
                 else:
                     boundary = (
                         (as_float(red), '#D8262B'),
                         (as_float(yellow), '#FFCC00'),
-                        (as_float(green), '#62B645')
+                        (as_float(green), '#62B645'),
+                        label, tooltip
                     )
                 boundaries[unicode(title, 'utf-8')] = boundary
         IQuizz5.setTaggedValue("chart_boundaries", boundaries)
