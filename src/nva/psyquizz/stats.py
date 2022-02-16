@@ -18,7 +18,7 @@ Result = namedtuple(
 
 Average = namedtuple(
     'Average',
-    ('title', 'average'),
+    ('title', 'average', 'min', 'max'),
 )
 
 Sum = namedtuple(
@@ -36,8 +36,15 @@ def computation(averages, sums, data):
             sums_data.append(
                 Sum(k, sum([x.result for x in v])))
         elif k in averages:
+            all_results = [x.result for x in v]
             averages_data.append(
-                Average(k, float(sum([x.result for x in v]))/len(v)))
+                Average(
+                    k,
+                    float(sum(all_results)/len(v)),
+                    min(all_results),
+                    max(all_results)
+                )
+            )
     return averages_data, sums_data
 
 
@@ -47,8 +54,15 @@ def question_computation(averages, sums, data):
     for k, v in data.items():
         for at, av in averages.items():
             if k in av:
+                all_results = [x.result for x in v]
                 averages_data.append(
-                    Average(k, float(sum([x.result for x in v]))/len(v)))
+                    Average(
+                        k,
+                        float(sum(all_results))/len(v),
+                        min(all_results),
+                        max(all_results)
+                    )
+                )
         for at, av in sums.items():
             if k in av:
                 sums_data.append(
