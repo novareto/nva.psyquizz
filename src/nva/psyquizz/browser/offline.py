@@ -152,6 +152,13 @@ class DownloadCourse(uvclight.View):
         base1.close()
         return ntf
 
+from dolmen.forms.base.actions import Action
+
+class CancelAction(Action):
+
+    def __call__(self, form):
+        form.flash('Die Aktion wurde abgebrochen.')
+        form.redirect(form.application_url())
 
 class GenericAnswerQuizz(AnswerQuizz):
     uvclight.context(IClassSession)
@@ -164,7 +171,7 @@ class GenericAnswerQuizz(AnswerQuizz):
     description = u"Eingabe kann per DropDown Menü oder über die Tastatur (Kreuz ganz links Eingabe 1 bis Kreuz ganz rechts Eingabe 5) erfolgen."
 
     fmode = 'input'
-    actions = Actions(CompanyAnswerQuizz(u'speichern'))
+    actions = Actions(CancelAction("Abbrechen"), CompanyAnswerQuizz(u'Speichern'))
 
     def update(self):
         self.template = Form.template
@@ -212,8 +219,18 @@ class GenericAnswerQuizz(AnswerQuizz):
 
         $('select').first().focus();
 
+        $('input#form-action-abbrechen').click(function(event) {
+         $(event.target).parent('form').attr('cancelled', true);
+        })
+
+
         $("form").submit(function(){
+            if (this.cancelled == true) {
+                return
+            }
             var isFormValid = true;
+            var cancel = $('input#form-action-abbrechen')
+            console.log(cancel)
             $("select").each(function() {
                if ($.trim($(this).val()).length == 0) {
                   $(this).parent().addClass("alert alert-danger");

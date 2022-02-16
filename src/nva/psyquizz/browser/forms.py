@@ -686,13 +686,14 @@ class CreateCourse(Form):
 
     def updateForm(self):
         super(CreateCourse, self).updateForm()
-        name = self.fieldWidgets['form.field.name']
-        nv = u"Beurteilung Psychischer Belastung %s" % (
-            datetime.datetime.now().strftime('%Y'))
-        courses = len(list(self.context.courses))
-        if courses > 0:
-            nv = "%s (%s)" % (nv, str(courses + 1))
-        name.value = {'form.field.name': nv}
+        if not self.request.form.get('form.field.name'):
+            name = self.fieldWidgets['form.field.name']
+            nv = u"Beurteilung Psychischer Belastung %s" % (
+                datetime.datetime.now().strftime('%Y'))
+            courses = len(list(self.context.courses))
+            if courses > 0:
+                nv = "%s (%s)" % (nv, str(courses + 1))
+            name.value = {'form.field.name': nv}
         criterias = self.fieldWidgets['form.field.criterias']
         criterias.value = {
             'form.field.criterias.present': u'1',
