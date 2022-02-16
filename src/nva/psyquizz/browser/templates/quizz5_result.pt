@@ -189,12 +189,15 @@
             data: [{
                 target: ${scale.average}
             }]
-        }]
+        }],
+        tooltip: {
+            pointFormat: '${color[4]}'
+        }
       });
 
       svgToCanvas(myChart${repeat["scale"].index}, 'chart-${repeat["scale"].index}');
       $('#pSVG${repeat["scale"].index}').val(myChart${repeat["scale"].index}.getSVGForExport());
-
+      $('div#container${repeat["scale"].index}').before('${color[3]}');
       </tal:chart>
     </tal:charts>
     $('div#container0').before('<h2>Arbeitsinhalt</h2>')
