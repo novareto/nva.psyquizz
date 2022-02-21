@@ -724,7 +724,7 @@ class Quizz5(QuizzBase, Base):
             next(data)
             for entry in data:
                 idx, title, label, tooltip, red, yellow, green, inverted = entry
-                yield unicode(title, 'utf-8'), bool(int(inverted))
+                yield unicode(title, 'utf-8'), (label, bool(int(inverted)))
 
     def get_boundaries(self):
         chart_boundaries = IQuizz5.queryTaggedValue("chart_boundaries")
