@@ -3,18 +3,19 @@
   <div class="header">
     <h1>Ergebnisse</h1>
     <p>
-      Hier sehen Sie die Auswertung für alle Beschäftigten.
+      Im Folgenden wird für die Befragungsergebnisse dargestellt, wie sich diese auf die Gesundheit der
+      Mitarbeiterinnen und Mitarbeiter auswirken. Ergebnisse innerhalb des roten Balkens deuten auf ein
+      stark erhöhtes Gesundheitsrisko hin, Ergebnisse innerhalb des gelben Balkens stehen für ein leicht
+      erhöhtes Gesundheitsrisiko und bei Ergebnissen innerhalb des grünen Balkens scheint alles in
+      Ordnung.
     </p>
     <p>
-      Durch Auswahl einer oder mehrerer Auswertungsgruppen haben Sie die
-      Möglichkeit sich eine detaillierte Auswertung anzeigen zu lassen.
-      (Bitte beachten Sie: Einzelne Auswertungsgruppen können erst ausgewählt
-      werden, wenn für diese Auswertungsgruppe mindestens sieben ausgefüllte
-      Fragebögen vorliegen.)
-    </p>
-    <p>
-      Der weitere Umgang mit den Ergebnissen ist in der
-      „Übersicht 7 Schritte“ unter 4. Lösungsworkshops beschrieben.
+			Die Wirkung der einzelnen Bereiche aus der Befragung auf die Gesundheit ist unterschiedlich stark.
+			So hat der Beriech „Soziale Stressoren unter Kollegen“ eine schädigendere Wirkung als z.B.
+			„Informationsmängel“. Daher setzt der rote Balken dort früher ein als bei „Informationsmängeln“.
+			Außerdem gibt es Bereiche , sogenannte Ressourcen, bei denen gilt „je mehr je besser“. Deshalb
+			beginnt beispielsweise bei „Handlungsspielraum“ die Grafik mit dem roten Balken und und endet mit
+			dem grünen.
     </p>
   </div>
   <form action="." tal:attributes="action view.request.url"
@@ -59,6 +60,7 @@
             $("#form-action-filter").click();
         });
     });
+
   </script>
 
   <script>
@@ -75,13 +77,11 @@
           document.getElementById(target_id).value = canvas.toDataURL("image/png");
         };
      }
-
+    Highcharts.AST.allowedAttributes.push('data-toggle');
     Highcharts.setOptions({
         chart: {
             inverted: true,
-            //marginLeft: 135,
-            type: 'bullet',
-            height: 110 
+            type: 'bullet'
         },
         title: {
             text: null
@@ -97,10 +97,19 @@
                 borderWidth: 0,
                 color: '#000',
                 targetOptions: {
+                  width: '200%',
+                  height: 5,
+                  borderWidth: 1,
+                  borderColor: 'black',
+                  color: 'blue'
+                }
+              /*
+                targetOptions: {
                     width: 30,
                     height: 3,
                     borderRadius: 0,
                 }
+                */
             }
         },
         credits: {
@@ -108,11 +117,8 @@
         },
         exporting: {
             enabled: false
-        },
-        tooltip: {
-            pointFormat: '<b>{point.y}</b> (with target at {point.target})'
         }
-        });
+     });
   </script>
 
   <form  id="result" method="POST"
@@ -143,15 +149,30 @@
 
   </form>
 
+  <style>
+
+</style>
+
   <script>
     <tal:charts repeat="scale view.stats.statistics['global.averages']">
       <tal:chart define="color view.colors[scale.title]">
 
     var myChart${repeat["scale"].index} = Highcharts.chart('container${repeat["scale"].index}', {
+        chart: {
+           height: '<span tal:replace="color[3].strip() and '140' or '125'" />',
+	},
         title: {
-                enabled: true,
-                align: 'left',
-                text: '<span style="font-size: large" class="hc-cat-title">${scale.title}</span>'
+            enabled: true,
+            align: 'left',
+          text: '<strong data-toggle="tooltip" tal:attributes="title color[4]" tal:content="structure color[3]" tal:condition="color[3].strip()"/>', 
+            //text: '<h3 data-toggle="tooltip" tal:attributes="title color[4]" tal:content="structure color[3]" tal:condition="color[3].strip()" /><h4 data-toggle="tooltip" tal:attributes="title color[4]" tal:content="scale.title" />',
+            useHTML: true
+        },
+        subtitle: {
+            enabled: false,
+            align: 'left',
+            useHTML: true,
+          text: '<span data-toggle="tooltip" tal:attributes="title color[4]" tal:content="scale.title"> </span>'
         },
         xAxis: {
             categories: [
@@ -181,7 +202,7 @@
                 to: 4,
                 color: '${color[2][1]}'
             }],
-            title: null
+            title: '${color[3]}'
         },
         series: [{
             data: [{
@@ -192,9 +213,9 @@
 
       svgToCanvas(myChart${repeat["scale"].index}, 'chart-${repeat["scale"].index}');
       $('#pSVG${repeat["scale"].index}').val(myChart${repeat["scale"].index}.getSVGForExport());
-
       </tal:chart>
     </tal:charts>
+      $('[data-toggle="tooltip"]').tooltip()
   </script>
 
   <div tal:condition="view.stats.statistics['extra_data']">

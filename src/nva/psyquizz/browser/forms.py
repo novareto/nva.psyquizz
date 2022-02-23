@@ -280,9 +280,10 @@ class EditCriteria(EditForm):
 
     label = "Auswertungsgruppe bearbeiten"
     description = u"Bitte beachten Sie: Einzelne Auswertungsgruppen können bei der Auswertung einer Mitarbeiterbefragung nur dann betrachtet werden, wenn für die jeweilige Auswertungsgruppe mindestens sieben ausgefüllte Fragebögen vorliegen. Andernfalls bleiben die jeweiligen Auswertungsgruppen inaktiv."
+
     preview = None
     fields = Fields(ICriteria).select('title', 'items')
-    actions = Actions()
+    #actions = Actions()
 
     @property
     def action_url(self):
@@ -685,13 +686,14 @@ class CreateCourse(Form):
 
     def updateForm(self):
         super(CreateCourse, self).updateForm()
-        name = self.fieldWidgets['form.field.name']
-        nv = u"Beurteilung Psychischer Belastung %s" % (
-            datetime.datetime.now().strftime('%Y'))
-        courses = len(list(self.context.courses))
-        if courses > 0:
-            nv = "%s (%s)" % (nv, str(courses + 1))
-        name.value = {'form.field.name': nv}
+        if not self.request.form.get('form.field.name'):
+            name = self.fieldWidgets['form.field.name']
+            nv = u"Beurteilung Psychischer Belastung %s" % (
+                datetime.datetime.now().strftime('%Y'))
+            courses = len(list(self.context.courses))
+            if courses > 0:
+                nv = "%s (%s)" % (nv, str(courses + 1))
+            name.value = {'form.field.name': nv}
         criterias = self.fieldWidgets['form.field.criterias']
         criterias.value = {
             'form.field.criterias.present': u'1',
