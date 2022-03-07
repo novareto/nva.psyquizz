@@ -446,7 +446,6 @@ class Registration(Publication, Location):
     def layers(self):
         if self.configuration.reg_layer is not None:
             return [self.configuration.reg_layer, self.configuration.layer] + self._layers
-        print self._layers
         return self._layers
 
     def __init__(self, configuration):
