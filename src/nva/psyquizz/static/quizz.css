@@ -233,3 +233,8 @@ div#field-form-field-challenge {
 #form-field-startdate {
     max-width: 100px;
 }
+
+.alert-danger {
+   padding: 1em;
+   border: 1px solid #a94442;
+}

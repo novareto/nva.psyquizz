@@ -473,7 +473,7 @@ class IScale20(Interface):
 
     question58 = schema.Choice(
         title=u"58",
-        description=u"Inwieweit sind folgenden Umgebungsbelastungen an Ihrem Arbeitsplatz vorhanden: <br> Lärm",
+        description=u"Inwieweit sind folgenden Umgebungsbelastungen an Ihrem Arbeitsplatz vorhanden: <br> <br> Lärm",
         vocabulary=FBGU,
         required=True,
     )
@@ -494,7 +494,7 @@ class IScale20(Interface):
 
     question61 = schema.Choice(
         title=u"61",
-        description=u"Gefahrenstoffe",
+        description=u"Gefahrstoffe",
         vocabulary=FBGU,
         required=True,
    )
@@ -716,7 +716,7 @@ class Quizz5(QuizzBase, Base):
     @staticmethod
     def inverted():
         resources = getSite().configuration.resources
-        test = resources.get('test.csv')
+        test = resources.get('strukturangaben.csv')
         with open(test, 'r') as fd:
             def as_float(v):
                 return float(v.replace(',', '.'))
@@ -731,15 +731,17 @@ class Quizz5(QuizzBase, Base):
         if chart_boundaries is not None:
             return chart_boundaries
         resources = getSite().configuration.resources
-        test = resources.get('test.csv')
+        test = resources.get('strukturangaben.csv')
         with open(test, 'r') as fd:
             def as_float(v):
                 return float(v.replace(',', '.'))
-            data = csv.reader(fd)
+            data = csv.reader(fd, delimiter=';')
             next(data)
             boundaries = OrderedDict()
             for entry in data:
                 idx, title, label, tooltip, red, yellow, green, inverted = entry
+                tooltip = tooltip.decode('utf-8')
+                #title = title.decode('utf-8')
                 if red.startswith("</="):
                     red = red[3:]
                 elif red.startswith(">") or red.startswith("<"):
@@ -749,16 +751,18 @@ class Quizz5(QuizzBase, Base):
                         (as_float(green), '#62B645'),
                         (as_float(red), '#FFCC00'),
                         (5, '#D8262B'),
-                        label, tooltip
+                        label, tooltip, inverted
                     )
                 else:
                     boundary = (
                         (as_float(red), '#D8262B'),
                         (as_float(yellow), '#FFCC00'),
                         (as_float(green), '#62B645'),
-                        label, tooltip
+                        label, tooltip, inverted
                     )
                 boundaries[unicode(title, 'utf-8')] = boundary
+                #boundaries[title] = boundary
+                print title
         IQuizz5.setTaggedValue("chart_boundaries", boundaries)
         return boundaries
 

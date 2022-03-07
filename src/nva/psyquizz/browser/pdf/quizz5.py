@@ -47,10 +47,10 @@ class Quizz5PDF(GeneratePDF):
         pdf.seek(0)
         return pdf.read()
 
-
     def headerfooter(self, canvas, doc):
         canvas.setFont("Helvetica", 9)
         canvas.drawString(1 * cm, 2 * cm, u"Gemeinsam zu gesunden Arbeitsbedingungen")
         canvas.drawString(1 * cm, 1.6 * cm, u"Psychische Belastungen online erfassen")
-        canvas.drawString(18 * cm, 2 * cm, u"Grundlage der Befragung: FBGU")
+        canvas.drawString(10 * cm, 2 * cm, u"Grundlage der Befragung:")
+        canvas.drawString(10 * cm, 1.6 * cm, u"FBGU-Fragebogen")
         canvas.setFont("Helvetica", 12)

@@ -351,14 +351,12 @@ class NoAccess(Location):
         return getGlobalSiteManager()
 
     def __call__(self):
-        if self.request.path_info == 'impressum':
+        if self.request.path_info == '/impressum':
             return getMultiAdapter((self, self.request), name="impressum")()
-        if self.request.path_info == 'datenschutz':
-            return getMultiAdapter(
-                (self, self.request), name="datenschutz")()
-        elif self.request.path_info == 'impressum':
-            return getMultiAdapter(
-                (self, self.request), name="impressum")()
+        elif self.request.path_info == '/datenschutz':
+            return getMultiAdapter((self, self.request), name="datenschutz")()
+        elif self.request.path_info == '/kontakt':
+            return getMultiAdapter((self, self.request), name="kontakt")()
 
         anonview = self.mapping.get(self.request.path_info)
         if anonview is None:

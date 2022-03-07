@@ -23,7 +23,7 @@
        metal:define-macro="form-fieldset"
        tal:condition="view.fieldWidgets">
     <div tal:repeat="widget view.fieldWidgets"
-         tal:attributes="id 'field-' + widget.htmlId(); class widget.error and 'form-group bs-callout bs-callout-danger has-error' or 'form-group'">
+         tal:attributes="id 'field-' + widget.htmlId(); class widget.error and 'form-group alert-danger bs-callout bs-callout-danger has-error' or 'form-group'">
       <label class="field-label control-label" for="#"
              tal:attributes="for widget.htmlId()"
              tal:condition="widget.isVisible()">
