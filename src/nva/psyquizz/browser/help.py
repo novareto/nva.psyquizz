@@ -3,18 +3,22 @@
 # cklinger@novareto.de
 
 import uvclight
-
+from os import path
+from dolmen.template import TALTemplate
 from zope.interface import Interface
 from uvc.design.canvas import IAboveContent
 from .forms import CreateCourse, CreateCompany, CreateCriterias, EditCriteria
 from .invitations import ExampleText
 
 
+
+PATH = path.dirname(__file__)
+
 class HelpPage(uvclight.Viewlet):
     uvclight.context(Interface)
     uvclight.viewletmanager(IAboveContent)
     uvclight.baseclass()
-    template = uvclight.get_template('helppage.cpt', __file__)
+    template = TALTemplate(PATH+'/help-templates/helppage.cpt')
 
 
 #class HelpCompany(HelpPage):
@@ -24,12 +28,12 @@ class HelpPage(uvclight.Viewlet):
 
 class HelpFrontPage(HelpPage):
     uvclight.view(CreateCompany)
-    template = uvclight.get_template('helpcompany.cpt', __file__)
+    template = TALTemplate(PATH +'/help-templates/helpcompany.cpt')
 
 
 class HelpAddCriteria(HelpPage):
     uvclight.view(CreateCriterias)
-    template = uvclight.get_template('helpcriterias.cpt', __file__)
+    template = TALTemplate(PATH+'/help-templates/helpcriterias.cpt')
 
 
 class HelpEditCriteria(HelpAddCriteria):
@@ -38,9 +42,9 @@ class HelpEditCriteria(HelpAddCriteria):
 
 class HelpCourse(HelpPage):
     uvclight.view(CreateCourse)
-    template = uvclight.get_template('helpcourse.cpt', __file__)
+    template = TALTemplate(PATH + './help-templates/helpcourse.cpt')
 
 
 class HelpLetter(HelpPage):
     uvclight.view(ExampleText)
-    template = uvclight.get_template('helpletter.cpt', __file__)
+    template = TALTemplate(PATH + './help-templates/helpletter.cpt')

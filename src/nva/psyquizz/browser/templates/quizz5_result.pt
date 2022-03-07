@@ -2,21 +2,10 @@
 <div>
   <div class="header">
     <h1>Ergebnisse</h1>
-    <p>
-      Hier sehen Sie die Auswertung für alle Beschäftigten.
-    </p>
-    <p>
-      Durch Auswahl einer oder mehrerer Auswertungsgruppen haben Sie die
-      Möglichkeit sich eine detaillierte Auswertung anzeigen zu lassen.
-      (Bitte beachten Sie: Einzelne Auswertungsgruppen können erst ausgewählt
-      werden, wenn für diese Auswertungsgruppe mindestens sieben ausgefüllte
-      Fragebögen vorliegen.)
-    </p>
-    <p>
-      Der weitere Umgang mit den Ergebnissen ist in der
-      „Übersicht 7 Schritte“ unter 4. Lösungsworkshops beschrieben.
-    </p>
+    <div tal:replace="structure view.description"> </div>
   </div>
+
+
   <form action="." tal:attributes="action view.request.url"
         tal:define="current view.stats.filters.get('criterias', {})">
     <div>
@@ -76,13 +65,11 @@
           document.getElementById(target_id).value = canvas.toDataURL("image/png");
         };
      }
-
+    Highcharts.AST.allowedAttributes.push('data-toggle');
     Highcharts.setOptions({
         chart: {
             inverted: true,
-            //marginLeft: 135,
-            type: 'bullet',
-            height: 110
+            type: 'bullet'
         },
         title: {
             text: null
@@ -98,10 +85,19 @@
                 borderWidth: 0,
                 color: '#000',
                 targetOptions: {
+                  width: '200%',
+                  height: 5,
+                  borderWidth: 1,
+                  borderColor: 'black',
+                  color: 'blue'
+                }
+              /*
+                targetOptions: {
                     width: 30,
                     height: 3,
                     borderRadius: 0,
                 }
+                */
             }
         },
         credits: {
@@ -110,7 +106,7 @@
         exporting: {
             enabled: false
         }
-        });
+     });
   </script>
 
   <form  id="result" method="POST"
@@ -141,15 +137,37 @@
 
   </form>
 
+  <style>
+.tooltip {
+  position: fixed;
+     font-size: 2rem;
+}
+.tooltip-inner {
+  max-width: 350px;
+  /* If max-width does not work, try using width instead */
+  width: 350px;
+}
+  </style>
+
   <script>
     <tal:charts repeat="scale view.stats.statistics['global.averages']">
       <tal:chart define="color view.colors[scale.title]">
 
     var myChart${repeat["scale"].index} = Highcharts.chart('container${repeat["scale"].index}', {
+        chart: {
+           height: '<span tal:replace="color[3].strip() and '140' or '125'" />',
+	},
         title: {
-                enabled: true,
-                align: 'left',
-                text: '<span style="font-size: large" class="hc-cat-title">${scale.title}</span>'
+            enabled: true,
+            align: 'left',
+          text: '<strong data-toggle="tooltip" data-container="body" tal:attributes="title color[4]" tal:content="structure color[3]" tal:condition="color[3].strip()"/>',
+            useHTML: true
+        },
+        subtitle: {
+            enabled: false,
+            align: 'left',
+            useHTML: true,
+          text: '<span data-bs-custom-class="beautifier" data-toggle="tooltip" data-container="body" tal:attributes="title color[4]" tal:content="scale.title"> </span> <span tal:condition="color[5] == str(1)"> (Ressource - hohe Werte wirken positiv auf die Gesundheit) </span>'
         },
         xAxis: {
             categories: [
@@ -179,23 +197,20 @@
                 to: 4,
                 color: '${color[2][1]}'
             }],
-            title: null
+            title: '${color[3]}'
         },
         series: [{
             data: [{
                 target: ${scale.average}
             }]
-        }],
-        tooltip: {
-            pointFormat: '${color[4]}'
-        }
+        }]
       });
 
       svgToCanvas(myChart${repeat["scale"].index}, 'chart-${repeat["scale"].index}');
       $('#pSVG${repeat["scale"].index}').val(myChart${repeat["scale"].index}.getSVGForExport());
-      $('div#container${repeat["scale"].index}').before('${color[3]}');
       </tal:chart>
     </tal:charts>
+      $('[data-toggle="tooltip"]').tooltip()
   </script>
 
   <div tal:condition="view.stats.statistics['extra_data']">

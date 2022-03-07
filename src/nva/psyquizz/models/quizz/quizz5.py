@@ -473,7 +473,7 @@ class IScale20(Interface):
 
     question58 = schema.Choice(
         title=u"58",
-        description=u"Inwieweit sind folgenden Umgebungsbelastungen an Ihrem Arbeitsplatz vorhanden: <br> Lärm",
+        description=u"Inwieweit sind folgenden Umgebungsbelastungen an Ihrem Arbeitsplatz vorhanden: <br> <br> Lärm",
         vocabulary=FBGU,
         required=True,
     )
@@ -494,7 +494,7 @@ class IScale20(Interface):
 
     question61 = schema.Choice(
         title=u"61",
-        description=u"Gefahrenstoffe",
+        description=u"Gefahrstoffe",
         vocabulary=FBGU,
         required=True,
    )
@@ -576,8 +576,8 @@ IQuizz5.setTaggedValue("scales", [
     {'iface': IScale13, 'label': u"Zeitdruck/hohe Arbeitsintensität"},
     {'iface': IScale14, 'label': u"Unterbrechungen/Multitasking"},
     {'iface': IScale15, 'label': u"Kommunikation/Kooperation"},
-    {'iface': IScale16, 'label': u"Soziale Unterstützung durch Kollegen und Kolleginnen"},
-    {'iface': IScale17, 'label': u"Soziale Stressoren durch Kollegen und Kolleginnen"},
+    {'iface': IScale16, 'label': u"Soziale Unterstützung"},
+    {'iface': IScale17, 'label': u"Soziale Drucksituationen"},
     {'iface': IScale18, 'label': u"Soziale Unterstützung durch Führungskräfte"},
     {'iface': IScale19, 'label': u"Feedback und Anerkennung"},
     {'iface': IScale20, 'label': u"Arbeitsumgebung und Arbeitsplatzgestaltung"},
@@ -600,8 +600,8 @@ IQuizz5.setTaggedValue("averages", OrderedDict((
     (u'Zeitdruck/hohe Arbeitsintensität', [x[1].title for x in schema.getFieldsInOrder(IScale13)]),
     (u'Unterbrechungen/Multitasking', [x[1].title for x in schema.getFieldsInOrder(IScale14)]),
     (u'Kommunikation/Kooperation', [x[1].title for x in schema.getFieldsInOrder(IScale15)]),
-    (u'Soziale Unterstützung durch Kollegen und Kolleginnen', [x[1].title for x in schema.getFieldsInOrder(IScale16)]),
-    (u'Soziale Stressoren durch Kollegen und Kolleginnen', [x[1].title for x in schema.getFieldsInOrder(IScale17)]),
+    (u'Soziale Unterstützung', [x[1].title for x in schema.getFieldsInOrder(IScale16)]),
+    (u'Soziale Drucksituationen', [x[1].title for x in schema.getFieldsInOrder(IScale17)]),
     (u'Soziale Unterstützung durch Führungskräfte', [x[1].title for x in schema.getFieldsInOrder(IScale18)]),
     (u'Feedback und Anerkennung', [x[1].title for x in schema.getFieldsInOrder(IScale19)]),
     (u'Arbeitsumgebung und Arbeitsplatzgestaltung', [x[1].title for x in schema.getFieldsInOrder(IScale20)]),
@@ -716,7 +716,7 @@ class Quizz5(QuizzBase, Base):
     @staticmethod
     def inverted():
         resources = getSite().configuration.resources
-        test = resources.get('test.csv')
+        test = resources.get('strukturangaben.csv')
         with open(test, 'r') as fd:
             def as_float(v):
                 return float(v.replace(',', '.'))
@@ -724,22 +724,24 @@ class Quizz5(QuizzBase, Base):
             next(data)
             for entry in data:
                 idx, title, label, tooltip, red, yellow, green, inverted = entry
-                yield unicode(title, 'utf-8'), bool(int(inverted))
+                yield unicode(title, 'utf-8'), (label, bool(int(inverted)))
 
     def get_boundaries(self):
         chart_boundaries = IQuizz5.queryTaggedValue("chart_boundaries")
         if chart_boundaries is not None:
             return chart_boundaries
         resources = getSite().configuration.resources
-        test = resources.get('test.csv')
+        test = resources.get('strukturangaben.csv')
         with open(test, 'r') as fd:
             def as_float(v):
                 return float(v.replace(',', '.'))
-            data = csv.reader(fd)
+            data = csv.reader(fd, delimiter=';')
             next(data)
             boundaries = OrderedDict()
             for entry in data:
                 idx, title, label, tooltip, red, yellow, green, inverted = entry
+                tooltip = tooltip.decode('utf-8')
+                #title = title.decode('utf-8')
                 if red.startswith("</="):
                     red = red[3:]
                 elif red.startswith(">") or red.startswith("<"):
@@ -749,16 +751,18 @@ class Quizz5(QuizzBase, Base):
                         (as_float(green), '#62B645'),
                         (as_float(red), '#FFCC00'),
                         (5, '#D8262B'),
-                        label, tooltip
+                        label, tooltip, inverted
                     )
                 else:
                     boundary = (
                         (as_float(red), '#D8262B'),
                         (as_float(yellow), '#FFCC00'),
                         (as_float(green), '#62B645'),
-                        label, tooltip
+                        label, tooltip, inverted
                     )
                 boundaries[unicode(title, 'utf-8')] = boundary
+                #boundaries[title] = boundary
+                print title
         IQuizz5.setTaggedValue("chart_boundaries", boundaries)
         return boundaries
 
