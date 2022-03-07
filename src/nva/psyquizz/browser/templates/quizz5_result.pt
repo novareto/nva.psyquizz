@@ -109,9 +109,6 @@
         },
         exporting: {
             enabled: false
-        },
-        tooltip: {
-            pointFormat: '<b>{point.y}</b> (with target at {point.target})'
         }
         });
   </script>
@@ -156,7 +153,7 @@
         },
         xAxis: {
             categories: [
-               '<span></span>'
+               '<span>${color[4]}</span>'
             ]
         },
         yAxis: {
