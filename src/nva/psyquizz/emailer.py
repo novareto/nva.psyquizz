@@ -11,7 +11,6 @@ from email.mime.multipart import MIMEMultipart
 from random import randrange
 from time import strftime
 from socket import gethostname
-from typing import NamedTuple, Type
 from contextlib import contextmanager
 from transaction.interfaces import (
     ISavepointDataManager, IDataManagerSavepoint)
@@ -91,7 +90,7 @@ class MailDelivery:
             if code < 200 or code >= 300:
                 raise RuntimeError(
                     'Error sending HELO to the SMTP server '
-                    f'(code={code}, response={response})'
+                    '(code=%s, response=%s)' % (code, response)
                 )
 
     def commit(self):
@@ -118,7 +117,7 @@ class MailDelivery:
             server.close()
 
     def abort(self):
-        self.queue.clear()
+        del self.queue[:]
         self.datamanager = None
 
     def email(self, recipient, subject, text, html=None):
@@ -183,7 +182,7 @@ class SecureMailer:
             self, tpl, to, subject, namespace, reply=None, callback=None):
         html = tpl.substitute(**namespace)
         text = html2text.html2text(html.decode('utf-8'))
-        return self.prepare(to, subject, html, text, reply, callback)
+        return self.prepare(to, subject, text, html, reply, callback)
 
     def get_sender(self):
         return MailDelivery(self)
