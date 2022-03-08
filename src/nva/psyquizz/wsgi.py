@@ -131,12 +131,12 @@ def routing(conf, files, **kwargs):
     # We create the emailer utility
     smtp = kwargs.get('smtp', '10.33.115.55')
     emitter = kwargs.get('emitter', 'my@email.com')
-    emailer = SecureMailer(smtp, emitter)
+    emailer = SecureMailer(smtp, emitter, port=25)
 
     # Applications configuration
     resources = Resources(kwargs['resources'])
     setup = Configuration(
-        title, session_key, engine, name, None, layer_iface, reg_layer_iface, smtp, resources)
+        title, session_key, engine, name, None, layer_iface, reg_layer_iface, emailer, resources)
 
     # Router
     root = URLMap()

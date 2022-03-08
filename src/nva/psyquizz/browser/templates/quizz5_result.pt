@@ -155,7 +155,7 @@
 
     var myChart${repeat["scale"].index} = Highcharts.chart('container${repeat["scale"].index}', {
         chart: {
-           height: '<span tal:replace="color[3].strip() and '140' or '125'" />',
+           height: '<span tal:replace="color[3].strip() and '147' or '125'" />',
 	},
         title: {
             enabled: true,

@@ -37,6 +37,7 @@
 	   var current = parseInt(hash);
            $('#scale-' + current.toString() + ' .question').each(function() {
              jQuery(this).removeClass('error alert alert-danger has-error')
+             jQuery('div#global-error').hide()
            }
            )
            if (current != 0) {

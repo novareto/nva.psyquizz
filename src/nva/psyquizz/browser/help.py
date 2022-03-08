@@ -42,9 +42,9 @@ class HelpEditCriteria(HelpAddCriteria):
 
 class HelpCourse(HelpPage):
     uvclight.view(CreateCourse)
-    template = TALTemplate(PATH + './help-templates/helpcourse.cpt')
+    template = TALTemplate(PATH + '/help-templates/helpcourse.cpt')
 
 
 class HelpLetter(HelpPage):
     uvclight.view(ExampleText)
-    template = TALTemplate(PATH + './help-templates/helpletter.cpt')
+    template = TALTemplate(PATH + '/help-templates/helpletter.cpt')
