@@ -356,6 +356,8 @@ class NoAccess(Location):
             return getMultiAdapter((self, self.request), name="datenschutz")()
         elif self.request.path_info == '/kontakt':
             return getMultiAdapter((self, self.request), name="kontakt")()
+        elif self.request.path_info == '/bf':
+            return getMultiAdapter((self, self.request), name="bf")()
 
         anonview = self.mapping.get(self.request.path_info)
         if anonview is None:
