@@ -171,7 +171,7 @@
         },
         xAxis: {
             categories: [
-               '<span>${color[4]}</span>'
+               ''
             ]
         },
         yAxis: {

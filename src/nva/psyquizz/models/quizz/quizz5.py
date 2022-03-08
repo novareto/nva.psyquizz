@@ -720,7 +720,8 @@ class Quizz5(QuizzBase, Base):
         with open(test, 'r') as fd:
             def as_float(v):
                 return float(v.replace(',', '.'))
-            data = csv.reader(fd)
+
+            data = csv.reader(fd, delimiter=';')
             next(data)
             for entry in data:
                 idx, title, label, tooltip, red, yellow, green, inverted = entry
