@@ -130,8 +130,9 @@ def routing(conf, files, **kwargs):
 
     # We create the emailer utility
     smtp = kwargs.get('smtp', '10.33.115.55')
+    smtp_port = kwargs.get('smtp_port', '2525')
     emitter = kwargs.get('emitter', 'my@email.com')
-    emailer = SecureMailer(smtp, emitter)
+    emailer = SecureMailer(smtp, emitter, port=smtp_port)
 
     # Applications configuration
     resources = Resources(kwargs['resources'])

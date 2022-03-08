@@ -12,15 +12,14 @@ from random import randrange
 from time import strftime
 from socket import gethostname
 from contextlib import contextmanager
-from transaction.interfaces import (
-    ISavepointDataManager, IDataManagerSavepoint)
+from transaction.interfaces import IDataManager
 from zope.interface import implementer
 
 
 ENCODING = 'utf-8'
 
 
-@implementer(ISavepointDataManager)
+@implementer(IDataManager)
 class MailDataManager:
 
     def __init__(self, callable, vote=None, onAbort=None):
@@ -34,31 +33,27 @@ class MailDataManager:
         pass
 
     def abort(self, txn):
-        if self.onAbort:
-            self.onAbort()
+        pass
 
     def sortKey(self):
         return str(id(self))
 
-    def savepoint(self):
-        pass
-
-    def abort_sub(self, txn):
-        pass
-
-    commit_sub = abort_sub
-
-    def beforeCompletion(self, txn):
-        pass
-
-    afterCompletion = beforeCompletion
+    def tpc_abort(self, txn):
+        if self.onAbort:
+            self.onAbort()
 
     def tpc_begin(self, txn, subtransaction=False):
         assert not subtransaction
 
     def tpc_vote(self, txn):
-        if self.vote is not None:
-            return self.vote()
+        try:
+            if self.vote is not None:
+                return self.vote()
+        except Exception as exc:
+            raise RuntimeError(
+                'An error occured while trying to reach the '
+                'email server: %s' % exc
+            )
 
     def tpc_finish(self, txn):
         try:
@@ -68,9 +63,8 @@ class MailDataManager:
             # Better to protect the data and potentially miss emails than
             # leave a database in an inconsistent state which requires a
             # guru to fix.
-            log.exception("Failed in tpc_finish for %r", self.callable)
-
-    tpc_abort = abort
+            logging.exception(
+                "Failed in tpc_finish for %r", self.callable)
 
 
 class MailDelivery:
@@ -80,10 +74,8 @@ class MailDelivery:
         self.queue = []
         self.txn = None
 
-    def vote(self):
-        server = smtplib.SMTP(
-            self.mailer.host, str(self.mailer.port))
-
+    def server_is_available(self):
+        server = smtplib.SMTP(self.mailer.host, self.mailer.port)
         code, response = server.ehlo()
         if code < 200 or code >= 300:
             code, response = server.helo()
@@ -93,10 +85,11 @@ class MailDelivery:
                     '(code=%s, response=%s)' % (code, response)
                 )
 
-    def commit(self):
-        server = smtplib.SMTP(
-            self.mailer.host, self.mailer.port)
-        server.set_debuglevel(self.mailer.debug)
+    def exhaust_queue(self):
+        if not self.queue:
+            return
+
+        server = smtplib.SMTP(self.mailer.host, self.mailer.port)
 
         # identify ourselves, prompting server for supported features
         server.ehlo()
@@ -116,7 +109,7 @@ class MailDelivery:
         finally:
             server.close()
 
-    def abort(self):
+    def abort_queue(self):
         del self.queue[:]
         self.datamanager = None
 
@@ -132,9 +125,9 @@ class MailDelivery:
                     'The transaction is doomed, no more emailing.')
 
             self.txn.join(MailDataManager(
-                self.commit,
-                vote=self.vote,
-                onAbort=self.abort
+                self.exhaust_queue,
+                vote=self.server_is_available,
+                onAbort=self.abort_queue
             ))
         self.queue.append(message)
         return message['Message-ID']
