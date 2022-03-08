@@ -158,7 +158,7 @@ class SecureMailer:
         left_part = '%s.%d.%d' % (strftime('%Y%m%d%H%M%S'),
                                   os.getpid(),
                                   randrange(0, randmax))
-        return f"{left_part}@{gethostname()}"
+        return "%s@%s" % (left_part, gethostname())
 
     def prepare(self, to, subject, text, html, reply=None, callback=None):
         msg = MIMEMultipart('alternative')
