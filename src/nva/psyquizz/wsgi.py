@@ -136,7 +136,7 @@ def routing(conf, files, **kwargs):
     # Applications configuration
     resources = Resources(kwargs['resources'])
     setup = Configuration(
-        title, session_key, engine, name, None, layer_iface, reg_layer_iface, smtp, resources)
+        title, session_key, engine, name, None, layer_iface, reg_layer_iface, emailer, resources)
 
     # Router
     root = URLMap()
