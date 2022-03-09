@@ -6,6 +6,7 @@ import uvclight
 from UserDict import UserDict
 from collections import namedtuple
 from zope.component import getUtility
+from collections import OrderedDict
 from nva.psyquizz.models import IQuizz, vocabularies
 from nva.psyquizz.models.quizz.quizz5 import IQuizz5
 from nva.psyquizz.browser.excel import SessionXSLX, Excel
@@ -13,12 +14,22 @@ from nva.psyquizz.browser.results import get_filters
 from zope.schema import getFieldsInOrder
 
 
-class Option(object):
-    __slots__ = ('title', 'value')
+def create_options_from_vocabulary(vocabulary):
+    options = OrderedDict()
+    for option in vocabulary:
+        options[option.value] = 0
+    return options
 
-    def __init__(self, title, value=None):
+
+class Option(object):
+    __slots__ = ('title', 'inverted', 'scale', 'description', 'options')
+
+    def __init__(self, title, description, vocabulary, inverted=False, scale=''):
         self.title = title
-        self.value = value
+        self.inverted = inverted
+        self.scale = scale
+        self.description = description
+        self.options = create_options_from_vocabulary(vocabulary)
 
 
 class Quizz5Excel(SessionXSLX):
@@ -29,28 +40,29 @@ class Quizz5Excel(SessionXSLX):
 
     def generate_ergebnisse(self, workbook):
         ws = workbook.add_worksheet(u'Ergebnisse')
-        total = 0
-        xAxis = []
-
-        averages = self.quizz.__schema__.queryTaggedValue('averages')
-        if averages:
-            avg_labels = {}
-            for label, ids in averages.items():
-                avg_labels.update({id: Option(label) for id in ids})
 
         if hasattr(self.quizz, 'inverted'):
             inverted = dict(list(self.quizz.inverted()))
         else:
             inverted = {}
 
-        for key, answers in self.statistics['raw'].items():
-            xAxis.append(key)
-            for answer in answers:
-                avg_labels[key].value = answer.result
+        averages = self.quizz.__schema__.queryTaggedValue('averages', {})
+        xAxis = OrderedDict()
 
-        xAxis_labels = {
-            k.title: k.description for id, k in
-            getFieldsInOrder(self.quizz.__schema__)}
+        for id, k in getFieldsInOrder(self.quizz.__schema__):
+            xAxis[k.title] = Option(
+                k.title, k.description, self.ergebnisse_vocabulary)
+
+        for label, ids in averages.items():
+            for id in ids:
+                _, is_inverted = inverted.get(label)
+                xAxis[id].scale = label
+                xAxis[id].inverted = is_inverted
+
+        for key, answers in self.statistics['raw'].items():
+            for answer in answers:
+                xAxis[key].options[answer.result] += 1
+
         line = 0
         ws.write(line, 0, 'Frage')
         ws.write(line, 1, 'Scale')
@@ -61,21 +73,13 @@ class Quizz5Excel(SessionXSLX):
             ws.write(line, start, option.title + ' - total')
             start += 1
 
-        line = 1
-        for idx in xAxis:
-            ws.write(line, 0, xAxis_labels[idx])
-            if averages:
-                label, is_inverted = inverted.get(avg_labels[idx].title)
-                ws.write(line, 1, avg_labels[idx].title)
-                ws.write(line, 2, is_inverted)
-                ws.write(line, 3, label)
-                start = 4
-                for option in self.ergebnisse_vocabulary:
-                    if option.value == avg_labels[idx].value:
-                        ws.write(line, start + 1, 1)
-                    start += 1
-
-            line += 1
+        for line, option in enumerate(xAxis.values(), 1):
+            ws.write(line, 0, option.title)
+            ws.write(line, 1, option.scale)
+            ws.write(line, 2, option.inverted)
+            ws.write(line, 3, option.description)
+            for column, count in enumerate(option.options.values(), 4):
+                ws.write(line, column, count)
 
 
 class Excel(Excel):
