@@ -111,8 +111,7 @@ class SevenSteps(MenuItem):
 
     @property
     def url(self):
-        #return "https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/gbpb-in-grossbetrieben"
-        return "https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/arbeitsbedingte-gesundheitsgefahren/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/gbpb-in-grossbetrieben"
+        return "https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/arbeitsmedizin-arbeitspsychologie-ergonomie/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/gbpb-in-grossbetrieben"
 
 
 class VideoAnleitungen(MenuItem):
@@ -125,7 +124,7 @@ class VideoAnleitungen(MenuItem):
 
     @property
     def url(self):
-        return "https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/arbeitsbedingte-gesundheitsgefahren/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/video-tutorials-zum-online-tool-zur-erfassung-psychischer-belastung-1/"
+        return "https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/arbeitsmedizin-arbeitspsychologie-ergonomie/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/video-tutorials-zum-online-tool-zur-erfassung-psychischer-belastung-1"
 
 
 class SevenStepsView(Page):

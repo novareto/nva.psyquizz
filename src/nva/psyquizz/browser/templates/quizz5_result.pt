@@ -1,0 +1,233 @@
+
+<div>
+  <div class="header">
+    <h1>Ergebnisse</h1>
+    <div tal:replace="structure view.description"> </div>
+  </div>
+
+
+  <form action="." tal:attributes="action view.request.url"
+        tal:define="current view.stats.filters.get('criterias', {})">
+    <div>
+      <a name="uncheckall">Alle</a>
+    </div>
+    <dl tal:define="crits view.stats.statistics['criterias']">
+      <tal:dl tal:repeat="crit crits">
+        <dt><h3 tal:content="crit" /></dt>
+        <dd>
+          <div tal:repeat="opt crits[crit]"
+               style="display: inline-block; padding: 5px;">
+            <tal:disabled define="disabled bool(opt.amount &lt; 7)">
+              <input name="criterias" type="checkbox"
+                     tal:attributes="value opt.uid;
+                                     checked opt.uid in current;
+                                     disabled disabled and 'disabled' or None" />
+              <span tal:content="'%s (%s)' % (opt.name, opt.amount)"
+                    tal:attributes="class disabled and 'text-muted' or ''"/>
+            </tal:disabled>
+          </div>
+        </dd>
+      </tal:dl>
+    </dl>
+    <input id="form-action-filter" type="submit" value="filter" />
+  </form>
+
+  <script>
+    $(document).ready(function() {
+        $("a[name='checkall']").click(function () {
+            $("input:checkbox").prop('checked', true);
+            $("#form-action-filter").click();
+        });
+
+        $("a[name='uncheckall']").click(function () {
+            $("input:checkbox").prop('checked', false);
+            $("#form-action-filter").click();
+        });
+
+        $('input[type=checkbox]').change(function() {
+            $("#form-action-filter").click();
+        });
+    });
+
+  </script>
+
+  <script>
+     function svgToCanvas(chart, target_id) {
+        var svg = chart.getSVG();
+        var canvas = document.createElement('canvas');
+        //canvas.width = "600";
+        //canvas.height = "400";
+        var ctx = canvas.getContext('2d');
+        var img = document.createElement("img");
+        img.setAttribute("src", "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg))));
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, 400, 400);
+          document.getElementById(target_id).value = canvas.toDataURL("image/png");
+        };
+     }
+    Highcharts.AST.allowedAttributes.push('data-toggle');
+    Highcharts.setOptions({
+        chart: {
+            inverted: true,
+            type: 'bullet'
+        },
+        title: {
+            text: null
+        },
+        legend: {
+            enabled: false
+        },
+        yAxis: {
+            gridLineWidth: 0
+        },
+        plotOptions: {
+            series: {
+                borderWidth: 0,
+                color: '#000',
+                targetOptions: {
+                  width: '200%',
+                  height: 5,
+                  borderWidth: 1,
+                  borderColor: 'black',
+                  color: 'blue'
+                }
+              /*
+                targetOptions: {
+                    width: 30,
+                    height: 3,
+                    borderRadius: 0,
+                }
+                */
+            }
+        },
+        credits: {
+            enabled: false
+        },
+        exporting: {
+            enabled: false
+        }
+     });
+  </script>
+
+  <form  id="result" method="POST"
+	 tal:attributes="action view.url(context) + '/export'">
+    <tal:containers
+        repeat="idx range(0, len(view.stats.statistics['global.averages']))">
+      <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
+      <textarea type="text" id="pSVG${idx}"
+                name="pSVG" style="display:none"></textarea>
+      <textarea type="text" id="chart-${idx}"
+                name="chart" style="display: none"></textarea>
+    </tal:containers>
+
+    <textarea type="text" id="averages" name="averages" style="display:none">
+      <tal:data
+           content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
+    </textarea>
+
+    <button class="btn btn-default" name="action" value="PDF">
+      <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+      </span>&nbsp; PDF export
+    </button>
+
+    <a class="btn btn-default"
+       tal:attributes="href 'excel?' + request.environment['QUERY_STRING']"
+       ><span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+       </span>&nbsp; Excel export</a>
+
+  </form>
+
+  <style>
+.tooltip {
+  position: fixed;
+     font-size: 2rem;
+}
+.tooltip-inner {
+  max-width: 350px;
+  /* If max-width does not work, try using width instead */
+  width: 350px;
+}
+  </style>
+
+  <script>
+    <tal:charts repeat="scale view.stats.statistics['global.averages']">
+      <tal:chart define="color view.colors[scale.title]">
+
+    var myChart${repeat["scale"].index} = Highcharts.chart('container${repeat["scale"].index}', {
+        chart: {
+           height: '<span tal:replace="color[3].strip() and '147' or '125'" />',
+	},
+        title: {
+            enabled: true,
+            align: 'left',
+          text: '<strong data-toggle="tooltip" data-container="body" tal:attributes="title color[4]" tal:content="structure color[3]" tal:condition="color[3].strip()"/>',
+            useHTML: true
+        },
+        subtitle: {
+            enabled: false,
+            align: 'left',
+            useHTML: true,
+          text: '<span data-bs-custom-class="beautifier" data-toggle="tooltip" data-container="body" tal:attributes="title color[4]" tal:content="scale.title"> </span> <span tal:condition="color[5] == str(1)"> (Ressource - hohe Werte wirken positiv auf die Gesundheit) </span>'
+        },
+        xAxis: {
+            categories: [
+               ''
+            ]
+        },
+        yAxis: {
+            min: 1,
+            max: 4,
+            gridLineWidth: 0,
+            tickInterval: 1,
+            labels: {
+                enabled: true,
+                step: 1,
+            },
+            plotBands: [
+            {
+                from: 0,
+                to: ${color[0][0]},
+                color: '${color[0][1]}'
+            }, {
+                from: ${color[0][0]},
+                to: ${color[1][0]},
+                color: '${color[1][1]}'
+            }, {
+                from: ${color[1][0]},
+                to: 4,
+                color: '${color[2][1]}'
+            }],
+            title: '${color[3]}'
+        },
+        series: [{
+            data: [{
+                target: ${scale.average}
+            }]
+        }]
+      });
+
+      svgToCanvas(myChart${repeat["scale"].index}, 'chart-${repeat["scale"].index}');
+      $('#pSVG${repeat["scale"].index}').val(myChart${repeat["scale"].index}.getSVGForExport());
+      </tal:chart>
+    </tal:charts>
+      $('[data-toggle="tooltip"]').tooltip()
+  </script>
+
+  <div tal:condition="view.stats.statistics['extra_data']">
+   <h2> Ergebnis der Zusatzfrage(n)  </h2>
+  <table id="mt" class="table table-bordered table-striped">
+    <tr tal:repeat="data view.stats.statistics['extra_data'].items()">
+      <td tal:content="data[0]"></td>
+      <td>
+        <ul>
+          <li tal:repeat="answer data[1].items()">
+            <span tal:content="answer[0]" /> :
+            <span tal:content="answer[1]" />
+          </li>
+        </ul>
+      </td>
+    </tr>
+  </table>
+  </div>
+
+</div>

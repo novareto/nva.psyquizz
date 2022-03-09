@@ -11,8 +11,6 @@ from nva.psyquizz.models import *
 from nva.psyquizz.models.quizz.quizz2 import Quizz2
 from nva.psyquizz.session import file_session_wrapper
 from nva.psyquizz.wsgi import routing
-from zope.testbrowser.wsgi import Browser
-from z3c.etestbrowser.testing import ExtendedTestBrowser
 
 
 @pytest.fixture(scope='session')

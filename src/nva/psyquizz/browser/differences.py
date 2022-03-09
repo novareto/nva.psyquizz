@@ -16,12 +16,12 @@ from cromlech.sqlalchemy import get_session
 from dolmen.forms.base import FAILURE, SUCCESS
 from grokcore.component import MultiAdapter, provides, adapts, name, provider
 from nva.psyquizz import hs
-from nva.psyquizz.models import IQuizz, IClassSession, ICourse, ICompany
+from nva.psyquizz.models import IQuizz, ICourse, ICompany
 from uvc.design.canvas import IAboveContent
 from uvclight.auth import require
 from zope.component import getMultiAdapter, queryUtility, getUtilitiesFor
-from zope.interface import Interface, classImplements
-from zope.location import Location, LocationProxy
+from zope.interface import Interface
+from zope.location import Location
 from zope.schema import Choice, Set
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
@@ -94,7 +94,7 @@ class CompanyCoursesDifference(Location):
                   )).\
                   group_by(Course.id).\
                   having(func.count(Student.access) >= 7)
-     
+
         rc = []
         for c in courses.all():
             title = c.name
@@ -259,7 +259,7 @@ class SessionsExport(Export):
     def update(self, *sessions):
         self.sessions = sessions
         self.quizz = queryUtility(IQuizz, name=self.context.quizz_type)
-        
+
     def render(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             filepath = os.path.join(temp_dir, "export.xlsx")
@@ -291,7 +291,7 @@ class SessionsExport(Export):
             worksheet = workbook.add_worksheet("Werte")
             global_avg = OrderedDict()
             stats = []
-            
+
             for session in self.sessions:
                 stat = SessionStatistics(self.quizz, session)
                 stat.update(filters)
@@ -322,7 +322,7 @@ class SessionsExport(Export):
 
         return u"Export"
 
-    
+
 class SessionsDiff(uvclight.Form):
     name("sessions.diff")
     require("manage.company")
@@ -338,7 +338,7 @@ class SessionsDiff(uvclight.Form):
     @property
     def quizz(self):
         return queryUtility(IQuizz, name=self.context.quizz_type)
-        
+
     @property
     def action_url(self):
         return self.request.path
@@ -435,7 +435,7 @@ class CompanyDiff(uvclight.Form):
     require("manage.company")
     uvclight.context(CompanyCoursesDifference)
     uvclight.layer(ICompanyRequest)
-    
+
     criterias = None
     ignoreContent = False
     fields = uvclight.Fields(IMultipleCoursesDiff)

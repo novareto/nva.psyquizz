@@ -14,8 +14,8 @@ from uvclight.backends.sql import SQLPublication
 from zope.component import getGlobalSiteManager
 from zope.interface import implementer
 from cromlech.sqlalchemy import get_session
-from functools import partial
-from zope.location import ILocation, Location, LocationProxy, locate
+from zope.location import ILocation, LocationProxy, locate
+from nva.psyquizz.models.student import student_quizz
 
 
 def get_id(secret):
@@ -29,10 +29,10 @@ class QuizzBoard(SQLContainer):
     assert_key = 'completion_date'
     db_key = "school"
 
-    def __init__(self, configuration, parent=None):
-        self.__parent__ = parent
-        self.__name__ = configuration.name
-        self.configuration = configuration
+    #def __init__(self, configuration, parent=None):
+    #    self.__parent__ = parent
+    #    self.__name__ = configuration.name
+    #    self.configuration = configuration
 
     def getSiteManager(self):
         return getGlobalSiteManager()
@@ -58,6 +58,7 @@ class QuizzBoard(SQLContainer):
         self.session.add(student)
         student.__name__ = uuid
         student.__parent__ = self
+        student_quizz(student, None)
         return student
 
     def __contains__(self, id):
@@ -82,14 +83,12 @@ class QuizzBoard(SQLContainer):
     def __getitem__(self, id):
         if id.startswith('generic'):
             try:
-                #sessionid = get_id(str(id[8:]))
                 return self.create_student(str(id[8:]))
             except QuizzClosed:
                 raise
             except:
                 raise KeyError(id)
         else:
-            #content = SQLContainer.__getitem__(self, id)
             content = self.getStudent(id)
             if content is not None:
                 if date.today() > content.session.enddate:
@@ -108,11 +107,12 @@ class QuizzBoard(SQLContainer):
             model = LocationProxy(model)
 
         locate(model, self, self.key_reverse(model))
+        student_quizz(model, None)
         return model
 
 
 def get_my_session():
-    return get_session('school') 
+    return get_session('school')
 
 
 class Application(SQLPublication):
@@ -122,8 +122,8 @@ class Application(SQLPublication):
         pass
 
     def site_manager(self, environ):
-        return Site(QuizzBoard(self.configuration, parent=None))
-        #return Site(QuizzBoard(get_my_session, name=self.configuration.name, parent=None))
+        #return Site(QuizzBoard(self.configuration, parent=None))
+        return Site(QuizzBoard(get_my_session, name=self.configuration.name, parent=None))
 
     @property
     def layers(self):

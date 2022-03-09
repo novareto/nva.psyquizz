@@ -1,37 +1,32 @@
 # -*- coding: utf-8 -*-
 
 from uvc.protectionwidgets import Captcha
-import os
 import json
 import uuid
 import hashlib
 import datetime
-import html2text
 import uvclight
-import re
 
 from .. import wysiwyg, quizzjs, startendpicker
 from ..apps.anonymous import QuizzBoard
 from ..i18n import _
 from ..interfaces import IAnonymousRequest, ICompanyRequest
-from ..interfaces import QuizzAlreadyCompleted, QuizzClosed
 from ..interfaces import IRegistrationRequest
 from ..models import HistoryEntry
 from ..models import Account, Company, Course, ClassSession, Student
 from ..models import ICourseSession, IAccount, ICompany, ICourse, IClassSession
-from ..models import IQuizz, TrueOrFalse
+from ..models import IQuizz
 from ..models import Criteria, CriteriaAnswer, ICriteria, ICriterias
 from ..models.criterias import criterias_table
-from ..models.quizz.quizz4 import IQuizz4
-from nva.psyquizz.browser.lib.emailer import SecureMailer, prepare, ENCODING
+from ..models.quizz.quizz5 import IQuizz5
+from ..emailer import ENCODING
 
-import grokcore.component as grok
 from grokcore.component import Adapter, provides, context, baseclass
-from grokcore.component import adapter, adapts, implementer
+from grokcore.component import adapter, implementer
 
 from cromlech.sqlalchemy import get_session
 from dolmen.forms.base import (
-    Field, SuccessMarker, makeAdaptiveDataManager, NO_VALUE)
+    SuccessMarker, makeAdaptiveDataManager, NO_VALUE)
 from dolmen.forms.base.actions import Action, Actions
 from dolmen.forms.base.errors import Error
 from dolmen.forms.base.utils import apply_data_event
@@ -39,10 +34,7 @@ from dolmen.forms.crud.actions import message
 from dolmen.forms.ztk.widgets.choice import ChoiceField
 from dolmen.menu import menuentry, order
 from js.jqueryui import jqueryui
-from nva.psyquizz import quizzjs
-from siguvtheme.resources import all_dates, datepicker_de
 from sqlalchemy import func
-from string import Template
 from uvc.design.canvas import IContextualActionsMenu
 from uvc.design.canvas import IDocumentActions
 from uvclight import Form, EditForm, DeleteForm, Fields, SUCCESS, FAILURE
@@ -50,14 +42,13 @@ from uvclight import action, layer, name, title, get_template
 from uvclight.auth import require
 from zope.component import getUtility
 from zope.interface import Interface, provider
-from zope.schema import Bool, List, Int, Choice, Password, TextLine
+from zope.schema import Bool, Int, Choice, Password, TextLine
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from dolmen.forms.base.interfaces import IForm
 from cromlech.browser import ITemplate
 from ..interfaces import IQuizzLayer
 from ..extra_questions import generate_extra_questions
-from siguvtheme.uvclight import IDGUVRequest
 
 
 @adapter(IForm, IQuizzLayer)
@@ -67,28 +58,25 @@ def form_quizz_template(context, request):
     return uvclight.get_template('form.cpt', __file__)
 
 
-with open(os.path.join(os.path.dirname(__file__), 'lib', 'mail.tpl'), 'r') as fd:
-    data = unicode(fd.read(), 'utf-8')
-    mail_template = Template(data.encode(ENCODING))
+def send_activation_code(config, company_name, email, code, base_url):
+    title = (
+        u'Gemeinsam zu gesunden Arbeitsbedingungen – Aktivierung'
+    ).encode(ENCODING)
 
+    namespace = dict(
+        title=title,
+        base_url=base_url,
+        encoding=ENCODING,
+        email=email.encode(ENCODING),
+        company=company_name.encode(ENCODING),
+        activation_code=code
+    )
 
-def send_activation_code(smtp, company_name, email, code, base_url):
-    mailer = SecureMailer(smtp)  # BBB
-    from_ = 'extranet@bgetem.de'
-    title = (u'Gemeinsam zu gesunden Arbeitsbedingungen – Aktivierung').encode(
-        ENCODING)
-    with mailer as sender:
-        html = mail_template.substitute(
-            title=title,
-            encoding=ENCODING,
-            base_url=base_url,
-            email=email.encode(ENCODING),
-            company=company_name.encode(ENCODING),
-            activation_code=code)
-
-        text = html2text.html2text(html.decode('utf-8'))
-        mail = prepare(from_, email, title, html, text.encode('utf-8'))
-        sender(from_, email, mail.as_string())
+    tpl = config.resources.get_template('mail.tpl')
+    sender = config.emailer.get_sender()
+    message = config.emailer.prepare_from_template(
+        tpl, email, title, namespace)
+    sender(message)
     return True
 
 
@@ -202,10 +190,11 @@ class PreviewCriterias(Form):
             SimpleTerm(value=c.strip(), token=idx, title=c.strip())
             for idx, c in enumerate(self.criterias.split('\n'), 1)
             if c.strip()])
-
+        import pdb; pdb.set_trace()
         fields = Fields(Choice(
             __name__='criteria_1',
-            title=self.title.decode('utf-8'),
+            #title=self.title.decode('utf-8'),
+            title=self.title,
             description=u"Wählen Sie das Zutreffende aus.",
             vocabulary=values,
             required=True,
@@ -231,10 +220,10 @@ class CreateCriterias(Form):
     fields = Fields(ICriteria).select('title', 'items')
     label = u"Auswertungsgruppen anlegen <a href='' data-toggle='modal' data-target='#myModal'> <span class='glyphicon glyphicon-question-sign' aria-hidden='true'></span> </a>"
     description = u"""
-Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.  
-„Abteilung“). Zu jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen (z.B.  
-„Personalabteilung“ und „Produktion“). <b>Aus Datenschutzgründen werden nur Ergebnisse von Auswertungsgruppen angezeigt, 
-von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
+Bitte geben Sie einen Oberbegriff für Ihre Auswertungsgruppen an (z.B.
+„Abteilung“). Zu jedem Oberbegriff gehören mindestens zwei Auswertungsgruppen (z.B.
+„Personalabteilung“ und „Produktion“). <b>Aus Datenschutzgründen werden nur Ergebnisse von Auswertungsgruppen angezeigt,
+von denen mindestens sieben ausgefüllte Fragebogen vorliegen.</b>
 """
 
     preview = None
@@ -243,6 +232,11 @@ von denen mindestens sieben ausgefüllte „Fragebogen“ vorliegen.</b>
     def action_url(self):
         quizzjs.need()
         return self.request.path
+
+    @action(_(u'Cancel'))
+    def handle_cancel(self):
+        self.redirect(self.application_url())
+        return SUCCESS
 
     @action(_(u'Add'))
     def handle_save(self):
@@ -284,10 +278,13 @@ class EditCriteria(EditForm):
     name('index')
     title(_(u'Edit criteria'))
     require('zope.Public')
-    label = ""
 
+    label = "Auswertungsgruppe bearbeiten"
+    description = u"Bitte beachten Sie: Einzelne Auswertungsgruppen können bei der Auswertung einer Mitarbeiterbefragung nur dann betrachtet werden, wenn für die jeweilige Auswertungsgruppe mindestens sieben ausgefüllte Fragebögen vorliegen. Andernfalls bleiben die jeweiligen Auswertungsgruppen inaktiv."
+
+    preview = None
     fields = Fields(ICriteria).select('title', 'items')
-    actions = Actions()
+    #actions = Actions()
 
     @property
     def action_url(self):
@@ -299,7 +296,18 @@ class EditCriteria(EditForm):
         url = self.application_url()
         return SuccessMarker('Aborted', True, url=url)
 
-    @action(_(u"Update"))
+    @action(_(u'Vorschau'))
+    def handle_preview(self):
+        data, errors = self.extractData()
+        if errors:
+            self.flash(_(u'An error occurred.'))
+            return FAILURE
+
+        preview = PreviewCriterias(self.context, self.request, **data)
+        preview.updateForm()
+        self.preview = preview.render()
+
+    @action(_(u"Speichern"))
     def save(self):
         data, errors = self.extractData()
         if errors:
@@ -310,6 +318,12 @@ class EditCriteria(EditForm):
         message(_(u"Ihre Auswertungsgruppe wurde aktualisiert."))
         url = self.application_url()
         return SuccessMarker('Updated', True, url=url)
+
+    def render(self):
+        html = super(EditCriteria, self).render()
+        if self.preview:
+            html += self.preview
+        return html
 
 
 class DeletedCriteria(DeleteForm):
@@ -322,7 +336,7 @@ class DeletedCriteria(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie die Auswertungsgruppe '%s' wirklich löschen" % (
+        return u"Wollen Sie die Auswertungsgruppe '%s' wirklich löschen" % (
             self.context.title)
 
     @property
@@ -425,6 +439,8 @@ class CreateAccount(Form):
     dataValidators = []
     fields = (Fields(IAccount).select('name', 'email', 'password') +
               Fields(IVerifyPassword, ICaptched))
+    fields = (Fields(IAccount).select('name', 'email', 'password') +
+              Fields(IVerifyPassword) )
 
     @property
     def action_url(self):
@@ -460,14 +476,18 @@ class CreateAccount(Form):
 
         # pop the captcha and verif, it's not a needed data
         data.pop('verif')
-        data.pop('captcha')
+        if 'captcha' in data:
+            data.pop('captcha')
 
         # hashing the password
         salt = uuid.uuid4().hex
+        if 'ack_form' in data:
+            data.pop('ack_form')
         password = data.pop('password').encode('utf-8')
         data['password'] = hashlib.sha512(password + salt).hexdigest()
         data['salt'] = salt
-
+        if 'ack_form' in data:
+            data.pop('ack_form')
         account = Account(**data)
         code = account.activation = str(uuid.uuid1())
         session.add(account)
@@ -478,7 +498,7 @@ class CreateAccount(Form):
 
         # We send the email.
         send_activation_code(
-            self.context.configuration.smtp_server,
+            self.context.configuration,
             data['name'], data['email'], code, base_url)
 
         self.flash(_(u'Account added with success.'))
@@ -596,11 +616,16 @@ class DeletedCompany(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie den Betrieb %s wirklich löschen" % self.context.name
+        return u"Wollen Sie den Betrieb %s wirklich löschen" % self.context.name
 
     @property
     def action_url(self):
         return self.request.path
+
+    @action(_(u'Cancel'))
+    def handle_cancel(self):
+        self.redirect(self.application_url())
+        return SUCCESS
 
     @action(_(u'Delete'))
     def handle_save(self):
@@ -615,11 +640,6 @@ class DeletedCompany(DeleteForm):
         session.delete(self.context)
         session.flush()
         self.flash(_(u'Deleted with success.'))
-        self.redirect(self.application_url())
-        return SUCCESS
-
-    @action(_(u'Cancel'))
-    def handle_cancel(self):
         self.redirect(self.application_url())
         return SUCCESS
 
@@ -667,13 +687,14 @@ class CreateCourse(Form):
 
     def updateForm(self):
         super(CreateCourse, self).updateForm()
-        name = self.fieldWidgets['form.field.name']
-        nv = u"Beurteilung Psychischer Belastung %s" % (
-            datetime.datetime.now().strftime('%Y'))
-        courses = len(list(self.context.courses))
-        if courses > 0:
-            nv = "%s (%s)" % (nv, str(courses + 1))
-        name.value = {'form.field.name': nv}
+        if not self.request.form.get('form.field.name'):
+            name = self.fieldWidgets['form.field.name']
+            nv = u"Beurteilung Psychischer Belastung %s" % (
+                datetime.datetime.now().strftime('%Y'))
+            courses = len(list(self.context.courses))
+            if courses > 0:
+                nv = "%s (%s)" % (nv, str(courses + 1))
+            name.value = {'form.field.name': nv}
         criterias = self.fieldWidgets['form.field.criterias']
         criterias.value = {
             'form.field.criterias.present': u'1',
@@ -704,7 +725,7 @@ class CreateCourse(Form):
            strategy=csdata.get('strategy')
         )
         #data['quizz_type'] = "quizz2"
-        if data['extra_questions'] is NO_VALUE:
+        if 'extra_questions' in data and data['extra_questions'] is NO_VALUE:
             data.pop('extra_questions')
         course = Course(**data)
 
@@ -720,7 +741,7 @@ class CreateCourse(Form):
         session.flush()
         session.refresh(clssession)
         if strategy.get('strategy') in ('mixed','fixed'):
-            if strategy['nb_students'] <= 7 or strategy['nb_students'] is NO_VALUE:
+            if strategy['nb_students'] < 7 or strategy['nb_students'] is NO_VALUE:
                 self.flash(u'Auswertungen sind erst ab 7 Teilnehmer zulässig. Bitte erhöhen Sie die Anzahl der Teilnehmer auf mindestens 7')
                 return FAILURE
             for student in clssession.generate_students(strategy['nb_students']):
@@ -918,7 +939,7 @@ class DeleteCourse(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie die Befragung %s wirklich löschen" % self.context.name
+        return u"Wollen Sie die Befragung %s wirklich löschen" % self.context.name
 
     @property
     def action_url(self):
@@ -1091,8 +1112,7 @@ class IAnonymousLogin(Interface):
         required=True,
         )
 
-    
-from nva.psyquizz.interfaces import QuizzAlreadyCompleted
+
 class AnonymousLogin(Action):
 
     def available(self, form):
@@ -1172,6 +1192,46 @@ class AnswerQuizz(Form):
                 field.mode = self.fmode
 
         return fields
+
+
+class Quizz5Wizard(AnswerQuizz):
+    context(IQuizz5)
+    name('index')
+    template = get_template('quizz5_wizard.pt', __file__)
+
+    def get_scales(self):
+        scales = []
+        criteria_fields = Fields(
+            *self.quizz.criteria_fields(self.context.course))
+        if criteria_fields:
+            scales = scales + [{'fields': criteria_fields, 'label': 'Unternehmenskriterien'}]
+        scales += IQuizz5.getTaggedValue('scales')
+        additional_questions = list(self.quizz.additional_extra_fields(
+            self.context.course))
+        extra_fields = list(self.quizz.extra_fields(self.context.course))
+        if additional_questions:
+            scales = scales + [
+                {'iface': iface, 'label': 'Zusatzfragen'}
+                for iface in additional_questions
+            ]
+        if extra_fields:
+            scales = scales + [
+                {'fields': extra_fields, 'label': 'Eigene Zusatzfragen'}
+            ]
+        return scales
+
+    def getFieldWidgets(self, scale):
+        from zope.schema import getFieldsInOrder
+        widgets = []
+        if 'fields' in scale:
+            for field in scale['fields']:
+                name = "form.field.%s" % getattr(field, '__name__', field.identifier)
+                widgets.append(self.fieldWidgets.get(name))
+        else:
+            for field, o in getFieldsInOrder(scale['iface']):
+                name = "form.field.%s" % field
+                widgets.append(self.fieldWidgets.get(name))
+        return widgets
 
 
 class CompanyAnswerQuizz(Action):

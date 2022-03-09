@@ -2,12 +2,10 @@
 # cklinger@novareto.de
 
 import json
-from copy import deepcopy
 from itertools import chain
 from collections import OrderedDict, namedtuple
 from cromlech.sqlalchemy import get_session
 from nva.psyquizz.models.criterias import CriteriaAnswer
-from sqlalchemy import and_, or_
 from sqlalchemy import func
 from zope.schema import getFieldsInOrder
 
@@ -20,7 +18,7 @@ Result = namedtuple(
 
 Average = namedtuple(
     'Average',
-    ('title', 'average'),
+    ('title', 'average', 'min', 'max'),
 )
 
 Sum = namedtuple(
@@ -38,8 +36,15 @@ def computation(averages, sums, data):
             sums_data.append(
                 Sum(k, sum([x.result for x in v])))
         elif k in averages:
+            all_results = [x.result for x in v]
             averages_data.append(
-                Average(k, float(sum([x.result for x in v]))/len(v)))
+                Average(
+                    k,
+                    float(sum(all_results)/len(v)),
+                    min(all_results),
+                    max(all_results)
+                )
+            )
     return averages_data, sums_data
 
 
@@ -49,8 +54,15 @@ def question_computation(averages, sums, data):
     for k, v in data.items():
         for at, av in averages.items():
             if k in av:
+                all_results = [x.result for x in v]
                 averages_data.append(
-                    Average(k, float(sum([x.result for x in v]))/len(v)))
+                    Average(
+                        k,
+                        float(sum(all_results))/len(v),
+                        min(all_results),
+                        max(all_results)
+                    )
+                )
         for at, av in sums.items():
             if k in av:
                 sums_data.append(
@@ -115,7 +127,6 @@ def compute(quizz, averages, sums, filters):
             answers = answers.filter(
                 quizz.session_id == filters['session']
             )
-
     total = 0
     if 'criterias' in filters:
         criterias = set(

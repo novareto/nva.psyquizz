@@ -210,7 +210,7 @@ button[data-target='div#personalprefs-mobile']:after {
     div#personalprefs-mobile {
 	background-color: white;
     }
-*/    
+*/
 div#field-form-field-exp_db > div > label {
     display: block;
 }
@@ -227,4 +227,14 @@ ul#main-nav > li > a {
 div#field-form-field-challenge {
  visibility: hidden;
  display: none;
+}
+
+#form-field-enddate,
+#form-field-startdate {
+    max-width: 100px;
+}
+
+.alert-danger {
+   padding: 1em;
+   border: 1px solid #a94442;
 }

@@ -15,8 +15,8 @@
         <a href="https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/arbeitsmedizin-arbeitspsychologie-ergonomie/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/video-tutorials-zum-online-tool-zur-erfassung-psychischer-belastung-1" target="_blank" class="pull-right"> <span class="glyphicon glyphicon-film" aria-hidden="true"></span> Erklärfilm </a>
         <p class="lead">Auswertungsgruppen anlegen <p>
         <p>
-        Um die Auswertungsgruppen anzulegen, wählen Sie zunächst einen Oberbegriff für Ihre 
-        Auswertungsgruppen, und legen anschließend die zugehörigen Auswertungsgruppen fest. 
+        Wählen Sie zunächst einen Oberbegriff für Ihre 
+        Auswertungsgruppen. Legen Sie anschließend die zugehörigen Auswertungsgruppen fest. 
         </p>
         <p>
         <b> Beispiele </b>
@@ -28,19 +28,19 @@
            </tr>
            <tr>
              <td>Abteilung </td>
-             <td> Produktion, Vertrieb, Personal</td>
+             <td> Produktion <br> Vertrieb <br> Personal</td>
            </tr>
            <tr>
              <td>Arbeitsgruppe </td>
-             <td> Team1, Team2 Team3</td>
+             <td> Team1 <br> Team2 <br> Team3</td>
            </tr>
            <tr>
              <td>Standort </td>
-             <td>Köln, Bonn, Düsseldorf </td>
+             <td>Köln <br> Bonn <br> Düsseldorf </td>
            </tr>
            <tr>
              <td>Führungskraft </td>
-             <td> Führungskraft, keine Führungskraft</td>
+             <td> Führungskraft <br> keine Führungskraft</td>
            </tr>
          </table>
 

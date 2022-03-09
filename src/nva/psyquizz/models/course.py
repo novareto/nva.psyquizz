@@ -5,7 +5,7 @@ from sqlalchemy import *
 from sqlalchemy.orm import relationship, backref
 from uvc.content.interfaces import IDescriptiveSchema
 from uvclight.directives import traversable
-from zope.interface import Interface, implementer
+from zope.interface import implementer
 from zope.location import Location
 
 from . import IntIds

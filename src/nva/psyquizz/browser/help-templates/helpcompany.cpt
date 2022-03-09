@@ -15,25 +15,25 @@
         <a href="https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/arbeitsmedizin-arbeitspsychologie-ergonomie/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/video-tutorials-zum-online-tool-zur-erfassung-psychischer-belastung-1" target="_blank" class="pull-right"> <span class="glyphicon glyphicon-film" aria-hidden="true"></span> Erklärfilm </a>
         <p class="lead"> Name des Unternehmens: </p>
             <p>
-            Bitte geben Sie hier den Namen Ihres Betriebes oder eine für Sie eindeutige Bezeichnung für Ihren
-            Betrieb ein.
+            Bitte geben Sie hier den Namen Ihres Unternehmens oder eine für Sie eindeutige Bezeichnung für Ihren
+            Unternehmen ein.
             </p>
 
         <p class="lead">Mitgliedsnummer:</p>
             <p>
             Bitte tragen Sie hier die ersten acht Ziffern Ihrer Mitgliedsnummer ein. So können wir sicherstellen,
             dass nur Mitgliedsbetriebe unserer Berufsgenossenschaft diesen Service nutzen und somit keine
-            Kosten durch nicht bei uns versicherte Betriebe entstehen.
-            Ihre Mitgliedsnummer wird nicht dauerhaft gespeichert. Ein Rückschluss auf Ihren Betrieb ist zu
+            Kosten durch nicht bei uns versicherte Unternehmene entstehen.
+            Ihre Mitgliedsnummer wird nicht dauerhaft gespeichert. Ein Rückschluss auf Ihren Unternehmen ist zu
             keinem Zeitpunkt möglich.
             </p>
 
         <p class="lead">Forschungsdatenbank:</p>
             <p>
             Hier haben Sie die Möglichkeit, uns die Nutzung Ihrer Daten zu Forschungszwecken zu ermöglichen.
-            Indem Sie uns angeben, aus welcher Branche Ihr Betrieb stammt und wieviel Beschäftigte Sie haben,
+            Indem Sie uns angeben, aus welcher Branche Ihr Unternehmen stammt und wieviel Beschäftigte Sie haben,
             helfen Sie uns bei der Entwicklung passgenauer Präventionsangebote für unsere Mitgliedsbetriebe.
-            Bitte beachten Sie, eine Rückführung der Daten auf Ihren Betrieb ist zu keinem Zeitpunkt möglich.
+            Bitte beachten Sie, eine Rückführung der Daten auf Ihren Unternehmen ist zu keinem Zeitpunkt möglich.
             Wir speichern lediglich die Anzahl der Beschäftigten, die Branche sowie die Ergebnisse des
             Fragebogens.
             </p>
@@ -41,13 +41,13 @@
         <p class="lead">Beschäftigte:</p>
             <p>
             Falls Sie der Nutzung Ihrer Daten zu Forschungszwecken zugestimmt haben, geben Sie bitte hier an,
-            wie viele Personen in Ihrem Betrieb beschäftigt sind. 
+            wie viele Personen in Ihrem Unternehmen beschäftigt sind. 
             </p>
 
-        <p class="lead">Betriebsgegenstand:</p>
+        <p class="lead">Branche:</p>
             <p>
-            Bitte geben Sie hier an, welcher Branche Ihr Betrieb am ehesten zuzuordnen ist. Orientieren Sie sich
-            hier am Geschäftszweck Ihres Betriebes.
+            Bitte geben Sie hier an, welcher Branche Ihr Unternehmen am ehesten zuzuordnen ist. Orientieren Sie sich
+            hier am Geschäftszweck Ihres Unternehmenes.
             </p>
 
       </div>

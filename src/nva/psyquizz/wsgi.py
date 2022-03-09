@@ -11,8 +11,7 @@ from collections import namedtuple
 from cromlech.configuration.utils import load_zcml
 from cromlech.i18n import register_allowed_languages, setLanguage
 from cromlech.jwt.components import ExpiredToken
-from cromlech.sessions.jwt import JWTCookieSession
-from cromlech.sessions.jwt import key_from_file
+from cromlech.sessions.jwt import JWTCookieSession, key_from_file
 from cromlech.sqlalchemy import create_engine
 from cromlech.sqlalchemy.components import EngineServer
 from paste.urlmap import URLMap
@@ -21,12 +20,23 @@ from zope.security.management import setSecurityPolicy
 
 from . import Base
 from .apps import company, anonymous, remote
+from .resources import Resources
+from .emailer import SecureMailer
 
 
 marker = object()
 Configuration = namedtuple(
-    'Configuration',
-    ('title', 'session_key', 'engine', 'name', 'fs_store', 'layer', 'smtp_server')
+    'Configuration', (
+        'title',
+        'session_key',
+        'engine',
+        'name',
+        'fs_store',
+        'layer',
+        'reg_layer',
+        'emailer',
+        'resources',
+    )
 )
 
 
@@ -88,7 +98,7 @@ def routing(conf, files, **kwargs):
 
     # We register our SQLengine under a given name
     if not 'engine' in kwargs:
-        dsn = kwargs['dsn']    
+        dsn = kwargs['dsn']
         engine = create_engine(dsn, name)
     else:
         engine = EngineServer(kwargs['engine'], name)
@@ -104,18 +114,30 @@ def routing(conf, files, **kwargs):
         layer_iface = eval_loader(layer)
     else:
         layer_iface = None
+    # Extract possible reg_layer
+    reg_layer = kwargs.get('reg_layer')
+    if reg_layer is not None:
+        reg_layer_iface = eval_loader(reg_layer)
+    else:
+        reg_layer_iface = None
 
     title = kwargs.get('title', 'BG ETEM')
 
     # We create the session wrappper
     session_key = "session"
     key = key_from_file(path.join(kwargs['root'], 'jwt.key'))
-    session_wrapper = Session(key, 60, environ_key=session_key)
+    session_wrapper = Session(key, 3600, environ_key=session_key)
+
+    # We create the emailer utility
+    smtp = kwargs.get('smtp', '10.33.115.55')
+    smtp_port = kwargs.get('smtp_port', '2525')
+    emitter = kwargs.get('emitter', 'my@email.com')
+    emailer = SecureMailer(smtp, emitter, port=smtp_port)
 
     # Applications configuration
-    smtp = kwargs.get('smtp', '10.33.115.55')
+    resources = Resources(kwargs['resources'])
     setup = Configuration(
-        title, session_key, engine, name, None, layer_iface, smtp)
+        title, session_key, engine, name, None, layer_iface, reg_layer_iface, emailer, resources)
 
     # Router
     root = URLMap()

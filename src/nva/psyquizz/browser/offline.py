@@ -4,25 +4,25 @@
 
 import uvclight
 import datetime
-
-from uvclight import Form
-from os import path
-from zope import interface
 from tempfile import TemporaryFile
-
-from pyPdf import PdfFileWriter, PdfFileReader
 from BeautifulSoup import BeautifulSoup
+from pyPdf import PdfFileWriter, PdfFileReader
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate
+from reportlab.platypus import Spacer, PageBreak, Paragraph, SimpleDocTemplate
+from reportlab.lib.units import cm
+
+from zope import interface
 from zope.component import getUtility
-from nva.psyquizz.models import IQuizz
-from nva.psyquizz.browser.forms import AnswerQuizz, CompanyAnswerQuizz
-from ..models import IClassSession
-from ..interfaces import ICompanyRequest
-from ..i18n import _
+from zope.component.hooks import getSite
 from dolmen.forms.base.actions import Actions
+from uvclight import Form
+from nva.psyquizz.browser.forms import AnswerQuizz, CompanyAnswerQuizz
+from nva.psyquizz.models import IQuizz
 from ..extra_questions import generate_extra_questions
+from ..i18n import _
+from ..interfaces import ICompanyRequest
+from ..models import IClassSession
 
 
 HINWEIS = """ <b>Hinweis</b>
@@ -76,7 +76,7 @@ class DownloadCourse(uvclight.View):
         style = getSampleStyleSheet()
         nm = style['Normal']
         nm.leading = 14
-        story = []
+        story = [Spacer(0, 2*cm)]
         na = self.context.about.replace('\r\n', '<br/>').replace('</p>', '</p><br/>')
         bs = BeautifulSoup(na)
         clean(bs, ['style', 'face'])
@@ -116,15 +116,22 @@ class DownloadCourse(uvclight.View):
 
     def render(self):
         output = PdfFileWriter()
-        base1 = "%s/lib/%s" % (path.dirname(__file__), "kfza_base.pdf")
+        resources = getSite().configuration.resources
+        base1 = resources.get("kfza_base.pdf")
         base1 = open(base1, 'rb')
         b1_pdf = PdfFileReader(base1)
         wm = b1_pdf.getPage(0)
         p1 = PdfFileReader(self.generate_page_one())
+
+        for num in range(p1.numPages-1):
+            page1 = p1.getPage(num + 1)
+            page1.mergePage(wm)
+            output.addPage(page1)
+
         page1 = p1.getPage(0)
         page1.mergePage(wm)
         output.addPage(page1)
-        bpdf = "%s/lib/%s" % (path.dirname(__file__), self.base_pdf)
+        bpdf = resources.get(self.base_pdf)
         with open(bpdf, 'rb') as pdf:
             pf = PdfFileReader(pdf)
             if pf.isEncrypted:
@@ -145,6 +152,13 @@ class DownloadCourse(uvclight.View):
         base1.close()
         return ntf
 
+from dolmen.forms.base.actions import Action
+
+class CancelAction(Action):
+
+    def __call__(self, form):
+        form.flash('Die Aktion wurde abgebrochen.')
+        form.redirect(form.application_url())
 
 class GenericAnswerQuizz(AnswerQuizz):
     uvclight.context(IClassSession)
@@ -157,7 +171,7 @@ class GenericAnswerQuizz(AnswerQuizz):
     description = u"Eingabe kann per DropDown Menü oder über die Tastatur (Kreuz ganz links Eingabe 1 bis Kreuz ganz rechts Eingabe 5) erfolgen."
 
     fmode = 'input'
-    actions = Actions(CompanyAnswerQuizz(u'speichern'))
+    actions = Actions(CancelAction("Abbrechen"), CompanyAnswerQuizz(u'Speichern'))
 
     def update(self):
         self.template = Form.template
@@ -205,18 +219,30 @@ class GenericAnswerQuizz(AnswerQuizz):
 
         $('select').first().focus();
 
+        $('input#form-action-abbrechen').click(function(event) {
+         $(event.target).parent('form').attr('cancelled', true);
+        })
+
+
         $("form").submit(function(){
+            if (this.cancelled == true) {
+                return
+            }
             var isFormValid = true;
+            var cancel = $('input#form-action-abbrechen')
+            console.log(cancel)
             $("select").each(function() {
                if ($.trim($(this).val()).length == 0) {
-                  $(this).parent().addClass("highlight");
+                  $(this).parent().addClass("alert alert-danger");
                   isFormValid = false;
                } else {
-                  $(this).parent().removeClass("highlight");
+                  $(this).parent().removeClass("alert alert-danger");
                }
             });
             if (!isFormValid) {
-                alert("Bitte füllen Sie zunächst alle Felder. Im Anschluss können Sie das Formular absenden.");
+                 $('form#GenericAnswerQuizz').before('<div id="global-error" class="alert alert-danger"> <p>Bitte füllen Sie alle Felder.</p> </div>')
+                //alert("Bitte füllen Sie zunächst alle Felder. Im Anschluss können Sie das Formular absenden.");
+                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
             return isFormValid;
         });

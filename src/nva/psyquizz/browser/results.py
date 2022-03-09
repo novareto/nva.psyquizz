@@ -7,26 +7,21 @@ import uvclight
 
 from collections import OrderedDict, namedtuple
 from cromlech.browser import IView
-from grokcore.component import name, provider
-from nva.psyquizz import hs
-from nva.psyquizz.models import IQuizz, IClassSession, ICourse, ICompany
+from grokcore.component import name
+from nva.psyquizz import hs, hsb_bullet
+from nva.psyquizz.models import IQuizz, IClassSession, ICourse
 from nva.psyquizz.models.quizz.quizz2 import IQuizz2
 from nva.psyquizz.models.quizz.quizz1 import Quizz1
 from nva.psyquizz.models.quizz.quizz3 import IQuizz3
+from nva.psyquizz.models.quizz.quizz5 import IQuizz5
 from uvclight.auth import require
 from zope.component import getUtility, getMultiAdapter
-from zope.interface import Interface
 from zope.schema import getFieldsInOrder
-from zope.schema.interfaces import IContextSourceBinder
-from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from zope.location import LocationProxy
 
 from ..interfaces import ICompanyRequest
 from ..stats import compute, groups_scaling
 from ..extra_questions import parse_extra_question_syntax
-from zope.schema import Choice, Set
-from dolmen.forms.base import FAILURE, SUCCESS
-from nva.psyquizz.i18n import MessageFactory as _
 
 
 def get_filters(request):
@@ -91,7 +86,7 @@ class CourseStatistics(object):
 
         self.extra_questions_order = OrderedDict()
         for iface in self.quizz.additional_extra_fields(self.course):
-            for name, field in getFieldsInOrder(iface):
+            for _, field in getFieldsInOrder(iface):
                  self.extra_questions_order[field.description] = [
                      t.title for t in field.vocabulary
                  ]
@@ -130,7 +125,7 @@ class Quizz2Charts(uvclight.View):
     name('charts')
     uvclight.context(IQuizz2)
 
-    template = uvclight.get_template('cr.pt', __file__)
+    template = uvclight.get_template('chart_results.pt', __file__)
     general_stats = None
 
     def jsonify(self, da):
@@ -140,6 +135,39 @@ class Quizz2Charts(uvclight.View):
         hs.need()
         self.stats = stats
         self.general_stats = general_stats
+
+
+class Quizz5Charts(Quizz2Charts):
+    uvclight.context(IQuizz5)
+    template = uvclight.get_template('quizz5_result.pt', __file__)
+    description = u"""
+        <p>
+        Im Folgenden wird für die Befragungsergebnisse dargestellt, wie sich diese auf die Gesundheit der
+        Mitarbeiterinnen und Mitarbeiter auswirken. Die blaue Markierung kennzeichnet dabei Ihr Ergebniss
+        für den jeweiligen Bereich. Ergebnisse innerhalb des roten Balkens deuten auf ein
+        erhöhtes Gesundheitsrisko hin, Ergebnisse innerhalb des gelben Balkens stehen für ein leicht
+        erhöhtes Gesundheitsrisiko und bei Ergebnissen innerhalb des grünen Balkens scheint alles in
+        Ordnung.
+        </p>
+        <p>
+        Die Wirkung der einzelnen Bereiche aus der Befragung auf die Gesundheit ist unterschiedlich stark.
+        So hat der Bereich „Soziale Stressoren unter Kollegen“ eine schädigendere Wirkung als z. B.
+        „Informationsmängel“. Daher setzt der rote Balken dort früher ein als bei „Informationsmängeln“.
+        Außerdem gibt es Bereiche, sogenannte Ressourcen, bei denen gilt „je mehr je besser“. Deshalb
+        beginnt beispielsweise bei „Handlungsspielraum“ die Grafik mit dem roten Balken und und endet mit
+        dem grünen.
+        <p>
+        Eine Definition der einzelnen Bereiche (z. B. Vollständigkeit der Aufgabe) erhalten Sie, indem Sie mit
+        der Mouse über den Text fahren. Eine Gesamtübersicht der Bereichsdefinitionen können Sie
+        <a target="_blank" href="/fanstatic/nva.psyquizz/kurzerlauterungen_fbgu_skalen.pdf">hier</a> herunterladen.
+        </p>
+    </p>
+    """
+
+    def update(self, stats, general_stats=None):
+        hsb_bullet.need()
+        self.colors = self.context.get_boundaries()
+        super(Quizz5Charts, self).update(stats, general_stats)
 
 
 class Quizz3Charts(Quizz2Charts):
@@ -222,7 +250,7 @@ class Quizz1Charts(uvclight.View):
     name('charts')
     uvclight.context(Quizz1)
 
-    template = uvclight.get_template('cr1.pt', __file__)
+    template = uvclight.get_template('quizz_results.pt', __file__)
 
     def extra_title(self):
         title = u"Zusatzfragen "
@@ -270,7 +298,7 @@ class Quizz1Charts(uvclight.View):
         self.series = json.dumps([good, bad])
 
 
-class SR(uvclight.Page):
+class SessionResults(uvclight.Page):
     require('manage.company')
     uvclight.context(IClassSession)
     uvclight.layer(ICompanyRequest)
@@ -304,12 +332,12 @@ class SR(uvclight.Page):
         return result
 
 
-class CR(uvclight.Page):
+class CourseResults(uvclight.Page):
     require('manage.company')
     uvclight.context(ICourse)
     uvclight.layer(ICompanyRequest)
 
-    template = uvclight.get_template('cr.pt', __file__)
+    template = uvclight.get_template('chart_results.pt', __file__)
     general_stats = None
 
     def jsonify(self, da):
