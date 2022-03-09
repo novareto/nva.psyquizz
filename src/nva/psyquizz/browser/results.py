@@ -32,13 +32,13 @@ def get_filters(request):
 
     filters = {}
     Criteria = namedtuple('Criteria', ('id', 'name'))
-    criterias = request.form.get('criterias', None)
-    if criterias is not None:
-        if not isinstance(criterias, (set, list, tuple)):
-            criterias = [criterias]
-        filters['criterias'] = {
-            uid: Criteria(cid, name) for uid, cid, name in
-            map(extract_criteria, criterias)}
+
+    criterias = [item for name, item in request.form.items()
+                 if name.startswith('criteria-') and item != 'reset']
+
+    filters['criterias'] = {
+        uid: Criteria(cid, name) for uid, cid, name in
+        map(extract_criteria, criterias)}
     return filters
 
 
@@ -168,6 +168,10 @@ class Quizz5Charts(Quizz2Charts):
         hsb_bullet.need()
         self.colors = self.context.get_boundaries()
         super(Quizz5Charts, self).update(stats, general_stats)
+
+        current = self.stats.filters.get('criterias', {})
+        criterias = self.stats.statistics['criterias']
+
 
 
 class Quizz3Charts(Quizz2Charts):
