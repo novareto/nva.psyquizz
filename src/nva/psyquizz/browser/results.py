@@ -54,7 +54,6 @@ class CourseStatistics(object):
         self.filters = filters
         self.statistics = compute(
             self.quizz, self.averages, self.sums, self.filters)
-
         if 'criterias' in filters:
             for criteria in filters['criterias']:
                 for title, cc in self.statistics['criterias'].items():

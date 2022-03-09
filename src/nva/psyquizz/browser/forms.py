@@ -190,7 +190,6 @@ class PreviewCriterias(Form):
             SimpleTerm(value=c.strip(), token=idx, title=c.strip())
             for idx, c in enumerate(self.criterias.split('\n'), 1)
             if c.strip()])
-        import pdb; pdb.set_trace()
         fields = Fields(Choice(
             __name__='criteria_1',
             #title=self.title.decode('utf-8'),

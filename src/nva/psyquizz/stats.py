@@ -40,7 +40,7 @@ def computation(averages, sums, data):
             averages_data.append(
                 Average(
                     k,
-                    float(sum(all_results)/len(v)),
+                    float(sum(all_results))/len(v),
                     min(all_results),
                     max(all_results)
                 )
@@ -141,7 +141,6 @@ def compute(quizz, averages, sums, filters):
             for c in answer.student.criterias:
                 criterias_title[str(c.criteria.id)] = c.criteria.title
                 student_criterias.add((str(c.criteria.id), c.answer))
-
             if criterias is not None and not student_criterias >= criterias:
                 # WE DO NOT MATCH THE CRITERIAS
                 continue
