@@ -76,6 +76,7 @@ class MailDelivery:
 
     def server_is_available(self):
         server = smtplib.SMTP(self.mailer.host, self.mailer.port)
+        server.set_debuglevel(5)
         code, response = server.ehlo()
         if code < 200 or code >= 300:
             code, response = server.helo()
@@ -90,6 +91,7 @@ class MailDelivery:
             return
 
         server = smtplib.SMTP(self.mailer.host, self.mailer.port)
+        server.set_debuglevel(5)
 
         # identify ourselves, prompting server for supported features
         server.ehlo()
@@ -105,7 +107,7 @@ class MailDelivery:
             )
         try:
             for email in self.queue:
-                server.send_message(email)
+                server.send(email.as_string())
         finally:
             server.close()
 
