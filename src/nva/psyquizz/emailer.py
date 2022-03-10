@@ -91,7 +91,7 @@ class MailDelivery:
             return
 
         server = smtplib.SMTP(self.mailer.host, self.mailer.port)
-        server.set_debuglevel(5)
+        server.set_debuglevel(50)
 
         # identify ourselves, prompting server for supported features
         server.ehlo()

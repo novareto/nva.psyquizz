@@ -293,7 +293,6 @@ class ICourse(ILocation, IContent):
         title=_(u"Quizz"),
         source=deferred('quizz_choice'),
         required=True,
-        default="quizz2"
     )
 
     fixed_extra_questions = schema.Set(
