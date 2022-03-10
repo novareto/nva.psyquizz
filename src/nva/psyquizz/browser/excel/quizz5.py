@@ -54,8 +54,8 @@ class Quizz5Excel(SessionXSLX):
                 k.title, k.description, self.ergebnisse_vocabulary)
 
         for label, ids in averages.items():
+            _, is_inverted = inverted.get(label)
             for id in ids:
-                _, is_inverted = inverted.get(label)
                 xAxis[id].scale = label
                 xAxis[id].inverted = is_inverted
 

@@ -2,7 +2,7 @@
   <div class="header">
     <h1>Ergebnisse</h1>
     <p>
-      Hier sehen Sie die Auswertung für alle Beschäftigten. 
+      Hier sehen Sie die Auswertung für alle Beschäftigten.
     </p>
     <p>
       Durch Auswahl einer oder mehrerer Auswertungsgruppen haben Sie die
@@ -17,33 +17,33 @@
     </p>
   </div>
   <form action="." tal:attributes="action view.request.url"
-	tal:define="current view.stats.filters.get('criterias', {})">
-    <div>
-      <a name="uncheckall">Alle</a>
-    </div>
+        tal:define="current view.stats.filters.get('criterias', {})">
+
     <dl tal:define="crits view.stats.statistics['criterias']">
       <tal:dl tal:repeat="crit crits">
-	<dt><h3 tal:content="crit" /></dt>
-	<dd>
-	  <div tal:repeat="opt crits[crit]"
-	       style="display: inline-block; padding: 5px;">
-	    <tal:disabled define="disabled bool(opt.amount < 7)">
-	    <input name="criterias" type="checkbox"
-		   tal:attributes="value opt.uid;
-				   checked opt.uid in current;
-				   disabled disabled and 'disabled' or None" />
-	    <span tal:content="'%s (%s)' % (opt.name, opt.amount)"
-		  tal:attributes="class disabled and 'text-muted' or ''"/>
-	  </tal:disabled>
-	</div>
-      </dd>
-    </tal:dl>
-  </dl>
-  <input id="form-action-filter" type="submit" value="filter" />
-</form>
+        <dt><h3 tal:content="crit" /></dt>
+        <dd>
+          <div tal:repeat="opt crits[crit]"
+               style="display: inline-block; padding: 5px;">
+            <tal:disabled define="disabled bool(opt.amount &lt; 7)">
+              <input type="radio"
+                     tal:attributes="value opt.uid;
+                                     name 'criteria-%s' % opt.id;
+                                     checked opt.uid in current and 'checked' or None;
+                                     disabled disabled and 'disabled' or None" />
+              <span tal:content="'%s (%s)' % (opt.name, opt.amount)"
+                    tal:attributes="class disabled and 'text-muted' or ''"/>
+            </tal:disabled>
+          </div>
+        </dd>
+      </tal:dl>
+    </dl>
+    <input id="form-action-filter" type="submit" value="filter" />
+  </form>
+
 
 <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
-  Glossar 
+  Glossar
 </button>
 <div id="container1" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
 
@@ -58,8 +58,8 @@
 
   <table id="mt" class="table table-bordered table-striped">
     <tr tal:repeat="data view.stats.statistics['global.averages']">
-      <td tal:content="data.title"></td> 
-      <td tal:content="str('%.2f' % data.average).replace('.',',')"></td> 
+      <td tal:content="data.title"></td>
+      <td tal:content="str('%.2f' % data.average).replace('.',',')"></td>
     </tr>
   </table>
 
@@ -138,10 +138,10 @@
   <input type="hidden" value="" name="has_criterias" tal:attributes="value len(view.stats.filters.get('criterias', {}))" />
     <input type="hidden" value=""
 	   tal:attributes="value view.stats.json_criterias" name="criterias" />
-    
+
     <input type="hidden"
 	   tal:attributes="value view.stats.statistics['total']" name="total"/>
-    
+
     <textarea type="text" id="averages" name="averages" style="display:none">
       <tal:data
            content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
@@ -150,7 +150,7 @@
     <textarea type="text" name="vp" style="display:none">
       <tal:data content="view.jsonify(view.results_count)" />
     </textarea>
-    
+
     <textarea type="text" id="chart" name="chart" style="display: none"></textarea>
     <textarea type="text" id="userschart" name="userschart" style="display: none"></textarea>
     <textarea type="text" id="pSVG" name="pSVG" style="display:none"></textarea>
@@ -250,7 +250,7 @@ var donut = Highcharts.chart('q3sums', {
 });
 
     $('#donut').val(donut.getSVGForExport());
-    
+
     var myChart = Highcharts.chart('container', {
 	chart: {
             type: 'bar'
@@ -265,7 +265,7 @@ var donut = Highcharts.chart('q3sums', {
             text: 'Verteilung'
 	},
 	xAxis: {
-            categories: <span tal:replace="view.stats.xAxis"/>, 
+            categories: <span tal:replace="view.stats.xAxis"/>,
               tickAmount: 10
 	},
 	yAxis: {
@@ -291,7 +291,7 @@ var donut = Highcharts.chart('q3sums', {
 		stacking: 'normal'
             }
 	},
-	series: <span tal:replace="view.stats.series"/> 
+	series: <span tal:replace="view.stats.series"/>
     });
 
     svgToCanvas(myChart, 'chart');
@@ -349,7 +349,7 @@ var donut = Highcharts.chart('q3sums', {
 		{
 		    color: '#D8262B',
 		    from: 1,
-		    to:  2.5 
+		    to:  2.5
 		},
 		{
 		    color: '#FFCC00',
@@ -374,7 +374,7 @@ var donut = Highcharts.chart('q3sums', {
            line: {
                events: {
                     legendItemClick: function () {
-                       return false; 
+                       return false;
                      }
                 },
                 showInLegend: true
@@ -394,7 +394,7 @@ var donut = Highcharts.chart('q3sums', {
             data: <span tal:replace="view.general_stats.rd"/>,
             pointPlacement: 'on'
 	  },
-	  {    
+	  {
             name: 'Ihre Auswahl',
             data: <span tal:replace="view.stats.rd"/>,
             pointPlacement: 'on'
@@ -406,7 +406,7 @@ var donut = Highcharts.chart('q3sums', {
 
      $('#pSVG').val(usersChart.getSVGForExport());
 
-    
+
     $("a[name='checkall']").click(function () {
     $("input:checkbox").prop('checked', true);
     $("#form-action-filter").click();
@@ -433,32 +433,32 @@ var donut = Highcharts.chart('q3sums', {
           <dt>Passende Arbeitsumgebung: </dt>
           <dd>Die physische Arbeitsumgebung: Lärm, Klima, Beleuchtung </dd>
           <dt>Ganzheitliches Arbeiten: </dt>
-          <dd>Möglichkeit den Anteil der eigenen Arbeit am Gesamtprodukt zu erkennen 
+          <dd>Möglichkeit den Anteil der eigenen Arbeit am Gesamtprodukt zu erkennen
          sowie am Arbeitsergebnis die Qualität der eigenen Leistungen beurteilen zu können </dd>
           <dt>Passende Arbeitsabläufe: </dt>
-          <dd>Hindernisse bei der Ausführungen der Arbeitsaufgabe: unpassende 
+          <dd>Hindernisse bei der Ausführungen der Arbeitsaufgabe: unpassende
          Arbeitsmittel sowie Störungen und Unterbrechungen bei der Arbeit </dd>
           <dt>Zusammenarbeit: </dt>
-          <dd>Qualität der Zusammenarbeit, Kommunikationsmöglichkeiten sowie die 
+          <dd>Qualität der Zusammenarbeit, Kommunikationsmöglichkeiten sowie die
          Rückmeldung (Feedback) über die eigene Arbeit durch Vorgesetzte und Kollegen </dd>
           <dt>Passende inhaltliche Arbeitsanforderungen: </dt>
-          <dd>Das Zueinanderpassen der Anforderungen aus den 
+          <dd>Das Zueinanderpassen der Anforderungen aus den
          Arbeitsaufgaben zu den Leistungsvoraussetzungen der Beschäftigten </dd>
           <dt>Information und Mitsprache: </dt>
           <dd>Betriebliche Informationspolitik und Beteiligung der Beschäftigten </dd>
           <dt>Vielseitiges Arbeiten: </dt>
-          <dd>Möglichkeiten die eigenen Fähigkeiten und Fertigkeiten zur Bewältigung der 
+          <dd>Möglichkeiten die eigenen Fähigkeiten und Fertigkeiten zur Bewältigung der
          Arbeitsaufgaben einzusetzen und Neues dazu zu lernen </dd>
           <dt>Passende mengenmäßige Arbeit: </dt>
-          <dd>Ausmaß der Arbeitsmenge sowie der Zeitdruck unter dem 
+          <dd>Ausmaß der Arbeitsmenge sowie der Zeitdruck unter dem
          gearbeitet wird </dd>
           <dt>Handlungsspielraum: </dt>
-          <dd>Einfluss auf Arbeitsweise, verwendete Arbeitsmittel und die zeitliche 
+          <dd>Einfluss auf Arbeitsweise, verwendete Arbeitsmittel und die zeitliche
          Organisation der Arbeit </dd>
           <dt>Entwicklungsmöglichkeiten: </dt>
           <dd>Weiterbildungsmöglichkeiten und Aufstiegschancen im Unternehmen </dd>
           <dt>Soziale Rückendeckung: </dt>
-          <dd>Die Qualität des Umgangs unter den Kolleginnen und Kollegen innerhalb des 
+          <dd>Die Qualität des Umgangs unter den Kolleginnen und Kollegen innerhalb des
          eigenen Arbeitsbereiches sowie mit dem direkten Vorgesetzten </dd>
           <dt> </dt>
           <dd> </dd>
@@ -469,5 +469,5 @@ var donut = Highcharts.chart('q3sums', {
       </div>
     </div>
   </div>
- 
+
 </div>
