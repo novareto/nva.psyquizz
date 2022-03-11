@@ -199,7 +199,12 @@
         series: [{
             data: [{
                 target: ${scale.average}
-            }]
+              }],
+            }, {
+            targetOptions: { color: "#ff0000" },
+            data: [{
+                target: 2.66,
+            }],
         }]
       });
 

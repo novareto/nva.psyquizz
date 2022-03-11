@@ -51,6 +51,6 @@ class Quizz5PDF(GeneratePDF):
         canvas.setFont("Helvetica", 9)
         canvas.drawString(1 * cm, 2 * cm, u"Gemeinsam zu gesunden Arbeitsbedingungen")
         canvas.drawString(1 * cm, 1.6 * cm, u"Psychische Belastungen online erfassen")
-        canvas.drawString(10 * cm, 2 * cm, u"Grundlage der Befragung:")
-        canvas.drawString(10 * cm, 1.6 * cm, u"FBGU-Fragebogen")
+        canvas.drawString(15 * cm, 2 * cm, u"Grundlage der Befragung:")
+        canvas.drawString(15 * cm, 1.6 * cm, u"FBGU-Fragebogen")
         canvas.setFont("Helvetica", 12)
