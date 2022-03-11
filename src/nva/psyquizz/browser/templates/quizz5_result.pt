@@ -11,7 +11,7 @@
         <dt>
           <h3 tal:content="crit" style="display: inline-block; margin-right: 0.4em" />
           <a name="reset" class="text-muted"
-             tal:attributes="rel opts[0].id">reset</a>
+             tal:attributes="rel opts[0].id">alle</a>
         </dt>
         <dd>
           <div tal:repeat="opt opts"

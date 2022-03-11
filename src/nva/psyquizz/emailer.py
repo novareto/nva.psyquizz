@@ -88,7 +88,7 @@ class MailDelivery:
             if code < 200 or code >= 300:
                 code, response = server.helo()
                 if code < 200 or code >= 300:
-                    server.close()
+                    self._close_connection()
                     raise RuntimeError(
                         'Error sending HELO to the SMTP server '
                         '(code=%s, response=%s)' % (code, response)
@@ -128,7 +128,7 @@ class MailDelivery:
         except Exception as exc:
             print(exc)  # can't raise.
         finally:
-            connection.close()
+            self._close_connection()
 
     def abort_queue(self):
         del self.queue[:]
