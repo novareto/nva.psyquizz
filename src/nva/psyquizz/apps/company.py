@@ -162,7 +162,6 @@ class AccountPasswordManager(PasswordManagerAdapter):
 
 
 def send_forgotten_password_token(config, account, app_url):
-
     manager = IPasswordManager(account)
     challenge = manager.request_password_reset()
     namespace = dict(
@@ -177,10 +176,10 @@ def send_forgotten_password_token(config, account, app_url):
     )
 
     tpl = config.resources.get_template('forgotten.tpl')
-    with config.emailer as sender:
-        mail = config.emailer.prepare_from_template(
-            tpl, account.email, namespace['title'], namespace)
-        sender(account.email, mail.as_string())
+    sender = config.emailer.get_sender()
+    message = config.emailer.prepare_from_template(
+        tpl, account.email, namespace['title'], namespace)
+    sender(message)
     return True
 
 

@@ -73,10 +73,10 @@ def send_activation_code(config, company_name, email, code, base_url):
     )
 
     tpl = config.resources.get_template('mail.tpl')
-    with config.emailer as sender:
-        mail = config.emailer.prepare_from_template(
-            tpl, email, title, namespace)
-        sender(email, mail.as_string())
+    sender = config.emailer.get_sender()
+    message = config.emailer.prepare_from_template(
+        tpl, email, title, namespace)
+    sender(message)
     return True
 
 
