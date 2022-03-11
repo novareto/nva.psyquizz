@@ -6,6 +6,7 @@ import transaction
 import smtplib
 import html2text
 import functools
+from ssl import SSLError
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from random import randrange
@@ -73,47 +74,68 @@ class MailDelivery:
         self.mailer = mailer
         self.queue = []
         self.txn = None
+        self.connection = None
+        self.code = None
+        self.response = None
 
     def server_is_available(self):
-        server = smtplib.SMTP(self.mailer.host, self.mailer.port)
-        server.set_debuglevel(5)
-        code, response = server.ehlo()
-        if code < 200 or code >= 300:
-            code, response = server.helo()
+        if self.connection is None:
+            self.connection = server = smtplib.SMTP(
+                self.mailer.host, self.mailer.port
+            )
+            server.set_debuglevel(5)
+            code, response = server.ehlo()
             if code < 200 or code >= 300:
-                raise RuntimeError(
-                    'Error sending HELO to the SMTP server '
-                    '(code=%s, response=%s)' % (code, response)
-                )
+                code, response = server.helo()
+                if code < 200 or code >= 300:
+                    server.close()
+                    raise RuntimeError(
+                        'Error sending HELO to the SMTP server '
+                        '(code=%s, response=%s)' % (code, response)
+                    )
+            self.code, self.response = code, response
+
+    def _close_connection(self):
+        if self.connection is not None:
+            try:
+                self.connection.quit()
+            except SSLError:
+                # something weird happened while quiting
+                self.connection.close()
+            self.connection = None
 
     def exhaust_queue(self):
         if not self.queue:
-            return
+            return self._close_connection()
 
-        server = smtplib.SMTP(self.mailer.host, self.mailer.port)
-        server.set_debuglevel(5)
+        if self.connection is None:
+            self.server_is_available()
 
-        # identify ourselves, prompting server for supported features
-        server.ehlo()
+        connection = self.connection
 
-        # If we can encrypt this session, do it
-        if server.has_extn("STARTTLS"):
-            server.starttls()
-            server.ehlo()  # re-identify ourselves over TLS connection
+        if connection.has_extn('starttls'):
+            connection.starttls()
+            connection.ehlo()
         if self.mailer.username:
-            server.login(
+            connection.login(
                 self.mailer.username,
                 self.mailer.password
             )
         try:
             for email in self.queue:
-                server.send(email.as_string())
+                connection.sendmail(
+                    email['From'], email['To'], email.as_string())
+        except Exception as exc:
+            print(exc)  # can't raise.
         finally:
-            server.close()
+            connection.close()
 
     def abort_queue(self):
         del self.queue[:]
         self.datamanager = None
+        if self.connection is None:
+            return
+        self._close_connection()
 
     def email(self, recipient, subject, text, html=None):
         message = self.mailer.prepare(recipient, subject, text, html)
