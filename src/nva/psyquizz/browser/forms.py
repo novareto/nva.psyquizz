@@ -1224,8 +1224,10 @@ class Quizz5Wizard(AnswerQuizz):
         widgets = []
         if 'fields' in scale:
             for field in scale['fields']:
-                #name = "form.field.%s" % getattr(field, '__name__', field.identifier)
-                name = "form.field.%s" % field.getName() 
+                try:
+                    name = "form.field.%s" % getattr(field, '__name__', field.identifier)
+                except:
+                    name = "form.field.%s" % field.getName() 
                 widgets.append(self.fieldWidgets.get(name))
         else:
             for field, o in getFieldsInOrder(scale['iface']):
