@@ -23,7 +23,7 @@ class Quizz1Excel(SessionXSLX):
         if len(self.filters.get('criterias', {})) == 0:
             db = "alle"
         for k,v in self.filters.get('criterias', {}).items():
-            db +=  "%s %s" % (v.name, amounts.get(v.name))
+            db +=  "%s" % (v.name)
         fp = FRONTPAGE % (
             self.course.company.name,
             self.course.title,

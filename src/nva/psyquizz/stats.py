@@ -40,7 +40,7 @@ def computation(averages, sums, data):
             averages_data.append(
                 Average(
                     k,
-                    float(sum(all_results)/len(v)),
+                    float(sum(all_results))/len(v),
                     min(all_results),
                     max(all_results)
                 )

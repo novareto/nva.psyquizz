@@ -1,8 +1,14 @@
 <div id="criterias">
   <h1 i18n:translate="">Tätigkeiten/Bereiche festlegen</h1>
-  <p> In diesem Bereich legen Sie die Struktur Ihres Unternehmens für die Befragung fest. Sie sollten Kriterien definieren, wie z.B. Abteilungen oder Standorte, um die psychische Belastung tätigkeitsbezogen auswerten zu können. Bei der späteren Auswertung der Befragung können Sie nach diesen Kriterien vergleichen.
+  <p>
+    In diesem Bereich legen Sie die Struktur Ihres Unternehmens für
+    die Befragung fest. Sie sollten Kriterien definieren, wie
+    z.B. Abteilungen oder Standorte, um die psychische Belastung
+    tätigkeitsbezogen auswerten zu können. Bei der späteren Auswertung
+    der Befragung können Sie nach diesen Kriterien vergleichen.
   </p>
-  <a href="" tal:attributes="href view.url(context, 'add.criteria')" class="btn"> Auswertungsgruppen bilden </a>
+  <a href="" tal:attributes="href view.url(context, 'add.criteria')"
+     class="btn">Auswertungsgruppen bilden</a>
   <ul>
     <li tal:repeat="crit context">
       <a tal:attributes="href 'criterias/' + str(crit.id)"

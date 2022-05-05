@@ -6,21 +6,21 @@ import transaction
 import smtplib
 import html2text
 import functools
+from ssl import SSLError
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from random import randrange
 from time import strftime
 from socket import gethostname
 from contextlib import contextmanager
-from transaction.interfaces import (
-    ISavepointDataManager, IDataManagerSavepoint)
+from transaction.interfaces import IDataManager
 from zope.interface import implementer
 
 
 ENCODING = 'utf-8'
 
 
-@implementer(ISavepointDataManager)
+@implementer(IDataManager)
 class MailDataManager:
 
     def __init__(self, callable, vote=None, onAbort=None):
@@ -34,31 +34,27 @@ class MailDataManager:
         pass
 
     def abort(self, txn):
-        if self.onAbort:
-            self.onAbort()
+        pass
 
     def sortKey(self):
         return str(id(self))
 
-    def savepoint(self):
-        pass
-
-    def abort_sub(self, txn):
-        pass
-
-    commit_sub = abort_sub
-
-    def beforeCompletion(self, txn):
-        pass
-
-    afterCompletion = beforeCompletion
+    def tpc_abort(self, txn):
+        if self.onAbort:
+            self.onAbort()
 
     def tpc_begin(self, txn, subtransaction=False):
         assert not subtransaction
 
     def tpc_vote(self, txn):
-        if self.vote is not None:
-            return self.vote()
+        try:
+            if self.vote is not None:
+                return self.vote()
+        except Exception as exc:
+            raise RuntimeError(
+                'An error occured while trying to reach the '
+                'email server: %s' % exc
+            )
 
     def tpc_finish(self, txn):
         try:
@@ -68,9 +64,8 @@ class MailDataManager:
             # Better to protect the data and potentially miss emails than
             # leave a database in an inconsistent state which requires a
             # guru to fix.
-            log.exception("Failed in tpc_finish for %r", self.callable)
-
-    tpc_abort = abort
+            logging.exception(
+                "Failed in tpc_finish for %r", self.callable)
 
 
 class MailDelivery:
@@ -79,46 +74,68 @@ class MailDelivery:
         self.mailer = mailer
         self.queue = []
         self.txn = None
+        self.connection = None
+        self.code = None
+        self.response = None
 
-    def vote(self):
-        server = smtplib.SMTP(
-            self.mailer.host, str(self.mailer.port))
-
-        code, response = server.ehlo()
-        if code < 200 or code >= 300:
-            code, response = server.helo()
+    def server_is_available(self):
+        if self.connection is None:
+            self.connection = server = smtplib.SMTP(
+                self.mailer.host, self.mailer.port
+            )
+            server.set_debuglevel(5)
+            code, response = server.ehlo()
             if code < 200 or code >= 300:
-                raise RuntimeError(
-                    'Error sending HELO to the SMTP server '
-                    '(code=%s, response=%s)' % (code, response)
-                )
+                code, response = server.helo()
+                if code < 200 or code >= 300:
+                    self._close_connection()
+                    raise RuntimeError(
+                        'Error sending HELO to the SMTP server '
+                        '(code=%s, response=%s)' % (code, response)
+                    )
+            self.code, self.response = code, response
 
-    def commit(self):
-        server = smtplib.SMTP(
-            self.mailer.host, self.mailer.port)
-        server.set_debuglevel(self.mailer.debug)
+    def _close_connection(self):
+        if self.connection is not None:
+            try:
+                self.connection.quit()
+            except SSLError:
+                # something weird happened while quiting
+                self.connection.close()
+            self.connection = None
 
-        # identify ourselves, prompting server for supported features
-        server.ehlo()
+    def exhaust_queue(self):
+        if not self.queue:
+            return self._close_connection()
 
-        # If we can encrypt this session, do it
-        if server.has_extn("STARTTLS"):
-            server.starttls()
-            server.ehlo()  # re-identify ourselves over TLS connection
+        if self.connection is None:
+            self.server_is_available()
+
+        connection = self.connection
+
+        if connection.has_extn('starttls'):
+            connection.starttls()
+            connection.ehlo()
         if self.mailer.username:
-            server.login(
+            connection.login(
                 self.mailer.username,
                 self.mailer.password
             )
         try:
             for email in self.queue:
-                server.send_message(email)
+                connection.sendmail(
+                    email['From'], email['To'], email.as_string())
+        except Exception as exc:
+            print(exc)  # can't raise.
         finally:
-            server.close()
+            self._close_connection()
 
-    def abort(self):
+    def abort_queue(self):
         del self.queue[:]
         self.datamanager = None
+        if self.connection is None:
+            return
+        self._close_connection()
 
     def email(self, recipient, subject, text, html=None):
         message = self.mailer.prepare(recipient, subject, text, html)
@@ -132,9 +149,9 @@ class MailDelivery:
                     'The transaction is doomed, no more emailing.')
 
             self.txn.join(MailDataManager(
-                self.commit,
-                vote=self.vote,
-                onAbort=self.abort
+                self.exhaust_queue,
+                vote=self.server_is_available,
+                onAbort=self.abort_queue
             ))
         self.queue.append(message)
         return message['Message-ID']

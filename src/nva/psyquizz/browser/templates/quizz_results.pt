@@ -1,13 +1,13 @@
 <div>
 <div class="header">
   <h1>Ergebnisse</h1>
-  <p>Hier sehen Sie die Auswertung für alle Beschäftigten. 
+  <p>Hier sehen Sie die Auswertung für alle Beschäftigten.
   </p>
 
   <p>
   Durch Auswahl einer oder mehrerer Auswertungsgruppen haben Sie die Möglichkeit sich eine
-  detaillierte Auswertung anzeigen zu lassen. (Bitte beachten Sie: Einzelne Auswertungsgruppen 
-  können erst ausgewählt werden, wenn für diese Auswertungsgruppe mindestens sieben 
+  detaillierte Auswertung anzeigen zu lassen. (Bitte beachten Sie: Einzelne Auswertungsgruppen
+  können erst ausgewählt werden, wenn für diese Auswertungsgruppe mindestens sieben
   ausgefüllte Fragebögen vorliegen.)
   </p>
   <p>
@@ -15,25 +15,29 @@
   </p>
 
 </div>
-
   <form action="." tal:attributes="action view.request.url"
-	tal:define="current view.stats.filters.get('criterias', {})">
-<div><a name="uncheckall">Alle</a>
+        tal:define="current view.stats.filters.get('criterias', {})">
 
- </div>
+
     <dl tal:define="crits view.stats.statistics['criterias']">
       <tal:dl tal:repeat="crit crits">
-	<dt><h3 tal:content="crit" /></dt>
-	<dd>
-	  <div tal:repeat="opt crits[crit]"
-	       style="display: inline-block; padding: 5px;">
-	    <input name="criterias" type="checkbox"
-		   tal:attributes="value opt.uid;
-				   checked opt.uid in current;
-				   disabled opt.amount < 7 and 'disabled' or None" />
-            <span tal:content="'%s (%s)' % (opt.name, opt.amount)" />
-	  </div>
-	</dd>
+        <dt>
+          <h3 tal:content="crit" /></dt>
+          <a name="reset" class="text-muted" tal:attributes="rel crits[crit][0].id">alle</a>
+        <dd>
+          <div tal:repeat="opt crits[crit]"
+               style="display: inline-block; padding: 5px;">
+            <tal:disabled define="disabled bool(opt.amount &lt; 7)">
+              <input type="radio"
+                     tal:attributes="value opt.uid;
+                                     name 'criteria-%s' % opt.id;
+                                     checked opt.uid in current and 'checked' or None;
+                                     disabled disabled and 'disabled' or None" />
+              <span tal:content="'%s (%s)' % (opt.name, opt.amount)"
+                    tal:attributes="class disabled and 'text-muted' or ''"/>
+            </tal:disabled>
+          </div>
+        </dd>
       </tal:dl>
     </dl>
     <input id="form-action-filter" type="submit" value="filter" />
@@ -45,17 +49,18 @@
   <form id="result" method="POST"
 	tal:attributes="action view.url(context) + '/pdf'">
 
+    <input type="hidden" value="" name="has_criterias" tal:attributes="value len(view.stats.filters.get('criterias', {}))" />
     <input type="hidden" value=""
 	   tal:attributes="value view.stats.json_criterias" name="criterias" />
-    
+
     <input type="hidden"
 	   tal:attributes="value view.stats.statistics['total']" name="total"/>
-    
+
     <textarea type="text" id="averages" name="averages" style="display:none">
       <tal:data
            content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
     </textarea>
-    
+
     <textarea type="text" id="chart" name="chart" style="display: none"></textarea>
     <textarea type="text" id="pSVG1" name="pSVG1" style="display: none"></textarea>
 
@@ -63,7 +68,7 @@
    <h2 tal:content="view.extra_title()"> Ergebnis der Zusatzfrage(n)  </h2>
   <table id="mt" class="table table-bordered table-striped">
     <tr tal:repeat="data view.stats.statistics['extra_data'].items()">
-      <td tal:content="data[0]"></td> 
+      <td tal:content="data[0]"></td>
       <td>
 	<ul>
 	  <li tal:repeat="answer data[1].items()">
@@ -116,8 +121,14 @@
 	},
 	xAxis: {
             categories: <span tal:replace="view.xAxis"/>,
-	    labels: { step: 1, useHTML: false, formatter: function() { return myValues[this.value]; } },
-	},
+    labels: {
+      style: {
+        whiteSpace: 'nowrap',
+      }, 
+      step: 1, 
+      useHTML: false, 
+      formatter: function() { return myValues[this.value]; } },
+	  },
 	yAxis: {
             min: 0,
 	    max: 100,
@@ -141,7 +152,7 @@
 		stacking: 'normal'
             }
 	},
-	series: <span tal:replace="view.series"/> 
+	series: <span tal:replace="view.series"/>
     });
 
     var myChart = Highcharts.chart('container', {
@@ -184,13 +195,13 @@
 		stacking: 'normal'
             }
 	},
-	series: <span tal:replace="view.series"/> 
+	series: <span tal:replace="view.series"/>
     });
-    
+
     svgToCanvas(myChart_export, 'chart');
     $('#pSVG1').val(myChart_export.getSVGForExport());
 
-    
+
     $("a[name='checkall']").click(function () {
     $("input:checkbox").prop('checked', true);
     $("#form-action-filter").click();
@@ -211,7 +222,21 @@
 
   </script>
 
-
+  <script>
+    $(document).ready(function() {
+        $('input[type=radio]').change(function() {
+            $("#form-action-filter").click();
+        });
+        $('a[name="reset"]').click(function(evt) {
+          var uid = $(this).attr('rel');
+          var selected = $('input[value^='+uid+']:checked');
+          if (selected.length) {
+            selected.attr('checked', false);
+            $("#form-action-filter").click();
+          }
+        });
+    });
+  </script>
 
 
 </div>

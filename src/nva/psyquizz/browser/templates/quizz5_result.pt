@@ -1,26 +1,26 @@
-
 <div>
   <div class="header">
     <h1>Ergebnisse</h1>
     <div tal:replace="structure view.description"> </div>
   </div>
-
-
   <form action="." tal:attributes="action view.request.url"
         tal:define="current view.stats.filters.get('criterias', {})">
-    <div>
-      <a name="uncheckall">Alle</a>
-    </div>
+
     <dl tal:define="crits view.stats.statistics['criterias']">
-      <tal:dl tal:repeat="crit crits">
-        <dt><h3 tal:content="crit" /></dt>
+      <tal:dl tal:repeat="(crit, opts) crits.items()">
+        <dt>
+          <h3 tal:content="crit" style="display: inline-block; margin-right: 0.4em" />
+          <a name="reset" class=""
+             tal:attributes="rel opts[0].id">alle</a>
+        </dt>
         <dd>
-          <div tal:repeat="opt crits[crit]"
+          <div tal:repeat="opt opts"
                style="display: inline-block; padding: 5px;">
             <tal:disabled define="disabled bool(opt.amount &lt; 7)">
-              <input name="criterias" type="checkbox"
+              <input type="radio"
                      tal:attributes="value opt.uid;
-                                     checked opt.uid in current;
+                                     name 'criteria-%s' % opt.id;
+                                     checked opt.uid in current and 'checked' or None;
                                      disabled disabled and 'disabled' or None" />
               <span tal:content="'%s (%s)' % (opt.name, opt.amount)"
                     tal:attributes="class disabled and 'text-muted' or ''"/>
@@ -34,21 +34,18 @@
 
   <script>
     $(document).ready(function() {
-        $("a[name='checkall']").click(function () {
-            $("input:checkbox").prop('checked', true);
+        $('input[type=radio]').change(function() {
             $("#form-action-filter").click();
         });
-
-        $("a[name='uncheckall']").click(function () {
-            $("input:checkbox").prop('checked', false);
+        $('a[name="reset"]').click(function(evt) {
+          var uid = $(this).attr('rel');
+          var selected = $('input[value^='+uid+']:checked');
+          if (selected.length) {
+            selected.attr('checked', false);
             $("#form-action-filter").click();
-        });
-
-        $('input[type=checkbox]').change(function() {
-            $("#form-action-filter").click();
+          }
         });
     });
-
   </script>
 
   <script>
@@ -111,14 +108,64 @@
 
   <form  id="result" method="POST"
 	 tal:attributes="action view.url(context) + '/export'">
+ <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+   <div class="panel panel-default">
+     <div class="panel-heading" role="tab" id="headingOne">
+       <h4 class="panel-title">
+         <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+           Auswertung
+         <span class="pull-right sign">&nbsp;</span>
+         </a>
+       </h4>
+     </div>
+     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+       <div class="panel-body">
+
+
+
     <tal:containers
-        repeat="idx range(0, len(view.stats.statistics['global.averages']))">
+        repeat="idx range(0, len(view.stats.statistics['global.averages'])-10)">
       <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
       <textarea type="text" id="pSVG${idx}"
                 name="pSVG" style="display:none"></textarea>
       <textarea type="text" id="chart-${idx}"
                 name="chart" style="display: none"></textarea>
     </tal:containers>
+    </div>
+    </div>
+    </div>
+
+   <div class="panel panel-default">
+     <div class="panel-heading" role="tab" id="headingOne">
+       <h4 class="panel-title">
+         <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+            Arbeitsumgebung
+         <span class="pull-right sign">&nbsp;</span>
+         </a>
+       </h4>
+     </div>
+     <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+       <div class="panel-body">
+        <p class="lead"> Im Folgenden sehen Sie die Ergebnisse der einzelnen Fragen zu den für die psychische Belastung relevanten Arbeitsumgebungsfaktoren. </p>
+
+     <tal:containers repeat="idx range(19, len(view.stats.statistics['global.averages']))">
+        <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
+        <textarea type="text" id="pSVG${idx}"
+                  name="pSVG" style="display:none"></textarea>
+        <textarea type="text" id="chart-${idx}"
+                  name="chart" style="display: none"></textarea>
+      </tal:containers>
+
+
+       </div>
+     </div>
+   </div>
+ </div>
+
+
+
+
+     <input type="hidden" tal:attributes="value view.stats.statistics['total']" name="total"/>
 
     <textarea type="text" id="averages" name="averages" style="display:none">
       <tal:data
@@ -167,7 +214,7 @@
             enabled: false,
             align: 'left',
             useHTML: true,
-          text: '<span data-bs-custom-class="beautifier" data-toggle="tooltip" data-container="body" tal:attributes="title color[4]" tal:content="scale.title"> </span> <span tal:condition="color[5] == str(1)"> (Ressource - hohe Werte wirken positiv auf die Gesundheit) </span>'
+          text: '<span data-bs-custom-class="beautifier" data-toggle="tooltip" data-container="body" tal:attributes="title color[4]" tal:content="scale.title"> </span> <span tal:condition="color[5] == str(1)"> * </span>'
         },
         xAxis: {
             categories: [
@@ -202,8 +249,9 @@
         series: [{
             data: [{
                 target: ${scale.average}
-            }]
-        }]
+              }],
+            } 
+        ]
       });
 
       svgToCanvas(myChart${repeat["scale"].index}, 'chart-${repeat["scale"].index}');
@@ -211,7 +259,9 @@
       </tal:chart>
     </tal:charts>
       $('[data-toggle="tooltip"]').tooltip()
-  </script>
+    </script>
+
+   <p class="pull-right"> * (Ressource - hohe Werte wirken positiv auf die Gesundheit)<p>
 
   <div tal:condition="view.stats.statistics['extra_data']">
    <h2> Ergebnis der Zusatzfrage(n)  </h2>
