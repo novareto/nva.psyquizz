@@ -118,6 +118,8 @@ class GeneratePDF(uvclight.Page):
         pSVG = self.request.form.get('pSVG')
         tf = tempfile.NamedTemporaryFile()
         tf.write(unicode(pSVG).encode('utf-8'))
+        #tf.write(pSVG)
+        #import pdb; pdb.set_trace()
         tf.seek(0)
         drawing = svg2rlg(tf.name)
         drawing.height = 350.0

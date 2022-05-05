@@ -42,6 +42,57 @@ class XSLX(object):
     enable_chart1 = True
     enable_verteilung = True
     enable_ergebnisse = False
+    enable_averages = True
+
+    def generate_mittelwerte(self, workbook):
+        worksheet = workbook.add_worksheet('Mittelwerte')
+        nformat = workbook.add_format()
+        nformat.set_num_format('0.00')
+    
+        # Add a format for the header cells.
+        header_format = workbook.add_format({
+            'border': 1,
+            'bg_color': '#C6EFCE',
+            'bold': True,
+            'text_wrap': True,
+            'valign': 'vcenter',
+            'indent': 1,
+            'locked': 1,
+        })
+        
+        question_format = workbook.add_format({
+            'border': 0,
+            'color': '#000000',
+            'bold': True,
+            'text_wrap': False,
+            'valign': 'vcenter',
+            'indent': 0,
+            'locked': 1,
+        })
+        
+        worksheet.write(0, 0, 'Bereich')
+        worksheet.write(0, 1, 'Mittelwert der Skala')
+        for i, x in enumerate(self.statistics['global.averages']):
+            worksheet.write(i+1, 0, x.title)
+            worksheet.write(i+1, 1, x.average, nformat)
+
+        if self.enable_chart1:
+            chart1 = workbook.add_chart({'type': 'radar'})
+            chart1.add_series({
+                'name':       'Mittelwerte',
+                'categories': '=Mittelwerte!$A$1:$A$11',
+                'values':     '=Mittelwerte!$B$1:$B$11',
+                'min': 1,
+            })
+            
+            chart1.set_title({'name': 'Durchschnitt'})
+            chart1.set_x_axis({'name': 'Test number', "min": 1})
+            chart1.set_y_axis({'name': 'Sample length (mm)', "min": 1})
+            chart1.set_style(11)
+            
+            # Insert the chart into the worksheet (with an offset).
+            worksheet.insert_chart(
+                'A13', chart1, {'x_offset': 25, 'y_offset': 10})
 
     def generate_ergebnisse(self, workbook):
         ws = workbook.add_worksheet(u'Ergebnisse')
@@ -127,55 +178,9 @@ class XSLX(object):
         #for k,v in self.filters.get('criterias', {}).items():
         #    worksheet.write(ii, 0,  "%s %s" % (v.name, amounts.get(v.name)))
         #    ii += 1
-
-
-        worksheet = workbook.add_worksheet('Mittelwerte')
-        nformat = workbook.add_format()
-        nformat.set_num_format('0.00')
-
-        # Add a format for the header cells.
-        header_format = workbook.add_format({
-            'border': 1,
-            'bg_color': '#C6EFCE',
-            'bold': True,
-            'text_wrap': True,
-            'valign': 'vcenter',
-            'indent': 1,
-            'locked': 1,
-        })
-
-        question_format = workbook.add_format({
-            'border': 0,
-            'color': '#000000',
-            'bold': True,
-            'text_wrap': False,
-            'valign': 'vcenter',
-            'indent': 0,
-            'locked': 1,
-        })
-
-        for i, x in enumerate(self.statistics['global.averages']):
-            worksheet.write(i, 0, x.title)
-            worksheet.write(i, 1, x.average, nformat)
-
-        if self.enable_chart1:
-            chart1 = workbook.add_chart({'type': 'radar'})
-            chart1.add_series({
-                'name':       'Mittelwerte',
-                'categories': '=Mittelwerte!$A$1:$A$11',
-                'values':     '=Mittelwerte!$B$1:$B$11',
-                'min': 1,
-            })
-
-            chart1.set_title({'name': 'Durchschnitt'})
-            chart1.set_x_axis({'name': 'Test number', "min": 1})
-            chart1.set_y_axis({'name': 'Sample length (mm)', "min": 1})
-            chart1.set_style(11)
-
-            # Insert the chart into the worksheet (with an offset).
-            worksheet.insert_chart(
-                'A13', chart1, {'x_offset': 25, 'y_offset': 10})
-
+        self.generate_mittelwerte(workbook)
+        
+        
         if self.enable_verteilung:
             worksheet = workbook.add_worksheet('Verteilung')
 
@@ -221,31 +226,30 @@ class XSLX(object):
 
             chart3.set_y_axis({'reverse': True})
             worksheet.insert_chart("A20", chart3, {'x_offset': 15, 'y_offset': 10})
+        if self.enable_averages:
+            worksheet = workbook.add_worksheet('Mittelwerte pro Frage')
+            offset = 1 
+            if 'criterias' in self.filters:
+                for cname, cvalues in self.statistics['criterias'].items():
+                    for v in cvalues:
+                        offset += 1
+                        worksheet.write("A%i" % offset, cname)
+                        worksheet.write("B%i" % offset, v.name)
+                        worksheet.write("C%i" % offset, v.amount)
+            else:
+                offset += 1
 
-        worksheet = workbook.add_worksheet('Mittelwerte pro Frage')
-        offset = 1
+            offset += 2
+            worksheet.write("A%i" % offset, "Frage")
+            worksheet.write("B%i" % offset, "Mittelwert")
 
-        if 'criterias' in self.filters:
-            for cname, cvalues in self.statistics['criterias'].items():
-                for v in cvalues:
-                    offset += 1
-                    worksheet.write("A%i" % offset, cname)
-                    worksheet.write("B%i" % offset, v.name)
-                    worksheet.write("C%i" % offset, v.amount)
-        else:
-            offset += 1
-
-        offset += 2
-        worksheet.write("A%i" % offset, "Frage")
-        worksheet.write("B%i" % offset, "Mittelwert")
-
-        labels = {k.title: k.description for id, k in
-                  getFieldsInOrder(self.quizz.__schema__)}
-        for avg in self.statistics['per_question_averages']:
-            offset += 1
-            assert avg.title in labels
-            worksheet.write("A%i" % offset, labels[avg.title])
-            worksheet.write("B%i" % offset, avg.average, nformat)
+            labels = {k.title: k.description for id, k in
+                      getFieldsInOrder(self.quizz.__schema__)}
+            for avg in self.statistics['per_question_averages']:
+                offset += 1
+                assert avg.title in labels
+                worksheet.write("A%i" % offset, labels[avg.title])
+                worksheet.write("B%i" % offset, avg.average, nformat)
 
         if self.enable_ergebnisse:
             self.generate_ergebnisse(workbook)

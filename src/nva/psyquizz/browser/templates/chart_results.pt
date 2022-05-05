@@ -189,8 +189,13 @@
             text: 'Verteilung'
 	},
 	xAxis: {
-            categories: <span tal:replace="view.stats.xAxis"/>,
-              tickAmount: 10
+    categories: <span tal:replace="view.stats.xAxis"/>,
+    tickAmount: 10,
+    labels: {
+        style: {
+            fontSize: '9px'
+        }
+    }
 	},
 	yAxis: {
             min: 0,
@@ -245,10 +250,12 @@
             tickmarkPlacement: 'on',
             lineWidth: 0,
             labels: {
-	        distance: 25,
+                format: '{text}',
+	              distance: 25,
                 style: {
                     color: 'black',
-                    fontSize: '15px',
+                    whiteSpace: 'nowrap',
+                    fontSize: '12px',
                 }
 	    },
 	},

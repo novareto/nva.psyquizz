@@ -1204,7 +1204,7 @@ class Quizz5Wizard(AnswerQuizz):
             *self.quizz.criteria_fields(self.context.course))
         if criteria_fields:
             scales = scales + [{'fields': criteria_fields, 'label': 'Unternehmenskriterien'}]
-        scales += IQuizz5.getTaggedValue('scales')
+        scales += IQuizz5.getTaggedValue('edit_scales')
         additional_questions = list(self.quizz.additional_extra_fields(
             self.context.course))
         extra_fields = list(self.quizz.extra_fields(self.context.course))

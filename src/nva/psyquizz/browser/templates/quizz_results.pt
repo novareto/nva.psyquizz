@@ -116,8 +116,14 @@
             text: 'Verteilung'
 	},
 	xAxis: {
-            categories: <span tal:replace="view.xAxis"/>,
-	    labels: { step: 1, useHTML: false, formatter: function() { return myValues[this.value]; } },
+      categories: <span tal:replace="view.xAxis"/>,
+    labels: { 
+      style: {
+         whiteSpace: 'nowrap',
+      },
+      step: 1, 
+      useHTML: false, 
+      formatter: function() { return myValues[this.value]; } },
 	},
 	yAxis: {
             min: 0,
@@ -213,6 +219,21 @@
   </script>
 
 
+  <script>
+    $(document).ready(function() {
+        $('input[type=radio]').change(function() {
+            $("#form-action-filter").click();
+        });
+        $('a[name="reset"]').click(function(evt) {
+          var uid = $(this).attr('rel');
+          var selected = $('input[value^='+uid+']:checked');
+          if (selected.length) {
+            selected.attr('checked', false);
+            $("#form-action-filter").click();
+          }
+        });
+    });
+  </script>
 
 
 </div>
