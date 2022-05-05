@@ -23,7 +23,7 @@ class Quizz5PDF(GeneratePDF):
         avg = json.loads(self.request.form['averages'])
         pSVGs = self.request.form.get('pSVG')
         assert isinstance(pSVGs, list)
-
+        i = 0
         for pSVG in pSVGs:
             tf = tempfile.NamedTemporaryFile()
             tf.write(unicode(pSVG).encode('utf-8'))
@@ -31,6 +31,11 @@ class Quizz5PDF(GeneratePDF):
             drawing = svg2rlg(tf.name)
             drawing.scale(0.7, 0.7)
             parts.append(drawing)
+            if i == 18:
+                parts.append(PageBreak())
+                parts.append(Paragraph('<h1>Umgebungsvariablen<h1>', styles['Heading1']))
+                parts.append(Paragraph('<p>Im Folgenden sehen Sie die Ergebnisse der einzelnen Fragen zu den für die psychische Belastung relevanten Arbeitsumgebungs  faktoren.</p>', styles['Normal']))
+            i += 1
         return parts
 
     def render(self):

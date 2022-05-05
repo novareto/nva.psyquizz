@@ -220,7 +220,7 @@ class IScale9(Interface):
 
     question27 = schema.Choice(
         title=u"27",
-        description=u"Es passsiert häufig, dass man mit unverschämten Personen oder unangemessenen Verhalten zu tun hat.",
+        description=u"Es passiert häufig, dass man mit unverschämten Personen oder unangemessenen Verhalten zu tun hat.",
         vocabulary=FBGU,
         required=True,
     )
@@ -478,12 +478,18 @@ class IScale20(Interface):
         required=True,
     )
 
+
+class IScale21(Interface):
+
     question59 = schema.Choice(
         title=u"59",
         description=u"Hitze",
         vocabulary=FBGU,
         required=True,
     )
+
+
+class IScale22(Interface):
 
     question60 = schema.Choice(
         title=u"60",
@@ -492,12 +498,18 @@ class IScale20(Interface):
         required=True,
     )
 
+
+class IScale23(Interface):
+
     question61 = schema.Choice(
         title=u"61",
         description=u"Gefahrstoffe",
         vocabulary=FBGU,
         required=True,
    )
+
+
+class IScale24(Interface):
 
     question62 = schema.Choice(
         title=u"62",
@@ -506,12 +518,18 @@ class IScale20(Interface):
         required=True,
     )
 
+
+class IScale25(Interface):
+
     question63 = schema.Choice(
         title=u"63",
         description=u"Ungünstige ergonomische Gestaltung",
         vocabulary=FBGU,
         required=True,
     )
+
+
+class IScale26(Interface):
 
     question64 = schema.Choice(
         title=u"64",
@@ -520,6 +538,9 @@ class IScale20(Interface):
         required=True,
     )
 
+
+class IScale27(Interface):
+
     question65 = schema.Choice(
         title=u"65",
         description=u"Unzureichende Gestaltung von Signalen und Hinweisen",
@@ -527,12 +548,18 @@ class IScale20(Interface):
         required=True,
     )
 
+
+class IScale28(Interface):
+
     question66 = schema.Choice(
         title=u"66",
         description=u"Schwere körperliche Arbeit",
         vocabulary=FBGU,
         required=True,
     )
+
+
+class IScale29(Interface):
 
     question67 = schema.Choice(
         title=u"67",
@@ -542,29 +569,22 @@ class IScale20(Interface):
     )
 
 
+class IGroupScale(IScale20, IScale21, IScale22, IScale23, IScale24, IScale25, IScale26, IScale27, IScale28, IScale29):
+    pass
+
+
 class IQuizz5(IQuizz, IScale1, IScale2, IScale3, IScale4, IScale5, IScale6, IScale7,
         IScale8, IScale9, IScale10, IScale11, IScale12, IScale13, IScale14, IScale15,
-        IScale16, IScale17, IScale18, IScale19, IScale20):
+        IScale16, IScale17, IScale18, IScale19, IScale20, IScale21, IScale22, IScale23,
+        IScale24, IScale25, IScale26, IScale27, IScale28, IScale29):
     pass
 
 
 IQuizz5.setTaggedValue("scales", [
-    {
-        'iface': IScale1,
-        'label': u"Vollständigkeit der Aufgabe"
-    },
-    {
-        'iface': IScale2,
-        'label': u"Handlungsspielraum"
-    },
-    {
-        'iface': IScale3,
-        'label': u"Variabilität (Abwechslungsreichtum)"
-    },
-    {
-        'iface': IScale4,
-        'label': u"Informationsmängel"
-    },
+    {'iface': IScale1, 'label': u"Vollständigkeit der Aufgabe"},
+    {'iface': IScale2, 'label': u"Handlungsspielraum"},
+    {'iface': IScale3, 'label': u"Variabilität (Abwechslungsreichtum)"},
+    {'iface': IScale4, 'label': u"Informationsmängel"},
     {'iface': IScale5, 'label': u"Informationsüberflutung"},
     {'iface': IScale6, 'label': u"Klarheit der Kompetenzen und Verantwortlichkeiten"},
     {'iface': IScale7, 'label': u"Qualifikationsmängel"},
@@ -580,9 +600,42 @@ IQuizz5.setTaggedValue("scales", [
     {'iface': IScale17, 'label': u"Soziale Drucksituationen"},
     {'iface': IScale18, 'label': u"Soziale Unterstützung durch Führungskräfte"},
     {'iface': IScale19, 'label': u"Feedback und Anerkennung"},
-    {'iface': IScale20, 'label': u"Arbeitsumgebung und Arbeitsplatzgestaltung"},
+#    {'iface': IScale20, 'label': u"Umgebung (Gesamt)"},
+    {'iface': IScale20, 'label': u"Lärm"},
+    {'iface': IScale21, 'label': u"Hitze"},
+    {'iface': IScale22, 'label': u"Ungünstige Beleuchtung"},
+    {'iface': IScale23, 'label': u"Gefahrstoffe"},
+    {'iface': IScale24, 'label': u"Räumliche Enge"},
+    {'iface': IScale25, 'label': u"Ergonomische Gestaltung"},
+    {'iface': IScale26, 'label': u"Dauerhaft gleiche Bewegungen"},
+    {'iface': IScale27, 'label': u"Gestaltung von Signalen"},
+    {'iface': IScale28, 'label': u"Schwere körperliche Arbeit"},
+    {'iface': IScale29, 'label': u"Arbeitsmittel"},
 ])
 
+IQuizz5.setTaggedValue("edit_scales", [
+    {'iface': IScale1, 'label': u"Vollständigkeit der Aufgabe"},
+    {'iface': IScale2, 'label': u"Handlungsspielraum"},
+    {'iface': IScale3, 'label': u"Variabilität (Abwechslungsreichtum)"},
+    {'iface': IScale4, 'label': u"Informationsmängel"},
+    {'iface': IScale5, 'label': u"Informationsüberflutung"},
+    {'iface': IScale6, 'label': u"Klarheit der Kompetenzen und Verantwortlichkeiten"},
+    {'iface': IScale7, 'label': u"Qualifikationsmängel"},
+    {'iface': IScale8, 'label': u"Qualifikationsunterforderung"},
+    {'iface': IScale9, 'label': u"Soziale und Emotionale Belastungen"},
+    {'iface': IScale10, 'label': u"Emotionsarbeit"},
+    {'iface': IScale11, 'label': u"Belastende Arbeitszeit"},
+    {'iface': IScale12, 'label': u"Entgrenzte Arbeitszeit"},
+    {'iface': IScale13, 'label': u"Zeitdruck/hohe Arbeitsintensität"},
+    {'iface': IScale14, 'label': u"Unterbrechungen/Multitasking"},
+    {'iface': IScale15, 'label': u"Kommunikation/Kooperation"},
+    {'iface': IScale16, 'label': u"Soziale Unterstützung"},
+    {'iface': IScale17, 'label': u"Soziale Drucksituationen"},
+    {'iface': IScale18, 'label': u"Soziale Unterstützung durch Führungskräfte"},
+    {'iface': IScale19, 'label': u"Feedback und Anerkennung"},
+#    {'iface': IScale20, 'label': u"Umgebung (Gesamt)"},
+    {'iface': IGroupScale, 'label': u"Umgebung"},
+])
 
 IQuizz5.setTaggedValue("averages", OrderedDict((
     (u'Vollständigkeit der Aufgabe', [x[1].title for x in schema.getFieldsInOrder(IScale1)]),
@@ -604,7 +657,17 @@ IQuizz5.setTaggedValue("averages", OrderedDict((
     (u'Soziale Drucksituationen', [x[1].title for x in schema.getFieldsInOrder(IScale17)]),
     (u'Soziale Unterstützung durch Führungskräfte', [x[1].title for x in schema.getFieldsInOrder(IScale18)]),
     (u'Feedback und Anerkennung', [x[1].title for x in schema.getFieldsInOrder(IScale19)]),
-    (u'Arbeitsumgebung und Arbeitsplatzgestaltung', [x[1].title for x in schema.getFieldsInOrder(IScale20)]),
+#    (u'Umgebung (Gesamt)', [x[1].title for x in schema.getFieldsInOrder(IScale20)]),
+    (u'Lärm', [x[1].title for x in schema.getFieldsInOrder(IScale20)]),
+    (u'Hitze', [x[1].title for x in schema.getFieldsInOrder(IScale21)]),
+    (u'Ungünstige Beleuchtung', [x[1].title for x in schema.getFieldsInOrder(IScale22)]),
+    (u'Gefahrenstoffe', [x[1].title for x in schema.getFieldsInOrder(IScale23)]),
+    (u'Räumliche Enge', [x[1].title for x in schema.getFieldsInOrder(IScale24)]),
+    (u'Ergonomische Gestaltung', [x[1].title for x in schema.getFieldsInOrder(IScale25)]),
+    (u'Dauerhaft gleiche Bewegungen', [x[1].title for x in schema.getFieldsInOrder(IScale26)]),
+    (u'Gestaltung von Signalen', [x[1].title for x in schema.getFieldsInOrder(IScale27)]),
+    (u'Schwere körperliche Arbeit', [x[1].title for x in schema.getFieldsInOrder(IScale28)]),
+    (u'Arbeitsmittel', [x[1].title for x in schema.getFieldsInOrder(IScale29)]),
     )))
 
 
@@ -613,7 +676,7 @@ class Quizz5(QuizzBase, Base):
 
     __tablename__ = "quizz5"
     __schema__ = IQuizz5
-    __title__ = u"FBGU Fragebogen"
+    __title__ = u"FGBU Fragebogen"
     __base_pdf__ = "fbgu.pdf"
     __supports_diff__ = False
 
@@ -752,14 +815,14 @@ class Quizz5(QuizzBase, Base):
                         (as_float(green), '#62B645'),
                         (as_float(red), '#FFCC00'),
                         (5, '#D8262B'),
-                        label, tooltip, inverted
+                        unicode(label, 'utf-8'), tooltip, inverted
                     )
                 else:
                     boundary = (
                         (as_float(red), '#D8262B'),
                         (as_float(yellow), '#FFCC00'),
                         (as_float(green), '#62B645'),
-                        label, tooltip, inverted
+                        unicode(label, 'utf-8'), tooltip, inverted
                     )
                 boundaries[unicode(title, 'utf-8')] = boundary
                 #boundaries[title] = boundary

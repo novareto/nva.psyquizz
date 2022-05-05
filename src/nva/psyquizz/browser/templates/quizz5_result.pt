@@ -108,16 +108,64 @@
 
   <form  id="result" method="POST"
 	 tal:attributes="action view.url(context) + '/export'">
+
+
+ <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+   <div class="panel panel-default">
+     <div class="panel-heading" role="tab" id="headingOne">
+       <h4 class="panel-title">
+         <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+           Auswertung
+         <span class="pull-right sign">&nbsp;</span>
+         </a>
+       </h4>
+     </div>
+     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+       <div class="panel-body">
+
+
     <tal:containers
-        repeat="idx range(0, len(view.stats.statistics['global.averages']))">
+        repeat="idx range(0, len(view.stats.statistics['global.averages']) - 10)">
       <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
       <textarea type="text" id="pSVG${idx}"
                 name="pSVG" style="display:none"></textarea>
       <textarea type="text" id="chart-${idx}"
                 name="chart" style="display: none"></textarea>
     </tal:containers>
-        <input type="hidden"
-       tal:attributes="value view.stats.statistics['total']" name="total"/>
+
+     </div>
+     </div>
+   </div>
+   <div class="panel panel-default">
+     <div class="panel-heading" role="tab" id="headingOne">
+       <h4 class="panel-title">
+         <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+            Arbeitsumgebung
+         <span class="pull-right sign">&nbsp;</span>
+         </a>
+       </h4>
+     </div>
+     <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+       <div class="panel-body">
+        <p class="lead"> Im Folgenden sehen Sie die Ergebnisse der einzelnen Fragen zu den für die psychische Belastung relevanten Arbeitsumgebungsfaktoren. </p>
+
+     <tal:containers repeat="idx range(19, len(view.stats.statistics['global.averages']))">
+        <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
+        <textarea type="text" id="pSVG${idx}"
+                  name="pSVG" style="display:none"></textarea>
+        <textarea type="text" id="chart-${idx}"
+                  name="chart" style="display: none"></textarea>
+      </tal:containers>
+
+
+       </div>
+     </div>
+   </div>
+ </div>
+
+
+
+        <input type="hidden" tal:attributes="value view.stats.statistics['total']" name="total"/>
     <textarea type="text" id="averages" name="averages" style="display:none">
       <tal:data
            content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
@@ -165,7 +213,7 @@
             enabled: false,
             align: 'left',
             useHTML: true,
-          text: '<span data-bs-custom-class="beautifier" data-toggle="tooltip" data-container="body" tal:attributes="title color[4]" tal:content="scale.title"> </span> <span tal:condition="color[5] == str(1)"> (Ressource - hohe Werte wirken positiv auf die Gesundheit) </span>'
+          text: '<span data-bs-custom-class="beautifier" data-toggle="tooltip" data-container="body" tal:attributes="title color[4]" tal:content="scale.title"> </span> <span tal:condition="color[5] == str(1)"> * </span>'
         },
         xAxis: {
             categories: [
@@ -211,6 +259,8 @@
     </tal:charts>
       $('[data-toggle="tooltip"]').tooltip()
   </script>
+
+ <p class="pull-right"> * (Ressource - hohe Werte wirken positiv auf die Gesundheit)<p>
 
   <div tal:condition="view.stats.statistics['extra_data']">
    <h2> Ergebnis der Zusatzfrage(n)  </h2>

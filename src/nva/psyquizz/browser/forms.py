@@ -1004,7 +1004,7 @@ class DeleteSession(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie die Befragung %s wirklich löschen" % self.context.title
+        return u"Möchten Sie die Befragung %s wirklich löschen?" % self.context.title
 
     @property
     def action_url(self):
@@ -1204,7 +1204,7 @@ class Quizz5Wizard(AnswerQuizz):
             *self.quizz.criteria_fields(self.context.course))
         if criteria_fields:
             scales = scales + [{'fields': criteria_fields, 'label': 'Unternehmenskriterien'}]
-        scales += IQuizz5.getTaggedValue('scales')
+        scales += IQuizz5.getTaggedValue('edit_scales')
         additional_questions = list(self.quizz.additional_extra_fields(
             self.context.course))
         extra_fields = list(self.quizz.extra_fields(self.context.course))
