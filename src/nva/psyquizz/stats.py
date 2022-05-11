@@ -141,7 +141,6 @@ def compute(quizz, averages, sums, filters):
             for c in answer.student.criterias:
                 criterias_title[str(c.criteria.id)] = c.criteria.title
                 student_criterias.add((str(c.criteria.id), c.answer))
-
             if criterias is not None and not student_criterias >= criterias:
                 # WE DO NOT MATCH THE CRITERIAS
                 continue

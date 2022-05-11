@@ -121,15 +121,15 @@
             text: 'Verteilung'
 	},
 	xAxis: {
-            categories: <span tal:replace="view.xAxis"/>,
+      categories: <span tal:replace="view.xAxis"/>,
     labels: {
       style: {
-        whiteSpace: 'nowrap',
+         whiteSpace: 'nowrap',
       },
       step: 1,
       useHTML: false,
       formatter: function() { return myValues[this.value]; } },
-	  },
+	},
 	yAxis: {
             min: 0,
 	    max: 100,
@@ -222,7 +222,6 @@
     });
 
   </script>
-
   <script>
     $(document).ready(function() {
         $('input[type=radio]').change(function() {

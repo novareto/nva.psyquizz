@@ -109,11 +109,7 @@
 
   <form  id="result" method="POST"
 	 tal:attributes="action view.url(context) + '/export'">
-<<<<<<< HEAD
 
-
-=======
->>>>>>> origin/vbg-chagnes
  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
    <div class="panel panel-default">
      <div class="panel-heading" role="tab" id="headingOne">
@@ -127,15 +123,8 @@
      <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
        <div class="panel-body">
 
-
-<<<<<<< HEAD
     <tal:containers
         repeat="idx range(0, len(view.stats.statistics['global.averages']) - 10)">
-=======
-
-    <tal:containers
-        repeat="idx range(0, len(view.stats.statistics['global.averages'])-10)">
->>>>>>> origin/vbg-chagnes
       <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
       <textarea type="text" id="pSVG${idx}"
                 name="pSVG" style="display:none"></textarea>
@@ -208,9 +197,10 @@
    </div>
  </div>
 
+ <input type="hidden"
+        tal:attributes="value view.stats.statistics['total']"
+        name="total"/>
 
-
-        <input type="hidden" tal:attributes="value view.stats.statistics['total']" name="total"/>
     <textarea type="text" id="averages" name="averages" style="display:none">
       <tal:data
            content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
@@ -294,7 +284,11 @@
             data: [{
                 target: ${scale.average}
               }],
+<<<<<<< HEAD
             }
+=======
+            }
+>>>>>>> origin/chagnes_etem
         ]
       });
 
@@ -303,11 +297,9 @@
       </tal:chart>
     </tal:charts>
       $('[data-toggle="tooltip"]').tooltip()
-    </script>
 
-   <p class="pull-right"> * (Ressource - hohe Werte wirken positiv auf die Gesundheit)<p>
-
- <p class="pull-right"> * (Ressource - hohe Werte wirken positiv auf die Gesundheit)<p>
+  </script>
+  <p class="pull-right"> * (Ressource - hohe Werte wirken positiv auf die Gesundheit)<p>
 
   <div tal:condition="view.stats.statistics['extra_data']">
    <h2> Ergebnis der Zusatzfrage(n)  </h2>

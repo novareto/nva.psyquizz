@@ -54,7 +54,6 @@ class CourseStatistics(object):
         self.filters = filters
         self.statistics = compute(
             self.quizz, self.averages, self.sums, self.filters)
-
         if 'criterias' in filters:
             for criteria in filters['criterias']:
                 for title, cc in self.statistics['criterias'].items():
@@ -166,7 +165,12 @@ class Quizz5Charts(Quizz2Charts):
         der Mouse über den Text der Bereiche fahren. Eine Gesamtübersicht der Bereichsdefinitionen können Sie
         <a target="_blank" href="/fanstatic/nva.psyquizz/kurzerlauterungen_fbgu_skalen.pdf">hier</a> herunterladen.
         </p>
-    </p>
+        <p>
+	    Eine Definition der einzelnen Bereiche (z. B. Vollständigkeit der Aufgabe) erhalten Sie, indem Sie mit
+	    der Mouse über den Text der Bereiche fahren. Eine Gesamtübersicht der Bereichsdefinitionen können Sie
+	    <a target="_blank" href="/fanstatic/nva.psyquizz/kurzerlauterungen_fbgu_skalen.pdf">hier</a> herunterladen.
+        </p>
+
     """
 
     def update(self, stats, general_stats=None):
