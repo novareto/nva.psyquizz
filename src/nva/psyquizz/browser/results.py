@@ -142,23 +142,28 @@ class Quizz5Charts(Quizz2Charts):
     template = uvclight.get_template('quizz5_result.pt', __file__)
     description = u"""
         <p>
-        Im Folgenden wird für die Befragungsergebnisse dargestellt, wie sich diese auf die Gesundheit der
-        Mitarbeiterinnen und Mitarbeiter auswirken. Die blaue Markierung kennzeichnet dabei Ihr Ergebniss
-        für den jeweiligen Bereich. Ergebnisse innerhalb des roten Balkens deuten auf ein
-        erhöhtes Gesundheitsrisko hin, Ergebnisse innerhalb des gelben Balkens stehen für ein leicht
-        erhöhtes Gesundheitsrisiko und bei Ergebnissen innerhalb des grünen Balkens scheint alles in
-        Ordnung.
+	Im Folgenden werden die Befragungsergebnisse dargestellt und wie sich diese auf die
+	Gesundheit der Mitarbeiterinnen und Mitarbeiter auswirken. Der blaue Strich kennzeichnet dabei
+	das Ergebnis für den jeweiligen Bereich. Ergebnisse innerhalb des roten Balkens deuten auf ein
+	erhöhtes Gesundheitsrisiko hin, Ergebnisse innerhalb des gelben Balkens stehen für ein leicht
+	erhöhtes Gesundheitsrisiko und bei Ergebnissen innerhalb des grünen Balkens scheint alles in
+	Ordnung.
         </p>
         <p>
-        Die Wirkung der einzelnen Bereiche aus der Befragung auf die Gesundheit ist unterschiedlich stark.
-        So hat der Bereich „Soziale Stressoren unter Kollegen“ eine schädigendere Wirkung als z. B.
-        „Informationsmängel“. Daher setzt der rote Balken dort früher ein als bei „Informationsmängeln“.
-        Außerdem gibt es Bereiche, sogenannte Ressourcen, bei denen gilt „je mehr je besser“. Deshalb
-        beginnt beispielsweise bei „Handlungsspielraum“ die Grafik mit dem roten Balken und und endet mit
-        dem grünen.
+	Die Wirkung der einzelnen Bereiche aus der Befragung auf die Gesundheit ist unterschiedlich
+	stark, was sich in der Länge der farblichen Balken widerspiegelt. Es gibt zwei Bereiche mit einem
+	insgesamt geringeren Risiko (Vollständigkeit der Aufgabe, Variabilität) hier wird kein roter Balken
+	dargestellt. Auf der anderen Seite gibt es Bereiche mit einem erhöhten Risiko (z.B. Soziale
+	Drucksituationen) hier ist der rote Balken besonders lang.
+        </p>
+        <p>
+	Außerdem gibt es Bereiche, sogenannte Ressourcen, bei denen gilt „je mehr desto besser“.
+	Deshalb beginnt beispielsweise bei „Handlungsspielraum“ die Grafik mit dem roten Balken und
+	endet mit dem grünen.
+        </p>
         <p>
         Eine Definition der einzelnen Bereiche (z. B. Vollständigkeit der Aufgabe) erhalten Sie, indem Sie mit
-        der Mouse über den Text fahren. Eine Gesamtübersicht der Bereichsdefinitionen können Sie
+        der Mouse über den Text der Bereiche fahren. Eine Gesamtübersicht der Bereichsdefinitionen können Sie
         <a target="_blank" href="/fanstatic/nva.psyquizz/kurzerlauterungen_fbgu_skalen.pdf">hier</a> herunterladen.
         </p>
     </p>

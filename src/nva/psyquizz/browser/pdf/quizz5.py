@@ -34,7 +34,7 @@ class Quizz5PDF(GeneratePDF):
             if i == 18:
                 parts.append(PageBreak())
                 parts.append(Paragraph('<h1>Umgebungsvariablen<h1>', styles['Heading1']))
-                parts.append(Paragraph('<p>Im Folgenden sehen Sie die Ergebnisse der einzelnen Fragen zu den für die psychische Belastung relevanten Arbeitsumgebungs  faktoren.</p>', styles['Normal']))
+                parts.append(Paragraph('<p>Im Folgenden sehen Sie die Ergebnisse der einzelnen Fragen zu den für die psychische Belastung relevanten Arbeitsumgebungsfaktoren.</p>', styles['Normal']))
             i += 1
         return parts
 

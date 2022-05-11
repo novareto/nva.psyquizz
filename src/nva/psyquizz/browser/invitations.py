@@ -190,7 +190,7 @@ class GenerateLetter(Action):
 
 DEFAULT = u"""
 <p><b>Liebe Kolleginnen und Kollegen, </b></p>
-<p>wie bereits angekündigt, erhalten Sie heute Ihre Einladung zur Teilnahme an unserer Befragung „Gemeinsam zu gesunden Arbeitsbedingungen“.</p>
+<p>wie bereits angekündigt, erhalten Sie heute Ihre Einladung zur Teilnahme an unserer Befragung „Gut gestaltete Arbeitsbedingungen“.</p>
 <p>Ziel der Befragung ist es, Ihre Arbeitsbedingungen zu beurteilen und ggf.
 entsprechende Verbesserungsmaßnahmen einleiten zu können. Bitte beantworten Sie
 alle Fragen offen und ehrlich. Wir sichern Ihnen vollständige Vertraulichkeit
