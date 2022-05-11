@@ -114,6 +114,7 @@
       </tal:criteria>
       -->
 
+
       <blockquote tal:condition="widget.title in view.titles">
 	      <span tal:replace="view.titles[widget.title]" />
       </blockquote>
