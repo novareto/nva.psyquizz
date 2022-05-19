@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 from zope import schema
 from zope.interface import invariant, Invalid, Interface
 from zope.location import ILocation
@@ -293,7 +294,7 @@ class ICourse(ILocation, IContent):
         title=_(u"Quizz"),
         source=deferred('quizz_choice'),
         required=True,
-        default="quizz2",
+        default=os.environ.get('DEFAULT_QUIZZ', None),
     )
 
     fixed_extra_questions = schema.Set(
