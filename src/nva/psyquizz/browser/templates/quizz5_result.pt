@@ -167,24 +167,23 @@
 
     <input type="hidden" name="total"
            tal:attributes="value view.stats.statistics['total']" />
-  </div>
 
-  <textarea type="text" id="averages" name="averages" style="display:none">
-    <tal:data
-        content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
-  </textarea>
+    <textarea type="text" id="averages" name="averages" style="display:none">
+      <tal:data
+          content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
+    </textarea>
 
-  <button class="btn btn-default" name="action" value="PDF">
-    <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
-      </span>&nbsp; PDF export
-  </button>
+    <button class="btn btn-default" name="action" value="PDF">
+      <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+        </span>&nbsp; PDF export
+    </button>
 
-  <a class="btn btn-default"
-     tal:attributes="href 'excel?' + request.environment['QUERY_STRING']"
-     ><span class="glyphicon glyphicon-download-alt" aria-hidden="true">
-  </span>&nbsp; Excel export</a>
+    <a class="btn btn-default"
+       tal:attributes="href 'excel?' + request.environment['QUERY_STRING']"
+       ><span class="glyphicon glyphicon-download-alt" aria-hidden="true">
+    </span>&nbsp; Excel export</a>
 
-</form>
+  </form>
 
   <style>
 .tooltip {
