@@ -812,11 +812,12 @@ class Quizz5(QuizzBase, Base):
                     red = red[1:]
                 if int(inverted) == 0:
                     boundary = (
-                        (as_float(green), '#62B645'),
-                        (as_float(red), '#FFCC00'),
+                        (as_float(red), '#62B645'),
+                        (as_float(yellow), '#FFCC00'),
                         (5, '#D8262B'),
                         unicode(label, 'utf-8'), tooltip, inverted
                     )
+                    print "%s; %s; | %s | %s | I0 | R %s | Y %s | G5  --> %s " %(idx, red, yellow, green, boundary[0][0], boundary[1][0], title)
                 else:
                     boundary = (
                         (as_float(red), '#D8262B'),
@@ -824,9 +825,8 @@ class Quizz5(QuizzBase, Base):
                         (as_float(green), '#62B645'),
                         unicode(label, 'utf-8'), tooltip, inverted
                     )
+                    print "%s; %s; | %s | %s | I1 | G %s | Y %s | R5  --> %s " %(idx, red, yellow, green, boundary[0][0], boundary[1][0], title)
                 boundaries[unicode(title, 'utf-8')] = boundary
-                #boundaries[title] = boundary
-                print title
         IQuizz5.setTaggedValue("chart_boundaries", boundaries)
         return boundaries
 
