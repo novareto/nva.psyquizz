@@ -183,6 +183,8 @@ class XSLX(object):
         
         if self.enable_verteilung:
             worksheet = workbook.add_worksheet('Verteilung')
+            nformat = workbook.add_format()
+            nformat.set_num_format('0.00')
 
             data = json.loads(self.series)
             for y, x in enumerate(data):
@@ -228,6 +230,8 @@ class XSLX(object):
             worksheet.insert_chart("A20", chart3, {'x_offset': 15, 'y_offset': 10})
         if self.enable_averages:
             worksheet = workbook.add_worksheet('Mittelwerte pro Frage')
+            nformat = workbook.add_format()
+            nformat.set_num_format('0.00')
             offset = 1 
             if 'criterias' in self.filters:
                 for cname, cvalues in self.statistics['criterias'].items():
