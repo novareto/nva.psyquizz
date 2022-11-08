@@ -46,9 +46,9 @@ $( document ).ready(function() {
        $('#field-form-field-employees, #field-form-field-type').hide();
     });
 
-    $("a[href='https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/gbpb-in-grossbetrieben']").attr('target','_blank');
+    $("a[href='https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/arbeitsmedizin-arbeitspsychologie-ergonomie/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/gbpb-in-grossbetrieben'").attr('target','_blank');
     $("a[href='http://www.bgetem.de/die-bgetem/impressum']").attr('target','_blank');
-    $("a[href='https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/arbeitsbedingte-gesundheitsgefahren/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/video-tutorials-zum-online-tool-zur-erfassung-psychischer-belastung-1/']").attr('target','_blank');
+    $("a[href='https://www.bgetem.de/arbeitssicherheit-gesundheitsschutz/themen-von-a-z-1/arbeitsmedizin-arbeitspsychologie-ergonomie/psychische-belastung-und-beanspruchung/gemeinsam-zu-gesunden-arbeitsbedingungen-beurteilung-psychischer-belastung/video-tutorials-zum-online-tool-zur-erfassung-psychischer-belastung-1']").attr('target','_blank');
 
 
     $('div#field-form-field-nb_students').hide();

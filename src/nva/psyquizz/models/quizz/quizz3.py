@@ -190,7 +190,7 @@ class SecurityCheck(Subscription):
     context(Interface)
 
     def check(self, name, quizz, context):
-        if name == 'quizz3':
+        if name == 'quizz3' or name == 'quizz5':
             principal = current_principal()
             if (principal.id.endswith('bgetem.de') or
                 principal.id.endswith("novareto.de") or

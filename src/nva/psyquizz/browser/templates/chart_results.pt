@@ -15,6 +15,51 @@
     </p>
   </div>
   <form action="." tal:attributes="action view.request.url"
+        tal:define="current view.stats.filters.get('criterias', {})">
+
+    <dl tal:define="crits view.stats.statistics['criterias']">
+      <tal:dl tal:repeat="(crit, opts) crits.items()">
+        <dt>
+          <h3 tal:content="crit" style="display: inline-block; margin-right: 0.4em" />
+          <a name="reset" class="text-muted"
+             tal:attributes="rel opts[0].id">alle</a>
+        </dt>
+        <dd>
+          <div tal:repeat="opt opts"
+               style="display: inline-block; padding: 5px;">
+            <tal:disabled define="disabled bool(opt.amount &lt; 7)">
+              <input type="radio"
+                     tal:attributes="value opt.uid;
+                                     name 'criteria-%s' % opt.id;
+                                     checked opt.uid in current and 'checked' or None;
+                                     disabled disabled and 'disabled' or None" />
+              <span tal:content="'%s (%s)' % (opt.name, opt.amount)"
+                    tal:attributes="class disabled and 'text-muted' or ''"/>
+            </tal:disabled>
+          </div>
+        </dd>
+      </tal:dl>
+    </dl>
+    <input id="form-action-filter" type="submit" value="filter" />
+  </form>
+
+  <script>
+    $(document).ready(function() {
+        $('input[type=radio]').change(function() {
+            $("#form-action-filter").click();
+        });
+        $('a[name="reset"]').click(function(evt) {
+          var uid = $(this).attr('rel');
+          var selected = $('input[value^='+uid+']:checked');
+          if (selected.length) {
+            selected.attr('checked', false);
+            $("#form-action-filter").click();
+          }
+        });
+    });
+  </script>
+  <!--
+  <form action="." tal:attributes="action view.request.url"
 	tal:define="current view.stats.filters.get('criterias', {})">
     <div>
       <a name="uncheckall">Alle</a>
@@ -40,7 +85,7 @@
     </dl>
     <input id="form-action-filter" type="submit" value="filter" />
   </form>
-
+  -->
   <button type="button" class="btn btn-primary pull-right"
 	  data-toggle="modal" data-target="#myModal">
     Glossar
@@ -144,8 +189,13 @@
             text: 'Verteilung'
 	},
 	xAxis: {
-            categories: <span tal:replace="view.stats.xAxis"/>,
-              tickAmount: 10
+    categories: <span tal:replace="view.stats.xAxis"/>,
+    tickAmount: 10,
+    labels: {
+        style: {
+            fontSize: '9px'
+        }
+    }
 	},
 	yAxis: {
             min: 0,
@@ -200,10 +250,12 @@
             tickmarkPlacement: 'on',
             lineWidth: 0,
             labels: {
-	        distance: 25,
+                format: '{text}',
+	              distance: 25,
                 style: {
                     color: 'black',
-                    fontSize: '15px',
+                    whiteSpace: 'nowrap',
+                    fontSize: '12px',
                 }
 	    },
 	},

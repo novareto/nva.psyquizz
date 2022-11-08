@@ -18,12 +18,13 @@
   <form action="." tal:attributes="action view.request.url"
         tal:define="current view.stats.filters.get('criterias', {})">
 
-
     <dl tal:define="crits view.stats.statistics['criterias']">
       <tal:dl tal:repeat="crit crits">
         <dt>
-          <h3 tal:content="crit" /></dt>
-          <a name="reset" class="text-muted" tal:attributes="rel crits[crit][0].id">alle</a>
+          <h3 tal:content="crit" />
+          <a name="reset" class="text-muted"
+             tal:attributes="rel crits[crit][0].id">alle</a>
+        </dt>
         <dd>
           <div tal:repeat="opt crits[crit]"
                style="display: inline-block; padding: 5px;">
@@ -120,15 +121,15 @@
             text: 'Verteilung'
 	},
 	xAxis: {
-            categories: <span tal:replace="view.xAxis"/>,
+      categories: <span tal:replace="view.xAxis"/>,
     labels: {
       style: {
-        whiteSpace: 'nowrap',
-      }, 
-      step: 1, 
-      useHTML: false, 
+         whiteSpace: 'nowrap',
+      },
+      step: 1,
+      useHTML: false,
       formatter: function() { return myValues[this.value]; } },
-	  },
+	},
 	yAxis: {
             min: 0,
 	    max: 100,
@@ -221,7 +222,6 @@
     });
 
   </script>
-
   <script>
     $(document).ready(function() {
         $('input[type=radio]').change(function() {

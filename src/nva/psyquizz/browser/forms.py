@@ -58,7 +58,7 @@ def form_quizz_template(context, request):
     return uvclight.get_template('form.cpt', __file__)
 
 
-def send_activation_code(config, company_name, email, code, base_url):
+def _send_activation_code(config, company_name, email, code, base_url):
     title = (
         u'Gemeinsam zu gesunden Arbeitsbedingungen – Aktivierung'
     ).encode(ENCODING)
@@ -445,6 +445,10 @@ class CreateAccount(Form):
     def action_url(self):
         return self.request.path
 
+    @staticmethod
+    def send_activation_code(config, company_name, email, code, base_url):
+        return _send_activation_code(config, company_name, email, code, base_url)
+    
     @action(_(u'Add'))
     def handle_save(self):
         data, errors = self.extractData()
@@ -496,7 +500,7 @@ class CreateAccount(Form):
         base_url = self.application_url().replace('/register', '')
 
         # We send the email.
-        send_activation_code(
+        self.send_activation_code(
             self.context.configuration,
             data['name'], data['email'], code, base_url)
 
@@ -1004,7 +1008,7 @@ class DeleteSession(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie die Befragung %s wirklich löschen" % self.context.title
+        return u"Möchten Sie die Befragung %s wirklich löschen?" % self.context.title
 
     @property
     def action_url(self):
