@@ -24,7 +24,7 @@ class QuizzBase(Location):
             yield zope.schema.Choice(
                 __name__='criteria_%s' % criteria.id,
                 title=criteria.title,
-                description=criteria.title, # u"Wählen Sie das Zutreffende aus.",
+                description=u"%s <small> Wählen Sie das Zutreffende aus.</small>" % criteria.title,
                 vocabulary=values,
                 required=True,
             )

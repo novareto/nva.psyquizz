@@ -17,6 +17,30 @@ class Quizz5PDF(GeneratePDF):
     uvclight.name('pdf')
     uvclight.auth.require('zope.Public')
 
+    def crit_style(self):
+        if int(self.request.form.get('has_criterias', 0)) > 0:
+            rc = []
+            criterias = json.loads(self.request.form.get('criterias', {}))
+            if isinstance(criterias, dict):
+                for k, v in criterias.values():
+                    rc.append(
+                        "<li> %s </li>" %(v)
+                        )
+            else:
+                for kv in criterias:
+                    if ':' in kv:
+                        v, k = kv.split(':')
+                    rc.append(
+                        "<li> %s </li>" %(k)
+                        )
+            if not rc:
+                rc.append('alle')
+        else:
+            rc = ['alle']
+
+        crit_style = "<ul> %s </ul>" % "".join(rc)
+        return crit_style
+
     def generate(self):
         parts = []
         self.frontpage(parts)
