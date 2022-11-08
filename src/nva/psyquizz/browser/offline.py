@@ -123,10 +123,10 @@ class DownloadCourse(uvclight.View):
         wm = b1_pdf.getPage(0)
         p1 = PdfFileReader(self.generate_page_one())
 
-        for num in range(p1.numPages-1):
-            page1 = p1.getPage(num + 1)
-            page1.mergePage(wm)
-            output.addPage(page1)
+        #for num in range(p1.numPages-1):
+        #    page1 = p1.getPage(num + 1)
+        #    page1.mergePage(wm)
+        #    output.addPage(page1)
 
         page1 = p1.getPage(0)
         page1.mergePage(wm)
