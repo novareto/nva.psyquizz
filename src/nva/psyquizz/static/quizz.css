@@ -238,3 +238,12 @@ div#field-form-field-challenge {
    padding: 1em;
    border: 1px solid #a94442;
 }
+
+span.field-description.lead {
+   font-weight: 400
+}
+
+span.field-description.lead small {
+   font-weight: 100;
+   font-size: 75%;
+}

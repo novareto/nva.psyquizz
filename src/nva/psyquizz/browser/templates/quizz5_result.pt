@@ -165,6 +165,8 @@
 
 
 
+    <input type="hidden" value="" name="has_criterias" tal:attributes="value len(view.stats.filters.get('criterias', {}))" />
+    <input type="hidden" value="" tal:attributes="value view.jsonify(view.stats.filters.get('criterias', {}).keys())" name="criterias" />
      <input type="hidden" tal:attributes="value view.stats.statistics['total']" name="total"/>
 
     <textarea type="text" id="averages" name="averages" style="display:none">

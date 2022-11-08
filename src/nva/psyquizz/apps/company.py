@@ -92,7 +92,6 @@ class Access(GlobalUtility):
         session = get_session('school')
         account = session.query(Account).filter(
             func.lower(Account.email) == username.lower())
-
         if account.count() == 1:
             account = account.first()
         else:
