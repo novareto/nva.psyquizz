@@ -183,6 +183,8 @@ class XSLX(object):
         
         if self.enable_verteilung:
             worksheet = workbook.add_worksheet('Verteilung')
+            nformat = workbook.add_format()
+            nformat.set_num_format('0.00')
 
             data = json.loads(self.series)
             for y, x in enumerate(data):
