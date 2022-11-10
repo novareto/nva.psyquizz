@@ -24,6 +24,7 @@ from ..emailer import ENCODING
 from grokcore.component import Adapter, provides, context, baseclass
 from grokcore.component import adapter, implementer
 
+from cromlech.i18n import setLanguage
 from cromlech.sqlalchemy import get_session
 from dolmen.forms.base import (
     SuccessMarker, makeAdaptiveDataManager, NO_VALUE)
@@ -448,7 +449,7 @@ class CreateAccount(Form):
     @staticmethod
     def send_activation_code(config, company_name, email, code, base_url):
         return _send_activation_code(config, company_name, email, code, base_url)
-    
+
     @action(_(u'Add'))
     def handle_save(self):
         data, errors = self.extractData()
@@ -1202,6 +1203,12 @@ class Quizz5Wizard(AnswerQuizz):
     name('index')
     template = get_template('quizz5_wizard.pt', __file__)
 
+    def update(self):
+        if 'lang' in self.request.params:
+            print('switching language to :', self.request.params['lang'])
+            setLanguage(self.request.params['lang'])
+        super(Quizz5Wizard, self).update()
+
     def get_scales(self):
         scales = []
         criteria_fields = Fields(
@@ -1231,7 +1238,7 @@ class Quizz5Wizard(AnswerQuizz):
                 try:
                     name = "form.field.%s" % getattr(field, '__name__', field.identifier)
                 except:
-                    name = "form.field.%s" % field.getName() 
+                    name = "form.field.%s" % field.getName()
                 widgets.append(self.fieldWidgets.get(name))
         else:
             for field, o in getFieldsInOrder(scale['iface']):

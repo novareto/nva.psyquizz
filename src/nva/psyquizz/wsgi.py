@@ -88,7 +88,7 @@ def localize(application):
 def routing(conf, files, **kwargs):
     languages = kwargs['langs']
     allowed = languages.strip().replace(',', ' ').split()
-    allowed = ('de',)
+    allowed = ('de', 'en')
     register_allowed_languages(allowed)
 
     load_zcml(kwargs['zcml'])
