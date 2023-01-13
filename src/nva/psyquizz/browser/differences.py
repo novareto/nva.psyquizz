@@ -15,7 +15,7 @@ from cromlech.browser import IRequest, ITraverser
 from cromlech.sqlalchemy import get_session
 from dolmen.forms.base import FAILURE, SUCCESS
 from grokcore.component import MultiAdapter, provides, adapts, name, provider
-from nva.psyquizz import hs
+from nva.psyquizz import hs, hsb_bullet
 from nva.psyquizz.models import IQuizz, ICourse, ICompany
 from uvc.design.canvas import IAboveContent
 from uvclight.auth import require
@@ -49,7 +49,6 @@ def have_courses_to_compare(context, threshold=7):
             if types[quizz_type] == 1:
                 return True
             types[quizz_type] += 1
-
         return False
 
     raise NotImplementedError
@@ -331,13 +330,37 @@ class SessionsDiff(uvclight.Form):
 
     ignoreContent = False
     fields = uvclight.Fields(IMultipleSessionsDiff)
-    template = uvclight.get_template("cdiff.cpt", __file__)
     inline = False
     view = None
+    _colors = None
+    rainbow = (
+        '#000000',
+        '#0000ff',
+        '#00ffff',
+        '#ff00a2',
+        '#6f00a2',
+        '#6fffa2'
+    )
 
     @property
     def quizz(self):
         return queryUtility(IQuizz, name=self.context.quizz_type)
+
+    @property
+    def template(self):
+        if self.context.quizz_type == 'quizz5':
+            hsb_bullet.need()
+            return uvclight.get_template("quizz5_session_diff.pt", __file__)
+        return uvclight.get_template("cdiff.cpt", __file__)
+
+    @property
+    def colors(self):
+        if self._colors is None:
+            if self.context.quizz_type != 'quizz5':
+                raise NotImplementedError(
+                    'No colors for quizz ' + self.context.quizz_type)
+            self._colors = self.quizz().get_boundaries()
+        return self._colors
 
     @property
     def action_url(self):

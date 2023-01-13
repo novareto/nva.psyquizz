@@ -55,7 +55,7 @@ class AccountHomepage(Page):
         return courses
 
     def canDiff(self, course):
-        if course.__parent__.quizz_type != 'quizz2':
+        if course.__parent__.quizz_type not in ('quizz2', 'quizz5'):
             return False
         courses = len(list(course))
         if courses > 1:
