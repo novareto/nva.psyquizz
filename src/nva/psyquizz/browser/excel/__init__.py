@@ -9,15 +9,19 @@ import datetime
 import xlsxwriter
 from backports import tempfile
 
-from grokcore.component import name
-from uvclight.auth import require
-from zope.component import getUtility
+from zope.component import getUtility, queryUtility
 from zope.schema import getFieldsInOrder
+from zope.interface import Interface
+from grokcore.component import name
+from cromlech.sqlalchemy import get_session
+from cromlech.browser import exceptions
+from uvclight.auth import require
+from uvclight.utils import current_principal
 
 from nva.psyquizz.browser.results import (
     get_filters, CourseStatistics, SessionStatistics)
 from nva.psyquizz.interfaces import ICompanyRequest
-from nva.psyquizz.models import IQuizz, IClassSession
+from nva.psyquizz.models import IQuizz, IClassSession, Company
 
 
 CHUNK = 4096
@@ -48,7 +52,7 @@ class XSLX(object):
         worksheet = workbook.add_worksheet('Mittelwerte')
         nformat = workbook.add_format()
         nformat.set_num_format('0.00')
-    
+
         # Add a format for the header cells.
         header_format = workbook.add_format({
             'border': 1,
@@ -59,7 +63,7 @@ class XSLX(object):
             'indent': 1,
             'locked': 1,
         })
-        
+
         question_format = workbook.add_format({
             'border': 0,
             'color': '#000000',
@@ -69,7 +73,7 @@ class XSLX(object):
             'indent': 0,
             'locked': 1,
         })
-        
+
         worksheet.write(0, 0, 'Bereich')
         worksheet.write(0, 1, 'Mittelwert der Skala')
         for i, x in enumerate(self.statistics['global.averages']):
@@ -84,12 +88,12 @@ class XSLX(object):
                 'values':     '=Mittelwerte!$B$1:$B$11',
                 'min': 1,
             })
-            
+
             chart1.set_title({'name': 'Durchschnitt'})
             chart1.set_x_axis({'name': 'Test number', "min": 1})
             chart1.set_y_axis({'name': 'Sample length (mm)', "min": 1})
             chart1.set_style(11)
-            
+
             # Insert the chart into the worksheet (with an offset).
             worksheet.insert_chart(
                 'A13', chart1, {'x_offset': 25, 'y_offset': 10})
@@ -179,8 +183,8 @@ class XSLX(object):
         #    worksheet.write(ii, 0,  "%s %s" % (v.name, amounts.get(v.name)))
         #    ii += 1
         self.generate_mittelwerte(workbook)
-        
-        
+
+
         if self.enable_verteilung:
             worksheet = workbook.add_worksheet('Verteilung')
             nformat = workbook.add_format()
@@ -232,7 +236,7 @@ class XSLX(object):
             worksheet = workbook.add_worksheet('Mittelwerte pro Frage')
             nformat = workbook.add_format()
             nformat.set_num_format('0.00')
-            offset = 1 
+            offset = 1
             if 'criterias' in self.filters:
                 for cname, cvalues in self.statistics['criterias'].items():
                     for v in cvalues:
@@ -315,6 +319,79 @@ class Excel(uvclight.Page):
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response.headers['Content-Disposition'] = (
             u'attachment; filename="Resultate_Befragung.xlsx"')
+
+        def filebody(r):
+            data = r.read(CHUNK)
+            while data:
+                yield data
+                data = r.read(CHUNK)
+
+        response.app_iter = filebody(result)
+        return response
+
+
+ALLOWED_USERS = {'test@example.com'}
+
+
+class SimpleExcelExport(uvclight.Page):
+    require('zope.Public')
+    uvclight.context(Interface)
+    uvclight.layer(ICompanyRequest)
+
+    def update(self):
+        user = current_principal()
+        #if not user.id in ALLOWED_USERS:
+        #    raise exceptions.HTTPForbidden('Not allowed.')
+        self.session = get_session('school')
+
+
+    def quizz_results(self, quizz, worksheet):
+        results = self.session.query(quizz).filter(
+            quizz.company_id == Company.id,
+            Company.exp_db == "true"
+        )
+        xAxis_labels = {
+            k.title: k.description for id, k in
+            getFieldsInOrder(quizz.__schema__)
+        }
+
+        fields = getFieldsInOrder(quizz.__schema__)
+        for idx, field_info in enumerate(fields):
+            qid, field = field_info
+            worksheet.write(0, idx, xAxis_labels[field.title])
+
+        for line, res in enumerate(results, 1):
+            for idx, field_info in enumerate(fields):
+                qid, field = field_info
+                worksheet.write(line, idx, getattr(res, qid, None))
+        return worksheet
+
+
+    def render(self):
+        quizzes = ('quizz1', 'quizz2', 'quizz3', 'quizz4', 'quizz5')
+        with tempfile.TemporaryDirectory() as temp_dir:
+            filepath = os.path.join(temp_dir, 'ErgebnisExcel.xlsx')
+            workbook = xlsxwriter.Workbook(filepath)
+            for quizz_type in quizzes:
+                quizz = queryUtility(IQuizz, quizz_type)
+                if quizz is not None:
+                    worksheet = workbook.add_worksheet(quizz_type)
+                    worksheet = self.quizz_results(quizz, worksheet)
+            workbook.close()
+
+            output = cStringIO.StringIO()
+            with open(filepath, 'rb') as fd:
+                shutil.copyfileobj(fd, output)
+
+            output.seek(0)
+        return output
+
+    def make_response(self, result):
+        response = self.responseFactory()
+        response.headers['Content-Type'] = (
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response.headers['Content-Disposition'] = (
+            u'attachment; filename="Fixme.xlsx"')
 
         def filebody(r):
             data = r.read(CHUNK)
