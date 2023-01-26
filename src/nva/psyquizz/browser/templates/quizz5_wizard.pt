@@ -1,3 +1,4 @@
+<div class="row pull-right">
 <button
     class="btn btn-default"
     onclick="changeLanguage('en')" id="lang-en">
@@ -8,6 +9,7 @@
     onclick="changeLanguage('de')" id="lang-de">
   Deutsch
 </button>
+</div>
 
 <script>
   const allowed = ['en', 'de'];

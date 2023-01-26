@@ -391,7 +391,7 @@ class SimpleExcelExport(uvclight.Page):
         response.headers['Content-Type'] = (
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response.headers['Content-Disposition'] = (
-            u'attachment; filename="Fixme.xlsx"')
+            u'attachment; filename="rohdaten_befragungen.xlsx"')
 
         def filebody(r):
             data = r.read(CHUNK)
