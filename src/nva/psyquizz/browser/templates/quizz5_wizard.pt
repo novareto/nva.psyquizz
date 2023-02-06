@@ -136,9 +136,7 @@
     </div>
     <div tal:repeat="scale view.get_scales()" class="scale"
          tal:attributes="id 'scale-%s' % repeat['scale'].number">
-      <h1> <span
-               i18n:translate=""
-               tal:content="scale['label']"></span></h1>
+      <h1> <span i18n:translate="" tal:content="scale['label']"></span></h1>
 
       <div class="progress">
         <div class="progress-bar progress-bar-success" role="progressbar"
@@ -152,6 +150,9 @@
       <div tal:repeat="widget view.getFieldWidgets(scale)"
            class="question"
            tal:attributes="id 'question-%s' % repeat['widget'].number">
+
+
+
 
         <blockquote tal:condition="widget.title in view.titles">
 	  <span i18n:translate=""

@@ -346,7 +346,7 @@ class SimpleExcelExport(uvclight.Page):
 
 
     def quizz_results(self, quizz, worksheet):
-        results = self.session.query(quizz).filter(
+        results = self.session.query(Company, quizz).filter(
             quizz.company_id == Company.id,
             Company.exp_db == "true"
         )
@@ -359,11 +359,14 @@ class SimpleExcelExport(uvclight.Page):
         for idx, field_info in enumerate(fields):
             qid, field = field_info
             worksheet.write(0, idx, xAxis_labels[field.title])
-
+        worksheet.write(0, idx+1, "Mitarbeiter")
+        worksheet.write(0, idx+2, "Branche")
         for line, res in enumerate(results, 1):
             for idx, field_info in enumerate(fields):
                 qid, field = field_info
-                worksheet.write(line, idx, getattr(res, qid, None))
+                worksheet.write(line, idx, getattr(res[1], qid, None))
+            worksheet.write(line, idx+1, res[0].employees)
+            worksheet.write(line, idx+2, res[0].type)
         return worksheet
 
 
