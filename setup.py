@@ -42,6 +42,7 @@ install_requires = [
     'uvclight[sql]',
     'xlsxwriter',
     'zope.cachedescriptors',
+    'zope.i18n[compile]',
     ]
 
 tests_require = [
