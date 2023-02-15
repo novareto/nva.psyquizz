@@ -614,11 +614,11 @@ IQuizz5.setTaggedValue("scales", [
 ])
 
 IQuizz5.setTaggedValue("edit_scales", [
-    {'iface': IScale1, 'label': u"Vollständigkeit der Aufgabe"},
+    {'iface': IScale1, 'label': u"Vollständigkeit der Aufgabe", 'translate': True},
     {'iface': IScale2, 'label': u"Handlungsspielraum"},
     {'iface': IScale3, 'label': u"Variabilität (Abwechslungsreichtum)"},
     {'iface': IScale4, 'label': u"Informationsmängel"},
-    {'iface': IScale5, 'label': u"Informationsüberflutung"},
+    {'iface': IScale5, 'label': u"Informationsüberflutung", 'translate': True},
     {'iface': IScale6, 'label': u"Klarheit der Kompetenzen und Verantwortlichkeiten"},
     {'iface': IScale7, 'label': u"Qualifikationsmängel"},
     {'iface': IScale8, 'label': u"Qualifikationsunterforderung"},

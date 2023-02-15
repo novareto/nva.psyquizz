@@ -1203,32 +1203,42 @@ class Quizz5Wizard(AnswerQuizz):
     name('index')
     template = get_template('quizz5_wizard.pt', __file__)
 
-    def update(self):
-        if 'lang' in self.request.params:
-            print('switching language to :', self.request.params['lang'])
-            setLanguage(self.request.params['lang'])
-        super(Quizz5Wizard, self).update()
-
     def get_scales(self):
         scales = []
         criteria_fields = Fields(
             *self.quizz.criteria_fields(self.context.course))
         if criteria_fields:
-            scales = scales + [{'fields': criteria_fields, 'label': 'Unternehmenskriterien'}]
+            scales = scales + [{
+                'fields': criteria_fields,
+                'label': 'Unternehmenskriterien'
+            }]
         scales += IQuizz5.getTaggedValue('edit_scales')
         additional_questions = list(self.quizz.additional_extra_fields(
             self.context.course))
-        extra_fields = list(self.quizz.extra_fields(self.context.course))
         if additional_questions:
             scales = scales + [
                 {'iface': iface, 'label': 'Zusatzfragen'}
                 for iface in additional_questions
             ]
+
+        extra_fields = list(self.quizz.extra_fields(self.context.course))
         if extra_fields:
-            scales = scales + [
-                {'fields': extra_fields, 'label': 'Eigene Zusatzfragen'}
-            ]
+            scales = scales + [{
+                'fields': extra_fields,
+                'label': 'Eigene Zusatzfragen'
+            }]
         return scales
+
+    def update(self):
+        if 'lang' in self.request.params:
+            print('switching language to :', self.request.params['lang'])
+            setLanguage(self.request.params['lang'])
+        super(Quizz5Wizard, self).update()
+        self.scales = self.get_scales()
+        self.translatable = [
+            idx for idx, scale in enumerate(self.scales, 1)
+            if scale.get('translate', False) is True
+        ]
 
     def getFieldWidgets(self, scale):
         from zope.schema import getFieldsInOrder

@@ -1,83 +1,155 @@
-<button
-    class="btn btn-default"
-    onclick="changeLanguage('en')" id="lang-en">
-  English
-</button>
-<button
-    class="btn btn-default"
-    onclick="changeLanguage('de')" id="lang-de">
-  Deutsch
-</button>
+<article id="quizz5-wizard">
+  <section id="language">
+    <button
+        class="btn btn-default"
+        onclick="changeLanguage('en')" id="lang-en">
+      English
+    </button>
+    <button
+        class="btn btn-default"
+        onclick="changeLanguage('de')" id="lang-de">
+      Deutsch
+    </button>
+  </section>
+  <section id="wizard">
+    <form action="."
+          i18n:domain="nva.psyquizz"
+          tal:attributes="action view.action_url;
+                          id view.htmlId();
+                          method view.formMethod;
+                          enctype view.enctype">
+      <h1 tal:condition="view.label"
+          tal:content="view.label"
+          i18n:translate="">Label</h1>
 
-<script>
-  const allowed = ['en', 'de'];
-  let params = new URLSearchParams(window.location.search);
-  var lang = params.get("lang");
-  var currentURL = new URL(window.location);
+      <p tal:condition="view.description"
+         tal:content="view.description"
+         i18n:translate="">Description</p>
 
-  if (lang === null || !allowed.includes(lang) ) {
+      <p class="form-status"
+         tal:condition="view.status"
+         tal:content="view.status"
+         i18n:translate="">Status</p>
+
+      <div class="form-error"
+           tal:condition="view.errors">
+        <ul tal:condition="view.formErrors"
+            tal:repeat="error view.formErrors">
+          <li> <span
+          tal:replace="error.title"
+          i18n:translate=""
+          /> </li>
+        </ul>
+      </div>
+
+      <div id="global-error" class="alert alert-danger">
+        <p i18n:translate="">Bitte füllen Sie alle Felder.</p>
+      </div>
+
+      <div id="wizard">
+        <div class="scale" id="scale-0">
+          <p tal:content="structure context.session.about or 'Press next to start'" />
+        </div>
+        <div tal:repeat="scale view.scales" class="scale"
+             tal:attributes="id 'scale-%s' % repeat['scale'].number">
+          <h1> <span
+                   i18n:translate=""
+                   tal:content="scale['label']"></span></h1>
+
+          <div class="progress">
+            <div class="progress-bar progress-bar-success" role="progressbar"
+                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                 style="width: 0%;">
+            </div>
+          </div>
+
+          <br/> <br/>
+
+          <div tal:repeat="widget view.getFieldWidgets(scale)"
+               class="question"
+               tal:attributes="id 'question-%s' % repeat['widget'].number">
+
+            <blockquote tal:condition="widget.title in view.titles">
+	      <span i18n:translate=""
+                    tal:replace="view.titles[widget.title]" />
+            </blockquote>
+
+            <tal:description tal:condition="widget.description">
+	      <span class="field-description lead"
+                    i18n:translate=""
+                    tal:content="structure widget.description"> </span><br />
+            </tal:description>
+
+            <tal:error tal:define="error widget.error" tal:condition="error">
+              <span class="field-error"
+                    i18n:translate=""
+                    tal:content="error.title"> Error </span> <br />
+            </tal:error>
+            <tal:widget tal:content="structure widget.render()" />
+          </div>
+        </div>
+        <div class="btn-group" role="group">
+          <a id="previous" class="control btn btn-default" href="">
+            ← <span i18n:translate="">Zurück</span>
+          </a>
+          <a id="next" class="control btn btn-primary" href="">
+            <span i18n:translate="">Weiter</span> →
+          </a>
+        </div>
+        <div class="scale"
+             tal:attributes="id 'scale-%d' % (len(view.scales) + 1)">
+          <p class="lead">
+            Klicken Sie auf „Abschließen“ um Ihre Daten abzusenden.
+          </p>
+          <div class="action" tal:repeat="widget view.actionWidgets">
+            <tal:widget tal:content="structure widget.render()" />
+          </div>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <script type="text/javascript">
+
+    const allowed = ['en', 'de'];
+    let params = new URLSearchParams(window.location.search);
+    var lang = params.get("lang");
+
+    if (lang === null || !allowed.includes(lang) ) {
       lang = 'de';
-  }
+    }
 
-  document.getElementById("lang-" + lang).disabled = true;
+    document.getElementById("lang-" + lang).disabled = true;
 
-  function changeLanguage(switch_to) {
+    function changeLanguage(switch_to) {
       if (!allowed.includes(lang)) {
-          alert('Invalid language. Switching back to default');
-          lang = 'de';
+         alert('Invalid language. Switching back to default');
+         lang = 'de';
       }
       if (switch_to != lang) {
+        var currentURL = new URL(window.location);
+        var hash = window.location.hash.substring(1) || '0';
+
         currentURL.searchParams.set('lang', switch_to);
         window.location.href = currentURL.toString();
       }
-  }
-</script>
+   }
 
-<form action="."
-      i18n:domain="nva.psyquizz"
-      tal:attributes="action view.action_url;
-                      id view.htmlId();
-                      method view.formMethod;
-                      enctype view.enctype">
-  <h1 tal:condition="view.label"
-      tal:content="view.label"
-      i18n:translate="">Label</h1>
-
-  <p tal:condition="view.description"
-     tal:content="view.description"
-     i18n:translate="">Description</p>
-
-  <p class="form-status"
-     tal:condition="view.status"
-     tal:content="view.status"
-     i18n:translate="">Status</p>
-
-  <div class="form-error"
-       tal:condition="view.errors">
-    <ul tal:condition="view.formErrors"
-        tal:repeat="error view.formErrors">
-      <li> <span
-      tal:replace="error.title"
-      i18n:translate=""
-      /> </li>
-    </ul>
-  </div>
-
-  <div id="global-error" class="alert alert-danger">
-    <p i18n:translate="">Bitte füllen Sie alle Felder.</p>
-  </div>
-
-  <script type="text/javascript">
    $(document).ready(function() {
-       var max = <tal:max replace="len(view.get_scales()) + 1" />;
+       var max = <tal:max replace="len(view.scales) + 1" />;
        var previous = $('#previous');
        var next = $('#next');
+       var language = $('section#language');
        var progressbar = $('.progress .progress-bar');
+       const translatable = <tal:max replace="view.translatable" />;
 
-       jQuery('div#global-error').hide()
+       jQuery('div#global-error').hide();
+       language.hide();
+
        next.click(function(e) {
 	   var hash = window.location.hash.substring(1) || '0';
 	   var current = parseInt(hash);
+
            $('#scale-' + current.toString() + ' .question').each(function() {
              jQuery(this).removeClass('error alert alert-danger has-error')
              jQuery('div#global-error').hide()
@@ -101,6 +173,12 @@
 
            var hash = window.location.hash.substring(1) || '0';
 	   var current = parseInt(hash);
+
+           if (translatable.includes(current)) {
+              language.show();
+           } else {
+              language.hide();
+           }
 
            progressbar.css(
                'width', Math.round((current / max) * 100).toString() + '%'
@@ -127,65 +205,4 @@
        switch_question();
    });
   </script>
-
-  <div id="wizard">
-    <div class="scale" id="scale-0">
-      <p tal:content="structure context.session.about or 'Press next to start'" />
-    </div>
-    <div tal:repeat="scale view.get_scales()" class="scale"
-         tal:attributes="id 'scale-%s' % repeat['scale'].number">
-      <h1> <span
-               i18n:translate=""
-               tal:content="scale['label']"></span></h1>
-
-      <div class="progress">
-        <div class="progress-bar progress-bar-success" role="progressbar"
-             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
-             style="width: 0%;">
-        </div>
-      </div>
-
-      <br/> <br/>
-
-      <div tal:repeat="widget view.getFieldWidgets(scale)"
-           class="question"
-           tal:attributes="id 'question-%s' % repeat['widget'].number">
-
-        <blockquote tal:condition="widget.title in view.titles">
-	  <span i18n:translate=""
-                tal:replace="view.titles[widget.title]" />
-        </blockquote>
-
-        <tal:description tal:condition="widget.description">
-	  <span class="field-description lead"
-                i18n:translate=""
-                tal:content="structure widget.description"> </span><br />
-        </tal:description>
-
-        <tal:error tal:define="error widget.error" tal:condition="error">
-          <span class="field-error"
-                i18n:translate=""
-                tal:content="error.title"> Error </span> <br />
-        </tal:error>
-        <tal:widget tal:content="structure widget.render()" />
-      </div>
-    </div>
-    <div class="btn-group" role="group">
-      <a id="previous" class="control btn btn-default" href="">
-        ← <span i18n:translate="">Zurück</span>
-      </a>
-      <a id="next" class="control btn btn-primary" href="">
-        <span i18n:translate="">Weiter</span> →
-      </a>
-    </div>
-    <div class="scale"
-         tal:attributes="id 'scale-%d' % (len(view.get_scales()) + 1)">
-      <p class="lead">
-        Klicken Sie auf „Abschließen“ um Ihre Daten abzusenden.
-      </p>
-      <div class="action" tal:repeat="widget view.actionWidgets">
-        <tal:widget tal:content="structure widget.render()" />
-      </div>
-    </div>
-  </div>
-</form>
+</article>
