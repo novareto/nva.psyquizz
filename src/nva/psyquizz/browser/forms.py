@@ -7,7 +7,7 @@ import hashlib
 import datetime
 import uvclight
 
-from .. import wysiwyg, quizzjs, startendpicker
+from .. import wysiwyg, quizzjs, startendpicker, conditionsjs
 from ..apps.anonymous import QuizzBoard
 from ..i18n import _
 from ..interfaces import IAnonymousRequest, ICompanyRequest
@@ -429,6 +429,19 @@ class IVerifyPassword(Interface):
         required=True)
 
 
+class IAcceptConditions(Interface):
+
+    accept = Choice(
+        title=_(u'Ist Ihr Unternehmen bei der BG RCI (VBG/ BG ETEM) '
+                u'versichert?'),
+        required=True,
+        source=SimpleVocabulary((
+            SimpleTerm('ja', 'ja', u'Hiermit versichere ich, dass mein Unternehmen Mitglied der Berufsgenossenschaft Rohstoffe und chemische Industrie ist. Das Befragungsinstrument wird nur zu internen betrieblichen Zwecken eingesetzt.'),
+            SimpleTerm('nein', 'nein', u'Leider können Sie das Instrument nicht nutzen.')
+        ))
+    )
+
+
 @menuentry(IContextualActionsMenu, order=10)
 class CreateAccount(Form):
     name('index')
@@ -440,7 +453,12 @@ class CreateAccount(Form):
     fields = (Fields(IAccount).select('name', 'email', 'password') +
               Fields(IVerifyPassword, ICaptched))
     fields = (Fields(IAccount).select('name', 'email', 'password') +
-              Fields(IVerifyPassword) )
+              Fields(IVerifyPassword) + Fields(IAcceptConditions))
+    fields['accept'].mode = "blockradio"
+
+    def update(self, *args, **kwargs):
+        conditionsjs.need()
+        Form.update(self, *args, **kwargs)
 
     @property
     def action_url(self):
@@ -456,6 +474,15 @@ class CreateAccount(Form):
         session = get_session('school')
 
         if errors:
+            return FAILURE
+
+        if data.get('accept', 'nein') == 'nein':
+            self.errors.append(
+                Error(identifier='form.field.accept',
+                      title='You need to accept the conditions.'))
+            self.flash(_(
+                u'You can only register by agreeing to the conditions.'
+            ))
             return FAILURE
 
         if not data['password'] == data['verif']:
