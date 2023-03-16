@@ -187,7 +187,7 @@ class SecureMailer:
         msg.set_charset(ENCODING)
         part1 = MIMEText(text.encode('utf-8'), 'plain')
         part1.set_charset(ENCODING)
-        part2 = MIMEText(html, 'html')
+        part2 = MIMEText(html.encode('utf-8'), 'html')
         part2.set_charset(ENCODING)
 
         msg.attach(part1)
