@@ -292,6 +292,7 @@ class ICourse(ILocation, IContent):
 
     quizz_type = schema.Choice(
         title=_(u"Quizz"),
+        description=_(u" Sie haben bei dem FGBU die Möglichkeit die Fragen innerhalb der Befragung auch auf Englisch darstellen zu lassen. Bitte beachten Sie dazu aber die folgenden Hinweise! <a href='' class='' data-toggle='modal' data-target='#myHelpTranslation'> <span class='glyphicon glyphicon-question-sign' aria-hidden='true'></span> </a>"),
         source=deferred('quizz_choice'),
         required=True,
         default=os.environ.get('DEFAULT_QUIZZ', None),
