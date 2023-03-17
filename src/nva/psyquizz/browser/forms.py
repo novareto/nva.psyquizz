@@ -758,14 +758,15 @@ class CreateCourse(Form):
         #data['quizz_type'] = "quizz2"
         if 'extra_questions' in data and data['extra_questions'] is NO_VALUE:
             data.pop('extra_questions')
-        course = Course(**data)
 
+
+        criterias = data.pop('criterias', [])
+        course = Course(**data)
         course.company_id = self.context.id
         session.add(course)
         session.flush()
         session.refresh(course)
         clssession = ClassSession(**csdata)
-
         clssession.course_id = course.id
         clssession.company_id = self.context.id
         session.add(clssession)
@@ -779,15 +780,15 @@ class CreateCourse(Form):
                 clssession.append(student)
 
         # update order
-        for idx, criteria in enumerate(data.get('criterias', []), 1):
-            query = criterias_table.update().where(
-                criterias_table.c.courses_id == course.id
-            ).where(
-                criterias_table.c.criterias_id == criteria.id
-            ).where(
-                criterias_table.c.company_id == self.context.id
-            ).values(order=idx)
-            session.execute(query)
+        if criterias:
+            for idx, criteria in enumerate(criterias, 1):
+                query = criterias_table.insert().values(
+                    courses_id=course.id,
+                    criterias_id=criteria.id,
+                    company_id=self.context.id,
+                    order=idx
+                )
+                session.execute(query)
 
         self.flash(_(u'Course added with success.'))
         self.redirect(self.application_url())

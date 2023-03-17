@@ -113,6 +113,10 @@
   <script type="text/javascript">
 
     const allowed = ['en', 'de'];
+    const url = location.protocol + '//' + location.host + location.pathname
+    let form = document.querySelector("form#form"); // select form
+    let formElements = form.elements; // get the elements in the form
+
     let params = new URLSearchParams(window.location.search);
     var lang = params.get("lang");
 
@@ -122,17 +126,39 @@
 
     document.getElementById("lang-" + lang).disabled = true;
 
+    function populateForm() {
+        if (localStorage.key(url)) {
+            const savedData = JSON.parse(localStorage.getItem(url));
+            for (const checked of savedData) {
+                document.getElementById(checked).checked = true;
+            }
+        }
+    }
+
+    document.onload = populateForm();
+
+    function saveFormLocally() {
+        let data = [];
+        for (const element of formElements) {
+            if (element.checked) {
+                data.push(element.id);
+            }
+        }
+        localStorage.setItem(url, JSON.stringify(data));
+    }
+
     function changeLanguage(switch_to) {
       if (!allowed.includes(lang)) {
-         alert('Invalid language. Switching back to default');
-         lang = 'de';
+          alert('Invalid language. Switching back to default');
+          lang = 'de';
       }
       if (switch_to != lang) {
-        var currentURL = new URL(window.location);
-        var hash = window.location.hash.substring(1) || '0';
+          var currentURL = new URL(window.location);
+          var hash = window.location.hash.substring(1) || '0';
 
-        currentURL.searchParams.set('lang', switch_to);
-        window.location.href = currentURL.toString();
+          saveFormLocally();
+          currentURL.searchParams.set('lang', switch_to);
+          window.location.href = currentURL.toString();
       }
    }
 
@@ -181,6 +207,7 @@
               language.hide();
            }
 
+           saveFormLocally();
            progressbar.css(
                'width', Math.round((current / max) * 100).toString() + '%'
            ).attr('aria-valuenow', current);
