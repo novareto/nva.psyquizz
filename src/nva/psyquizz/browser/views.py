@@ -63,11 +63,13 @@ class QuizzErrorPage(Page):
     name('')
     context(QuizzAlreadyCompleted)
     require('zope.Public')
+    template = get_template('alreadycompleted.pt', __file__)
 
-    def render(self):
-        if self.context.location.completion_date.date() == date.today():
-            return _(u"Vielen Dank für Ihre Teilnahme. Ihre Angaben wurden gespeichert.")
-        return _(u"This quizz is already completed and therefore closed.")
+    def update(self):
+        super(QuizzErrorPage, self).update()
+        self.today = (
+            self.context.location.completion_date.date() == date.today()
+        )
 
 
 class CourseExpiredPage(Page):
