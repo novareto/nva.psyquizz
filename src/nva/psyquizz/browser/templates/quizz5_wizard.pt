@@ -99,7 +99,7 @@
         </div>
         <div class="scale"
              tal:attributes="id 'scale-%d' % (len(view.scales) + 1)">
-          <p class="lead">
+          <p class="lead"  i18n:translate="">
             Klicken Sie auf „Abschließen“ um Ihre Daten abzusenden.
           </p>
           <div class="action" tal:repeat="widget view.actionWidgets">
@@ -129,8 +129,10 @@
     function populateForm() {
         if (localStorage.key(url)) {
             const savedData = JSON.parse(localStorage.getItem(url));
-            for (const checked of savedData) {
-                document.getElementById(checked).checked = true;
+            if (savedData) {
+                for (const checked of savedData) {
+                    document.getElementById(checked).checked = true;
+                }
             }
         }
     }
