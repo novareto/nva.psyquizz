@@ -1,0 +1,8 @@
+<div>
+  <script type="javascript">
+    localStorage.clear();
+  </script>
+  <p>
+    Vielen Danke für die Teilnahme an der Befragung
+  </p>
+</div>
