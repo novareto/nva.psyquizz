@@ -144,9 +144,7 @@ class SevenStepsView(Page):
 class FinishQuizz(Page):
     context(QuizzBoard)
     layer(IAnonymousRequest)
-
-    def render(self):
-        return u"Vielen Danke für die Teilnahme an der Befragung"
+    template = get_template('finish.pt', __file__)
 
 
 class PageError500(PageError500):
