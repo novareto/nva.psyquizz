@@ -432,12 +432,12 @@ class IVerifyPassword(Interface):
 class IAcceptConditions(Interface):
 
     accept = Choice(
-        title=_(u'Ist Ihr Unternehmen bei der BG RCI (VBG/ BG ETEM) '
+        title=_(u'Ist Ihr Unternehmen bei der Berufsgenossenschaft '
                 u'versichert?'),
         required=True,
         source=SimpleVocabulary((
-            SimpleTerm('ja', 'ja', u'Hiermit versichere ich, dass mein Unternehmen Mitglied der Berufsgenossenschaft Rohstoffe und chemische Industrie ist. Das Befragungsinstrument wird nur zu internen betrieblichen Zwecken eingesetzt.'),
-            SimpleTerm('nein', 'nein', u'Leider können Sie das Instrument nicht nutzen.')
+            SimpleTerm('ja', 'ja', u'Ja'),
+            SimpleTerm('nein', 'nein', u'Nein')
         ))
     )
 
