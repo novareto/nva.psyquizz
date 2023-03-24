@@ -59,8 +59,10 @@ class MySimpleTerm(SimpleTerm):
 @provider(IContextSourceBinder)
 def source_fixed_extra_questions(context):
     rc = [MySimpleTerm('1', '1', u'Corona', ICoronaQuestions), MySimpleTerm('2', '2', u'Homeoffice', IHomeOfficeQuestions)]
+    #rc = [MySimpleTerm('2', '2', u'Homeoffice', IHomeOfficeQuestions),]
     return SimpleVocabulary(rc)
 
+deferred_vocabularies['fixed_extra_questions'] = source_fixed_extra_questions
 
 
 @provider(IContextSourceBinder)
@@ -301,7 +303,7 @@ class ICourse(ILocation, IContent):
         title=_(u"Zusatzfragen auswählen"),
         description=_(u"Hier können Sie vordefinierte Zusatzfragen zu Ihrer Befragung auswählen.  <a href='' class='' data-toggle='modal' data-target='#myHelpModal'> <span class='glyphicon glyphicon-question-sign' aria-hidden='true'></span> </a>"),
         required=False,
-        value_type=schema.Choice(title=u'Please select one', source=source_fixed_extra_questions)
+        value_type=schema.Choice(title=u'Please select one', source=deferred('fixed_extra_questions'))
     )
 
     extra_questions = schema.Text(
