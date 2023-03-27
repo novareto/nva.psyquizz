@@ -1,0 +1,11 @@
+<div>
+  <script type="javascript">
+    localStorage.clear();
+  </script>
+  <p tal:condition="view.today">
+    Vielen Dank für die Teilnahme an der Befragung.
+  </p>
+  <p tal:condition="view.today == False">
+    Die Befragung ist bereits beendet.
+  </p>
+</div>
