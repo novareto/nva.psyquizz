@@ -1,6 +1,8 @@
 <div>
-  <script type="javascript">
+  <script>
     localStorage.clear();
+    window.localStorage.clear();
+    console.log('CLEAR STORAGE')
   </script>
   <p tal:condition="view.today">
     Vielen Dank für die Teilnahme an der Befragung.
