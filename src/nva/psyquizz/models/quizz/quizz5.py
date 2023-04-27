@@ -678,7 +678,7 @@ class Quizz5(QuizzBase, Base):
     __schema__ = IQuizz5
     __title__ = u"FGBU Fragebogen"
     __base_pdf__ = "fbgu.pdf"
-    __supports_diff__ = False
+    __supports_diff__ = True 
 
     __table_args__ = {"extend_existing": True}
 

@@ -110,7 +110,7 @@
                 borderWidth: 0,
                 color: '#000',
                 targetOptions: {
-                  width: '200%',
+                  width: '600%',
                   borderWidth: 0,
                   height: 5,
                   borderColor: 'black',

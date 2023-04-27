@@ -97,11 +97,11 @@ def available_criterias(criterias, session_id):
 
     for crit in criterias:
         for item in crit.items.split('\r\n'):
-            total = all_crits.get(item, 0)
-            if total:
-                uid = '%s:%s' % (crit.id, item)
-                criterias = available_criterias.setdefault(crit.title, [])
-                criterias.append(Criteria(crit.id, item, total, uid))
+            #total = all_crits.get(item, 0)
+            #if total:
+            uid = '%s:%s' % (crit.id, item)
+            criterias = available_criterias.setdefault(crit.title, [])
+            criterias.append(Criteria(crit.id, item, total, uid))
 
     return available_criterias
 

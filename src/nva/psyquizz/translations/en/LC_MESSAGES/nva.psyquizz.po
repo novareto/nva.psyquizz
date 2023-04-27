@@ -119,7 +119,7 @@ msgid "Man muss zu ungünstigen Arbeitszeiten arbeiten."
 msgstr "I have to work unsociable hours."
 
 msgid "Bei meiner Arbeit ist man mit schlecht gestalteten Arbeitszeiten / schlecht gestalteter Schichtarbeit konfrontiert."
-msgstr "I am confronted with poorly design shift work."
+msgstr "I am confronted with poorly designed shift work."
 
 msgid "Bei meiner Arbeit macht man häufig Überstunden."
 msgstr "I often work overtime."
@@ -308,5 +308,5 @@ msgid "Trifft zu"
 msgstr "Strongly agree"
 
 msgid "Klicken Sie auf „Abschließen“ um Ihre Daten abzusenden."
-msgstr "Please click Answer to submit this course."
+msgstr "Please click Answer to submit this survey."
 
