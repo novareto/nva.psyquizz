@@ -519,6 +519,8 @@ class CreateAccount(Form):
         data['salt'] = salt
         if 'ack_form' in data:
             data.pop('ack_form')
+        if 'accept' in data:
+            data.pop('accept')
         account = Account(**data)
         code = account.activation = str(uuid.uuid1())
         session.add(account)

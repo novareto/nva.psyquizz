@@ -31,6 +31,7 @@ from .results import CourseStatistics, SessionStatistics, get_filters
 from ..interfaces import ICompanyRequest
 from ..i18n import _
 from ..models import Course, Student, ClassSession
+from nva.psyquizz.models.deferred import check_quizz
 
 
 def have_courses_to_compare(context, threshold=7):
@@ -62,7 +63,7 @@ def sessions(context, threshold=7):
                   filter(Course.id == context.id).\
                   filter(ClassSession.course_id == context.id).\
                   join(Student, and_(
-                      Student.course_id==context.id,
+                      Student.session_id==ClassSession.id,
                       Student.completion_date != None
                   )).\
                   group_by(ClassSession.id).\
@@ -150,17 +151,19 @@ class DiffTraverser(MultiAdapter):
         quizzes = [(n, q) for n, q in getUtilitiesFor(IQuizz)
                    if getattr(q, '__supports_diff__', True)]
         if quizzes:
-            quizzes.sort(sorter)
-            self.quizzes = OrderedDict(quizzes)
+            for name, quizz in quizzes:
+                if check_quizz(name, quizz, self.context):
+                    quizzes.sort(sorter)
+                    self.quizzes = OrderedDict(quizzes)
 
-            if not name:
-                name, quizz = quizzes[0]
-            else:
-                quizz = self.quizzes[name]
+                    if not name:
+                        name, quizz = quizzes[0]
+                    else:
+                        quizz = self.quizzes[name]
 
-            return CompanyCoursesDifference(
-                self.context, "++diff++" + name, quizz, self.quizzes
-            )
+                    return CompanyCoursesDifference(
+                        self.context, "++diff++" + name, quizz, self.quizzes
+                    )
         return None
 
 
