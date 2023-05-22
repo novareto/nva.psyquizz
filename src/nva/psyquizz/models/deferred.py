@@ -81,7 +81,9 @@ def companies_choice(context):
         for c in accounts])
 
 
+from nva.psyquizz.models.quizz.corona_set import FREQUENCY as FREQUENCY_CORONA
 deferred_vocabularies['quizz_choice'] = quizz_choice
 deferred_vocabularies['accounts_choice'] = accounts_choice
 deferred_vocabularies['criterias_choice'] = criterias_choice
 deferred_vocabularies['companies_choice'] = companies_choice
+deferred_vocabularies['frequency_corona'] = FREQUENCY_CORONA 

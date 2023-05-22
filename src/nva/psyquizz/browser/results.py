@@ -86,9 +86,9 @@ class CourseStatistics(object):
         self.extra_questions_order = OrderedDict()
         for iface in self.quizz.additional_extra_fields(self.course):
             for _, field in getFieldsInOrder(iface):
-                 self.extra_questions_order[field.description] = [
-                     t.title for t in field.vocabulary
-                 ]
+                self.extra_questions_order[field.description] = [
+                    t.title for t in field.vocabulary(None)
+                ]
 
         if self.course.extra_questions:
             questions = self.course.extra_questions.strip().split('\n')

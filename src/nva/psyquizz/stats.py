@@ -6,6 +6,7 @@ from itertools import chain
 from collections import OrderedDict, namedtuple
 from cromlech.sqlalchemy import get_session
 from nva.psyquizz.models.criterias import CriteriaAnswer
+from nva.psyquizz.models import Course, ClassSession
 from sqlalchemy import func
 from zope.schema import getFieldsInOrder
 
@@ -25,7 +26,6 @@ Sum = namedtuple(
     'Sum',
     ('title', 'total'),
 )
-
 
 
 def computation(averages, sums, data):
@@ -94,7 +94,6 @@ def available_criterias(criterias, session_id):
         CriteriaAnswer.answer, func.count(CriteriaAnswer.answer)).filter(
         CriteriaAnswer.session_id.in_(session_id))
                  .group_by(CriteriaAnswer.answer).all()}
-
     for crit in criterias:
         for item in crit.items.split('\r\n'):
             total = all_crits.get(item, 0)
@@ -116,17 +115,32 @@ def compute(quizz, averages, sums, filters):
     answers = session.query(quizz)
     criterias_title = {}
     filtered_criterias = {}
+    merged_criterias = {}
 
+    Criteria = namedtuple('Criteria', ('id', 'name', 'amount', 'uid'))
+
+    course = None
     if filters:
         if 'course' in filters:
             answers = answers.filter(
                 quizz.course_id == filters['course']
             )
+            course = session.query(Course).get(filters['course'])
 
         if 'session' in filters:
             answers = answers.filter(
                 quizz.session_id == filters['session']
             )
+            clssess = session.query(ClassSession).get(filters['session'])
+            course = clssess.course
+
+    if course is not None:
+        for criteria in clssess.course.criterias:
+            criterias = merged_criterias.setdefault(criteria.title, [])
+            for item in (c.strip() for c in criteria.items.split('\n')):
+                uid = '%s:%s' % (criteria.id, item)
+                criterias.append(Criteria(criteria.id, item, 0, uid))
+
     total = 0
     if 'criterias' in filters:
         criterias = set(
@@ -225,14 +239,14 @@ def compute(quizz, averages, sums, filters):
     global_averages, global_sums = computation(
         averages, sums, sorted_global_answers)
 
-    Criteria = namedtuple('Criteria', ('id', 'name', 'amount', 'uid'))
-    merged_criterias = {}
     for fid, fc in filtered_criterias.items():
         id, name = fid.split(':', 1)
         for fa, count in fc.items():
             uid = '%s:%s' % (id, fa)
             criterias = merged_criterias.setdefault(name, [])
-            criterias.append(Criteria(id, fa, count, uid))
+            for idx, c in enumerate(criterias):
+                if c.uid == uid:
+                    criterias[idx] = Criteria(id, fa, count, uid)
 
     return {
         'raw': global_data,

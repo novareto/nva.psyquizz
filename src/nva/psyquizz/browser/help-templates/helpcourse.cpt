@@ -87,17 +87,6 @@ gleichzeitig an alle Beschäftigten verschickt werden.
       <div class="modal-body">
 
         <h3> Zusatzfragen (optional) </h3>
-          <p>
-            <b>Corona </b>
-Die SARS-CoV-2-Arbeitsschutzregel sieht eine Aktualisierung der Gefährdungsbeurteilung in Bezug auf die psychische Belastung durch Corona vor. Diese Zusatzfragen helfen Ihnen dabei, diese Belastung ergänzend zu erfassen.
-          </p>
-<ul>
-  <li> Durch Corona habe ich zu wenig Arbeit.</li>
-  <li> Durch Corona habe ich zu wenig Kontakt mit Kolleginnen und Kollegen. </li>
-  <li> Ich werde über die Corona Maßnahmen im Betrieb ausreichend informiert. </li>
-  <li> Ich fühle mich durch die Maßnahmen in meinem Betrieb ausreichend geschützt. </li>
-  <li> Ich habe Angst durch die Pandemie meinen Arbeitsplatz zu verlieren. </li>
-</ul>
           <p> <b> Homeoffice </b>
             Bei der Gefährdungsbeurteilung soll die psychische Belastung durch die spezifischen Anforderungen und Bedingungen bei einer Tätigkeit erfasst werden. Diese Zusatzfragen helfen Ihnen dabei, die Belastung im Homeoffice ergänzend zu erfassen.
             </p>
@@ -111,6 +100,71 @@ Die SARS-CoV-2-Arbeitsschutzregel sieht eine Aktualisierung der Gefährdungsbeur
               <li> Meine Arbeit lässt sich gut selbst organisieren.  </li>
               <li> Meine Arbeit ermöglicht es mir, Beruf und Privatleben miteinander zu vereinbaren. </li>
               </ul>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+      </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="myHelpTranslation" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Hilfe</h4>
+      </div>
+      <div class="modal-body">
+
+<h2>
+Hinweise für Befragungen mit FGBU in englischer Sprache
+</h2>
+
+<p>
+Es besteht die Möglichkeit die Befragung in englischer Sprache durchzuführen. Hierbei gibt es
+jedoch ein paar Einschränkungen bzw. Dinge die Sie beachten müssen, um die Umfrage
+bestmöglich umzusetzen.
+</p>
+<p>
+Wichtig: es besteht lediglich die Möglichkeit die Fragen der Erhebung auf Englisch zu erhalten. Das
+Onlinetool an sich und die Überschriften usw. bleiben auf Deutsch. Mit ein paar wenigen zu
+bedenkenden Punkten ist das Instrument dennoch für alle einsetzbar und verständlich.
+</p>
+
+<img src="fanstatic/nva.psyquizz/deutsch_english.png"/>
+
+
+Anlegen einer Befragung
+
+<ol>
+  <li>
+    <p>
+Bennen Sie Ihre Auswertungsgruppen so, dass auch englischsprachige Mitarbeitende es
+verstehen oder fügen Sie beide Begriffe ein
+Z.B Standort/Side Abteilung/Department. Achten Sie dabei darauf sowohl die Oberbegriffe
+als auch die einzelnen Auswahloptionen für alle verständlich zu wählen.
+    </p>
+  </li>
+  <li>
+    <p>
+Bei dem Einführungstext müssten Sie auch selbst eine englische Variante Ihres Textes
+unterhalb der deutschen Vorlage einfügen, sofern dies erforderlich erscheint.
+    </p>
+  </li>
+  <li>
+    <p>
+Zusatzfragen: Sollten Sie eigene Zusatzfragen erstellen, bedenken Sie, dass diese nicht
+automatisch übersetzt werden.
+    </p>
+  </li>
+
+</ol>
+
 
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>

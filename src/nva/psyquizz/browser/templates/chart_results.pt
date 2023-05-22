@@ -16,7 +16,6 @@
   </div>
   <form action="." tal:attributes="action view.request.url"
         tal:define="current view.stats.filters.get('criterias', {})">
-
     <dl tal:define="crits view.stats.statistics['criterias']">
       <tal:dl tal:repeat="(crit, opts) crits.items()">
         <dt>

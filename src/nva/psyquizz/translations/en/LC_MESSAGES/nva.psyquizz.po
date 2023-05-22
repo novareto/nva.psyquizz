@@ -308,4 +308,5 @@ msgid "Trifft zu"
 msgstr "Strongly agree"
 
 msgid "Klicken Sie auf „Abschließen“ um Ihre Daten abzusenden."
-msgstr "Please click Save to finsih this form"
+msgstr "Please click Answer to submit this course."
+
