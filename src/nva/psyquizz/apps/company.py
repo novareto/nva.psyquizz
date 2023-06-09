@@ -81,7 +81,10 @@ def activate_url(url, **data):
 
 
 def hashed(pwd, salt):
-    return hashlib.sha512(pwd + salt).hexdigest()
+    try:
+        return hashlib.sha512(pwd + salt).hexdigest()
+    except:
+        return hashlib.sha512((pwd + salt).encode('utf-8')).hexdigest()
 
 
 @implementer(ICredentials)
