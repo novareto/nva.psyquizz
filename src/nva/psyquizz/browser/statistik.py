@@ -8,19 +8,46 @@ from zope import interface
 from zope.component import getUtilitiesFor
 
 import uvclight
+from uvclight.utils import current_principal
+from cromlech.browser import exceptions
 from cromlech.sqlalchemy import get_session
 from uvclight.auth import require
 from nva.psyquizz import models
 from nva.psyquizz.models.interfaces import IQuizz
+from uvclight import MenuItem
+from ..interfaces import ICompanyRequest
+from uvc.design.canvas import IFooterMenu
 
+
+ALLOWED_USERS = {'max.mustermann@bg.de', 'ck@novareto.de', 'ulf.krummreich@vbg.de', 'miriam.rexroth@bgrci.de', 'kuczynski.isabell@bgetem.de'}
+
+
+class StatstikMenu(MenuItem):
+    uvclight.context(interface.Interface)
+    uvclight.menu(IFooterMenu)
+    uvclight.title(u'Statstik')
+    uvclight.layer(ICompanyRequest)
+
+    @property
+    def action(self):
+        return self.view.application_url() + '/statistik'
+
+    @property
+    def available(self):
+        if self.request.principal.id in ALLOWED_USERS:
+            return True
+        return False
 
 class Statistik(uvclight.Page):
     uvclight.context(interface.Interface)
-    require('manage.company')
+    require('zope.Public')
 
     template = uvclight.get_template('statistik.cpt', __file__)
 
     def update(self):
+        user = current_principal()
+        if not user.id in ALLOWED_USERS:
+            raise exceptions.HTTPForbidden('Not allowed.')
         self.session = get_session('school')
 
     def getAccounts(self):

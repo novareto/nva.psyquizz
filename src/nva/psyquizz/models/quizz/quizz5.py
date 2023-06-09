@@ -614,27 +614,27 @@ IQuizz5.setTaggedValue("scales", [
 ])
 
 IQuizz5.setTaggedValue("edit_scales", [
-    {'iface': IScale1, 'label': u"Vollständigkeit der Aufgabe"},
-    {'iface': IScale2, 'label': u"Handlungsspielraum"},
-    {'iface': IScale3, 'label': u"Variabilität (Abwechslungsreichtum)"},
-    {'iface': IScale4, 'label': u"Informationsmängel"},
-    {'iface': IScale5, 'label': u"Informationsüberflutung"},
-    {'iface': IScale6, 'label': u"Klarheit der Kompetenzen und Verantwortlichkeiten"},
-    {'iface': IScale7, 'label': u"Qualifikationsmängel"},
-    {'iface': IScale8, 'label': u"Qualifikationsunterforderung"},
-    {'iface': IScale9, 'label': u"Soziale und Emotionale Belastungen"},
-    {'iface': IScale10, 'label': u"Emotionsarbeit"},
-    {'iface': IScale11, 'label': u"Belastende Arbeitszeit"},
-    {'iface': IScale12, 'label': u"Entgrenzte Arbeitszeit"},
-    {'iface': IScale13, 'label': u"Zeitdruck/hohe Arbeitsintensität"},
-    {'iface': IScale14, 'label': u"Unterbrechungen/Multitasking"},
-    {'iface': IScale15, 'label': u"Kommunikation/Kooperation"},
-    {'iface': IScale16, 'label': u"Soziale Unterstützung"},
-    {'iface': IScale17, 'label': u"Soziale Drucksituationen"},
-    {'iface': IScale18, 'label': u"Soziale Unterstützung durch Führungskräfte"},
-    {'iface': IScale19, 'label': u"Feedback und Anerkennung"},
+    {'iface': IScale1, 'label': u"Vollständigkeit der Aufgabe", 'translate': True},
+    {'iface': IScale2, 'label': u"Handlungsspielraum", 'translate': True},
+    {'iface': IScale3, 'label': u"Variabilität (Abwechslungsreichtum)", 'translate': True},
+    {'iface': IScale4, 'label': u"Informationsmängel", 'translate': True},
+    {'iface': IScale5, 'label': u"Informationsüberflutung", 'translate': True},
+    {'iface': IScale6, 'label': u"Klarheit der Kompetenzen und Verantwortlichkeiten", 'translate': True},
+    {'iface': IScale7, 'label': u"Qualifikationsmängel", 'translate': True},
+    {'iface': IScale8, 'label': u"Qualifikationsunterforderung", 'translate': True},
+    {'iface': IScale9, 'label': u"Soziale und Emotionale Belastungen", 'translate': True},
+    {'iface': IScale10, 'label': u"Emotionsarbeit", 'translate': True},
+    {'iface': IScale11, 'label': u"Belastende Arbeitszeit", 'translate': True},
+    {'iface': IScale12, 'label': u"Entgrenzte Arbeitszeit", 'translate': True},
+    {'iface': IScale13, 'label': u"Zeitdruck/hohe Arbeitsintensität", 'translate': True},
+    {'iface': IScale14, 'label': u"Unterbrechungen/Multitasking",'translate': True},
+    {'iface': IScale15, 'label': u"Kommunikation/Kooperation", 'translate': True},
+    {'iface': IScale16, 'label': u"Soziale Unterstützung", 'translate': True},
+    {'iface': IScale17, 'label': u"Soziale Drucksituationen", 'translate': True},
+    {'iface': IScale18, 'label': u"Soziale Unterstützung durch Führungskräfte", 'translate': True},
+    {'iface': IScale19, 'label': u"Feedback und Anerkennung", 'translate': True},
 #    {'iface': IScale20, 'label': u"Umgebung (Gesamt)"},
-    {'iface': IGroupScale, 'label': u"Umgebung"},
+    {'iface': IGroupScale, 'label': u"Umgebung", 'translate': True},
 ])
 
 IQuizz5.setTaggedValue("averages", OrderedDict((
@@ -678,7 +678,7 @@ class Quizz5(QuizzBase, Base):
     __schema__ = IQuizz5
     __title__ = u"FGBU Fragebogen"
     __base_pdf__ = "fbgu.pdf"
-    __supports_diff__ = False
+    __supports_diff__ = True 
 
     __table_args__ = {"extend_existing": True}
 
@@ -812,11 +812,12 @@ class Quizz5(QuizzBase, Base):
                     red = red[1:]
                 if int(inverted) == 0:
                     boundary = (
-                        (as_float(green), '#62B645'),
-                        (as_float(red), '#FFCC00'),
+                        (as_float(red), '#62B645'),
+                        (as_float(yellow), '#FFCC00'),
                         (5, '#D8262B'),
                         unicode(label, 'utf-8'), tooltip, inverted
                     )
+                    print "%s; %s; | %s | %s | I0 | R %s | Y %s | G5  --> %s " %(idx, red, yellow, green, boundary[0][0], boundary[1][0], title)
                 else:
                     boundary = (
                         (as_float(red), '#D8262B'),
@@ -824,9 +825,8 @@ class Quizz5(QuizzBase, Base):
                         (as_float(green), '#62B645'),
                         unicode(label, 'utf-8'), tooltip, inverted
                     )
+                    print "%s; %s; | %s | %s | I1 | G %s | Y %s | R5  --> %s " %(idx, red, yellow, green, boundary[0][0], boundary[1][0], title)
                 boundaries[unicode(title, 'utf-8')] = boundary
-                #boundaries[title] = boundary
-                print title
         IQuizz5.setTaggedValue("chart_boundaries", boundaries)
         return boundaries
 

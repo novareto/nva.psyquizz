@@ -15,7 +15,7 @@ from cromlech.browser import IRequest, ITraverser
 from cromlech.sqlalchemy import get_session
 from dolmen.forms.base import FAILURE, SUCCESS
 from grokcore.component import MultiAdapter, provides, adapts, name, provider
-from nva.psyquizz import hs
+from nva.psyquizz import hs, hsb_bullet
 from nva.psyquizz.models import IQuizz, ICourse, ICompany
 from uvc.design.canvas import IAboveContent
 from uvclight.auth import require
@@ -31,6 +31,7 @@ from .results import CourseStatistics, SessionStatistics, get_filters
 from ..interfaces import ICompanyRequest
 from ..i18n import _
 from ..models import Course, Student, ClassSession
+from nva.psyquizz.models.deferred import check_quizz
 
 
 def have_courses_to_compare(context, threshold=7):
@@ -49,7 +50,6 @@ def have_courses_to_compare(context, threshold=7):
             if types[quizz_type] == 1:
                 return True
             types[quizz_type] += 1
-
         return False
 
     raise NotImplementedError
@@ -63,7 +63,7 @@ def sessions(context, threshold=7):
                   filter(Course.id == context.id).\
                   filter(ClassSession.course_id == context.id).\
                   join(Student, and_(
-                      Student.course_id==context.id,
+                      Student.session_id==ClassSession.id,
                       Student.completion_date != None
                   )).\
                   group_by(ClassSession.id).\
@@ -151,17 +151,19 @@ class DiffTraverser(MultiAdapter):
         quizzes = [(n, q) for n, q in getUtilitiesFor(IQuizz)
                    if getattr(q, '__supports_diff__', True)]
         if quizzes:
-            quizzes.sort(sorter)
-            self.quizzes = OrderedDict(quizzes)
+            for name, quizz in quizzes:
+                if check_quizz(name, quizz, self.context):
+                    quizzes.sort(sorter)
+                    self.quizzes = OrderedDict(quizzes)
 
-            if not name:
-                name, quizz = quizzes[0]
-            else:
-                quizz = self.quizzes[name]
+                    if not name:
+                        name, quizz = quizzes[0]
+                    else:
+                        quizz = self.quizzes[name]
 
-            return CompanyCoursesDifference(
-                self.context, "++diff++" + name, quizz, self.quizzes
-            )
+                    return CompanyCoursesDifference(
+                        self.context, "++diff++" + name, quizz, self.quizzes
+                    )
         return None
 
 
@@ -331,13 +333,37 @@ class SessionsDiff(uvclight.Form):
 
     ignoreContent = False
     fields = uvclight.Fields(IMultipleSessionsDiff)
-    template = uvclight.get_template("cdiff.cpt", __file__)
     inline = False
     view = None
+    _colors = None
+    rainbow = (
+        '#000000',
+        '#0000ff',
+        '#00ffff',
+        '#ff00a2',
+        '#6f00a2',
+        '#6fffa2'
+    )
 
     @property
     def quizz(self):
         return queryUtility(IQuizz, name=self.context.quizz_type)
+
+    @property
+    def template(self):
+        if self.context.quizz_type == 'quizz5':
+            hsb_bullet.need()
+            return uvclight.get_template("quizz5_session_diff.pt", __file__)
+        return uvclight.get_template("cdiff.cpt", __file__)
+
+    @property
+    def colors(self):
+        if self._colors is None:
+            if self.context.quizz_type != 'quizz5':
+                raise NotImplementedError(
+                    'No colors for quizz ' + self.context.quizz_type)
+            self._colors = self.quizz().get_boundaries()
+        return self._colors
 
     @property
     def action_url(self):

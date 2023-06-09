@@ -21,11 +21,10 @@ class QuizzBase(Location):
                     value=c.strip(), token=idx, title=c.strip())
                     for idx, c in enumerate(criteria.items.split('\n'), 1)
                     if c.strip()])
-
             yield zope.schema.Choice(
                 __name__='criteria_%s' % criteria.id,
                 title=criteria.title,
-                description=u"Wählen Sie das Zutreffende aus.",
+                description=u"%s <small> Wählen Sie das Zutreffende aus.</small>" % criteria.title,
                 vocabulary=values,
                 required=True,
             )

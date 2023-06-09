@@ -1,60 +1,87 @@
-<div>
-  <div class="header">
-    <h1>Ergebnisse</h1>
-    <div tal:replace="structure view.description"> </div>
+<form action="." tal:attributes="action view.action_url;
+                                 id view.htmlId();
+                                 method view.formMethod;
+                                 enctype view.enctype">
+
+  <h1 tal:condition="view.label"
+      tal:content="view.label">Label</h1>
+
+  <p tal:condition="view.description"
+     tal:content="view.description">Description</p>
+
+  <p class="form-status"
+     tal:condition="view.status"
+     tal:content="view.status">Status</p>
+
+  <div class="form-error"
+       tal:condition="view.errors">
+    <ul tal:condition="view.formErrors"
+        tal:repeat="error view.formErrors">
+      <li> <span tal:replace="error.title" /> </li>
+    </ul>
   </div>
-  <form action="." tal:attributes="action view.request.url"
-        tal:define="current view.stats.filters.get('criterias', {})">
 
-    <dl tal:define="crits view.stats.statistics['criterias']">
-      <tal:dl tal:repeat="(crit, opts) crits.items()">
-        <dt>
-          <h3 tal:content="crit"
-              tyle="display: inline-block; margin-right: 0.4em" />
-          <a name="reset" class="text-muted"
-             tal:attributes="rel opts[0].id">alle</a>
-        </dt>
-        <dd>
-          <div tal:repeat="opt opts"
-               style="display: inline-block; padding: 5px;">
-            <tal:disabled define="disabled bool(opt.amount &lt; 7)">
-              <input type="radio"
-                     tal:attributes="value opt.uid;
-                                     name 'criteria-%s' % opt.id;
-                                     checked opt.uid in current and 'checked' or None;
-                                     disabled disabled and 'disabled' or None" />
-              <span tal:content="'%s (%s)' % (opt.name, opt.amount)"
-                    tal:attributes="class disabled and 'text-muted' or ''"/>
-            </tal:disabled>
-          </div>
-        </dd>
-      </tal:dl>
-    </dl>
-    <input id="form-action-filter" type="submit" value="filter" />
-  </form>
+  <dl tal:define="crits view.criterias" tal:condition="crits">
+    <tal:dl tal:repeat="crit crits">
+      <dt><h3 tal:content="crit" /></dt>
+      <dd>
+	<div tal:repeat="opt crits[crit]"
+	     style="display: inline-block; padding: 5px;">
+	  <input name="criterias" type="checkbox"
+		 tal:attributes="value opt;
+				 checked crits[crit][opt]['selected'];" />
+	  <span tal:content="crits[crit][opt]['name']" />
+	</div>
+      </dd>
+    </tal:dl>
+  </dl>
 
-  <script>
-    $(document).ready(function() {
-        $('input[type=radio]').change(function() {
-            $("#form-action-filter").click();
-        });
-        $('a[name="reset"]').click(function(evt) {
-          var uid = $(this).attr('rel');
-          var selected = $('input[value^='+uid+']:checked');
-          if (selected.length) {
-            selected.attr('checked', false);
-            $("#form-action-filter").click();
-          }
-        });
-    });
-  </script>
+  <div class="fields"
+       tal:condition="view.fieldWidgets">
+    <div class="field" tal:repeat="widget view.fieldWidgets">
+      <label class="field-label" for="#"
+             tal:attributes="for widget.htmlId()"
+             tal:content="widget.title"
+             tal:condition="widget.isVisible() and not view.isHidden(widget)">
+            Label
+      </label>
+      <span class="field-required"
+            i18n:translate=""
+            tal:condition="widget.required and widget.isVisible()
+			   and not view.isHidden(widget)"
+            >(required)</span>
+      <br />
+      <tal:description tal:condition="widget.description">
+        <span class="field-description"
+              tal:content="widget.description">
+          </span><br />
+      </tal:description>
+          <tal:error tal:define="error widget.error"
+                     tal:condition="error">
+            <span class="field-error"
+                  tal:content="error.title">
+              Error
+            </span>
+            <br />
+          </tal:error>
+          <tal:widget tal:content="structure widget.render()" />
+    </div>
+  </div>
+
+  <div class="actions" tal:condition="view.actionWidgets"
+       style="margin-top: 2em;">
+    <tal:action repeat="widget view.actionWidgets">
+      <tal:widget tal:content="structure widget.render()" />
+    </tal:action>
+  </div>
+
+  <div tal:condition="view.stats">
+
 
   <script>
      function svgToCanvas(chart, target_id) {
         var svg = chart.getSVG();
         var canvas = document.createElement('canvas');
-        //canvas.width = "600";
-        //canvas.height = "400";
         var ctx = canvas.getContext('2d');
         var img = document.createElement("img");
         img.setAttribute("src", "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg))));
@@ -73,7 +100,7 @@
             text: null
         },
         legend: {
-            enabled: false
+            enabled: true
         },
         yAxis: {
             gridLineWidth: 0
@@ -83,19 +110,11 @@
                 borderWidth: 0,
                 color: '#000',
                 targetOptions: {
-                  width: '200%',
+                  width: '600%',
+                  borderWidth: 0,
                   height: 5,
-                  borderWidth: 1,
                   borderColor: 'black',
-                  color: 'blue'
                 }
-              /*
-                targetOptions: {
-                    width: 30,
-                    height: 3,
-                    borderRadius: 0,
-                }
-                */
             }
         },
         credits: {
@@ -107,8 +126,7 @@
      });
   </script>
 
-  <form  id="result" method="POST"
-	 tal:attributes="action view.url(context) + '/export'">
+
 
     <div class="panel-group" id="accordion" role="tablist"
          aria-multiselectable="true">
@@ -129,7 +147,7 @@
              aria-labelledby="headingOne">
           <div class="panel-body">
             <tal:containers
-                repeat="idx range(0, len(view.stats.statistics['global.averages']) - 10)">
+                repeat="idx range(0, len(view.stats[0].statistics['global.averages']) - 10)">
               <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
               <textarea type="text" id="pSVG${idx}"
                         name="pSVG" style="display:none"></textarea>
@@ -153,7 +171,7 @@
           <div class="panel-body">
             <p class="lead"> Im Folgenden sehen Sie die Ergebnisse der einzelnen Fragen zu den für die psychische Belastung relevanten Arbeitsumgebungsfaktoren. </p>
 
-            <tal:containers repeat="idx range(19, len(view.stats.statistics['global.averages']))">
+            <tal:containers repeat="idx range(19, len(view.stats[0].statistics['global.averages']))">
               <div tal:attributes="id 'container'+str(idx)" class="chart"></div>
               <textarea type="text" id="pSVG${idx}"
                         name="pSVG" style="display:none"></textarea>
@@ -164,28 +182,6 @@
         </div>
       </div>
     </div>
-
-    <input type="hidden" value="" name="has_criterias" tal:attributes="value len(view.stats.filters.get('criterias', {}))" />
-    <input type="hidden" value="" tal:attributes="value view.jsonify(view.stats.filters.get('criterias', {}).keys())" name="criterias" />
-     <input type="hidden" tal:attributes="value view.stats.statistics['total']" name="total"/>
-
-
-    <textarea type="text" id="averages" name="averages" style="display:none">
-      <tal:data
-          content="view.jsonify([[res.title, '%.2f' % res.average] for res in view.stats.statistics['global.averages']])" />
-    </textarea>
-
-    <button class="btn btn-default" name="action" value="PDF">
-      <span class="glyphicon glyphicon-download-alt" aria-hidden="true">
-        </span>&nbsp; PDF export
-    </button>
-
-    <a class="btn btn-default"
-       tal:attributes="href 'excel?' + request.environment['QUERY_STRING']"
-       ><span class="glyphicon glyphicon-download-alt" aria-hidden="true">
-    </span>&nbsp; Excel export</a>
-
-  </form>
 
   <style>
 .tooltip {
@@ -200,12 +196,12 @@
   </style>
 
   <script>
-    <tal:charts repeat="scale view.stats.statistics['global.averages']">
+    <tal:charts repeat="scale view.stats[0].statistics['global.averages']">
       <tal:chart define="color view.colors[scale.title]">
 
     var myChart${repeat["scale"].index} = Highcharts.chart('container${repeat["scale"].index}', {
         chart: {
-           height: '<span tal:replace="color[3].strip() and '147' or '125'" />',
+           height: '<span tal:replace="len(view.stats) * 50 + (color[3].strip() and 72 or 50)" />'
 	},
         title: {
             enabled: true,
@@ -214,7 +210,7 @@
             useHTML: true
         },
         subtitle: {
-            enabled: false,
+            enabled: true,
             align: 'left',
             useHTML: true,
           text: '<span data-bs-custom-class="beautifier" data-toggle="tooltip" data-container="body" tal:attributes="title color[4]" tal:content="scale.title"> </span> <span tal:condition="color[5] == str(1)"> * </span>'
@@ -249,11 +245,21 @@
             }],
             title: '${color[3]}'
         },
-        series: [{
+        series: [
+        <tal:marker repeat="stat view.stats">
+          {
+            showInLegend: true,
+            name: "<b>${view.stat_title(stat)}</b>",
+            targetOptions: {
+                color: "${view.rainbow[repeat["stat"].index]}"
+            },
+            color: "${view.rainbow[repeat["stat"].index]}",
             data: [{
-                target: ${scale.average}
-              }],
-            }
+                target: ${stat.statistics['global.averages'][repeat["scale"].index].average}
+                }
+              ]
+            },
+          </tal:marker>
         ]
       });
 
@@ -266,21 +272,7 @@
   </script>
   <p class="pull-right"> * (Ressource - hohe Werte wirken positiv auf die Gesundheit)<p>
 
-  <div tal:condition="view.stats.statistics['extra_data']">
-   <h2> Ergebnis der Zusatzfrage(n)  </h2>
-  <table id="mt" class="table table-bordered table-striped">
-    <tr tal:repeat="data view.stats.statistics['extra_data'].items()">
-      <td tal:content="data[0]"></td>
-      <td>
-        <ul>
-          <li tal:repeat="answer data[1].items()">
-            <span tal:content="answer[0]" /> :
-            <span tal:content="answer[1]" />
-          </li>
-        </ul>
-      </td>
-    </tr>
-  </table>
-  </div>
 
-</div>
+
+  </div>
+</form>

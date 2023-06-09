@@ -1,4 +1,9 @@
 <div id="statistiks">
+
+  <h1> Daten </h1>
+
+  <a class="btn btn-primary" href="/simpleexcelexport"> Download Rohdaten </a>
+
   <h1>Statistik</h1>
   <p class="lead"> Statistische Informationen </p>
 

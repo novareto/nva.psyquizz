@@ -1,0 +1,315 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"POT-Creation-Date: Tue Mar 24 14:10:42 2010\n"
+"PO-Revision-Date: 2015-03-24 14:48+0200\n"
+"Last-Translator: Souheil Chelfouh <trollfot@gmail.com>\n"
+"Language-Team: Novareto\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: nva.psyquizz\n"
+
+
+msgid "Zurück"
+msgstr "Previous"
+
+msgid "Zurueck"
+msgstr "Previous"
+
+msgid "Weiter"
+msgstr "Next"
+
+msgid "Bei meiner Arbeit ist man an Arbeitsvorgängen von Anfang bis Ende beteiligt."
+msgstr "At work, I am involved in work processes from start to finish."
+
+msgid "Bei meiner Arbeit führt man nicht nur kleine Teilaufgaben aus, sondern stellt vollständige Produkte und Dienstleistungen her."
+msgstr "In my work, I do not just perform small subtasks, but produce complete products and services."
+
+msgid "Man muss vorgegebene Arbeiten nicht nur ausführen, sondern auch selbst planen und die Ergebnisse überprüfen."
+msgstr "In my role, I do not only execute tasks that are assigned to me, but I must plan and check the results."
+
+msgid "Bei meiner Arbeit kann man die Reihenfolge der Aufgabenerledigung selbst bestimmen."
+msgstr "In my work, I can determine the order of task completion myself."
+
+msgid "Man kann bei meiner Arbeit selbst bestimmen, wann man was macht."
+msgstr "In my role, I can decide myself when I do what."
+
+msgid "Man hat viele Freiheiten in der Art und Weise, wie man seine Arbeit verrichtet."
+msgstr "I have a lot of freedom in the way I do my job."
+
+msgid "Bei meiner Arbeit hat man fast jeden Tag etwas anderes zu tun."
+msgstr "In my job, there is something different to do almost every day."
+
+msgid "Die Arbeitsaufgaben wechseln häufig bei meiner Arbeit."
+msgstr "My work tasks change frequently."
+
+msgid "Man muss bei meiner Arbeit unterschiedliche Fähigkeiten einsetzen."
+msgstr "I have to use different skills in my work."
+
+msgid "Man muss viel Energie dafür aufwenden, die für die Arbeit notwendigen Informationen zu beschaffen."
+msgstr "It takes a lot of effort to get the information required to complete the task."
+
+msgid "Erforderliche Unterlagen, Informationen und Daten sind bei meiner Arbeit häufig unvollständig."
+msgstr "Documents, information and data required for my work are often incomplete."
+
+msgid "Entscheidungen werden erschwert, weil häufig nicht alle notwendigen Informationen vorliegen."
+msgstr "The lack of necessary information hampers decision making."
+
+msgid "Die tägliche Informationsmenge bei meiner Arbeit ist zu hoch (z.B. Mails, Unternehmenskommunikation)."
+msgstr "The daily amount of information is too much (e.g. mails, corporate communications)."
+
+msgid "Daten sind häufig zu umfangreich oder zu unstrukturiert, um die wichtigen Informationen zu erkennen."
+msgstr "Data is often too large or too unstructured to recognize the important information."
+
+msgid "Die vielen unterschiedlichen Informationskanäle (z.B. Akten, Datenbanken, Intranet) sind schwer zu handhaben."
+msgstr "The many different information channels (e.g. records, databases, intranet) are difficult to manage."
+
+msgid "Man weiß nicht genau, wie weit die eigenen Entscheidungsbefugnisse reichen."
+msgstr "I don't understand clearly how much authority to make decisions I have."
+
+msgid "Ich erhalte häufig widersprüchliche Anweisungen von unterschiedlichen Stellen (Führungskräften/Abteilungen)."
+msgstr "I often receive contradictory instructions from different stakeholders (managers/departments)."
+
+msgid "Bei meiner Arbeit sind die Prioritäten unklar."
+msgstr "The priorities between different work goals are not clearly defined."
+
+msgid "Man muss Aufgaben übernehmen, für die man eigentlich zu wenig eingearbeitet ist."
+msgstr "I am expected to undertake tasks for which I am not sufficiently trained."
+
+msgid "Bei meiner Arbeit muss man Tätigkeiten durchführen, für die man eigentlich nicht vollständig ausgebildet bin."
+msgstr "In my work, I have to perform activities for which I am not fully qualified."
+
+msgid "Man fühlt sich häufig von den Aufgaben überfordert."
+msgstr "I often feel overwhelmed by the type of tasks I am given."
+
+msgid "Bei meiner Arbeit hat man keine anspruchsvolle Aufgabe."
+msgstr "My work is not challenging."
+
+msgid "Man denkt häufig, dass man mehr leisten könnte, als von einem gefordert wird."
+msgstr "In my work, I often think that I am capable of more than what I am required to do."
+
+msgid "Man fühlt sich bei meiner Arbeit häufig unterfordert."
+msgstr "I often feel underutilized at work."
+
+msgid "Meine Arbeit bringt einen in stark emotional belastende Situationen (z.B. Trauer, Wut)."
+msgstr "My work sometimes causes states that are very emotionally draining (e.g. grief, rage)."
+
+msgid "Bei meiner Arbeit ist man häufig mit aggressivem Verhalten oder Übergriffen (z.B. von Kundeninnen/Kunden oder von Klientinnen/Klienten) konfrontiert."
+msgstr "At work, I am often confronted with aggressive behaviour or attacks (e.g., by customers/clients)."
+
+msgid "Es passiert häufig, dass man mit unverschämten Personen oder unangemessenen Verhalten zu tun hat."
+msgstr "At work, I often have to deal with rude people or inappropriate behaviour."
+
+msgid "Bei meiner Arbeit muss man häufig nach außen hin Gefühle zeigen, die nicht mit meinen eigentlichen Gefühlen übereinstimmen."
+msgstr "At work, I often have to outwardly show feelings that are not consistent with my actual emotions and feelings."
+
+msgid "Bei meiner Arbeit muss man häufig seine aktuellen Gefühle verbergen."
+msgstr "At work, I often have to hide my real feelings."
+
+msgid "Man muss häufig die eigenen Gefühle den momentanen Gefühlen von Anderen anpassen."
+msgstr "I often have to adapt my own feelings to the current emotions of others while working."
+
+msgid "Man hat sehr stark variierende Arbeitszeiten."
+msgstr "I have highly variable working hours."
+
+msgid "Man muss zu ungünstigen Arbeitszeiten arbeiten."
+msgstr "I have to work unsociable hours."
+
+msgid "Bei meiner Arbeit ist man mit schlecht gestalteten Arbeitszeiten / schlecht gestalteter Schichtarbeit konfrontiert."
+msgstr "I am confronted with poorly designed shift work."
+
+msgid "Bei meiner Arbeit macht man häufig Überstunden."
+msgstr "I often work overtime."
+
+msgid "Man bekommt häufig kurzfristig zusätzliche Aufgaben, so dass man den Feierabend nicht einhalten kann."
+msgstr "I often get additional tasks at short notice, so that I am unable to finish work on time."
+
+msgid "Auch außerhalb der regulären Arbeitszeiten ist es bei meiner Arbeit häufig erforderlich, verfügbar zu sein."
+msgstr "I often need to be available outside of my official working hours."
+
+msgid "Um die Arbeitsmenge bei meiner Arbeit zu schaffen, muss man länger arbeiten oder Pausen wegfallen lassen."
+msgstr "I have to work overtime or skip breaks to complete my entire workload."
+
+msgid "Aufgrund der hohen Arbeitsmenge kommt es häufig zu hohem Zeitdruck."
+msgstr "The high volume of work often causes intense time pressure."
+
+msgid "Es kommt häufig vor, dass man nicht genügend Zeit hat, alle Aufgaben zu erledigen."
+msgstr "I often do not have enough time to complete all of my tasks."
+
+msgid "Man wird bei seiner täglichen Arbeit immer wieder durch andere Personen unterbrochen."
+msgstr "During my work I am often interrupted by other people."
+
+msgid "Man hat häufig mehrere Aufgaben gleichzeitig, zwischen denen man hin- und herspringen muss."
+msgstr "I am often confronted with multiple tasks at once and have to switch back and forth between them."
+
+msgid "Man muss bei meiner Arbeit häufig aktuelle Arbeiten unterbrechen, weil etwas Wichtiges dazwischenkommt."
+msgstr "I often have to interrupt a task I am in the process of completing because something urgent comes up."
+
+msgid "Man steht nicht im direktem persönlichen Kontakt mit Kolleginnen und Kollegen."
+msgstr "During my work, I am not in direct personal contact with my colleagues."
+
+msgid "An meinem Arbeitsplatz mangelt es an Möglichkeiten zum persönlichen Austausch."
+msgstr "My workplace lacks opportunities for personal interaction."
+
+msgid "Man kann sich bei meiner Arbeit nicht mit seinen Kolleginnen und Kollegen unterhalten."
+msgstr "I cannot have conversations with my colleagues while working."
+
+msgid "Wenn es Probleme bei der Arbeit gibt, kann man sich auf die Unterstützung der Kolleginnen und Kollegen verlassen."
+msgstr "When an issue arises at work I can rely on the support of my colleagues."
+
+msgid "Man kann mit seinen Kolleginnen und Kollegen offen über alles reden."
+msgstr "I can talk openly about everything with my colleagues."
+
+msgid "Meine Kolleginnen und Kollegen sind immer bereit, sich meine Arbeitsprobleme anzuhören."
+msgstr "My colleagues are always ready to listen to my work issues."
+
+msgid "Es gibt häufig Spannungen unter Kolleginnen und Kollegen."
+msgstr "There are often tensions between colleagues."
+
+msgid "Man wird bei meiner Arbeit von anderen über die Maße kritisiert oder bloßgestellt."
+msgstr "I am excessively criticized or ridiculed by others."
+
+msgid "Es gibt häufig Streitereien an meinem Arbeitsplatz."
+msgstr "There are often disagreements within my workplace."
+
+msgid "Meine Führungskraft ist bereit, sich meine Probleme anzuhören."
+msgstr "My supervisor is ready to listen to my problems."
+
+msgid "Man kann sich auf die Unterstützung der Führungskräfte verlassen, wenn es Probleme bei der Arbeit gibt."
+msgstr "I can rely on the support of my supervisors if there are problems at work."
+
+msgid "Meine Führungskraft unterstützt mich, sodass ich meine Aufgaben leichter erfüllen kann."
+msgstr "My supervisors support me so that I can complete my tasks more easily."
+
+msgid "Man bekommt von Führungskräften sowie von Kolleginnen und Kollegen Rückmeldungen über die Qualität der Arbeit."
+msgstr "I receive feedback on the quality of my work from my managers and colleagues."
+
+msgid "Man erhält Wertschätzung für seine Arbeit."
+msgstr "I am recognized for my work."
+
+msgid "Meine Führungskraft gibt mir nützliches Feedback über meine Arbeitsleistung."
+msgstr "My manager gives me useful feedback about my performance at work."
+
+msgid "Inwieweit sind folgenden Umgebungsbelastungen an Ihrem Arbeitsplatz vorhanden: <br> <br> Lärm"
+msgstr "Noise"
+
+msgid "Hitze"
+msgstr "Heat"
+
+msgid "Ungünstige Beleuchtung/Blendung"
+msgstr "Poor lighting/glare"
+
+msgid "Gefahrstoffe"
+msgstr "Hazardous substances"
+
+msgid "Räumliche Enge"
+msgstr "Confined spaces"
+
+msgid "Ungünstige ergonomische Gestaltung"
+msgstr "Poor ergonomic design"
+
+msgid "Ununterbrochene gleiche Bewegung"
+msgstr "Monotonous repetitive movement."
+
+msgid "Unzureichende Gestaltung von Signalen und Hinweisen"
+msgstr "Inadequate design of signals and instructions"
+
+msgid "Schwere körperliche Arbeit"
+msgstr "Hard physical work"
+
+msgid "Fehlende oder ungünstig zu bedienende Arbeitsmittel"
+msgstr "Missing or unsuitable work equipment"
+
+msgid "Vollständigkeit der Aufgabe"
+msgstr "Completeness of work task"
+
+msgid "Handlungsspielraum"
+msgstr "Autonomy"
+
+msgid "Variabilität (Abwechslungsreichtum)"
+msgstr "Variation"
+
+msgid "Informationsmängel"
+msgstr "Lack of information"
+
+msgid "Informationsüberflutung"
+msgstr "Information overload"
+
+msgid "Klarheit der Kompetenzen und Verantwortlichkeiten"
+msgstr "Lack of role clarity"
+
+msgid "Qualifikationsmängel"
+msgstr "Gaps in skills or knowledge"
+
+msgid "Qualifikationsunterforderung"
+msgstr "Underutilisation of skills"
+
+msgid "Soziale und Emotionale Belastungen"
+msgstr "Social and emotional stress"
+
+msgid "Emotionsarbeit"
+msgstr "Emotional dissonance"
+
+msgid "Belastende Arbeitszeit"
+msgstr "Stressful working hours"
+
+msgid "Entgrenzte Arbeitszeit"
+msgstr "Overtime"
+
+msgid "Zeitdruck/hohe Arbeitsintensität"
+msgstr "Intensity of work"
+
+msgid "Unterbrechungen/Multitasking"
+msgstr "Workflow interruptions/multitasking"
+
+msgid "Kommunikation/Kooperation"
+msgstr "Lack of communication opportunities"
+
+msgid "Soziale Unterstützung"
+msgstr "Social support from colleagues"
+
+msgid "Soziale Drucksituationen"
+msgstr "Social stressors from colleagues"
+
+msgid "Soziale Unterstützung durch Führungskräfte"
+msgstr "Social support from supervisors"
+
+msgid "Feedback und Anerkennung"
+msgstr "Feedback and recognition"
+
+msgid "Lärm"
+msgstr "Noise"
+
+msgid "Ungünstige Beleuchtung"
+msgstr "Poor lighting/glare"
+
+msgid "Ergonomische Gestaltung"
+msgstr "Poor ergonomic design"
+
+msgid "Dauerhaft gleiche Bewegungen"
+msgstr "Monotonous repetitive movement."
+
+msgid "Gestaltung von Signalen"
+msgstr "Inadequate design of signals and instructions"
+
+msgid "Trifft nicht zu"
+msgstr "Strongly disagree"
+
+msgid "Trifft eher nicht zu"
+msgstr "Disagree"
+
+msgid "Trifft eher zu"
+msgstr "Agree"
+
+msgid "Trifft zu"
+msgstr "Strongly agree"
+
+msgid "Klicken Sie auf „Abschließen“ um Ihre Daten abzusenden."
+msgstr "Please click Answer to submit this survey."
+

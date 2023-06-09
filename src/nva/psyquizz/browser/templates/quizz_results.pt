@@ -20,7 +20,11 @@
 
     <dl tal:define="crits view.stats.statistics['criterias']">
       <tal:dl tal:repeat="crit crits">
-        <dt><h3 tal:content="crit" /></dt>
+        <dt>
+          <h3 tal:content="crit" />
+          <a name="reset" class="text-muted"
+             tal:attributes="rel crits[crit][0].id">alle</a>
+        </dt>
         <dd>
           <div tal:repeat="opt crits[crit]"
                style="display: inline-block; padding: 5px;">
@@ -46,6 +50,7 @@
   <form id="result" method="POST"
 	tal:attributes="action view.url(context) + '/pdf'">
 
+    <input type="hidden" value="" name="has_criterias" tal:attributes="value len(view.stats.filters.get('criterias', {}))" />
     <input type="hidden" value=""
 	   tal:attributes="value view.stats.json_criterias" name="criterias" />
 
@@ -117,12 +122,12 @@
 	},
 	xAxis: {
       categories: <span tal:replace="view.xAxis"/>,
-    labels: { 
+    labels: {
       style: {
          whiteSpace: 'nowrap',
       },
-      step: 1, 
-      useHTML: false, 
+      step: 1,
+      useHTML: false,
       formatter: function() { return myValues[this.value]; } },
 	},
 	yAxis: {
@@ -217,8 +222,6 @@
     });
 
   </script>
-
-
   <script>
     $(document).ready(function() {
         $('input[type=radio]').change(function() {

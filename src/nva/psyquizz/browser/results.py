@@ -86,9 +86,9 @@ class CourseStatistics(object):
         self.extra_questions_order = OrderedDict()
         for iface in self.quizz.additional_extra_fields(self.course):
             for _, field in getFieldsInOrder(iface):
-                 self.extra_questions_order[field.description] = [
-                     t.title for t in field.vocabulary
-                 ]
+                self.extra_questions_order[field.description] = [
+                    t.title for t in field.vocabulary(None)
+                ]
 
         if self.course.extra_questions:
             questions = self.course.extra_questions.strip().split('\n')
@@ -141,24 +141,29 @@ class Quizz5Charts(Quizz2Charts):
     template = uvclight.get_template('quizz5_result.pt', __file__)
     description = u"""
         <p>
-	  Im Folgenden werden die Befragungsergebnisse dargestellt und wie sich diese auf die
-	  Gesundheit der Mitarbeiterinnen und Mitarbeiter auswirken. Der blaue Strich kennzeichnet dabei
-	  das Ergebnis für den jeweiligen Bereich. Ergebnisse innerhalb des roten Balkens deuten auf ein
-	  erhöhtes Gesundheitsrisiko hin, Ergebnisse innerhalb des gelben Balkens stehen für ein leicht
-	  erhöhtes Gesundheitsrisiko und bei Ergebnissen innerhalb des grünen Balkens scheint alles in
-	  Ordnung.
+	Im Folgenden werden die Befragungsergebnisse dargestellt und wie sich diese auf die
+	Gesundheit der Mitarbeiterinnen und Mitarbeiter auswirken. Der blaue Strich kennzeichnet dabei
+	das Ergebnis für den jeweiligen Bereich. Ergebnisse innerhalb des roten Balkens deuten auf ein
+	erhöhtes Gesundheitsrisiko hin, Ergebnisse innerhalb des gelben Balkens stehen für ein leicht
+	erhöhtes Gesundheitsrisiko und bei Ergebnissen innerhalb des grünen Balkens scheint alles in
+	Ordnung.
         </p>
         <p>
-	  Die Wirkung der einzelnen Bereiche aus der Befragung auf die Gesundheit ist unterschiedlich
-	  stark, was sich in der Länge der farblichen Balken widerspiegelt. Es gibt zwei Bereiche mit einem
-	  insgesamt geringeren Risiko (Vollständigkeit der Aufgabe, Variabilität) hier wird kein roter Balken
-	  dargestellt. Auf der anderen Seite gibt es Bereiche mit einem erhöhten Risiko (z.B. Soziale
-	  Drucksituationen) hier ist der rote Balken besonders lang.
+	Die Wirkung der einzelnen Bereiche aus der Befragung auf die Gesundheit ist unterschiedlich
+	stark, was sich in der Länge der farblichen Balken widerspiegelt. Es gibt zwei Bereiche mit einem
+	insgesamt geringeren Risiko (Vollständigkeit der Aufgabe, Variabilität) hier wird kein roter Balken
+	dargestellt. Auf der anderen Seite gibt es Bereiche mit einem erhöhten Risiko (z.B. Soziale
+	Drucksituationen) hier ist der rote Balken besonders lang.
         </p>
         <p>
-	  Außerdem gibt es Bereiche, sogenannte Ressourcen, bei denen gilt „je mehr desto besser“.
-	  Deshalb beginnt beispielsweise bei „Handlungsspielraum“ die Grafik mit dem roten Balken und
-	  endet mit dem grünen.
+	Außerdem gibt es Bereiche, sogenannte Ressourcen, bei denen gilt „je mehr desto besser“.
+	Deshalb beginnt beispielsweise bei „Handlungsspielraum“ die Grafik mit dem roten Balken und
+	endet mit dem grünen.
+        </p>
+        <p>
+        Eine Definition der einzelnen Bereiche (z. B. Vollständigkeit der Aufgabe) erhalten Sie, indem Sie mit
+        der Mouse über den Text der Bereiche fahren. Eine Gesamtübersicht der Bereichsdefinitionen können Sie
+        <a target="_blank" href="/fanstatic/nva.psyquizz/kurzerlauterungen_fbgu_skalen.pdf">hier</a> herunterladen.
         </p>
         <p>
 	    Eine Definition der einzelnen Bereiche (z. B. Vollständigkeit der Aufgabe) erhalten Sie, indem Sie mit

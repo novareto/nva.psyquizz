@@ -161,7 +161,7 @@ class SecureMailer:
 
     delivery = MailDelivery
 
-    def __init__(self, host, from_, user=None, pwd=None, port="2525"):
+    def __init__(self, host, from_, user=None, pwd=None, port="25"):
         self.host = host
         self.port = port
         self.username = user
@@ -187,8 +187,12 @@ class SecureMailer:
         msg.set_charset(ENCODING)
         part1 = MIMEText(text.encode('utf-8'), 'plain')
         part1.set_charset(ENCODING)
-        part2 = MIMEText(html, 'html')
-        part2.set_charset(ENCODING)
+        try:
+            part2 = MIMEText(html, 'html')
+            part2.set_charset(ENCODING)
+        except:
+            part2 = MIMEText(html.encode('utf-8'), 'html')
+            part2.set_charset(ENCODING)
 
         msg.attach(part1)
         msg.attach(part2)

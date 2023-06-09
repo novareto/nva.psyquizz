@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 from zope import schema
 from zope.interface import invariant, Invalid, Interface
 from zope.location import ILocation
@@ -58,8 +59,10 @@ class MySimpleTerm(SimpleTerm):
 @provider(IContextSourceBinder)
 def source_fixed_extra_questions(context):
     rc = [MySimpleTerm('1', '1', u'Corona', ICoronaQuestions), MySimpleTerm('2', '2', u'Homeoffice', IHomeOfficeQuestions)]
+    #rc = [MySimpleTerm('2', '2', u'Homeoffice', IHomeOfficeQuestions),]
     return SimpleVocabulary(rc)
 
+deferred_vocabularies['fixed_extra_questions'] = source_fixed_extra_questions
 
 
 @provider(IContextSourceBinder)
@@ -291,16 +294,17 @@ class ICourse(ILocation, IContent):
 
     quizz_type = schema.Choice(
         title=_(u"Quizz"),
+        description=_(u" Sie haben bei dem FGBU die Möglichkeit die Fragen innerhalb der Befragung auch auf Englisch darstellen zu lassen. Bitte beachten Sie dazu aber die folgenden Hinweise! <a href='' class='' data-toggle='modal' data-target='#myHelpTranslation'> <span class='glyphicon glyphicon-question-sign' aria-hidden='true'></span> </a>"),
         source=deferred('quizz_choice'),
         required=True,
-        default="quizz2",
+        default=os.environ.get('DEFAULT_QUIZZ', None),
     )
 
     fixed_extra_questions = schema.Set(
         title=_(u"Zusatzfragen auswählen"),
         description=_(u"Hier können Sie vordefinierte Zusatzfragen zu Ihrer Befragung auswählen.  <a href='' class='' data-toggle='modal' data-target='#myHelpModal'> <span class='glyphicon glyphicon-question-sign' aria-hidden='true'></span> </a>"),
         required=False,
-        value_type=schema.Choice(title=u'Please select one', source=source_fixed_extra_questions)
+        value_type=schema.Choice(title=u'Please select one', source=deferred('fixed_extra_questions'))
     )
 
     extra_questions = schema.Text(

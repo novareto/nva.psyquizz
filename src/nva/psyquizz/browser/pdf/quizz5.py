@@ -17,6 +17,30 @@ class Quizz5PDF(GeneratePDF):
     uvclight.name('pdf')
     uvclight.auth.require('zope.Public')
 
+    def crit_style(self):
+        if int(self.request.form.get('has_criterias', 0)) > 0:
+            rc = []
+            criterias = json.loads(self.request.form.get('criterias', {}))
+            if isinstance(criterias, dict):
+                for k, v in criterias.values():
+                    rc.append(
+                        "<li> %s </li>" %(v)
+                        )
+            else:
+                for kv in criterias:
+                    if ':' in kv:
+                        v, k = kv.split(':')
+                    rc.append(
+                        "<li> %s </li>" %(k)
+                        )
+            if not rc:
+                rc.append('alle')
+        else:
+            rc = ['alle']
+
+        crit_style = "<ul> %s </ul>" % "".join(rc)
+        return crit_style
+
     def generate(self):
         parts = []
         self.frontpage(parts)
@@ -31,13 +55,11 @@ class Quizz5PDF(GeneratePDF):
             drawing = svg2rlg(tf.name)
             drawing.scale(0.7, 0.7)
             parts.append(drawing)
-
             if i == 18:
                 parts.append(PageBreak())
                 parts.append(Paragraph('<h1>Umgebungsvariablen<h1>', styles['Heading1']))
-                parts.append(Paragraph('<p>Im Folgenden sehen Sie die Ergebnisse der einzelnen Fragen zu den für die psychische Belastung relevanten Arbeitsumgeb      ungsfaktoren.</p>', styles['Normal']))
+                parts.append(Paragraph('<p>Im Folgenden sehen Sie die Ergebnisse der einzelnen Fragen zu den für die psychische Belastung relevanten Arbeitsumgebungsfaktoren.</p>', styles['Normal']))
             i += 1
-
         return parts
 
     def render(self):

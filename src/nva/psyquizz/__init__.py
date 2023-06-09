@@ -34,6 +34,7 @@ lbg = Group([lbjs, lbcss])
 
 quizzcss = Resource(library, 'quizz.css')
 quizzjs = Resource(library, 'quizz.js')
+conditionsjs = Resource(library, 'conditions.js')
 clipboard_js = Resource(library, 'clipboard.min.js')
 wysiwyg_js = Resource(library, 'summernote.min.js', bottom=True)
 font_css = Resource(library, 'font-awesome.min.css')

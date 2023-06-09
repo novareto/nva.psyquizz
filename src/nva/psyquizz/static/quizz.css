@@ -30,6 +30,10 @@ div.dropdown.pull-right {
   display: none;
 }
 
+.radio label:not(.radio-inline) {
+    display: block !important;
+}
+
 .radio input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
     margin-left: -20px;
 }
@@ -237,4 +241,13 @@ div#field-form-field-challenge {
 .alert-danger {
    padding: 1em;
    border: 1px solid #a94442;
+}
+
+span.field-description.lead {
+   font-weight: 400
+}
+
+span.field-description.lead small {
+   font-weight: 100;
+   font-size: 75%;
 }

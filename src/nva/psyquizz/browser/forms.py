@@ -7,7 +7,7 @@ import hashlib
 import datetime
 import uvclight
 
-from .. import wysiwyg, quizzjs, startendpicker
+from .. import wysiwyg, quizzjs, startendpicker, conditionsjs
 from ..apps.anonymous import QuizzBoard
 from ..i18n import _
 from ..interfaces import IAnonymousRequest, ICompanyRequest
@@ -24,6 +24,7 @@ from ..emailer import ENCODING
 from grokcore.component import Adapter, provides, context, baseclass
 from grokcore.component import adapter, implementer
 
+from cromlech.i18n import setLanguage
 from cromlech.sqlalchemy import get_session
 from dolmen.forms.base import (
     SuccessMarker, makeAdaptiveDataManager, NO_VALUE)
@@ -58,7 +59,7 @@ def form_quizz_template(context, request):
     return uvclight.get_template('form.cpt', __file__)
 
 
-def send_activation_code(config, company_name, email, code, base_url):
+def _send_activation_code(config, company_name, email, code, base_url):
     title = (
         u'Gemeinsam zu gesunden Arbeitsbedingungen – Aktivierung'
     ).encode(ENCODING)
@@ -428,6 +429,19 @@ class IVerifyPassword(Interface):
         required=True)
 
 
+class IAcceptConditions(Interface):
+
+    accept = Choice(
+        title=_(u'Ist Ihr Unternehmen bei der Berufsgenossenschaft '
+                u'versichert?'),
+        required=True,
+        source=SimpleVocabulary((
+            SimpleTerm('ja', 'ja', u'Ja'),
+            SimpleTerm('nein', 'nein', u'Nein')
+        ))
+    )
+
+
 @menuentry(IContextualActionsMenu, order=10)
 class CreateAccount(Form):
     name('index')
@@ -439,11 +453,20 @@ class CreateAccount(Form):
     fields = (Fields(IAccount).select('name', 'email', 'password') +
               Fields(IVerifyPassword, ICaptched))
     fields = (Fields(IAccount).select('name', 'email', 'password') +
-              Fields(IVerifyPassword) )
+              Fields(IVerifyPassword) + Fields(IAcceptConditions))
+    fields['accept'].mode = "blockradio"
+
+    def update(self, *args, **kwargs):
+        #conditionsjs.need()
+        Form.update(self, *args, **kwargs)
 
     @property
     def action_url(self):
         return self.request.path
+
+    @staticmethod
+    def send_activation_code(config, company_name, email, code, base_url):
+        return _send_activation_code(config, company_name, email, code, base_url)
 
     @action(_(u'Add'))
     def handle_save(self):
@@ -451,6 +474,15 @@ class CreateAccount(Form):
         session = get_session('school')
 
         if errors:
+            return FAILURE
+
+        if data.get('accept', 'nein') == 'nein':
+            self.errors.append(
+                Error(identifier='form.field.accept',
+                      title='You need to accept the conditions.'))
+            self.flash(_(
+                u'You can only register by agreeing to the conditions.'
+            ))
             return FAILURE
 
         if not data['password'] == data['verif']:
@@ -487,6 +519,8 @@ class CreateAccount(Form):
         data['salt'] = salt
         if 'ack_form' in data:
             data.pop('ack_form')
+        if 'accept' in data:
+            data.pop('accept')
         account = Account(**data)
         code = account.activation = str(uuid.uuid1())
         session.add(account)
@@ -496,7 +530,7 @@ class CreateAccount(Form):
         base_url = self.application_url().replace('/register', '')
 
         # We send the email.
-        send_activation_code(
+        self.send_activation_code(
             self.context.configuration,
             data['name'], data['email'], code, base_url)
 
@@ -550,8 +584,8 @@ class CreateCompany(Form):
 
     dataValidators = []
     fields = Fields(ICompany).select(
-        'name', 'mnr', 'exp_db', 'type', 'employees')
-    fields['mnr'].htmlAttributes = {'maxlength': 8}
+        'name', 'exp_db', 'type', 'employees')
+    #fields['mnr'].htmlAttributes = {'maxlength': 8}
     fields['exp_db'].mode = "blockradio"
 
     def htmlId(self):
@@ -579,6 +613,8 @@ class CreateCompany(Form):
             self.flash(_(u'An error occurred.'))
             return FAILURE
 
+        if 'mnr' in data.keys():
+            data.pop('mnr')
         # create it
         if not data['exp_db']:
             data.pop('employees')
@@ -726,14 +762,15 @@ class CreateCourse(Form):
         #data['quizz_type'] = "quizz2"
         if 'extra_questions' in data and data['extra_questions'] is NO_VALUE:
             data.pop('extra_questions')
-        course = Course(**data)
 
+
+        criterias = data.pop('criterias', [])
+        course = Course(**data)
         course.company_id = self.context.id
         session.add(course)
         session.flush()
         session.refresh(course)
         clssession = ClassSession(**csdata)
-
         clssession.course_id = course.id
         clssession.company_id = self.context.id
         session.add(clssession)
@@ -747,15 +784,15 @@ class CreateCourse(Form):
                 clssession.append(student)
 
         # update order
-        for idx, criteria in enumerate(data.get('criterias', []), 1):
-            query = criterias_table.update().where(
-                criterias_table.c.courses_id == course.id
-            ).where(
-                criterias_table.c.criterias_id == criteria.id
-            ).where(
-                criterias_table.c.company_id == self.context.id
-            ).values(order=idx)
-            session.execute(query)
+        if criterias:
+            for idx, criteria in enumerate(criterias, 1):
+                query = criterias_table.insert().values(
+                    courses_id=course.id,
+                    criterias_id=criteria.id,
+                    company_id=self.context.id,
+                    order=idx
+                )
+                session.execute(query)
 
         self.flash(_(u'Course added with success.'))
         self.redirect(self.application_url())
@@ -1004,7 +1041,7 @@ class DeleteSession(DeleteForm):
 
     @property
     def description(self):
-        return u"Wollen sie die Befragung %s wirklich löschen" % self.context.title
+        return u"Möchten Sie die Befragung %s wirklich löschen?" % self.context.title
 
     @property
     def action_url(self):
@@ -1203,29 +1240,47 @@ class Quizz5Wizard(AnswerQuizz):
         criteria_fields = Fields(
             *self.quizz.criteria_fields(self.context.course))
         if criteria_fields:
-            scales = scales + [{'fields': criteria_fields, 'label': 'Unternehmenskriterien'}]
+            scales = scales + [{
+                'fields': criteria_fields,
+                'label': 'Unternehmenskriterien'
+            }]
         scales += IQuizz5.getTaggedValue('edit_scales')
         additional_questions = list(self.quizz.additional_extra_fields(
             self.context.course))
-        extra_fields = list(self.quizz.extra_fields(self.context.course))
         if additional_questions:
             scales = scales + [
                 {'iface': iface, 'label': 'Zusatzfragen'}
                 for iface in additional_questions
             ]
+
+        extra_fields = list(self.quizz.extra_fields(self.context.course))
         if extra_fields:
-            scales = scales + [
-                {'fields': extra_fields, 'label': 'Eigene Zusatzfragen'}
-            ]
+            scales = scales + [{
+                'fields': extra_fields,
+                'label': 'Eigene Zusatzfragen'
+            }]
         return scales
+
+    def update(self):
+        if 'lang' in self.request.params:
+            print('switching language to :', self.request.params['lang'])
+            setLanguage(self.request.params['lang'])
+        super(Quizz5Wizard, self).update()
+        self.scales = self.get_scales()
+        self.translatable = [
+            idx for idx, scale in enumerate(self.scales, 1)
+            if scale.get('translate', False) is True
+        ]
 
     def getFieldWidgets(self, scale):
         from zope.schema import getFieldsInOrder
         widgets = []
         if 'fields' in scale:
             for field in scale['fields']:
-                #name = "form.field.%s" % getattr(field, '__name__', field.identifier)
-                name = "form.field.%s" % field.getName() 
+                try:
+                    name = "form.field.%s" % getattr(field, '__name__', field.identifier)
+                except:
+                    name = "form.field.%s" % field.getName()
                 widgets.append(self.fieldWidgets.get(name))
         else:
             for field, o in getFieldsInOrder(scale['iface']):

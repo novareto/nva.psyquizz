@@ -5,6 +5,16 @@ from zope.interface import Interface
 from zope.schema import Choice
 from nva.psyquizz.models.vocabularies import make_vocabulary 
 from zope.schema.vocabulary import SimpleTerm
+from zope.schema.interfaces import IContextSourceBinder
+from grokcore.component import provider
+
+def deferred(name):
+    @provider(IContextSourceBinder)
+    def vocabulary(context):
+        from nva.psyquizz.models.interfaces import deferred_vocabularies
+        return deferred_vocabularies[name]
+    return vocabulary
+
 
 
 FREQUENCY = make_vocabulary('frequency_corona', [
@@ -73,46 +83,54 @@ class IHomeOfficeQuestions(Interface):
     extra_ho_one = Choice(
         title=u"1",
         description=u"Ich kann im Homeoffice ungestört arbeiten.",
-        source=FREQUENCY
+        #source=FREQUENCY
+        source=deferred('frequency_corona'),  #FREQUENCY
     )
 
     extra_ho_two = Choice(
         title=u"2",
         description=u"Im Homeoffice ist mein Arbeitsplatz für mich passend gestaltet (Stuhl, Tisch, Bildschirm etc.).",
-        source=FREQUENCY
+        #source=FREQUENCY
+        source=deferred('frequency_corona'),  #FREQUENCY
     )
 
     extra_ho_three = Choice(
         title=u"3",
         description=u"Im Homeoffice ist meine technische Ausstattung gut (Software, Hardware, Internetverbindung etc.).",
-        source=FREQUENCY
+        #source=FREQUENCY
+        source=deferred('frequency_corona'),  #FREQUENCY
     )
 
     extra_ho_four = Choice(
         title=u"4",
         description=u"Der Austausch mit meinen Kolleginnen und Kollegen funktioniert aus dem Homeoffice heraus gut.",
-        source=FREQUENCY
+        #source=FREQUENCY
+        source=deferred('frequency_corona'),  #FREQUENCY
     )
 
     extra_ho_five = Choice(
         title=u"5",
         description=u"Meine Erreichbarkeitszeiten im Homeoffice sind mit meiner Führungskraft und meinem Team abgestimmt.",
-        source=FREQUENCY
+        #source=FREQUENCY
+        source=deferred('frequency_corona'),  #FREQUENCY
     )
 
     extra_ho_six = Choice(
         title=u"6",
         description=u"Ziele und Erwartungen an meine Arbeit im Homeoffice sind mit meiner Führungskraft und Kolleginnen und Kollegen eindeutig geklärt.",
-        source=FREQUENCY
+        #source=FREQUENCY
+        source=deferred('frequency_corona'),  #FREQUENCY
     )
 
     extra_ho_seven = Choice(
         title=u"7",
         description=u"Meine Arbeit im Homeoffice lässt sich gut selbst organisieren.",
-        source=FREQUENCY
+        #source=FREQUENCY
+        source=deferred('frequency_corona'),  #FREQUENCY
     )
     extra_ho_eight = Choice(
         title=u"8", 
         description=u"Meine Arbeit im Homeoffice ermöglicht es mir, Beruf und Privatleben miteinander zu vereinbaren.",
-        source=FREQUENCY
+        #source=FREQUENCY
+        source=deferred('frequency_corona'),  #FREQUENCY
     )
