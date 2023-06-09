@@ -584,8 +584,8 @@ class CreateCompany(Form):
 
     dataValidators = []
     fields = Fields(ICompany).select(
-        'name', 'mnr', 'exp_db', 'type', 'employees')
-    fields['mnr'].htmlAttributes = {'maxlength': 8}
+        'name', 'exp_db', 'type', 'employees')
+    #fields['mnr'].htmlAttributes = {'maxlength': 8}
     fields['exp_db'].mode = "blockradio"
 
     def htmlId(self):
@@ -613,6 +613,8 @@ class CreateCompany(Form):
             self.flash(_(u'An error occurred.'))
             return FAILURE
 
+        if 'mnr' in data.keys():
+            data.pop('mnr')
         # create it
         if not data['exp_db']:
             data.pop('employees')

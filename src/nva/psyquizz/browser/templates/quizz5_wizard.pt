@@ -91,7 +91,7 @@
         </div>
         <div class="btn-group" role="group">
           <a id="previous" class="control btn btn-default" href="">
-            ← <span i18n:translate="">Zurück</span>
+            ← <span i18n:translate="Zurueck">Zurück</span>
           </a>
           <a id="next" class="control btn btn-primary" href="">
             <span i18n:translate="">Weiter</span> →

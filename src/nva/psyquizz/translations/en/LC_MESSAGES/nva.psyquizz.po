@@ -19,6 +19,9 @@ msgstr ""
 msgid "Zurück"
 msgstr "Previous"
 
+msgid "Zurueck"
+msgstr "Previous"
+
 msgid "Weiter"
 msgstr "Next"
 
